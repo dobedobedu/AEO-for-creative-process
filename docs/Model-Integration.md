@@ -35,7 +35,8 @@ Always store:
 - Deep research mode may include fewer explicit citations; capture any URLs present and keep raw metadata.
 
 ## Query generation provider (optional)
-- Use OpenRouter for persona -> query generation only.
+- Use OpenRouter for persona -> query generation only (DeepSeek default).
 - Keep query generation separate from visibility evaluation to preserve comparability across runs.
 - Store the model/provider used for query generation in run config for auditability.
 - Default OpenRouter model: deepseek/deepseek-v3.2.
+- Query generation output is parsed as JSON with fallback extraction if the model returns plain text.

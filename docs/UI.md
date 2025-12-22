@@ -23,6 +23,9 @@ Fixed grid with a simple dagre or custom layout function.
 - Response nodes show status: queued / running / done / failed
 - Insight node shows progress when analysis is running
 - Query generation step includes an OpenRouter model selector (default deepseek/deepseek-v3.2)
+- Add \"Generate with DeepSeek\" button for persona -> queries
+- Show raw response text and citations in a results panel
+- Show progress as completed/total calls
 
 ## States
 - Draft: nodes are placeholders

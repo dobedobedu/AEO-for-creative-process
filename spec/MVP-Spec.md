@@ -4,6 +4,7 @@
 - Single persona input (free text + optional structured normalization).
 - Trigger selection by buying stage (Explore / Consider / Compare).
 - Generate 5 queries per run; allow user edits.
+- Generate queries with DeepSeek (OpenRouter) and parse JSON with fallback extraction.
 - Execute 4 model calls per query in standard mode.
 - Deep Research toggle routes all queries to deep research models.
 - Persist raw responses + tool metadata.
@@ -11,6 +12,8 @@
 - Generate insights using Gemini 3 Pro (narrative + charts).
 - React Flow UI displays the pipeline with node status.
 - OpenRouter model selector for query generation (default deepseek/deepseek-v3.2).
+- Run status shows completed/total calls.
+- UI displays raw responses and citations.
 
 ## Non-functional requirements
 - Vercel deployable
