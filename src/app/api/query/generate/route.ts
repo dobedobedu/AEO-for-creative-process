@@ -15,6 +15,23 @@ function getOpenRouterModel() {
   return process.env.OPENROUTER_MODEL?.trim() || "deepseek/deepseek-v3.2";
 }
 
+function fallbackExtractQueries(content: string, count: number): string[] {
+  const lines = content
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^[-*\d.\)\s]+/, "").trim())
+    .filter(Boolean);
+
+  const queries = lines.filter((line) => line.length > 3).slice(0, count);
+  if (queries.length > 0) return queries;
+
+  return content
+    .split("?")
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .slice(0, count)
+    .map((chunk) => `${chunk}?`);
+}
+
 export async function POST(req: Request) {
   const payload = await req.json();
   const data = RequestSchema.parse(payload);
@@ -38,18 +55,23 @@ Return JSON: {"queries": ["..."]}`;
   });
 
   const cleaned = content.trim();
-  let parsed: unknown;
   try {
-    parsed = JSON.parse(cleaned);
-  } catch {
-    const jsonStart = cleaned.indexOf("{");
-    const jsonEnd = cleaned.lastIndexOf("}");
-    if (jsonStart === -1 || jsonEnd === -1) {
-      throw new Error("Failed to parse OpenRouter JSON response");
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      const jsonStart = cleaned.indexOf("{");
+      const jsonEnd = cleaned.lastIndexOf("}");
+      if (jsonStart === -1 || jsonEnd === -1) {
+        throw new Error("Failed to parse OpenRouter JSON response");
+      }
+      parsed = JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
     }
-    parsed = JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
-  }
 
-  const result = ResponseSchema.parse(parsed);
-  return Response.json(result);
+    const result = ResponseSchema.parse(parsed);
+    return Response.json(result);
+  } catch {
+    const queries = fallbackExtractQueries(cleaned, count);
+    return Response.json({ queries });
+  }
 }

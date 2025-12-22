@@ -22,12 +22,21 @@ export async function callOpenRouter(params: {
   }
 
   const baseUrl = process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json",
+  };
+
+  if (process.env.OPENROUTER_SITE_URL) {
+    headers["HTTP-Referer"] = process.env.OPENROUTER_SITE_URL;
+  }
+  if (process.env.OPENROUTER_APP_NAME) {
+    headers["X-Title"] = process.env.OPENROUTER_APP_NAME;
+  }
+
   const response = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({
       model: params.model,
       messages: params.messages,

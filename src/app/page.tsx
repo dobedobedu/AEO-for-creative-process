@@ -63,6 +63,7 @@ export default function Home() {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const queries = useMemo(
     () =>
@@ -95,6 +96,28 @@ export default function Home() {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setIsGenerating(false);
+    }
+  }
+
+  async function refreshRunData(runId: string) {
+    setIsRefreshing(true);
+    try {
+      const summaryRes = await fetch(`/api/run/${runId}`);
+      if (!summaryRes.ok) {
+        throw new Error(await summaryRes.text());
+      }
+      const summaryData = (await summaryRes.json()) as RunSummary;
+      setSummary(summaryData);
+
+      const responsesRes = await fetch(`/api/run/${runId}/responses`);
+      if (responsesRes.ok) {
+        const responseData = (await responsesRes.json()) as { responses: ResponseItem[] };
+        setResponses(responseData.responses);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsRefreshing(false);
     }
   }
 
@@ -135,19 +158,7 @@ export default function Home() {
       setExecuteResult(execData);
 
       setStatus("loading");
-      const summaryRes = await fetch(`/api/run/${runData.runId}`);
-      if (!summaryRes.ok) {
-        throw new Error(await summaryRes.text());
-      }
-      const summaryData = (await summaryRes.json()) as RunSummary;
-      setSummary(summaryData);
-
-      const responsesRes = await fetch(`/api/run/${runData.runId}/responses`);
-      if (responsesRes.ok) {
-        const responseData = (await responsesRes.json()) as { responses: ResponseItem[] };
-        setResponses(responseData.responses);
-      }
-
+      await refreshRunData(runData.runId);
       setStatus("complete");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -225,7 +236,18 @@ export default function Home() {
         </section>
 
         <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
-          <h2 className="text-lg font-semibold">Run Status</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Run Status</h2>
+            {runResult && (
+              <button
+                onClick={() => refreshRunData(runResult.runId)}
+                disabled={isRefreshing}
+                className="rounded-full border border-slate-600 px-3 py-1 text-xs text-slate-200 hover:bg-slate-800 disabled:opacity-50"
+              >
+                {isRefreshing ? "Refreshing..." : "Refresh"}
+              </button>
+            )}
+          </div>
           <div className="text-sm text-slate-300">Status: {status}</div>
           <div className="text-sm text-slate-300">Progress: {progressText}</div>
           {error && <div className="text-sm text-red-300">Error: {error}</div>}
@@ -237,36 +259,48 @@ export default function Home() {
               Executed: {executeResult.total} calls, errors: {executeResult.errors.length}
             </div>
           )}
+          {executeResult && executeResult.errors.length > 0 && (
+            <div className="mt-3 space-y-2 text-xs text-amber-200">
+              {executeResult.errors.map((err, idx) => (
+                <div key={`${err.queryId}-${idx}`}>
+                  {err.provider}/{err.model}: {err.error}
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
-        {responses.length > 0 && (
+        {responses.length > 0 ? (
           <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
             <h2 className="text-lg font-semibold">Responses</h2>
             <div className="space-y-4">
               {responses.map((response) => (
-                <div key={response.id} className="rounded-xl border border-slate-800 p-4">
-                  <div className="text-sm text-emerald-200">
-                    {response.provider} / {response.model}
-                  </div>
-                  <div className="text-sm text-slate-300">Query: {response.query_text}</div>
-                  <p className="mt-2 text-sm text-slate-200 whitespace-pre-line">
-                    {response.response_text}
+                <details key={response.id} className="rounded-xl border border-slate-800 p-4">
+                  <summary className="cursor-pointer text-sm text-emerald-200">
+                    {response.provider} / {response.model} · {response.query_text}
+                  </summary>
+                  <p className="mt-3 text-sm text-slate-200 whitespace-pre-line">
+                    {response.response_text ?? "(no response text)"}
                   </p>
                   <div className="mt-3 text-xs text-slate-400">
                     Citations: {response.citations.length}
                   </div>
                   {response.citations.length > 0 && (
                     <ul className="mt-2 space-y-1 text-xs text-slate-300">
-                      {response.citations.slice(0, 6).map((citation, idx) => (
+                      {response.citations.slice(0, 8).map((citation, idx) => (
                         <li key={`${response.id}-${idx}`}>
                           {citation.title ?? citation.domain ?? citation.url}
                         </li>
                       ))}
                     </ul>
                   )}
-                </div>
+                </details>
               ))}
             </div>
+          </section>
+        ) : (
+          <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 text-sm text-slate-400">
+            No responses loaded yet. Run a baseline or click Refresh.
           </section>
         )}
       </div>
