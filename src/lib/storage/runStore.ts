@@ -73,6 +73,19 @@ export async function setRunPendingCount(runId: string, count: number): Promise<
   `;
 }
 
+export async function setRunExecutionConfig(runId: string, execution: Record<string, unknown>) {
+  await sql`
+    UPDATE runs
+    SET config_json = jsonb_set(
+      COALESCE(config_json, '{}'::jsonb),
+      '{execution}',
+      ${sql.json(execution)}::jsonb,
+      true
+    )
+    WHERE id = ${runId};
+  `;
+}
+
 export async function decrementRunPendingCount(runId: string): Promise<number> {
   const rows = await sql<{ pending_count: number }[]>`
     UPDATE runs
@@ -109,9 +122,23 @@ export async function getRunSummary(runId: string) {
     GROUP BY query_id, provider, model;
   `;
 
+  const completedRows = await sql`
+    SELECT COUNT(*)::int AS total
+    FROM responses
+    WHERE run_id = ${runId};
+  `;
+
+  const completedCalls = completedRows[0]?.total ?? 0;
+  const execution = run.config_json?.execution ?? null;
+  const totalCalls = execution?.totalCalls ?? null;
+
   return {
     run,
     queries: queryRows,
     responses: responseRows,
+    progress: {
+      completedCalls,
+      totalCalls,
+    },
   };
 }

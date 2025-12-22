@@ -21,6 +21,25 @@ type RunSummary = {
   };
   queries: Array<{ id: string; query_text: string }>;
   responses: Array<{ query_id: string; provider: string; model: string; count: number }>;
+  progress?: {
+    completedCalls: number;
+    totalCalls: number | null;
+  };
+};
+
+type ResponseItem = {
+  id: string;
+  query_id: string;
+  provider: string;
+  model: string;
+  response_text: string | null;
+  query_text: string;
+  citations: Array<{
+    url: string | null;
+    domain: string | null;
+    title: string | null;
+    snippet: string | null;
+  }>;
 };
 
 const defaultQueries = [
@@ -40,8 +59,10 @@ export default function Home() {
   const [runResult, setRunResult] = useState<RunResult | null>(null);
   const [executeResult, setExecuteResult] = useState<ExecuteResult | null>(null);
   const [summary, setSummary] = useState<RunSummary | null>(null);
+  const [responses, setResponses] = useState<ResponseItem[]>([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const queries = useMemo(
     () =>
@@ -52,12 +73,38 @@ export default function Home() {
     [queriesText]
   );
 
+  async function handleGenerate() {
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/query/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          personaText,
+          triggerStage: stage,
+          count: 5,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      const data = (await res.json()) as { queries: string[] };
+      setQueriesText(data.queries.join("\n"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
   async function handleRun() {
     setStatus("creating");
     setError(null);
     setRunResult(null);
     setExecuteResult(null);
     setSummary(null);
+    setResponses([]);
 
     try {
       const runRes = await fetch("/api/run", {
@@ -94,6 +141,13 @@ export default function Home() {
       }
       const summaryData = (await summaryRes.json()) as RunSummary;
       setSummary(summaryData);
+
+      const responsesRes = await fetch(`/api/run/${runData.runId}/responses`);
+      if (responsesRes.ok) {
+        const responseData = (await responsesRes.json()) as { responses: ResponseItem[] };
+        setResponses(responseData.responses);
+      }
+
       setStatus("complete");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -101,13 +155,18 @@ export default function Home() {
     }
   }
 
+  const progressText =
+    summary?.progress?.totalCalls != null
+      ? `${summary.progress.completedCalls}/${summary.progress.totalCalls}`
+      : "-";
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 px-6 py-10">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto space-y-8">
         <header className="space-y-2">
           <h1 className="text-3xl font-semibold">AI Visibility Baseline</h1>
           <p className="text-slate-300">
-            Create a run, execute sequential model calls, and view persisted responses.
+            Generate queries with DeepSeek, execute sequential model calls, and view responses.
           </p>
         </header>
 
@@ -122,17 +181,27 @@ export default function Home() {
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm uppercase tracking-wide text-slate-400">Stage</label>
-            <select
-              value={stage}
-              onChange={(e) => setStage(e.target.value as typeof stage)}
-              className="rounded-lg bg-slate-950 border border-slate-800 px-3 py-2 text-sm"
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="space-y-2">
+              <label className="block text-sm uppercase tracking-wide text-slate-400">Stage</label>
+              <select
+                value={stage}
+                onChange={(e) => setStage(e.target.value as typeof stage)}
+                className="rounded-lg bg-slate-950 border border-slate-800 px-3 py-2 text-sm"
+              >
+                <option value="explore">Explore</option>
+                <option value="consider">Consider</option>
+                <option value="compare">Compare</option>
+              </select>
+            </div>
+
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="rounded-full border border-emerald-300/60 text-emerald-200 px-4 py-2 text-sm hover:bg-emerald-500/20 disabled:opacity-50"
             >
-              <option value="explore">Explore</option>
-              <option value="consider">Consider</option>
-              <option value="compare">Compare</option>
-            </select>
+              {isGenerating ? "Generating..." : "Generate with DeepSeek"}
+            </button>
           </div>
 
           <div className="space-y-2">
@@ -158,6 +227,7 @@ export default function Home() {
         <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
           <h2 className="text-lg font-semibold">Run Status</h2>
           <div className="text-sm text-slate-300">Status: {status}</div>
+          <div className="text-sm text-slate-300">Progress: {progressText}</div>
           {error && <div className="text-sm text-red-300">Error: {error}</div>}
           {runResult && (
             <div className="text-sm text-slate-300">Run ID: {runResult.runId}</div>
@@ -169,16 +239,31 @@ export default function Home() {
           )}
         </section>
 
-        {summary && (
-          <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+        {responses.length > 0 && (
+          <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
             <h2 className="text-lg font-semibold">Responses</h2>
-            <div className="text-sm text-slate-300">
-              Run status: {summary.run.status} · Pending: {summary.run.pending_count}
-            </div>
-            <div className="space-y-2">
-              {summary.responses.map((row) => (
-                <div key={`${row.query_id}-${row.provider}-${row.model}`} className="text-sm">
-                  {row.provider} / {row.model} → {row.count}
+            <div className="space-y-4">
+              {responses.map((response) => (
+                <div key={response.id} className="rounded-xl border border-slate-800 p-4">
+                  <div className="text-sm text-emerald-200">
+                    {response.provider} / {response.model}
+                  </div>
+                  <div className="text-sm text-slate-300">Query: {response.query_text}</div>
+                  <p className="mt-2 text-sm text-slate-200 whitespace-pre-line">
+                    {response.response_text}
+                  </p>
+                  <div className="mt-3 text-xs text-slate-400">
+                    Citations: {response.citations.length}
+                  </div>
+                  {response.citations.length > 0 && (
+                    <ul className="mt-2 space-y-1 text-xs text-slate-300">
+                      {response.citations.slice(0, 6).map((citation, idx) => (
+                        <li key={`${response.id}-${idx}`}>
+                          {citation.title ?? citation.domain ?? citation.url}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>

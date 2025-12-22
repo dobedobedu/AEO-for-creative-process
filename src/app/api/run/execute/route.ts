@@ -7,6 +7,7 @@ import { ingestGeminiResponse } from "@/lib/ingest/geminiIngest";
 import {
   decrementRunPendingCount,
   getRunSummary,
+  setRunExecutionConfig,
   setRunPendingCount,
   updateRunStatus,
 } from "@/lib/storage/runStore";
@@ -49,6 +50,10 @@ export async function POST(req: Request) {
   const total = queries.length * modelList.length;
   await updateRunStatus(data.runId, "running");
   await setRunPendingCount(data.runId, total);
+  await setRunExecutionConfig(data.runId, {
+    totalCalls: total,
+    models: modelList,
+  });
 
   const errors: Array<{ queryId: string; provider: string; model: string; error: string }> = [];
 
