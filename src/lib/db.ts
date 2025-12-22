@@ -18,6 +18,11 @@ export const sql =
     prepare: false,
   });
 
+export function query<T>(strings: TemplateStringsArray, ...values: any[]): Promise<T[]> {
+  const sqlAny = sql as unknown as (strings: TemplateStringsArray, ...values: any[]) => Promise<T[]>;
+  return sqlAny(strings, ...values);
+}
+
 if (process.env.NODE_ENV !== "production") {
   globalForSql.sql = sql;
 }

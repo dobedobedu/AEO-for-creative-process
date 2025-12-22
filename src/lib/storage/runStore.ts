@@ -1,4 +1,4 @@
-import { sql } from "@/lib/db";
+import { query as dbQuery, sql } from "@/lib/db";
 
 export type CreateRunInput = {
   personaText: string;
@@ -22,7 +22,7 @@ export async function createRunWithQueries(input: CreateRunInput): Promise<Creat
     ...(input.config ?? {}),
   };
 
-  const runRows = await sql<{ id: string }[]>`
+  const runRows = await dbQuery<{ id: string }>`
     INSERT INTO runs (status, config_json, pending_count)
     VALUES ('queued', ${runConfig}, 0)
     RETURNING id;
@@ -33,7 +33,7 @@ export async function createRunWithQueries(input: CreateRunInput): Promise<Creat
     throw new Error("Failed to create run");
   }
 
-  const personaRows = await sql<{ id: string }[]>`
+  const personaRows = await dbQuery<{ id: string }>`
     INSERT INTO personas (run_id, name, text)
     VALUES (${runId}, ${input.personaName ?? null}, ${input.personaText})
     RETURNING id;
@@ -45,9 +45,9 @@ export async function createRunWithQueries(input: CreateRunInput): Promise<Creat
   }
 
   const queryRows = await Promise.all(
-    input.queries.map((query) => sql<{ id: string }[]>`
+    input.queries.map((queryText) => dbQuery<{ id: string }>`
       INSERT INTO queries (run_id, persona_id, trigger_stage, query_text)
-      VALUES (${runId}, ${personaId}, ${input.triggerStage}, ${query})
+      VALUES (${runId}, ${personaId}, ${input.triggerStage}, ${queryText})
       RETURNING id;
     `)
   );
@@ -74,12 +74,13 @@ export async function setRunPendingCount(runId: string, count: number): Promise<
 }
 
 export async function setRunExecutionConfig(runId: string, execution: Record<string, unknown>) {
+  const executionJson = JSON.parse(JSON.stringify(execution ?? null));
   await sql`
     UPDATE runs
     SET config_json = jsonb_set(
       COALESCE(config_json, '{}'::jsonb),
       '{execution}',
-      ${sql.json(execution)}::jsonb,
+      ${sql.json(executionJson)}::jsonb,
       true
     )
     WHERE id = ${runId};
@@ -87,7 +88,7 @@ export async function setRunExecutionConfig(runId: string, execution: Record<str
 }
 
 export async function decrementRunPendingCount(runId: string): Promise<number> {
-  const rows = await sql<{ pending_count: number }[]>`
+  const rows = await dbQuery<{ pending_count: number }>`
     UPDATE runs
     SET pending_count = GREATEST(pending_count - 1, 0)
     WHERE id = ${runId}

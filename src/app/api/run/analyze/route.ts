@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sql } from "@/lib/db";
+import { query, sql } from "@/lib/db";
 import { callGeminiAnalysis } from "@/lib/providers/geminiAnalysis";
 import { upsertInsight } from "@/lib/storage/insightStore";
 
@@ -7,11 +7,27 @@ const RequestSchema = z.object({
   runId: z.string().uuid(),
 });
 
+type CitationRow = {
+  domain: string | null;
+};
+
+type ResponseRow = {
+  query_id: string;
+  provider: string;
+  model: string;
+  response_text: string | null;
+};
+
+type QueryRow = {
+  id: string;
+  query_text: string;
+};
+
 function buildPrompt(params: {
   persona: string;
   stage: string;
   responses: Array<{ query: string; provider: string; model: string; text: string | null }>;
-  citations: Array<{ domain: string | null }>
+  citations: CitationRow[];
 }) {
   const responseLines = params.responses
     .slice(0, 40)
@@ -59,21 +75,21 @@ export async function POST(req: Request) {
     return Response.json({ error: "Run not found" }, { status: 404 });
   }
 
-  const queries = await sql`
+  const queries = await query<QueryRow>`
     SELECT id, query_text
     FROM queries
     WHERE run_id = ${data.runId}
     ORDER BY id;
   `;
 
-  const responses = await sql`
+  const responses = await query<ResponseRow>`
     SELECT query_id, provider, model, response_text
     FROM responses
     WHERE run_id = ${data.runId}
     ORDER BY created_at ASC;
   `;
 
-  const citations = await sql`
+  const citations = await query<CitationRow>`
     SELECT domain
     FROM citations
     WHERE response_id IN (SELECT id FROM responses WHERE run_id = ${data.runId});

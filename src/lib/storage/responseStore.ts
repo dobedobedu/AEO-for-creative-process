@@ -1,4 +1,4 @@
-import { sql } from "@/lib/db";
+import { query, sql } from "@/lib/db";
 import type { Citation } from "@/lib/parsers/types";
 
 export type ResponseInsert = {
@@ -14,9 +14,7 @@ export type ResponseInsert = {
 };
 
 export async function insertResponse(data: ResponseInsert): Promise<string> {
-  const result = await sql<
-    { id: string }[]
-  >`
+  const result = await query<{ id: string }>`
     INSERT INTO responses (
       run_id,
       query_id,
@@ -35,9 +33,9 @@ export async function insertResponse(data: ResponseInsert): Promise<string> {
       ${data.model},
       ${data.providerResponseId ?? null},
       ${data.responseText ?? null},
-      ${data.outputJson ?? null},
-      ${data.annotationsJson ?? null},
-      ${data.groundingMetadataJson ?? null}
+      ${sql.json(toJson(data.outputJson))},
+      ${sql.json(toJson(data.annotationsJson))},
+      ${sql.json(toJson(data.groundingMetadataJson))}
     )
     RETURNING id;
   `;
@@ -54,6 +52,10 @@ export type WebSearchCallInsert = {
   rawCallJson?: unknown;
 };
 
+function toJson(value: unknown) {
+  return JSON.parse(JSON.stringify(value ?? null));
+}
+
 export async function insertWebSearchCall(data: WebSearchCallInsert): Promise<void> {
   await sql`
     INSERT INTO web_search_calls (
@@ -68,9 +70,9 @@ export async function insertWebSearchCall(data: WebSearchCallInsert): Promise<vo
       ${data.responseId},
       ${data.action ?? null},
       ${data.query ?? null},
-      ${data.domains ?? null},
+      ${sql.json(toJson(data.domains))},
       ${data.status ?? null},
-      ${data.rawCallJson ?? null}
+      ${sql.json(toJson(data.rawCallJson))}
     );
   `;
 }
@@ -89,7 +91,7 @@ export async function insertCitations(responseId: string, provider: string, cita
     c.endIndex ?? null,
     c.sourceType,
     c.query ?? null,
-    c.raw ?? null,
+    toJson(c.raw),
   ]);
 
   await sql`

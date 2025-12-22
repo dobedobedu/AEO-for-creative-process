@@ -1,10 +1,31 @@
-import { sql } from "@/lib/db";
+import { query, sql } from "@/lib/db";
+
+type CitationRow = {
+  response_id: string;
+  url: string | null;
+  domain: string | null;
+  title: string | null;
+  snippet: string | null;
+  start_idx: number | null;
+  end_idx: number | null;
+  source_type: string | null;
+};
+
+type ResponseRow = {
+  id: string;
+  query_id: string;
+  provider: string;
+  model: string;
+  response_text: string | null;
+  created_at: string;
+  query_text: string;
+};
 
 export async function GET(_: Request, context: { params: Promise<{ runId: string }> }) {
   const params = await context.params;
   const runId = params.runId;
 
-  const responses = await sql`
+  const responses = await query<ResponseRow>`
     SELECT
       r.id,
       r.query_id,
@@ -19,7 +40,7 @@ export async function GET(_: Request, context: { params: Promise<{ runId: string
     ORDER BY r.created_at ASC;
   `;
 
-  const citations = await sql`
+  const citations = await query<CitationRow>`
     SELECT
       c.response_id,
       c.url,
@@ -34,7 +55,7 @@ export async function GET(_: Request, context: { params: Promise<{ runId: string
     ORDER BY c.created_at ASC;
   `;
 
-  const citationsByResponse = new Map<string, typeof citations>();
+  const citationsByResponse = new Map<string, CitationRow[]>();
   for (const citation of citations) {
     const list = citationsByResponse.get(citation.response_id) ?? [];
     list.push(citation);

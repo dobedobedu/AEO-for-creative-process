@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sql } from "@/lib/db";
+import { query, sql } from "@/lib/db";
 import { callOpenAIWebSearch } from "@/lib/providers/openai";
 import { callGeminiWebSearch } from "@/lib/providers/gemini";
 import { ingestOpenAIResponse } from "@/lib/ingest/openaiIngest";
@@ -35,8 +35,8 @@ export async function POST(req: Request) {
     return Response.json({ error: "Run not found" }, { status: 404 });
   }
 
-  const queries = await sql<
-    { id: string; query_text: string }[]
+  const queries = await query<
+    { id: string; query_text: string }
   >`SELECT id, query_text FROM queries WHERE run_id = ${data.runId} ORDER BY id`;
 
   if (queries.length === 0) {
