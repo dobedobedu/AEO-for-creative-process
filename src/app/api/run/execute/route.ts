@@ -23,6 +23,7 @@ const RequestSchema = z.object({
       })
     )
     .optional(),
+  mode: z.enum(["server", "client"]).optional(),
 });
 
 export async function POST(req: Request) {
@@ -54,6 +55,14 @@ export async function POST(req: Request) {
     totalCalls: total,
     models: modelList,
   });
+
+  if (data.mode === "client") {
+    return Response.json({
+      runId: data.runId,
+      total,
+      models: modelList,
+    });
+  }
 
   const errors: Array<{ queryId: string; provider: string; model: string; error: string }> = [];
 

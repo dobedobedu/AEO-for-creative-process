@@ -42,6 +42,11 @@ type ResponseItem = {
   }>;
 };
 
+type SearchModelConfig = {
+  provider: "openai" | "gemini";
+  model: string;
+};
+
 const defaultQueries = [
   "Is Lakewood Ranch good for families with kids?",
   "Best neighborhoods in Lakewood Ranch for schools",
@@ -64,6 +69,9 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [progressLocal, setProgressLocal] = useState<{ completed: number; total: number } | null>(
+    null
+  );
 
   const queries = useMemo(
     () =>
@@ -121,6 +129,61 @@ export default function Home() {
     }
   }
 
+  async function getSearchModels(): Promise<SearchModelConfig[]> {
+    const res = await fetch("/api/models/search");
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
+    const data = (await res.json()) as { models: SearchModelConfig[] };
+    return data.models;
+  }
+
+  async function executeSequential(
+    runId: string,
+    models: SearchModelConfig[],
+    queryPairs: Array<{ queryId: string; queryText: string }>
+  ) {
+    const total = queryPairs.length * models.length;
+    setProgressLocal({ completed: 0, total });
+    let completed = 0;
+    const errors: ExecuteResult["errors"] = [];
+
+    for (const pair of queryPairs) {
+      for (const model of models) {
+        try {
+          const res = await fetch("/api/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              runId,
+              queryId: pair.queryId,
+              provider: model.provider,
+              model: model.model,
+              query: pair.queryText,
+            }),
+          });
+
+          if (!res.ok) {
+            throw new Error(await res.text());
+          }
+        } catch (err) {
+          errors.push({
+            queryId: pair.queryId,
+            provider: model.provider,
+            model: model.model,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        } finally {
+          completed += 1;
+          setProgressLocal({ completed, total });
+          await refreshRunData(runId);
+        }
+      }
+    }
+
+    setExecuteResult({ total, errors });
+  }
+
   async function handleRun() {
     setStatus("creating");
     setError(null);
@@ -128,6 +191,7 @@ export default function Home() {
     setExecuteResult(null);
     setSummary(null);
     setResponses([]);
+    setProgressLocal(null);
 
     try {
       const runRes = await fetch("/api/run", {
@@ -149,13 +213,19 @@ export default function Home() {
       const execRes = await fetch("/api/run/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ runId: runData.runId }),
+        body: JSON.stringify({ runId: runData.runId, mode: "client" }),
       });
       if (!execRes.ok) {
         throw new Error(await execRes.text());
       }
-      const execData = (await execRes.json()) as ExecuteResult;
-      setExecuteResult(execData);
+      const execInit = (await execRes.json()) as { models: SearchModelConfig[]; total: number };
+
+      const queryPairs = runData.queryIds.map((queryId, idx) => ({
+        queryId,
+        queryText: queries[idx] ?? "",
+      }));
+
+      await executeSequential(runData.runId, execInit.models, queryPairs);
 
       setStatus("loading");
       await refreshRunData(runData.runId);
@@ -166,8 +236,9 @@ export default function Home() {
     }
   }
 
-  const progressText =
-    summary?.progress?.totalCalls != null
+  const progressText = progressLocal
+    ? `${progressLocal.completed}/${progressLocal.total}`
+    : summary?.progress?.totalCalls != null
       ? `${summary.progress.completedCalls}/${summary.progress.totalCalls}`
       : "-";
 
