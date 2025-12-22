@@ -84,8 +84,9 @@ CREATE TABLE IF NOT EXISTS insights (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_insights_run ON insights(run_id);
+
 CREATE INDEX IF NOT EXISTS idx_runs_status ON runs(status);
 CREATE INDEX IF NOT EXISTS idx_queries_run ON queries(run_id);
 CREATE INDEX IF NOT EXISTS idx_responses_run ON responses(run_id);
 CREATE INDEX IF NOT EXISTS idx_citations_response ON citations(response_id);
-

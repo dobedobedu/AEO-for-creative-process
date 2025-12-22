@@ -47,6 +47,17 @@ type SearchModelConfig = {
   model: string;
 };
 
+type InsightResult = {
+  narrative: string;
+  charts: Array<{
+    title: string;
+    type: string;
+    data: { labels: string[]; series: Array<{ name: string; values: number[] }> };
+    insight: string;
+  }>;
+  blind_spots: string[];
+};
+
 const defaultQueries = [
   "Is Lakewood Ranch good for families with kids?",
   "Best neighborhoods in Lakewood Ranch for schools",
@@ -65,10 +76,12 @@ export default function Home() {
   const [executeResult, setExecuteResult] = useState<ExecuteResult | null>(null);
   const [summary, setSummary] = useState<RunSummary | null>(null);
   const [responses, setResponses] = useState<ResponseItem[]>([]);
+  const [insight, setInsight] = useState<InsightResult | null>(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progressLocal, setProgressLocal] = useState<{ completed: number; total: number } | null>(
     null
   );
@@ -191,6 +204,7 @@ export default function Home() {
     setExecuteResult(null);
     setSummary(null);
     setResponses([]);
+    setInsight(null);
     setProgressLocal(null);
 
     try {
@@ -241,6 +255,28 @@ export default function Home() {
     : summary?.progress?.totalCalls != null
       ? `${summary.progress.completedCalls}/${summary.progress.totalCalls}`
       : "-";
+
+  async function handleAnalyze() {
+    if (!runResult?.runId) return;
+    setIsAnalyzing(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/run/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ runId: runResult.runId }),
+      });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      const data = (await res.json()) as { analysis: InsightResult };
+      setInsight(data.analysis);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 px-6 py-10">
@@ -339,6 +375,15 @@ export default function Home() {
               ))}
             </div>
           )}
+          {runResult && (
+            <button
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className="mt-3 rounded-full border border-emerald-400/60 px-4 py-2 text-xs text-emerald-200 hover:bg-emerald-500/20 disabled:opacity-50"
+            >
+              {isAnalyzing ? "Analyzing..." : "Analyze with Gemini 3 Pro"}
+            </button>
+          )}
         </section>
 
         {responses.length > 0 ? (
@@ -372,6 +417,32 @@ export default function Home() {
         ) : (
           <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 text-sm text-slate-400">
             No responses loaded yet. Run a baseline or click Refresh.
+          </section>
+        )}
+
+        {insight && (
+          <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+            <h2 className="text-lg font-semibold">Insights</h2>
+            <p className="text-sm text-slate-200 whitespace-pre-line">{insight.narrative}</p>
+            {insight.charts.length > 0 && (
+              <div className="space-y-3">
+                {insight.charts.map((chart, idx) => (
+                  <div key={`${chart.title}-${idx}`} className="rounded-xl border border-slate-800 p-4">
+                    <div className="text-sm text-emerald-200">{chart.title}</div>
+                    <div className="text-xs text-slate-400">{chart.type}</div>
+                    <div className="mt-2 text-xs text-slate-300">{chart.insight}</div>
+                    <div className="mt-2 text-xs text-slate-400">
+                      Labels: {chart.data.labels.join(", ")}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {insight.blind_spots.length > 0 && (
+              <div className="text-xs text-slate-300">
+                Blind spots: {insight.blind_spots.join("; ")}
+              </div>
+            )}
           </section>
         )}
       </div>
