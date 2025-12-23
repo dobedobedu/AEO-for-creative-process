@@ -1,11 +1,15 @@
 import { getDefaultSearchModels } from "@/lib/models/searchModels";
 
 export async function GET() {
+  const defaultConcurrency = 4;
+  const openaiConcurrency = Number(process.env.OPENAI_CONCURRENCY ?? defaultConcurrency) || defaultConcurrency;
+  const geminiConcurrency = Number(process.env.GEMINI_CONCURRENCY ?? defaultConcurrency) || defaultConcurrency;
+
   return Response.json({
     models: getDefaultSearchModels(),
     concurrency: {
-      openai: 1,
-      gemini: 1,
+      openai: Math.min(Math.max(openaiConcurrency, 3), 5),
+      gemini: Math.min(Math.max(geminiConcurrency, 3), 5),
     },
   });
 }
