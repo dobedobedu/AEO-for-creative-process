@@ -40,3 +40,7 @@ Always store:
 - Store the model/provider used for query generation in run config for auditability.
 - Default OpenRouter model: deepseek/deepseek-v3.2.
 - Query generation output is parsed as JSON with fallback extraction if the model returns plain text.
+
+## Analysis provider
+- Use Gemini 3 Pro (models/gemini-3-pro-preview) for insight synthesis.
+- Enforce JSON output via response schema for narrative + charts.

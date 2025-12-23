@@ -28,9 +28,10 @@ Marketing/brand stakeholder who wants to understand AI visibility and the citati
 2. Select trigger stage (Explore / Consider / Compare) and optional sub-triggers.
 3. Generate queries with DeepSeek (OpenRouter) or edit manually.
 4. Review and edit 5 generated queries.
-5. Launch run (sequential execution in MVP).
+5. Launch run (client-side sequential execution in MVP for streaming updates).
 6. Review graph UI (persona -> queries -> responses -> insight).
 7. Read insight summary and charts; inspect citations and raw responses.
+8. Trigger Gemini 3 Pro analysis for narrative + charts.
 
 ## Success metrics
 - Run completes reliably with all 4 model responses per query.
@@ -54,6 +55,7 @@ Marketing/brand stakeholder who wants to understand AI visibility and the citati
 - DeepSeek (OpenRouter) query generation works and updates the UI.
 - Run status shows completed/total calls.
 - Raw responses and citations are visible in the UI.
+- Gemini 3 Pro analysis returns narrative + charts and persists in insights.
 
 ## Trigger library
 See docs/Trigger-Library.md for the MVP trigger set.

@@ -26,6 +26,8 @@ Fixed grid with a simple dagre or custom layout function.
 - Add \"Generate with DeepSeek\" button for persona -> queries
 - Show raw response text and citations in a results panel
 - Show progress as completed/total calls
+- Add \"Analyze with Gemini 3 Pro\" button
+- Insights section shows narrative + charts + blind spots
 
 ## States
 - Draft: nodes are placeholders

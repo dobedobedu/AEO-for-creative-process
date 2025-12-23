@@ -14,6 +14,8 @@
 - OpenRouter model selector for query generation (default deepseek/deepseek-v3.2).
 - Run status shows completed/total calls.
 - UI displays raw responses and citations.
+- Add Gemini 3 Pro analysis endpoint and store insights.
+- Client-side sequential execution updates UI after each call.
 
 ## Non-functional requirements
 - Vercel deployable
