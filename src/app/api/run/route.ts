@@ -5,6 +5,15 @@ const RequestSchema = z.object({
   personaText: z.string().min(1),
   personaName: z.string().optional(),
   triggerStage: z.enum(["explore", "consider", "compare"]),
+  geo: z.string().optional(),
+  triggers: z.array(z.string().min(1)).optional(),
+  memory: z
+    .object({
+      enabled: z.boolean(),
+      detail: z.enum(["compact", "full"]).optional(),
+    })
+    .optional(),
+  queryLength: z.enum(["auto", "short", "medium", "long"]).optional(),
   queries: z.array(z.string().min(1)).min(1),
   config: z.record(z.any()).optional(),
 });
@@ -17,6 +26,10 @@ export async function POST(req: Request) {
     personaText: data.personaText,
     personaName: data.personaName,
     triggerStage: data.triggerStage,
+    geo: data.geo,
+    triggers: data.triggers,
+    memory: data.memory,
+    queryLength: data.queryLength,
     queries: data.queries,
     config: data.config,
   });

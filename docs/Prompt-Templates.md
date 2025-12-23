@@ -32,11 +32,20 @@ Persona:
 {{persona_card_json}}
 
 Stage: {{stage}}
-Triggers: {{trigger_list}}
-Geography: {{geo}}
+Explore stage: do NOT mention Lakewood Ranch or any specific community/brand. Keep queries generic, need-based, and location-agnostic (e.g., "master-planned community near Sarasota").
+Consider stage: Lakewood Ranch may be mentioned, but keep phrasing balanced with needs and constraints.
+Compare stage: include Lakewood Ranch explicitly and compare against alternatives or nearby communities.
+Selected triggers: {{trigger_list}}
+Geography: {{geo}} (zip, city, county, or state)
 Brand focus: Lakewood Ranch community + builder reputation
 
-Generate exactly 5 queries. Return JSON:
+Generate exactly 5 queries.
+- Embody the persona's priorities, constraints, and life context.
+- Stage intent: Explore = broad discovery; Consider = feasibility/costs/risks; Compare = side-by-side tradeoffs.
+- Query length: short (5-9 words), medium (10-16), long (16-26), or auto (persona style).
+- Each query should reflect at least one trigger.
+- If triggers > 5, prioritize the most impactful triggers.
+Return JSON:
 {
   "queries": ["...", "...", "...", "...", "..."]
 }
@@ -65,6 +74,18 @@ Return JSON:
 }
 ```
 
+## Memory context (optional)
+When memory is enabled, prepend this block to the model search query:
+```
+User memory (compact):
+Persona: {{persona_text}}
+Stage: {{stage}}
+Geography: {{geo}}
+Triggers: {{trigger_list}}
+
+User query: {{query_text}}
+```
+
 ## 4) Insight synthesis (Gemini 3 Pro)
 Goal: generate a consultant-style summary and chart specs.
 
@@ -85,6 +106,17 @@ Citations summary:
 Return JSON:
 {
   "narrative": "...",
+  "citation_summary": { ... },
+  "model_breakdown": [ ... ],
+  "insight_cards": [
+    {
+      "title": "...",
+      "type": "authority|pros_cons|alternatives|positioning|recency|source_gaps|message_mismatch|evidence_quality|opportunity_targets|other",
+      "evidence": ["..."],
+      "recommendations": ["..."],
+      "supporting_citations": [{"url": "...", "domain": "..."}]
+    }
+  ],
   "charts": [
     {
       "title": "...",
@@ -97,6 +129,25 @@ Return JSON:
 }
 ```
 
+## 5) Hypothesis pass (Gemini 3 Pro / 3 Flash)
+Goal: generate falsifiable hypotheses about LLM search/recommendation behavior.
+
+User
+```
+You analyze LLM search and recommendation behavior across models.
+Do NOT mention Lakewood Ranch or any specific brand/community.
+
+Input JSON:
+{{aggregated_metrics_json}}
+
+Return JSON matching the analysis schema, but:
+- Provide 3-5 hypotheses as insight_cards (type "other")
+- Include evidence + how_to_test in recommendations
+- Charts can be empty
+```
+
+## Thinking + thought summaries (Gemini 3)
+Use `thinkingConfig` with `thinkingLevel` and `includeThoughts: true` to receive thought summaries.
+
 ## Deep Research mode note
 Deep Research responses may not support structured outputs. If parsing fails, store the raw response and run a secondary classification pass using a standard model.
-

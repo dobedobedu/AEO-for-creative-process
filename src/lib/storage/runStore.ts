@@ -4,6 +4,13 @@ export type CreateRunInput = {
   personaText: string;
   personaName?: string;
   triggerStage: "explore" | "consider" | "compare";
+  geo?: string;
+  triggers?: string[];
+  memory?: {
+    enabled: boolean;
+    detail?: "compact" | "full";
+  };
+  queryLength?: "auto" | "short" | "medium" | "long";
   queries: string[];
   config?: Record<string, unknown>;
 };
@@ -18,6 +25,10 @@ export async function createRunWithQueries(input: CreateRunInput): Promise<Creat
   const runConfig = {
     personaText: input.personaText,
     triggerStage: input.triggerStage,
+    geo: input.geo ?? null,
+    triggers: input.triggers ?? [],
+    memory: input.memory ?? { enabled: false },
+    queryLength: input.queryLength ?? "auto",
     queries: input.queries,
     ...(input.config ?? {}),
   };
@@ -51,6 +62,15 @@ export async function createRunWithQueries(input: CreateRunInput): Promise<Creat
       RETURNING id;
     `)
   );
+
+  if (input.triggers && input.triggers.length > 0) {
+    await Promise.all(
+      input.triggers.map((label) => dbQuery`
+        INSERT INTO triggers (run_id, stage, label)
+        VALUES (${runId}, ${input.triggerStage}, ${label});
+      `)
+    );
+  }
 
   const queryIds = queryRows.map((rows) => rows[0]?.id).filter(Boolean) as string[];
 

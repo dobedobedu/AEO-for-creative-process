@@ -3,9 +3,9 @@
 ## runs
 - id (uuid)
 - status (draft | queued | running | waiting_analysis | analyzing | complete | failed | canceled)
-- config_json (persona, triggers, geo, mode)
+- config_json (persona, triggers, geo, mode, execution config)
 - pending_count (int)
-- started_at, completed_at
+- created_at, started_at, completed_at
 
 ## personas
 - id, run_id
@@ -27,21 +27,34 @@
 - id, run_id, query_id
 - provider
 - model
+- provider_response_id
 - response_text
-- raw_tool_json
+- output_json
+- annotations_json
+- grounding_metadata_json
+- created_at
+
+## web_search_calls
+- id, response_id
+- action, query, domains
+- status
+- raw_call_json
 - created_at
 
 ## citations
 - id, response_id
+- provider
 - url
 - domain
 - title
 - snippet
 - start_idx, end_idx
+- source_type
+- query
+- raw_json
 
 ## insights
 - id, run_id
 - narrative_text
 - charts_json
 - created_at
-
