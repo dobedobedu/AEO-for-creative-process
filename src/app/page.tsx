@@ -42,11 +42,6 @@ type ResponseItem = {
   }>;
 };
 
-type SearchModelConfig = {
-  provider: "openai" | "gemini";
-  model: string;
-};
-
 type InsightResult = {
   narrative: string;
   charts: Array<{
@@ -56,6 +51,24 @@ type InsightResult = {
     insight: string;
   }>;
   blind_spots: string[];
+};
+
+type SearchModelConfig = {
+  provider: "openai" | "gemini";
+  model: string;
+};
+
+type ModelConfigResponse = {
+  models: SearchModelConfig[];
+  concurrency: Record<string, number>;
+};
+
+type Task = {
+  runId: string;
+  queryId: string;
+  queryText: string;
+  provider: "openai" | "gemini";
+  model: string;
 };
 
 const defaultQueries = [
@@ -142,57 +155,122 @@ export default function Home() {
     }
   }
 
-  async function getSearchModels(): Promise<SearchModelConfig[]> {
+  async function handleAnalyze() {
+    if (!runResult?.runId) return;
+    setIsAnalyzing(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/run/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ runId: runResult.runId }),
+      });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      const data = (await res.json()) as { analysis: InsightResult };
+      setInsight(data.analysis);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }
+
+  async function getSearchModels(): Promise<ModelConfigResponse> {
     const res = await fetch("/api/models/search");
     if (!res.ok) {
       throw new Error(await res.text());
     }
-    const data = (await res.json()) as { models: SearchModelConfig[] };
-    return data.models;
+    return (await res.json()) as ModelConfigResponse;
   }
 
-  async function executeSequential(
-    runId: string,
-    models: SearchModelConfig[],
-    queryPairs: Array<{ queryId: string; queryText: string }>
-  ) {
-    const total = queryPairs.length * models.length;
-    setProgressLocal({ completed: 0, total });
-    let completed = 0;
-    const errors: ExecuteResult["errors"] = [];
-
-    for (const pair of queryPairs) {
+  function createTasks(runId: string, models: SearchModelConfig[]): Task[] {
+    const tasks: Task[] = [];
+    runResult?.queryIds.forEach((queryId, idx) => {
+      const queryText = queries[idx] ?? "";
       for (const model of models) {
-        try {
-          const res = await fetch("/api/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              runId,
-              queryId: pair.queryId,
-              provider: model.provider,
-              model: model.model,
-              query: pair.queryText,
-            }),
-          });
+        tasks.push({
+          runId,
+          queryId,
+          queryText,
+          provider: model.provider,
+          model: model.model,
+        });
+      }
+    });
+    return tasks;
+  }
 
-          if (!res.ok) {
-            throw new Error(await res.text());
-          }
-        } catch (err) {
-          errors.push({
-            queryId: pair.queryId,
-            provider: model.provider,
-            model: model.model,
-            error: err instanceof Error ? err.message : String(err),
-          });
-        } finally {
-          completed += 1;
-          setProgressLocal({ completed, total });
-          await refreshRunData(runId);
-        }
+  async function runTask(task: Task) {
+    const res = await fetch("/api/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        runId: task.runId,
+        queryId: task.queryId,
+        provider: task.provider,
+        model: task.model,
+        query: task.queryText,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
+  }
+
+  async function runProviderQueue(provider: Task["provider"], queue: Task[], errors: ExecuteResult["errors"]) {
+    for (const task of queue) {
+      try {
+        await runTask(task);
+      } catch (err) {
+        errors.push({
+          queryId: task.queryId,
+          provider: task.provider,
+          model: task.model,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      } finally {
+        setProgressLocal((prev) => {
+          if (!prev) return prev;
+          return { completed: prev.completed + 1, total: prev.total };
+        });
+        await refreshRunData(task.runId);
       }
     }
+  }
+
+  async function executeWithProviderConcurrency(
+    runId: string,
+    models: SearchModelConfig[],
+    concurrency: Record<string, number>
+  ) {
+    const tasks = createTasks(runId, models);
+    const total = tasks.length;
+    setProgressLocal({ completed: 0, total });
+
+    const queues: Record<string, Task[]> = {};
+    for (const task of tasks) {
+      if (!queues[task.provider]) {
+        queues[task.provider] = [];
+      }
+      queues[task.provider].push(task);
+    }
+
+    const errors: ExecuteResult["errors"] = [];
+
+    const providerPromises = Object.entries(queues).map(async ([provider, queue]) => {
+      const laneCount = Math.max(1, concurrency[provider] ?? 1);
+      const lanes: Task[][] = Array.from({ length: laneCount }, () => []);
+      queue.forEach((task, idx) => {
+        lanes[idx % laneCount].push(task);
+      });
+
+      await Promise.all(lanes.map((lane) => runProviderQueue(provider as Task["provider"], lane, errors)));
+    });
+
+    await Promise.all(providerPromises);
 
     setExecuteResult({ total, errors });
   }
@@ -233,13 +311,9 @@ export default function Home() {
         throw new Error(await execRes.text());
       }
       const execInit = (await execRes.json()) as { models: SearchModelConfig[]; total: number };
+      const modelConfig = await getSearchModels();
 
-      const queryPairs = runData.queryIds.map((queryId, idx) => ({
-        queryId,
-        queryText: queries[idx] ?? "",
-      }));
-
-      await executeSequential(runData.runId, execInit.models, queryPairs);
+      await executeWithProviderConcurrency(runData.runId, execInit.models, modelConfig.concurrency);
 
       setStatus("loading");
       await refreshRunData(runData.runId);
@@ -256,35 +330,13 @@ export default function Home() {
       ? `${summary.progress.completedCalls}/${summary.progress.totalCalls}`
       : "-";
 
-  async function handleAnalyze() {
-    if (!runResult?.runId) return;
-    setIsAnalyzing(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/run/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ runId: runResult.runId }),
-      });
-      if (!res.ok) {
-        throw new Error(await res.text());
-      }
-      const data = (await res.json()) as { analysis: InsightResult };
-      setInsight(data.analysis);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 px-6 py-10">
       <div className="max-w-5xl mx-auto space-y-8">
         <header className="space-y-2">
           <h1 className="text-3xl font-semibold">AI Visibility Baseline</h1>
           <p className="text-slate-300">
-            Generate queries with DeepSeek, execute sequential model calls, and view responses.
+            Generate queries with DeepSeek, execute model calls by provider, and view responses.
           </p>
         </header>
 

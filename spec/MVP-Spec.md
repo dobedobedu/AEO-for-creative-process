@@ -16,6 +16,7 @@
 - UI displays raw responses and citations.
 - Add Gemini 3 Pro analysis endpoint and store insights.
 - Client-side sequential execution updates UI after each call.
+- Provider concurrency runs one lane per provider (expandable).
 
 ## Non-functional requirements
 - Vercel deployable

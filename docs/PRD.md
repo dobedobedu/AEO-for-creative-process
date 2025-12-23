@@ -32,6 +32,7 @@ Marketing/brand stakeholder who wants to understand AI visibility and the citati
 6. Review graph UI (persona -> queries -> responses -> insight).
 7. Read insight summary and charts; inspect citations and raw responses.
 8. Trigger Gemini 3 Pro analysis for narrative + charts.
+9. Runs execute with per-provider concurrency (1 per provider default).
 
 ## Success metrics
 - Run completes reliably with all 4 model responses per query.
@@ -56,6 +57,7 @@ Marketing/brand stakeholder who wants to understand AI visibility and the citati
 - Run status shows completed/total calls.
 - Raw responses and citations are visible in the UI.
 - Gemini 3 Pro analysis returns narrative + charts and persists in insights.
+- Provider concurrency executes one lane per provider in parallel.
 
 ## Trigger library
 See docs/Trigger-Library.md for the MVP trigger set.

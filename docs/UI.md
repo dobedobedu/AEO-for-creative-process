@@ -28,6 +28,7 @@ Fixed grid with a simple dagre or custom layout function.
 - Show progress as completed/total calls
 - Add \"Analyze with Gemini 3 Pro\" button
 - Insights section shows narrative + charts + blind spots
+- Runs execute with one lane per provider in parallel
 
 ## States
 - Draft: nodes are placeholders
