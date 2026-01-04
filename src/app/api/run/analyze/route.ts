@@ -2,7 +2,7 @@ import { z } from "zod";
 import { query, sql } from "@/lib/db";
 import { callGeminiAnalysis } from "@/lib/providers/geminiAnalysis";
 import { buildAnalysisInput } from "@/lib/analysis/normalize";
-import { upsertInsight } from "@/lib/storage/insightStore";
+import { upsertInsight, saveAnalyses } from "@/lib/storage/insightStore";
 
 const RequestSchema = z.object({
   runId: z.string().uuid(),
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
           SELECT id, query_id, provider, model, response_text
           FROM responses
           WHERE run_id = ${data.runId}
-          AND id = ANY(${sql.array(responseIds, "uuid")})
+          AND id = ANY(${sql.array(responseIds, 2950)})
           ORDER BY created_at ASC;
         `
       : await query<ResponseRow>`
@@ -102,7 +102,7 @@ export async function POST(req: Request) {
       ? await query<CitationRow>`
           SELECT response_id, provider, url, domain, title, source_type
           FROM citations
-          WHERE response_id = ANY(${sql.array(responseIds, "uuid")});
+          WHERE response_id = ANY(${sql.array(responseIds, 2950)});
         `
       : await query<CitationRow>`
           SELECT response_id, provider, url, domain, title, source_type
@@ -199,6 +199,10 @@ export async function POST(req: Request) {
     });
   }
 
+  // Save all analysis variants to database
+  await saveAnalyses(data.runId, analyses);
+
+  // Also save primary insight for backwards compatibility
   const primary = analyses.find((a) => a.key === "pro_consultant") ?? analyses[0];
   if (primary) {
     await upsertInsight(data.runId, primary.analysis.narrative, primary.analysis.charts);

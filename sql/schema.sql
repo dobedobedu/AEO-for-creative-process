@@ -86,6 +86,22 @@ CREATE TABLE IF NOT EXISTS insights (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_insights_run ON insights(run_id);
 
+-- Full analysis storage (supports multiple variants per run)
+CREATE TABLE IF NOT EXISTS analyses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  run_id UUID REFERENCES runs(id) ON DELETE CASCADE,
+  variant_key TEXT NOT NULL,
+  model TEXT NOT NULL,
+  thinking_level TEXT,
+  analysis_kind TEXT NOT NULL,
+  analysis_json JSONB NOT NULL,
+  thought_summaries JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_analyses_run ON analyses(run_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_analyses_run_variant ON analyses(run_id, variant_key);
+
 CREATE INDEX IF NOT EXISTS idx_runs_status ON runs(status);
 CREATE INDEX IF NOT EXISTS idx_queries_run ON queries(run_id);
 CREATE INDEX IF NOT EXISTS idx_responses_run ON responses(run_id);

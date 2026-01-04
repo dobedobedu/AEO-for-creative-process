@@ -1,0 +1,353 @@
+================================================================================
+FLORIDA HOME SEARCH QUERY BANK - 2025
+Compiled from: Grok, Gemini, Claude, OpenAI Deep Research
+Sources: Reddit, Quora, City-Data, BiggerPockets, Google PAA, Facebook Groups
+================================================================================
+
+================================================================================
+SECTION 1: DISCOVERY / EXPLORATION PHASE
+================================================================================
+
+--------------------------------------------------------------------------------
+1.1 "IS IT WORTH IT" / GENERAL MOVE VALIDATION
+--------------------------------------------------------------------------------
+"is florida still worth moving to in 2025" - Reddit r/florida [informational] [GROK]
+"is florida still worth moving to in 2025" - Reddit r/florida [informational] [OPENAI]
+"Is it worth it to move to Florida in 2024?" - Quora [informational] [GROK]
+"Is it worth it to move to Florida in 2024?" - Quora [informational] [GEMINI]
+"is moving to florida worth it" - Google PAA [informational] [OPENAI]
+"Would you recommend moving to Florida?" - Quora (28 answers, HIGH engagement) [informational] [GEMINI]
+"is it too late to consider moving to florida" - City-Data forum [informational] [OPENAI]
+
+--------------------------------------------------------------------------------
+1.2 REGRET / SECOND THOUGHTS / LEAVING FLORIDA
+--------------------------------------------------------------------------------
+"regret or happy you moved to florida" - Reddit r/florida [informational] [GROK]
+"any regrets moving to florida" - City-Data forum [informational] [OPENAI]
+"Regrets moving to Florida from California weather and culture shock?" - Reddit r/AskFlorida [informational] [GEMINI]
+"has anybody here actually left florida where did you end up" - Reddit r/florida [informational] [GROK]
+"everybody warns against moving to florida but where is better" - Reddit r/florida [informational] [GROK]
+"florida retirees are fleeing experts predict these 5 states will be top retirement spots in 10 years" - Google PAA [commercial] [GROK]
+"i planned to retire in florida but these 5 states have now taken its place heres why" - Quora [informational] [GROK]
+"Why are so many people leaving Florida in 2025 is it just the cost?" - Reddit r/SameGrassButGreener [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.3 WHAT TO KNOW / PREPARATION
+--------------------------------------------------------------------------------
+"what do i need to know before moving to florida" - Quora [informational] [GROK]
+"What advice would you give to someone who is moving to Florida?" - Quora (220 answers—VERY HIGH engagement) [informational] [GEMINI]
+"what are the most important things to consider when moving to florida" - Quora [informational] [GROK]
+"what are some of your top questions that you have about moving to florida" - Quora [informational] [GROK]
+"things you didnt think to bring when moving to florida" - Reddit r/florida [informational] [GROK]
+"moving to fl soon have no idea what to expect" - Reddit r/florida [informational] [GROK]
+"i plan on moving to florida in 6 months, what should i know" - Facebook group [informational] [OPENAI]
+"want to retire in florida ask yourself these 7 questions first" - Quora [informational] [GROK]
+
+--------------------------------------------------------------------------------
+1.4 MIGRATION TRENDS / WHY PEOPLE MOVE
+--------------------------------------------------------------------------------
+"why so many people moving to florida in 2025" - Google PAA [informational] [GROK]
+"why are so many people moving to florida" - Reddit [informational] [OPENAI]
+"Why is everyone moving to Florida in 2025?" - Google PAA [informational] [GEMINI]
+"why do so many people continue to move to florida at a record pace" - Reddit r/florida [informational] [GROK]
+"what are the most popular cities to move to in florida" - Google PAA [informational] [OPENAI]
+
+--------------------------------------------------------------------------------
+1.5 INSURANCE CRISIS (2024-2025 DOMINANT TOPIC)
+--------------------------------------------------------------------------------
+"Is it worth moving to Florida for tax purposes when homeowners insurance is $6k-$10k/year?" - Reddit r/bogleheads [informational] [GEMINI]
+"how many of you gave up on moving to florida because of the insurance" - Reddit r/SameGrassButGreener [informational] [OPENAI]
+"How do people afford $10k+ premiums?" - Reddit r/homeowners [informational] [GEMINI]
+"How likely is it that homeowners will be priced out of the market due to astronomical insurance rates in Florida?" - Quora [informational] [GEMINI]
+"I know home owners is a big deal in FL due to hurricanes, would renters be very expensive too?" - Reddit r/moving [informational] [GEMINI]
+"What insurance companies are writing policies in Florida in 2024?" - Google PAA [informational] [GEMINI]
+"is it true home insurance rates are doubling again in 2025" - Reddit r/Insurance [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.6 COST OF LIVING / AFFORDABILITY
+--------------------------------------------------------------------------------
+"how much do i really need to retire in florida" - Quora [informational] [GROK]
+"how much will moving to florida set me back" - Google PAA [commercial] [OPENAI]
+"what is considered a decent wage in florida" - Google PAA [informational] [OPENAI]
+"Why has Florida become the least affordable place to reside in the US?" - Quora [informational] [GEMINI]
+"What are some good places to live in Florida that have a lower cost of living?" - Quora (33 answers) [informational] [GEMINI]
+"cheapest places to live in florida with good schools" - Google PAA [informational] [OPENAI]
+"Cost to move 3 bedroom house from NY to Florida 2025?" - Moving FAQ [transactional] [GEMINI]
+"Hidden costs of living in Florida besides rent and food?" - Reddit r/tampa [commercial] [GEMINI]
+"How much do you actually save with no state income tax after insurance?" - Reddit r/financialindependence [commercial] [GEMINI]
+"Does Florida have state income tax?" - Google PAA [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.7 HURRICANE / CLIMATE / SAFETY
+--------------------------------------------------------------------------------
+"whats the safest place in florida from hurricanes" - Google search [informational] [OPENAI]
+"best places to retire in florida without hurricanes" - Google PAA [informational] [OPENAI]
+"what are the best and worst places to live in florida when it comes to hurricanes" - Quora [informational] [GROK]
+"After Milton and Helene back-to-back, is it even worth buying in coastal Florida anymore?" - Reddit r/realestate [informational] [GEMINI]
+"Should I buy a home in a Florida flood zone?" - Google PAA [informational] [GEMINI]
+"Is Florida safe from hurricanes?" - Google PAA [informational] [GEMINI]
+"Safe places in Florida that arent flood zones after Hurricane Ian?" - Reddit r/florida [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.8 WEATHER / HEAT / LIFESTYLE CONCERNS
+--------------------------------------------------------------------------------
+"best places to retire in florida that arent too hot" - Quora [informational] [GROK]
+"best places to retire in florida that arent too hot" - Quora [informational] [OPENAI]
+"Is the heat really that bad in Florida summer or do you get used to it?" - Reddit r/AskFlorida [informational] [GEMINI]
+"moving from the mid west to fl question about weather" - City-Data [informational] [GROK]
+"is red tide bad this year 2025 west coast beaches" - Reddit r/Naples_FL [informational] [GEMINI]
+"How bad is the gator/snake situation really" - Reddit r/florida [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.9 RETIREMENT-FOCUSED DISCOVERY
+--------------------------------------------------------------------------------
+"Where is a hidden gem location to live out your retirement in Florida?" - Quora (162 answers—EXTREMELY HIGH engagement) [informational] [GEMINI]
+"I am planning to retire in Florida and loves water. What are places where hurricane risks are low, good hospitals, and cost of living is manageable? I am not white." - Quora [informational] [GEMINI]
+"What are the best Florida retirement cities if one prioritizes culture (theater, movies, museums & restaurants) over golf and tennis?" - Quora [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.10 FAMILY-FOCUSED DISCOVERY
+--------------------------------------------------------------------------------
+"best places to live in florida for young families not retirees" - Reddit r/florida [informational] [GEMINI]
+"whats the best place in florida to raise a family" - Reddit r/florida [informational] [OPENAI]
+"best big city in fl for families" - Reddit r/SameGrassButGreener [informational] [OPENAI]
+"Is Florida good for families?" - Google PAA [informational] [GEMINI]
+"is tampa a good place to raise a family" - Reddit r/tampa [informational] [OPENAI]
+"My current negatives with florida is public schools are not great (I have kids)" - Reddit r/florida [informational] [GEMINI]
+"Are schools in Florida really getting worse with the voucher stuff?" - Reddit r/moderatepolitics [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.11 REMOTE WORK / TAX DOMICILE
+--------------------------------------------------------------------------------
+"is florida a good place for remote workers" - Google PAA [informational] [OPENAI]
+"Moving to Florida remote work taxes do I need to live there 6 months?" - Reddit r/digitalnomad [commercial] [GEMINI]
+"Can I keep my NY job and live in Florida for tax benefits?" - Reddit r/tax [commercial] [GEMINI]
+"Best internet for remote work in rural Florida Starlink reliable?" - Reddit r/Starlink [transactional] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.12 STATE VS STATE COMPARISONS
+--------------------------------------------------------------------------------
+"florida vs texas for families" - Google PAA [commercial] [GROK]
+"florida vs texas for families" - Google PAA [commercial] [OPENAI]
+"north carolina vs florida for retirement" - City-Data forum [commercial] [OPENAI]
+"florida vs arizona for retirement" - Quora [commercial] [OPENAI]
+"Which is a better state to live in, Florida or California?" - Quora (52 answers) [informational] [GEMINI]
+"Relocate to Texas or Florida?" - City-Data Forum [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.13 SPECIFIC AREA DISCOVERY
+--------------------------------------------------------------------------------
+"what are some places to live in florida that are not near the coast" - Quora [commercial] [GROK]
+"where is the best place to move to in florida as a first time mover" - Quora [commercial] [GROK]
+"where should i not live in florida" - Google PAA [informational] [OPENAI]
+"moving to niceville fl with kids" - City-Data [informational] [GROK]
+"moving from midwest illinois to florida" - City-Data [informational] [GROK]
+"questions about moving to florida 27 year old single guy" - City-Data [informational] [GROK]
+"Moving to Orlando vs Tampa for tech jobs 2025?" - Reddit r/AskFlorida [commercial] [GEMINI]
+
+--------------------------------------------------------------------------------
+1.14 INVESTMENT / REAL ESTATE
+--------------------------------------------------------------------------------
+"is florida real estate still a good investment in 2024" - BiggerPockets [commercial] [OPENAI]
+"whats the best city in florida to invest in for rentals" - BiggerPockets [commercial] [OPENAI]
+
+--------------------------------------------------------------------------------
+1.15 SOCIAL / CULTURAL FIT
+--------------------------------------------------------------------------------
+"Is Florida hostile to transplants/newcomers now?" - Reddit r/florida [informational] [GEMINI]
+"Is it hard to make friends in Florida if you aren't retired?" - Reddit r/AskFlorida [informational] [GEMINI]
+"do you want to become a floridian do you really want to move to florida" - X/Twitter [informational] [GROK]
+"pros and cons of moving to florida" - Quora [informational] [OPENAI]
+"Is traffic in Orlando really as bad as I4 nightmares?" - Reddit r/AskFlorida [informational] [GEMINI]
+"Are there any walkable cities in Florida or do I need a car?" - Reddit r/sarasota [informational] [GEMINI]
+
+
+================================================================================
+SECTION 2: COMPARISON / EVALUATION PHASE
+================================================================================
+
+--------------------------------------------------------------------------------
+2.1 MASTER-PLANNED COMMUNITY COMPARISONS
+--------------------------------------------------------------------------------
+
+--- Lakewood Ranch vs The Villages ---
+"lakewood ranch vs the villages for retirees" - Reddit r/retirement [commercial] [GROK]
+"lakewood ranch vs the villages for retirees" - Reddit r/retirement [commercial] [OPENAI]
+"Lakewood Ranch vs The Villages for active 55+ lifestyle?" - Reddit r/retirement [commercial] [GEMINI]
+"the villages amenities vs lakewood ranch for retirees" - Reddit r/florida [commercial] [GROK]
+
+--- Lakewood Ranch vs Wellen Park ---
+"lakewood ranch vs wellen park for families" - Reddit r/sarasota [commercial] [GROK]
+"lakewood ranch vs wellen park" - Facebook group [commercial] [OPENAI]
+"Wellen Park vs Lakewood Ranch CDD fees comparison?" - Reddit r/sarasota [commercial] [GEMINI]
+
+--- Lakewood Ranch vs Nocatee ---
+"nocatee vs lakewood ranch schools" - Facebook group [commercial] [GROK]
+"nocatee vs lakewood ranch schools" - Facebook group [commercial] [OPENAI]
+"nocatee schools vs lakewood ranch schools" - Facebook group [commercial] [GROK]
+"lakewood ranch vs nocatee vs wellen park" - Reddit [commercial] [OPENAI]
+
+--- Lakewood Ranch vs Others ---
+"lakewood ranch vs babcock ranch" - Reddit r/realestate [commercial] [OPENAI]
+"lake nona vs lakewood ranch" - Quora [commercial] [OPENAI]
+"lakewood ranch hoa fees vs nocatee 2025" - City-Data [informational] [GROK]
+"Why is Lakewood Ranch so expensive?" - Sarasota Neighborhood Experts [informational] [GEMINI]
+"Lakewood Ranch Waterside vs regular LWR nightlife?" - Reddit r/sarasota [commercial] [GEMINI]
+"HOA fees history Lakewood Ranch 2024 2025 increases?" - Reddit r/sarasota [commercial] [GEMINI]
+
+--- The Villages vs Others ---
+"the villages vs on top of the world retirement" - City-Data forum [commercial] [OPENAI]
+"the villages vs ave maria retirement costs" - Reddit r/retirement [commercial] [GROK]
+"the villages vs sun city center" - Reddit r/retirement [commercial] [OPENAI]
+"Is The Villages really like Stepford Wives or just rumors?" - Reddit r/AskFlorida [informational] [GEMINI]
+"Can you rent out your home in The Villages easily restrictions?" - Reddit r/retirement [commercial] [GEMINI]
+"Is it hard to find doctors accepting Medicare in The Villages?" - Reddit r/AskOldPeople [commercial] [GEMINI]
+"55+ alternatives to The Villages?" - TripAdvisor Florida Forum [commercial] [GEMINI]
+"What 55+ communities in Florida have lots of clubs and activities like The Villages?" - Talk of The Villages Forum [commercial] [GEMINI]
+
+--- Nocatee Comparisons ---
+"Nocatee vs Ponte Vedra for high schools and family vibe?" - Reddit r/jacksonville [commercial] [GEMINI]
+"Best schools near Nocatee or eTown for special needs?" - Reddit r/jacksonville [commercial] [GEMINI]
+"Does Nocatee feel soulless or is there a real community?" - Reddit r/jacksonville [informational] [GEMINI]
+"nocatee vs ave maria remote work options" - Quora [commercial] [GROK]
+
+--- Wellen Park Comparisons ---
+"wellen park vs babcock ranch for remote workers" - Quora [commercial] [GROK]
+"wellen park insurance rates vs east coast" - Google PAA [informational] [GROK]
+"wellen park vs ave maria" - City-Data forum [commercial] [OPENAI]
+"Can I use a golf cart everywhere in Wellen Park like The Villages?" - Reddit r/retirement [commercial] [GEMINI]
+"Difference between CDD and HOA fees in Wellen Park?" - Reddit r/sarasota [informational] [GEMINI]
+
+--- Ave Maria Comparisons ---
+"ave maria vs nocatee amenities comparison" - Quora [commercial] [GROK]
+"ave maria vs wellen park family relocation" - Facebook group [commercial] [GROK]
+"ave maria vs estero florida" - Facebook group [commercial] [OPENAI]
+"Is Ave Maria too isolated for people who work in Naples?" - Reddit r/Naples_FL [commercial] [GEMINI]
+"Ave Maria vs Babcock Ranch for hurricane safety inland?" - Reddit r/florida [commercial] [GEMINI]
+"Can anyone comment on the Town of Ave Maria? Younger or older crowd? elementary schools? Is it safe?" - City-Data Forum [informational] [GEMINI]
+
+--- Babcock Ranch ---
+"Does Babcock Ranch actually have lower electric bills solar?" - Reddit r/SWFL [commercial] [GEMINI]
+
+--------------------------------------------------------------------------------
+2.2 CITY VS CITY COMPARISONS
+--------------------------------------------------------------------------------
+"tampa vs orlando for young families" - Reddit r/relocating [commercial] [OPENAI]
+"Tampa vs Orlando - which is better if we want beach access but also good schools?" - Reddit r/florida [commercial] [GEMINI]
+"tampa vs sarasota living" - City-Data forum [commercial] [OPENAI]
+"sarasota vs naples for retirement" - Quora [commercial] [OPENAI]
+"naples vs sarasota for families" - City-Data forum [commercial] [OPENAI]
+"naples vs fort myers retirement" - City-Data forum [commercial] [OPENAI]
+"sarasota vs bradenton living" - City-Data forum [informational] [OPENAI]
+"living in tampa vs suburbs like wesley chapel" - Reddit r/tampa [informational] [OPENAI]
+"Sarasota vs Lakewood Ranch traffic and beach access?" - Reddit r/sarasota [commercial] [GEMINI]
+"Sarasota or Tampa for families? Schools in Sarasota are apparently #1 in Florida but insurance seems worse near coast" - Reddit r/sarasota [commercial] [GEMINI]
+"Jacksonville/St. Augustine vs Orlando vs Tampa for a growing family?" - City-Data Forum (poll: Jacksonville 89%, Tampa 11%, Orlando 0%) [commercial] [GEMINI]
+"3 Florida markets, drastically different. Which has the strongest economy and is best for young professionals?" - City-Data Forum (Jacksonville vs Tampa vs Orlando) [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+2.3 EAST COAST VS WEST COAST FLORIDA
+--------------------------------------------------------------------------------
+"gulf or atlantic side" - Reddit r/florida [commercial] [GROK]
+"which coast of florida is better east or west" - Facebook group [commercial] [GROK]
+"florida east or west coast which do you prefer" - Google PAA [commercial] [GROK]
+"east coast vs west coast florida for families" - Quora [commercial] [GROK]
+"east coast vs west coast florida living" - City-Data forum [commercial] [OPENAI]
+"Gulf Coast vs Atlantic - which side has better insurance rates after the 2024 hurricanes?" - Reddit r/realestate [informational] [GEMINI]
+"how do property taxes compare east coast vs west coast florida" - Google PAA [informational] [GROK]
+"east coast vs west coast florida hurricanes which worse" - Quora [informational] [GROK]
+"hoa rules east vs west coast florida condos" - BiggerPockets [informational] [GROK]
+"Gulf coast vs Atlantic for swimming which is better?" - Reddit r/SameGrassButGreener [informational] [GEMINI]
+"Is it better to retire on the East Coast or West Coast of Florida?" - 55places.com [commercial] [GEMINI]
+"I would look more at Jacksonville area. Great hospitals and the east coast is so much better than the gulf coast" - City-Data Forum [commercial] [GEMINI]
+
+--------------------------------------------------------------------------------
+2.4 HOA / CDD FEE QUESTIONS
+--------------------------------------------------------------------------------
+"why is hoa so expensive in florida" - City-Data [informational] [GROK]
+"why is hoa so expensive in florida" - City-Data forum [informational] [OPENAI]
+"hoa fees in florida condos why soaring 2025" - Google PAA [informational] [GROK]
+"hoa community vs no hoa in florida" - Reddit r/realestate [informational] [OPENAI]
+"How strict are Florida HOAs really?" - Reddit r/tampa [informational] [GEMINI]
+"whats the deal with cdd fees in florida communities" - City-Data forum [informational] [OPENAI]
+"What is a CDD and do I have to pay it?" - Florida for Boomers [informational] [GEMINI]
+"My CDD fee is now 38% of my tax bill... Seems like a documented Ponzi scheme. Am I missing something?" - Florida for Boomers [informational] [GEMINI]
+"$1100 in monthly HOA fees are A LOT. Is that common in Florida vacation condos?" - BiggerPockets Forum [informational] [GEMINI]
+"I am currently looking into condos in the Oviedo, Fl area. HOA fees are turning each deal into not cashflowing." - BiggerPockets Forum [informational] [GEMINI]
+"How much are special assessments usually in Florida condos 2025?" - Reddit r/tampa [transactional] [GEMINI]
+"property taxes in master planned communities florida 2025" - Google PAA [informational] [GROK]
+"why are property taxes so high for new florida homeowners" - City-Data forum [informational] [OPENAI]
+"Property tax estimator Sarasota County vs Manatee County?" - Reddit r/sarasota [transactional] [GEMINI]
+
+--------------------------------------------------------------------------------
+2.5 INSURANCE COMPARISONS
+--------------------------------------------------------------------------------
+"insurance rates in the villages vs lakewood ranch 2025" - Reddit r/florida [informational] [GROK]
+"is home insurance cheaper inland or on the coast in florida" - City-Data forum [informational] [OPENAI]
+"why is home insurance so high in florida" - Reddit r/florida [informational] [OPENAI]
+"Insurance premiums for older homes vs new construction FL 2025?" - Reddit r/Insurance [transactional] [GEMINI]
+"Self insuring home in Florida pros and cons risk?" - Reddit r/florida [transactional] [GEMINI]
+"Cost of flood insurance Zone AE vs Zone X 2025?" - Reddit r/Mortgages [transactional] [GEMINI]
+"Are wind mitigation inspections worth it for new builds?" - Reddit r/Insurance [transactional] [GEMINI]
+"Do I really need flood insurance if I'm not in a flood zone anymore?" - Reddit r/Mortgages [commercial] [GEMINI]
+"Does homeowner insurance cover red tide damage or loss of use?" - Reddit r/Insurance [informational] [GEMINI]
+"We're in a flood zone - what does that mean for insurance?" (Wellen Park context) - The Sunshine State Co. [informational] [GEMINI]
+"Flood disclosure laws Florida 2025 what do sellers have to tell?" - Reddit r/homeowners [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+2.6 NEW CONSTRUCTION VS OLDER HOMES
+--------------------------------------------------------------------------------
+"buying new construction vs older home in florida" - BiggerPockets [commercial] [OPENAI]
+"city vs suburb comparisons in florida for investors" - BiggerPockets [commercial] [GROK]
+"Pros and cons of gated communities vs regular neighborhoods FL?" - Reddit r/retirement [informational] [GEMINI]
+"Is it better to rent first before buying in Florida 2025?" - Reddit r/retirement [transactional] [GEMINI]
+
+--------------------------------------------------------------------------------
+2.7 SCHOOLS / EDUCATION
+--------------------------------------------------------------------------------
+"Best Family Neighborhoods and Schools in Orlando area?" - City-Data Forum [commercial] [GEMINI]
+"Nice/safe neighborhoods to raise young children near Orlando?" - City-Data Forum [commercial] [GEMINI]
+"Our neighborhood is not zoned to go to our neighborhood school" - Nocatee/St. Johns County discussion [informational] [GEMINI]
+"Are Florida school vouchers destroying public school funding?" - Reddit r/moderatepolitics [informational] [GEMINI]
+
+--------------------------------------------------------------------------------
+2.8 MARKET TIMING / INVESTMENT
+--------------------------------------------------------------------------------
+"Is Florida real estate headed for a downturn?" - BiggerPockets Forum [informational] [GEMINI]
+"Home values in Lee County are down about $200,000 from pre-Ian prices - is this the time to buy or is it going to keep dropping?" - Reddit r/realestate [transactional] [GEMINI]
+
+
+================================================================================
+STATISTICS
+================================================================================
+Total Unique Queries (approximate): ~150
+Discovery Phase: ~75 queries
+Comparison Phase: ~75 queries
+
+Source Distribution:
+- Reddit: ~45%
+- City-Data: ~20%
+- Quora: ~15%
+- Google PAA: ~10%
+- BiggerPockets: ~5%
+- Facebook Groups: ~3%
+- Other (X/Twitter, TripAdvisor, specialized forums): ~2%
+
+Intent Distribution:
+- Informational: ~60%
+- Commercial: ~35%
+- Transactional: ~5%
+
+Top Themes by Frequency:
+1. Insurance Crisis (appears in ~40% of queries)
+2. Master-Planned Community Comparisons (Lakewood Ranch dominates)
+3. Cost of Living / Affordability
+4. Hurricane / Climate Safety
+5. HOA/CDD Fee Concerns
+6. East Coast vs West Coast
+7. Family / Schools
+8. Retirement Lifestyle
+
+================================================================================
+END OF QUERY BANK
+================================================================================

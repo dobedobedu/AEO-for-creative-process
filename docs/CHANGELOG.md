@@ -47,6 +47,12 @@
 - Enabled Gemini thinking config with thought summaries.
 - Analysis now returns multiple variants side-by-side in the UI.
 
+## Checkpoint 2025-12-23 (Dashboard UI refactor - in progress)
+- New dashboard layout with KPI row + collapsible columns (Persona, Triggers, Queries, Outputs, Analysis).
+- Added default personas and persona selection logic.
+- Added KPI v0.1 row with deterministic metrics (citations + mention rate).
+- UI refactor introduced pending tasks: shadcn preset install, KPI tile expand/collapse, and mention-rate fix.
+
 ## Checkpoint 2025-12-22 (MVP: Query gen + sequential execution + response visibility)
 - Added OpenRouter (DeepSeek) query generation endpoint and UI button.
 - Added sequential run executor with progress tracking (completed/total calls).
