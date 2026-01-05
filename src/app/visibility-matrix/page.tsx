@@ -14,7 +14,6 @@ import {
 import { Slider } from "@/components/ui/slider";
 import {
   Play,
-  Loader2,
   ArrowLeft,
   Eye,
   EyeOff,
@@ -34,7 +33,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { QueryPanel } from "@/components/query-panel";
+import { QueryPanelV2 } from "@/components/query-panel-v2";
+import { StageCell } from "@/components/stage-cell";
 import { ChatPanel } from "@/components/chat-panel";
 import type { ChatContext } from "@/lib/chat/types";
 import {
@@ -94,6 +94,14 @@ interface CellData {
   avgScore: number;
   mentionRate: number;
   status: "idle" | "running" | "complete";
+  // Stage-specific metrics from new scoring system
+  stageMetrics?: {
+    discoveryRate?: number;
+    topThreeRate?: number;
+    sentimentScore?: number;
+    winRate?: number;
+    recommendationRate?: number;
+  };
 }
 
 interface BenchmarkRun {
@@ -575,12 +583,19 @@ export default function VisibilityMatrixPage() {
             allScores.length > 0 ? allScores.reduce((a, b) => a + b, 0) / allScores.length : 0;
           const mentionRate = totalResponses > 0 ? mentionCount / totalResponses : 0;
 
+          // Extract stage-specific metrics from the run object
+          // The run uses underscore separator (e.g., "luxury_explore"), UI uses dash
+          const runCellKey = `${t.persona}_${t.stage}`;
+          const runCell = run.cells[runCellKey];
+          const stageMetrics = runCell?.metrics ?? {};
+
           next[t.key] = {
             ...next[t.key],
             results: result.queries,
             avgScore,
             mentionRate,
             status: "complete",
+            stageMetrics,
           };
         }
 
@@ -676,6 +691,8 @@ export default function VisibilityMatrixPage() {
     setEditValue("");
   };
 
+  // Background color based on legacy score (kept for hover cards / future use)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getCellBgColor = (score: number, mentionRate: number): string => {
     if (mentionRate === 0) return "bg-[#f0d9d9]";
     if (score >= 0.6) return "bg-[#d4e5d4]";
@@ -1342,7 +1359,6 @@ export default function VisibilityMatrixPage() {
                   {STAGES.map(stage => {
                     const cellKey = `${persona.id}-${stage.id}`;
                     const cell = matrixData[cellKey];
-                    const stats = cell ? getFilteredCellStats(cell) : { avgScore: 0, mentionRate: 0 };
                     const cellSelected = selection.type === "cell" && selection.persona === persona.id && selection.stage === stage.id;
                     const inSelection = isInSelection(persona.id, stage.id);
                     const cellQueries = localQueryBank[persona.id][stage.id];
@@ -1350,7 +1366,7 @@ export default function VisibilityMatrixPage() {
                     return (
                       <HoverCard key={stage.id} openDelay={300}>
                         <HoverCardTrigger asChild>
-                          <button
+                          <div
                             onClick={() => {
                               if (cell?.status === "idle" && !isRunning) {
                                 runCellsBenchmark([cellKey], true);
@@ -1359,36 +1375,32 @@ export default function VisibilityMatrixPage() {
                               }
                             }}
                             className={`
-                              h-20 rounded-xl transition-all
-                              flex flex-col items-center justify-center gap-0.5
+                              relative rounded-xl transition-all cursor-pointer
                               ${cell?.status === "complete"
-                                ? getCellBgColor(stats.avgScore, stats.mentionRate)
-                                : "bg-[#efe6d9]/60"
+                                ? "bg-white"
+                                : "bg-[#efe6d9]/40"
                               }
                               ${inSelection ? "ring-2 ring-[#1f3b2c]/30 ring-inset" : ""}
                               ${cellSelected ? "ring-2 ring-[#1f3b2c] ring-offset-2 ring-offset-[#fffaf2]" : ""}
-                              hover:scale-[1.02] cursor-pointer
+                              hover:scale-[1.02]
                               border border-[#e3dacb]/50
                             `}
                           >
-                            {cell?.status === "running" ? (
-                              <Loader2 className="h-5 w-5 animate-spin text-[#1e1b16]/40" />
-                            ) : cell?.status === "complete" ? (
-                              <>
-                                <div className="text-xl font-semibold text-[#1e1b16]">
-                                  {(stats.avgScore * 100).toFixed(0)}%
-                                </div>
-                                <div className="text-xs text-[#1e1b16]/50">
-                                  {(stats.mentionRate * 100).toFixed(0)}% hit
-                                </div>
-                              </>
-                            ) : (
-                              <div className="text-center">
+                            <StageCell
+                              stage={stage.id}
+                              metrics={cell?.stageMetrics ?? {}}
+                              isComplete={cell?.status === "complete"}
+                              isRunning={cell?.status === "running"}
+                              selected={cellSelected}
+                            />
+                            {/* Idle state overlay */}
+                            {cell?.status === "idle" && (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#efe6d9]/60 rounded-xl">
                                 <div className="text-xs text-[#1e1b16]/30">{cellQueries.length} queries</div>
                                 <div className="text-xs text-[#6e7c5b]/60">Click to test</div>
                               </div>
                             )}
-                          </button>
+                          </div>
                         </HoverCardTrigger>
                         <HoverCardContent 
                           className="w-72 bg-[#fffaf2] border-[#e3dacb]" 
@@ -1995,8 +2007,8 @@ export default function VisibilityMatrixPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Query Panel */}
-      <QueryPanel
+      {/* Query Panel V2 */}
+      <QueryPanelV2
         key={`${queryPanelScope}-${queryPanelPersona ?? "all"}-${queryPanelStage ?? "all"}-${queryPanelOpen ? "open" : "closed"}`}
         open={queryPanelOpen}
         onOpenChange={setQueryPanelOpen}
