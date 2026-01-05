@@ -1484,10 +1484,10 @@ export default function VisibilityMatrixPage() {
           </div>
         </div>
 
-        {/* DETAIL PANEL - Bottom section */}
+        {/* DETAIL PANEL - Stats, Insights, Competitors */}
         <div className="grid grid-cols-12 gap-4">
           {/* Stats Card */}
-          <div className="col-span-3">
+          <div className="col-span-4">
             <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none h-full">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -1546,7 +1546,7 @@ export default function VisibilityMatrixPage() {
           </div>
 
           {/* Stage Insights - Adaptive & Clickable */}
-          <div className="col-span-3">
+          <div className="col-span-4">
             <Card className={`bg-[#fffaf2] border-[#e3dacb] shadow-none h-full ${isViewingHistory ? "ring-2 ring-[#b86f3a]/20" : ""}`}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
@@ -1717,7 +1717,7 @@ export default function VisibilityMatrixPage() {
           </div>
 
           {/* Competitors - Clickable */}
-          <div className="col-span-3">
+          <div className="col-span-4">
             <Card className={`bg-[#fffaf2] border-[#e3dacb] shadow-none h-full ${isViewingHistory ? "ring-2 ring-[#b86f3a]/20" : ""}`}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
@@ -1768,99 +1768,101 @@ export default function VisibilityMatrixPage() {
             </Card>
           </div>
 
-          {/* Trend Chart + Time Slider */}
-          <div className="col-span-3">
-            <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-[#6e7c5b]" />
-                  Trend
-                  {isViewingHistory && (
-                    <Badge variant="outline" className="bg-[#b86f3a]/10 border-[#b86f3a]/30 text-[#b86f3a] text-xs ml-auto">
-                      Viewing {selectedHistoricalData?.label}
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {benchmarkHistory.length > 1 ? (
-                  <>
-                    <ChartContainer config={chartConfig} className="h-[120px] w-full">
-                      <RechartsLineChart
-                        data={benchmarkHistory.map((run) => ({
-                          label: run.label,
-                          openai: enabledProviders.has("openai") ? Math.round((run.providerScores.openai?.avgScore ?? 0) * 100) : null,
-                          anthropic: enabledProviders.has("anthropic") ? Math.round((run.providerScores.anthropic?.avgScore ?? 0) * 100) : null,
-                          gemini: enabledProviders.has("gemini") ? Math.round((run.providerScores.gemini?.avgScore ?? 0) * 100) : null,
-                          xai: enabledProviders.has("xai") ? Math.round((run.providerScores.xai?.avgScore ?? 0) * 100) : null,
-                        }))}
-                        margin={{ top: 10, right: 10, bottom: 0, left: 0 }}
-                      >
-                        <XAxis 
-                          dataKey="label" 
-                          tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
-                          axisLine={false}
-                          tickLine={false}
-                        />
-                        <YAxis 
-                          domain={[0, 100]} 
-                          tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
-                          axisLine={false}
-                          tickLine={false}
-                          width={25}
-                          tickFormatter={(v) => `${v}%`}
-                        />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        {selectedTimeIndex < benchmarkHistory.length && (
-                          <ReferenceLine 
-                            x={benchmarkHistory[selectedTimeIndex]?.label} 
-                            stroke="#1f3b2c" 
-                            strokeDasharray="4 4"
-                            strokeWidth={2}
-                          />
-                        )}
-                        {enabledProviders.has("openai") && (
-                          <Line type="monotone" dataKey="openai" stroke="var(--color-openai)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                        {enabledProviders.has("anthropic") && (
-                          <Line type="monotone" dataKey="anthropic" stroke="var(--color-anthropic)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                        {enabledProviders.has("gemini") && (
-                          <Line type="monotone" dataKey="gemini" stroke="var(--color-gemini)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                        {enabledProviders.has("xai") && (
-                          <Line type="monotone" dataKey="xai" stroke="var(--color-xai)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                      </RechartsLineChart>
-                    </ChartContainer>
-                    {/* Time Slider */}
-                    <div className="space-y-1">
-                      <Slider
-                        value={[selectedTimeIndex]}
-                        onValueChange={([val]) => setSelectedTimeIndex(val)}
-                        min={0}
-                        max={benchmarkHistory.length - 1}
-                        step={1}
-                        className="[&_[data-slot=slider-track]]:bg-[#e3dacb] [&_[data-slot=slider-range]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:shadow-md"
-                      />
-                      <div className="flex justify-between text-xs text-[#1e1b16]/40">
-                        <span>{benchmarkHistory[0]?.label}</span>
-                        <span className="font-medium text-[#1e1b16]/60">
-                          {isViewingHistory ? selectedHistoricalData?.label : "Now"}
-                        </span>
-                        <span>Now</span>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-sm text-[#1e1b16]/40 text-center py-4">
-                    Run 2+ benchmarks to see trend
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
         </div>
+
+        {/* Trend Chart + Time Slider - Full Width */}
+        <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-[#6e7c5b]" />
+              Trend Over Time
+              {isViewingHistory && (
+                <Badge variant="outline" className="bg-[#b86f3a]/10 border-[#b86f3a]/30 text-[#b86f3a] text-xs ml-2">
+                  Viewing {selectedHistoricalData?.label}
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {benchmarkHistory.length > 1 ? (
+              <div className="flex gap-6 items-end">
+                {/* Chart - takes most space */}
+                <div className="flex-1">
+                  <ChartContainer config={chartConfig} className="h-[100px] w-full">
+                    <RechartsLineChart
+                      data={benchmarkHistory.map((run) => ({
+                        label: run.label,
+                        openai: enabledProviders.has("openai") ? Math.round((run.providerScores.openai?.avgScore ?? 0) * 100) : null,
+                        anthropic: enabledProviders.has("anthropic") ? Math.round((run.providerScores.anthropic?.avgScore ?? 0) * 100) : null,
+                        gemini: enabledProviders.has("gemini") ? Math.round((run.providerScores.gemini?.avgScore ?? 0) * 100) : null,
+                        xai: enabledProviders.has("xai") ? Math.round((run.providerScores.xai?.avgScore ?? 0) * 100) : null,
+                      }))}
+                      margin={{ top: 5, right: 10, bottom: 0, left: 0 }}
+                    >
+                      <XAxis 
+                        dataKey="label" 
+                        tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis 
+                        domain={[0, 100]} 
+                        tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
+                        axisLine={false}
+                        tickLine={false}
+                        width={30}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      {selectedTimeIndex < benchmarkHistory.length && (
+                        <ReferenceLine 
+                          x={benchmarkHistory[selectedTimeIndex]?.label} 
+                          stroke="#1f3b2c" 
+                          strokeDasharray="4 4"
+                          strokeWidth={2}
+                        />
+                      )}
+                      {enabledProviders.has("openai") && (
+                        <Line type="monotone" dataKey="openai" stroke="var(--color-openai)" strokeWidth={2} dot={false} connectNulls />
+                      )}
+                      {enabledProviders.has("anthropic") && (
+                        <Line type="monotone" dataKey="anthropic" stroke="var(--color-anthropic)" strokeWidth={2} dot={false} connectNulls />
+                      )}
+                      {enabledProviders.has("gemini") && (
+                        <Line type="monotone" dataKey="gemini" stroke="var(--color-gemini)" strokeWidth={2} dot={false} connectNulls />
+                      )}
+                      {enabledProviders.has("xai") && (
+                        <Line type="monotone" dataKey="xai" stroke="var(--color-xai)" strokeWidth={2} dot={false} connectNulls />
+                      )}
+                    </RechartsLineChart>
+                  </ChartContainer>
+                </div>
+                
+                {/* Time Slider - vertical on the right */}
+                <div className="w-48 space-y-2">
+                  <Slider
+                    value={[selectedTimeIndex]}
+                    onValueChange={([val]) => setSelectedTimeIndex(val)}
+                    min={0}
+                    max={benchmarkHistory.length - 1}
+                    step={1}
+                    className="[&_[data-slot=slider-track]]:bg-[#e3dacb] [&_[data-slot=slider-range]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:shadow-md"
+                  />
+                  <div className="flex justify-between text-[10px] text-[#1e1b16]/40">
+                    <span>{benchmarkHistory[0]?.label}</span>
+                    <span className="font-medium text-[#1e1b16]/60">
+                      {isViewingHistory ? selectedHistoricalData?.label : "Now"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-[#1e1b16]/40 text-center py-6">
+                Run 2+ benchmarks to see trend over time
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Query Bank Info */}
         <div className="flex items-center justify-center gap-2 text-xs text-[#1e1b16]/50">
