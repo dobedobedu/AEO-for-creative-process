@@ -1375,31 +1375,19 @@ export default function VisibilityMatrixPage() {
                               }
                             }}
                             className={`
-                              relative rounded-xl transition-all cursor-pointer
-                              ${cell?.status === "complete"
-                                ? "bg-white"
-                                : "bg-[#efe6d9]/40"
-                              }
+                              rounded-xl transition-all cursor-pointer
                               ${inSelection ? "ring-2 ring-[#1f3b2c]/30 ring-inset" : ""}
-                              ${cellSelected ? "ring-2 ring-[#1f3b2c] ring-offset-2 ring-offset-[#fffaf2]" : ""}
                               hover:scale-[1.02]
-                              border border-[#e3dacb]/50
                             `}
                           >
                             <StageCell
                               stage={stage.id}
                               metrics={cell?.stageMetrics ?? {}}
+                              queryCount={cellQueries.length}
                               isComplete={cell?.status === "complete"}
                               isRunning={cell?.status === "running"}
                               selected={cellSelected}
                             />
-                            {/* Idle state overlay */}
-                            {cell?.status === "idle" && (
-                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#efe6d9]/60 rounded-xl">
-                                <div className="text-xs text-[#1e1b16]/30">{cellQueries.length} queries</div>
-                                <div className="text-xs text-[#6e7c5b]/60">Click to test</div>
-                              </div>
-                            )}
                           </div>
                         </HoverCardTrigger>
                         <HoverCardContent 

@@ -8,7 +8,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { X, Plus, Play, Save, RotateCcw } from "lucide-react";
 
@@ -65,16 +64,12 @@ function MiniMatrix({
   }, [scope, selectedPersona, selectedStage]);
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-0.5">
       {/* Stage labels - top */}
-      <div className="flex gap-1 ml-6">
+      <div className="flex gap-0.5 ml-5">
         {stages.map((stage) => (
-          <div
-            key={stage.id}
-            className="w-6 h-4 flex items-center justify-center"
-            title={stage.label}
-          >
-            <span className="text-[8px] font-medium text-[#1e1b16]/40 uppercase tracking-tight">
+          <div key={stage.id} className="w-5 h-3 flex items-center justify-center">
+            <span className="text-[7px] font-medium text-[#1e1b16]/30 uppercase">
               {stage.label.charAt(0)}
             </span>
           </div>
@@ -82,24 +77,18 @@ function MiniMatrix({
       </div>
       
       {/* Grid with persona labels */}
-      <div className="flex gap-1">
-        {/* Persona labels - left */}
-        <div className="flex flex-col gap-1">
+      <div className="flex gap-0.5">
+        <div className="flex flex-col gap-0.5">
           {personas.map((persona) => (
-            <div
-              key={persona.id}
-              className="w-5 h-6 flex items-center justify-end pr-1"
-              title={persona.label}
-            >
-              <span className="text-[8px] font-medium text-[#1e1b16]/40 uppercase tracking-tight">
+            <div key={persona.id} className="w-4 h-5 flex items-center justify-end pr-0.5">
+              <span className="text-[7px] font-medium text-[#1e1b16]/30 uppercase">
                 {persona.label.charAt(0)}
               </span>
             </div>
           ))}
         </div>
         
-        {/* The matrix grid */}
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-4 gap-0.5">
           {personas.map((persona) =>
             stages.map((stage) => {
               const selected = isCellSelected(persona.id, stage.id);
@@ -110,16 +99,14 @@ function MiniMatrix({
                   key={`${persona.id}-${stage.id}`}
                   onClick={() => onCellClick(persona.id, stage.id)}
                   className={`
-                    w-6 h-6 rounded-md transition-all duration-150 
-                    border border-[#e3dacb]
+                    w-5 h-5 rounded transition-all duration-150 
                     ${selected 
                       ? highlighted
-                        ? "bg-[#1f3b2c] border-[#1f3b2c] shadow-sm" 
-                        : "bg-[#1f3b2c]/70 border-[#1f3b2c]/70"
-                      : "bg-white hover:bg-[#efe6d9] hover:border-[#1f3b2c]/30"
+                        ? "bg-[#1f3b2c]" 
+                        : "bg-[#1f3b2c]/60"
+                      : "bg-[#e3dacb]/50 hover:bg-[#e3dacb]"
                     }
                   `}
-                  title={`${persona.label} × ${stage.label}`}
                 />
               );
             })
@@ -130,55 +117,31 @@ function MiniMatrix({
   );
 }
 
-// Query variation dial component
-function VariationDial({
+// Intent interpretation dial - simplified
+function InterpretationDial({
   value,
   onChange,
 }: {
   value: number;
   onChange: (value: number) => void;
 }) {
-  const getLabel = (val: number): string => {
-    if (val <= 0.2) return "Verbatim";
-    if (val <= 0.4) return "Precise";
-    if (val <= 0.6) return "Balanced";
-    if (val <= 0.8) return "Exploratory";
-    return "Interpretive";
-  };
-
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-[#1e1b16]/70">Query Style</span>
-        <span className="text-xs font-semibold text-[#1f3b2c]">{getLabel(value)}</span>
-      </div>
+    <div className="space-y-2">
+      <span className="text-xs font-medium text-[#1e1b16]/60">Intent Interpretation</span>
       
-      <div className="relative">
-        <Slider
-          value={[value]}
-          onValueChange={([v]) => onChange(v)}
-          min={0}
-          max={1}
-          step={0.1}
-          className="w-full"
-        />
-        
-        {/* Labels below slider */}
-        <div className="flex justify-between mt-2">
-          <span className="text-[10px] text-[#1e1b16]/40">Verbatim</span>
-          <span className="text-[10px] text-[#1e1b16]/40">Interpretive</span>
-        </div>
-      </div>
+      <Slider
+        value={[value]}
+        onValueChange={([v]) => onChange(v)}
+        min={0}
+        max={1}
+        step={0.1}
+        className="w-full"
+      />
       
-      {/* Description */}
-      <p className="text-[10px] text-[#1e1b16]/50 leading-relaxed">
-        {value <= 0.3 
-          ? "Searches exactly as written — best for specific terms"
-          : value <= 0.7
-            ? "Natural variations — how real people might search"
-            : "Explores related angles — creative reinterpretations"
-        }
-      </p>
+      <div className="flex justify-between">
+        <span className="text-[10px] text-[#1e1b16]/50">Decision Maker</span>
+        <span className="text-[10px] text-[#1e1b16]/50">Family Unit</span>
+      </div>
     </div>
   );
 }
@@ -207,7 +170,6 @@ export function QueryPanelV2({
 
   // Handle mini-matrix cell click
   const handleMatrixClick = useCallback((persona: Persona, stage: Stage) => {
-    // If clicking the same cell, toggle between cell and all
     if (scope === "cell" && persona === selectedPersona && stage === selectedStage) {
       setScope("all");
       setSelectedPersona(undefined);
@@ -218,19 +180,6 @@ export function QueryPanelV2({
       setSelectedStage(stage);
     }
   }, [scope, selectedPersona, selectedStage]);
-
-  // Handle row/column selection by clicking labels (future enhancement)
-  const selectRow = useCallback((persona: Persona) => {
-    setScope("row");
-    setSelectedPersona(persona);
-    setSelectedStage(undefined);
-  }, []);
-
-  const selectColumn = useCallback((stage: Stage) => {
-    setScope("column");
-    setSelectedStage(stage);
-    setSelectedPersona(undefined);
-  }, []);
 
   const selectAll = useCallback(() => {
     setScope("all");
@@ -294,6 +243,16 @@ export function QueryPanelV2({
       return `${stages.find(x => x.id === selectedStage)?.label} (all personas)`;
     }
     return "Full Matrix";
+  };
+
+  // Get intent text for current cell
+  const getIntentText = () => {
+    if (scope === "cell" && selectedPersona && selectedStage) {
+      const personaLabel = personas.find(p => p.id === selectedPersona)?.label;
+      const stageLabel = stages.find(s => s.id === selectedStage)?.label;
+      return `${personaLabel} buyer in ${stageLabel?.toLowerCase()} stage`;
+    }
+    return null;
   };
 
   const startEditQuery = (persona: Persona, stage: Stage, index: number, value: string) => {
@@ -366,23 +325,24 @@ export function QueryPanelV2({
     onOpenChange(false);
   };
 
+  const intentText = getIntentText();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[85vh] bg-[#fffaf2] border-[#e3dacb] overflow-hidden flex flex-col p-0">
+      <DialogContent className="max-w-5xl max-h-[90vh] bg-[#fffaf2] border-[#e3dacb] overflow-hidden flex flex-col p-0">
         {/* Header */}
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-[#e3dacb] flex-shrink-0">
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex-1">
-              <DialogTitle className="text-lg font-semibold text-[#1e1b16] mb-1">
-                Query Bank
+        <DialogHeader className="px-6 pt-5 pb-4 border-b border-[#e3dacb] flex-shrink-0">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <DialogTitle className="text-base font-semibold text-[#1e1b16]">
+                {getScopeLabel()}
               </DialogTitle>
-              <p className="text-sm text-[#1e1b16]/50">
-                {getScopeLabel()} · {totalQueryCount} queries
+              <p className="text-xs text-[#1e1b16]/50 mt-0.5">
+                {totalQueryCount} queries
               </p>
             </div>
             
-            {/* Mini-matrix scope selector */}
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-3">
               <MiniMatrix
                 personas={personas}
                 stages={stages}
@@ -391,156 +351,135 @@ export function QueryPanelV2({
                 scope={scope}
                 onCellClick={handleMatrixClick}
               />
-              <div className="flex gap-1">
-                <button
-                  onClick={selectAll}
-                  className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
-                    scope === "all" 
-                      ? "bg-[#1f3b2c] text-white" 
-                      : "text-[#1e1b16]/50 hover:text-[#1e1b16] hover:bg-[#efe6d9]"
-                  }`}
-                >
-                  All
-                </button>
-                {selectedPersona && (
-                  <button
-                    onClick={() => selectRow(selectedPersona)}
-                    className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
-                      scope === "row" 
-                        ? "bg-[#1f3b2c] text-white" 
-                        : "text-[#1e1b16]/50 hover:text-[#1e1b16] hover:bg-[#efe6d9]"
-                    }`}
-                  >
-                    Row
-                  </button>
-                )}
-                {selectedStage && (
-                  <button
-                    onClick={() => selectColumn(selectedStage)}
-                    className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
-                      scope === "column" 
-                        ? "bg-[#1f3b2c] text-white" 
-                        : "text-[#1e1b16]/50 hover:text-[#1e1b16] hover:bg-[#efe6d9]"
-                    }`}
-                  >
-                    Column
-                  </button>
-                )}
-              </div>
+              <button
+                onClick={selectAll}
+                className={`text-[10px] px-2 py-1 rounded transition-colors ${
+                  scope === "all" 
+                    ? "bg-[#1f3b2c] text-white" 
+                    : "text-[#1e1b16]/50 hover:bg-[#efe6d9]"
+                }`}
+              >
+                All
+              </button>
             </div>
           </div>
         </DialogHeader>
 
-        {/* Main content area */}
-        <div className="flex-1 flex min-h-0">
-          {/* Query list */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
-            {displayQueries.map(({ persona, stage, queries }) => {
-              const sectionKey = `${persona}-${stage}`;
-              const personaLabel = personas.find(p => p.id === persona)?.label;
-              const stageLabel = stages.find(s => s.id === stage)?.label;
-              const showHeader = displayQueries.length > 1;
+        {/* Main content */}
+        <div className="flex-1 flex min-h-0 overflow-hidden">
+          {/* Query list - takes most space */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {/* Intent box (only for cell scope) */}
+            {intentText && (
+              <div className="mb-4 p-3 bg-[#efe6d9]/50 rounded-lg border border-[#e3dacb]">
+                <span className="text-[10px] uppercase tracking-wide text-[#1e1b16]/40">Intent</span>
+                <p className="text-sm text-[#1e1b16] mt-1">{intentText}</p>
+              </div>
+            )}
 
-              return (
-                <div key={sectionKey} className="space-y-2">
-                  {showHeader && (
-                    <div className="flex items-center gap-2 pb-1">
-                      <span className="text-xs font-semibold text-[#1e1b16]/70 uppercase tracking-wide">
+            {/* Queries */}
+            <div className="space-y-4">
+              {displayQueries.map(({ persona, stage, queries }) => {
+                const sectionKey = `${persona}-${stage}`;
+                const personaLabel = personas.find(p => p.id === persona)?.label;
+                const stageLabel = stages.find(s => s.id === stage)?.label;
+                const showHeader = displayQueries.length > 1;
+
+                return (
+                  <div key={sectionKey}>
+                    {showHeader && (
+                      <div className="text-xs font-medium text-[#1e1b16]/50 uppercase tracking-wide mb-2">
                         {personaLabel} × {stageLabel}
-                      </span>
-                      <Badge variant="outline" className="bg-[#efe6d9]/50 border-transparent text-[#1e1b16]/50 text-[10px]">
-                        {queries.length}
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  <div className="space-y-1">
-                    {queries.map((query, idx) => {
-                      const isEditing = editingQuery?.persona === persona && editingQuery?.stage === stage && editingQuery?.index === idx;
-                      
-                      return (
-                        <div
-                          key={idx}
-                          className="group flex items-center gap-2 py-1.5 px-2 -mx-2 rounded-lg hover:bg-[#efe6d9]/40 transition-colors"
-                        >
-                          <span className="w-5 h-5 flex items-center justify-center rounded-full bg-[#efe6d9] text-[10px] font-medium text-[#1e1b16]/50">
-                            {idx + 1}
-                          </span>
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              value={editValue}
-                              onChange={e => setEditValue(e.target.value)}
-                              onBlur={saveEditQuery}
-                              onKeyDown={e => {
-                                if (e.key === "Enter") saveEditQuery();
-                                if (e.key === "Escape") {
-                                  setEditingQuery(null);
-                                  setEditValue("");
-                                }
-                              }}
-                              className="flex-1 text-sm bg-white border border-[#1f3b2c] rounded-lg px-3 py-1.5 text-[#1e1b16] focus:outline-none focus:ring-2 focus:ring-[#1f3b2c]/20"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onClick={() => startEditQuery(persona, stage, idx, query)}
-                              className="flex-1 text-sm text-[#1e1b16] cursor-text leading-relaxed"
-                            >
-                              {query || <span className="text-[#1e1b16]/30 italic">Empty query...</span>}
-                            </span>
-                          )}
-                          <button
-                            onClick={() => deleteQuery(persona, stage, idx)}
-                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-[#f0d9d9] rounded-lg transition-all"
-                            title="Delete query"
-                          >
-                            <X className="h-3.5 w-3.5 text-[#8b4a4a]" />
-                          </button>
-                        </div>
-                      );
-                    })}
+                      </div>
+                    )}
                     
-                    <button
-                      onClick={() => addQuery(persona, stage)}
-                      className="flex items-center gap-2 text-xs text-[#1f3b2c]/60 hover:text-[#1f3b2c] py-1.5 px-2 -mx-2 rounded-lg hover:bg-[#efe6d9]/40 transition-colors w-full"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      Add query
-                    </button>
+                    <div className="space-y-1.5">
+                      {queries.map((query, idx) => {
+                        const isEditing = editingQuery?.persona === persona && editingQuery?.stage === stage && editingQuery?.index === idx;
+                        
+                        return (
+                          <div
+                            key={idx}
+                            className="group flex items-center gap-2 py-2 px-3 bg-white rounded-lg border border-[#e3dacb]/50 hover:border-[#e3dacb]"
+                          >
+                            <span className="w-5 h-5 flex items-center justify-center rounded-full bg-[#efe6d9] text-[10px] font-medium text-[#1e1b16]/50 flex-shrink-0">
+                              {idx + 1}
+                            </span>
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editValue}
+                                onChange={e => setEditValue(e.target.value)}
+                                onBlur={saveEditQuery}
+                                onKeyDown={e => {
+                                  if (e.key === "Enter") saveEditQuery();
+                                  if (e.key === "Escape") {
+                                    setEditingQuery(null);
+                                    setEditValue("");
+                                  }
+                                }}
+                                className="flex-1 text-sm bg-transparent border-none text-[#1e1b16] focus:outline-none"
+                                autoFocus
+                              />
+                            ) : (
+                              <span
+                                onClick={() => startEditQuery(persona, stage, idx, query)}
+                                className="flex-1 text-sm text-[#1e1b16] cursor-text"
+                              >
+                                {query || <span className="text-[#1e1b16]/30 italic">Empty...</span>}
+                              </span>
+                            )}
+                            <button
+                              onClick={() => deleteQuery(persona, stage, idx)}
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-[#f0d9d9] rounded transition-all flex-shrink-0"
+                            >
+                              <X className="h-3 w-3 text-[#8b4a4a]" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                      
+                      <button
+                        onClick={() => addQuery(persona, stage)}
+                        className="flex items-center gap-2 text-xs text-[#1f3b2c]/60 hover:text-[#1f3b2c] py-2 px-3 rounded-lg hover:bg-[#efe6d9]/30 transition-colors w-full"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Add query
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
-          {/* Right sidebar - Variation dial (only for cell scope) */}
+          {/* Sidebar - dial and generate (only for cell scope) */}
           {scope === "cell" && selectedPersona && selectedStage && (
-            <div className="w-56 border-l border-[#e3dacb] bg-[#faf7f2] p-4 flex flex-col gap-6">
-              <VariationDial value={variation} onChange={setVariation} />
+            <div className="w-64 border-l border-[#e3dacb] bg-[#faf7f2] p-5 flex flex-col">
+              <InterpretationDial value={variation} onChange={setVariation} />
               
               {onRegenerateQueries && (
                 <Button
                   onClick={handleRegenerate}
                   disabled={isRegenerating}
                   variant="outline"
-                  className="w-full border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9] text-sm"
+                  className="mt-4 w-full border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
                 >
                   <RotateCcw className={`h-3.5 w-3.5 mr-2 ${isRegenerating ? "animate-spin" : ""}`} />
-                  {isRegenerating ? "Generating..." : "Regenerate"}
+                  {isRegenerating ? "Generating..." : "Generate"}
                 </Button>
               )}
               
-              <div className="mt-auto pt-4 border-t border-[#e3dacb]">
-                <p className="text-[10px] text-[#1e1b16]/40 leading-relaxed">
-                  Tip: Click cells in the mini-matrix above to quickly switch between different persona × stage combinations.
+              <div className="mt-auto pt-4">
+                <p className="text-[9px] text-[#1e1b16]/30 leading-relaxed">
+                  Click cells in the matrix to switch scope
                 </p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer actions */}
+        {/* Footer */}
         <div className="px-6 py-4 border-t border-[#e3dacb] flex gap-3 flex-shrink-0 bg-[#faf7f2]">
           <Button
             onClick={handleRun}
@@ -552,7 +491,7 @@ export function QueryPanelV2({
           <Button
             onClick={handleSave}
             variant="outline"
-            className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9] h-10"
+            className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9] h-10 px-6"
           >
             <Save className="h-4 w-4 mr-2" />
             Save

@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updatedAt": "2026-01-05T14:00:01.085Z",
+  "version": 17,
+  "updatedAt": "2026-01-05T16:23:58.329Z",
   "intents": [
     {
       "id": "int_move_up_explore_mk189ge5",
@@ -291,6 +291,334 @@
         {
           "action": "created",
           "intentId": "int_first_time_decide_mk189ge6"
+        }
+      ]
+    },
+    {
+      "version": 2,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_explore_mk189ge5",
+          "field": "defaultQueries",
+          "oldValue": [
+            "best places in florida for growing families",
+            "whats the best place in florida to raise a family",
+            "is tampa a good place to raise a family"
+          ],
+          "newValue": [
+            "best places in florida for growing families",
+            "whats the best place in florida to raise a family",
+            "is tampa a good place to raise a family"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 3,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_consider_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "master planned communities florida families",
+            "best family neighborhoods and schools in orlando area",
+            "florida communities with good schools not too expensive"
+          ],
+          "newValue": [
+            "master planned communities florida families",
+            "best family neighborhoods and schools in orlando area",
+            "florida communities with good schools not too expensive"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 4,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_compare_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "lakewood ranch vs nocatee for families",
+            "wellen park vs lakewood ranch schools",
+            "tampa vs orlando for young families"
+          ],
+          "newValue": [
+            "lakewood ranch vs nocatee for families",
+            "wellen park vs lakewood ranch schools",
+            "tampa vs orlando for young families"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 5,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_decide_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "best neighborhoods in lakewood ranch for families",
+            "nocatee schools vs lakewood ranch schools"
+          ],
+          "newValue": [
+            "best neighborhoods in lakewood ranch for families",
+            "nocatee schools vs lakewood ranch schools"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 6,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_explore_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "best places to retire in florida 2025",
+            "best places to retire in florida that arent too hot",
+            "how much do i really need to retire in florida"
+          ],
+          "newValue": [
+            "best places to retire in florida 2025",
+            "best places to retire in florida that arent too hot",
+            "how much do i really need to retire in florida"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 7,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_consider_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "55 plus communities florida amenities",
+            "what 55+ communities in florida have lots of clubs and activities",
+            "active adult communities southwest florida"
+          ],
+          "newValue": [
+            "55 plus communities florida amenities",
+            "what 55+ communities in florida have lots of clubs and activities",
+            "active adult communities southwest florida"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 8,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_compare_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "lakewood ranch vs the villages for retirees",
+            "the villages vs sun city center",
+            "the villages vs on top of the world retirement"
+          ],
+          "newValue": [
+            "lakewood ranch vs the villages for retirees",
+            "the villages vs sun city center",
+            "the villages vs on top of the world retirement"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 9,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_decide_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "is it hard to find doctors accepting medicare in the villages",
+            "cresswind lakewood ranch reviews"
+          ],
+          "newValue": [
+            "is it hard to find doctors accepting medicare in the villages",
+            "cresswind lakewood ranch reviews"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 10,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_explore_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "luxury communities florida gulf coast",
+            "upscale master planned communities florida",
+            "best florida retirement cities culture theater museums restaurants"
+          ],
+          "newValue": [
+            "luxury communities florida gulf coast",
+            "upscale master planned communities florida",
+            "best florida retirement cities culture theater museums restaurants"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 11,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_consider_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "florida communities with golf courses",
+            "waterfront homes master planned florida",
+            "sarasota vs naples for retirement"
+          ],
+          "newValue": [
+            "florida communities with golf courses",
+            "waterfront homes master planned florida",
+            "sarasota vs naples for retirement"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 12,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_compare_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "lakewood ranch country club vs tpc prestancia",
+            "lakewood ranch waterside vs regular lwr",
+            "sarasota vs lakewood ranch traffic and beach access"
+          ],
+          "newValue": [
+            "lakewood ranch country club vs tpc prestancia",
+            "lakewood ranch waterside vs regular lwr",
+            "sarasota vs lakewood ranch traffic and beach access"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 13,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_decide_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "luxury homes lakewood ranch waterside",
+            "why is lakewood ranch so expensive"
+          ],
+          "newValue": [
+            "luxury homes lakewood ranch waterside",
+            "why is lakewood ranch so expensive"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 14,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_explore_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "affordable places to live in florida 2025",
+            "best florida cities for young professionals",
+            "cheapest places to live in florida with good schools"
+          ],
+          "newValue": [
+            "affordable places to live in florida 2025",
+            "best florida cities for young professionals",
+            "cheapest places to live in florida with good schools"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 15,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_consider_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "florida communities low hoa fees",
+            "whats the deal with cdd fees in florida communities",
+            "hidden costs of living in florida besides rent and food"
+          ],
+          "newValue": [
+            "florida communities low hoa fees",
+            "whats the deal with cdd fees in florida communities",
+            "hidden costs of living in florida besides rent and food"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 16,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_compare_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "hoa community vs no hoa in florida",
+            "buying new construction vs older home in florida",
+            "living in tampa vs suburbs like wesley chapel"
+          ],
+          "newValue": [
+            "hoa community vs no hoa in florida",
+            "buying new construction vs older home in florida",
+            "living in tampa vs suburbs like wesley chapel"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 17,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "defaultQueries",
+          "oldValue": [
+            "new construction under 400k florida",
+            "is it better to rent first before buying in florida 2025"
+          ],
+          "newValue": [
+            "new construction under 400k florida",
+            "is it better to rent first before buying in florida 2025"
+          ]
         }
       ]
     }

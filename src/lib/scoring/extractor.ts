@@ -47,9 +47,14 @@ export async function extractStageMetrics(input: ExtractionInput): Promise<Extra
   const schema = getExtractionSchemaForStage(stage);
   const stagePrompt = STAGE_EXTRACTION_PROMPTS[stage];
 
-  const prompt = `${stagePrompt}
+  // Brand name MUST come first so Gemini knows what to look for
+  const brandInfo = brandTerms.length > 0 
+    ? `"${brand}" (also known as: ${brandTerms.join(", ")})`
+    : `"${brand}"`;
 
-Brand to analyze: "${brand}"${brandTerms.length > 0 ? ` (also known as: ${[brand, ...brandTerms].join(", ")})` : ""}
+  const prompt = `Brand to analyze: ${brandInfo}
+
+${stagePrompt}
 
 Original query: "${query}"
 
@@ -58,7 +63,7 @@ AI Response (from ${provider}):
 ${responseText}
 """
 
-Extract the relevant metrics based on the stage.`;
+Extract the metrics. Remember: the brand is ${brandInfo}.`;
 
   try {
     const result = await generateObject({

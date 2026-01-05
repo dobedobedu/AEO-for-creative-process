@@ -1,0 +1,83 @@
+{
+  "id": "run_2026-01-05_mk1db8ez",
+  "timestamp": "2026-01-05T16:21:22.139Z",
+  "intentLibraryVersion": 1,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_explore": {
+      "intentId": "int_move_up_explore_mk189ge5",
+      "intentText": "Growing family exploring Florida relocation options",
+      "queriesUsed": [
+        "best places in florida for growing families"
+      ],
+      "metrics": {
+        "discoveryRate": 0,
+        "topThreeRate": 0
+      },
+      "results": [
+        {
+          "query": "best places in florida for growing families",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some of the best Florida areas for **growing families**, grouped by “type of fit” (schools, neighborhoods, jobs, and day-to-day livability). I’m using **recent Florida school district grading info (2024–2025)** as one anchor, since that’s often a top driver for families. ([fldoe.org](https://www.fldoe.org/newsroom/latest-news/icymi-governor-ron-desantis-announces-positive-achievements-in-2025-school-grades.stml?utm_source=openai))\n\n## Consistently popular “family hubs” (schools + suburbs + amenities)\n\n### **Seminole County (Lake Mary, Oviedo, Winter Springs) – Orlando suburbs**\nA long-time family favorite for **suburban neighborhoods, parks, and strong district reputation**; good access to Orlando jobs without living in the busiest areas. Seminole County earned an **“A”** for the 2024–2025 school year. ([clickorlando.com](https://www.clickorlando.com/news/florida/2025/07/08/florida-school-grades-released-how-did-your-school-do/?utm_source=openai))\n\n### **St. Johns County (St. Augustine, Nocatee/Ponte Vedra area) – Jacksonville metro**\nFrequently cited as one of Florida’s top family areas thanks to **newer master-planned communities** and a strong school reputation. (If you’re commuting, it’s a common pick for people working in Jacksonville.)\n\n### **Brevard County (Viera, Suntree, West Melbourne) – Space Coast**\nGood mix of **family neighborhoods, space/aerospace economy, and beach access**. Brevard County earned an **“A”** in the 2024–2025 grades. ([clickorlando.com](https://www.clickorlando.com/news/florida/2025/07/08/florida-school-grades-released-how-did-your-school-do/?utm_source=openai))\n\n## “More house for the money” (still family-friendly)\n\n### **Lake County (Clermont, Mount Dora, Minneola) – west/northwest of Orlando**\nOften more affordable than core Orlando suburbs while still having lots of **new build communities**. Lake County earned an **“A”** in 2024–2025 (improved vs. prior year in some reporting). ([clickorlando.com](https://www.clickorlando.com/news/florida/2025/07/08/florida-school-grades-released-how-did-your-school-do/?utm_source=openai))\n\n### **Volusia County (Port Orange, Ormond Beach) – Daytona area**\nBeach-town feel with many family-oriented neighborhoods. Volusia County earned an **“A”** in 2024–2025 (noted as improved vs. prior year by local reporting). ([clickorlando.com](https://www.clickorlando.com/news/florida/2025/07/08/florida-school-grades-released-how-did-your-school-do/?utm_source=openai))\n\n## Big-metro options (more job access; neighborhood choice matters)\n\n### **Tampa Bay suburbs (Westchase, FishHawk Ranch/Lithia, Wesley Chapel)**\nTampa is a major job hub and has many very family-oriented pockets; neighborhood selection is key. Some Tampa neighborhoods/subareas are highly ranked in national “best places” style lists, but these can skew toward adult lifestyle/walkability, so it’s worth sanity-checking for schools/commutes. ([z105.iheart.com](https://z105.iheart.com/featured/florida-news/content/2025-03-24-thirteen-florida-neighborhoods-named-among-best-places-to-live-in-the-us/?utm_source=openai))\n\n### **Orlando area (Winter Garden, Windermere, Horizon West, parts of East Orlando)**\nLots of family infrastructure (sports leagues, parks, kid activities). Orange County earned an **“A”** in 2024–2025. ([clickorlando.com](https://www.clickorlando.com/news/florida/2025/07/08/florida-school-grades-released-how-did-your-school-do/?utm_source=openai))\n\n## Before I narrow it down to a top 5 for *your* family\nAnswer these and I’ll tailor recommendations (including specific neighborhoods):\n1) Budget range (rent or buy)?  \n2) Kids’ ages (daycare vs elementary vs high school)?  \n3) Do you need a commute to a specific city (Miami, Tampa, Orlando, Jax, etc.)?  \n4) Hurricane/flood risk tolerance (low / medium / “we’ll take waterfront”)?",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on current research, here are some of the best places in Florida for growing families:\n\n## Top-Ranked Cities\n\n\nThe best places for families in Florida are Key Biscayne, Winter Park, Lake Mary, Oviedo, Miami Lakes, Miami Shores, Maitland, Safety Harbor, North Palm Beach, and Boca Raton.\n\n\n## Gulf Coast Options\n\n\nThe Gulf Coast offers fantastic places for families like Sarasota, Tampa, and Naples.\n \n\n**Sarasota** is particularly appealing because \nit is often considered one of the top places to live in Florida for families, boasting beautiful beaches, vibrant arts, and excellent public schools, with the Sarasota County School District ranked in the top tier of school districts in Florida.\n\n\n**Tampa** is attractive for families because \nit is a vibrant and affordable city with top-ranked schools and easy access to amusement parks and sugar sand beaches, offering plenty of family-friendly activities year round, including Busch Gardens and The Florida Aquarium.\n\n\n## Northeast Florida\n\n\nSt. Johns County is known for its historic charm and family-friendly atmosphere with some of the best schools in the state, low crime rates, and proximity to beautiful beaches such as St. Augustine Beach.\n \nThe community of Nocatee, a master-planned community within St. Johns County, accommodates family-friendly delights including parks, great schools, and lively community events.\n\n\n## Central Florida\n\n\nOviedo blends affordability, community charm, and excellent schools—making it one of the best neighborhoods in Florida for young families.\n\n\n## Key Criteria\n\n\nRankings of best places for families in Florida are based on crime rates, public schools, cost of living,",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Raising a family in Florida is a popular choice due to the absence of state income tax, year-round outdoor weather, and a variety of world-class master-planned communities designed specifically for children.\n\nHere are the best places in Florida for growing families in 2025, categorized by what they offer most.\n\n### 1. The \"Gold Standard\" for Schools: St. Johns County\nLocated just south of Jacksonville, St. Johns County is consistently ranked as the #1 school district in Florida. It is the top choice for families where education is the primary driver of the move.\n\n*   **Nocatee (Ponte Vedra):** Frequently voted the best place to raise a family in Florida. It’s a massive master-planned community where residents use golf carts to get to schools, grocery stores, and massive water parks (Splash and Spray) included in their HOA.\n*   **SilverLeaf (St. Augustine):** A newer, rapidly growing alternative to Nocatee. It is popular because it has **no CDD fees** (a rare find in new Florida developments), which can save families hundreds of dollars a month.\n*   **Ponte Vedra Beach:** Offers a more established, coastal, and luxury feel with high-end public and private schools.\n\n### 2. The \"Community Vibe\" Pick: FishHawk Ranch (Lithia)\nLocated about 30–45 minutes east of Tampa, FishHawk Ranch is often described as a \"bubble\" because of its safe, self-contained feel.\n\n*   **Why families love it:** It features over 25 miles of nature trails that connect every neighborhood to the schools. It is home to some of the highest-rated elementary schools in the state and has a very active social calendar with food truck Fridays, outdoor movies, and youth sports leagues.\n*   **Perks:** Multiple \"Aquatic Clubs\" with resort-style pools, a \"Lake House\" for community gatherings, and a Park Square center with shops and an ice cream parlor.\n\n### 3. Best for Safety & Master-Planning: Weston & Parkland\nIf safety and meticulously manicured surroundings are your priority, these Broward County (South Florida) cities are national leaders.\n\n*   **Weston:** Consistently ranked among the safest cities in the U.S. It was built with a \"city within a park\" concept. Every neighborhood is gated, schools are A-rated, and the parks are world-class (e.g., Regional Park).\n*   **Parkland:** Known for having larger lot sizes than most of Florida and a heavy focus on equestrian trails. It has a peaceful, upscale suburban feel with very little commercial noise, but it's close enough to Fort Lauderdale for commuting.\n\n### 4. The Emerging \"Affordability\" Hotspots\nAs prices have risen in major cities, families are moving to these high-growth areas that offer brand-new homes for better value.\n\n*   **Parrish (Manatee County):** Located between Tampa and Sarasota, Parrish is exploding with new family communities like **North River Ranch**. It offers the \"Lakewood Ranch lifestyle\" at a more accessible price point.\n*   **Wimauma (Hillsborough County):** A rural-turned-suburban area south of Tampa. It features the \"Southshore Bay\" lagoon community, where families can live around a massive man-made crystal lagoon.\n*   **Oviedo (Central Florida):** Located near Orlando, Oviedo offers a \"small-town\" feel with a historic downtown (famous for its roaming chickens) and access to some of the best schools in the Seminole County district.\n\n### Comparison Summary for Families\n\n| Location | Primary Perk | School Grade | Cost of Living |\n| :--- | :--- | :--- | :--- |\n| **Nocatee** | \"Disney-level\" amenities | A+ | High |\n| **FishHawk Ranch** | Tight-knit community feel | A | Moderate |\n| **Weston** | Top-tier safety | A | High |\n| **Parrish** | New builds & value | B+/A | Moderate |\n| **Oviedo** | Suburban balance | A | Moderate |\n\n### Key Tips for Moving Families:\n1.  **Check the CDD Fee:** Many newer Florida communities have a \"Community Development District\" fee on top of your property taxes. This pays for the amenities (pools, parks). Always ask what this fee is before buying.\n2.  **School Zoning:** In high-growth areas (like St. Johns County or Parrish), schools can be \"capped\" or rezoned frequently. Always verify the current school zone with the county's school board.\n3.  **The \"Golf Cart\" Lifestyle:** If you want your kids to be able to ride to a friend's house safely, look specifically for \"Master-Planned Communities\" (MPCs) which prioritize internal trails over main roads.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent analyses and rankings from sources like Niche, U.S. News, and WalletHub (updated for 2025-2026), Florida offers plenty of appealing spots for growing families. These recommendations focus on factors like safety, quality schools, family-friendly amenities, cost of living, job opportunities, and access to outdoor activities. Keep in mind that \"best\" is subjective—consider your budget, lifestyle preferences (e.g., urban vs. suburban), and priorities like proximity to beaches or cities. I'll highlight some top contenders for 2026, drawing from current data.\n\n### Top Picks for Growing Families in Florida\n1. **Marco Island**  \n   Often ranked as one of the safest places in Florida, this coastal gem in Collier County is ideal for families seeking a relaxed, secure environment. It boasts low crime rates, excellent public services, and easy access to beaches and nature preserves. The community is family-oriented with good schools and a focus on outdoor activities like boating and parks. Median home prices are around $800K-$1M, but it's great for those who value tranquility over big-city hustle.\n\n2. **Weston**  \n   In Broward County, Weston consistently tops lists for safety and family-friendliness (e.g., Niche's 2025 rankings). It features strong public schools, active community involvement, and plenty of parks, sports facilities, and family events. Crime is low, and it's close to Fort Lauderdale for work or entertainment. Housing is suburban and affordable for the area (median around $600K), making it suitable for growing families needing space.\n\n3. **Parkland**  \n   Another Broward County standout, Parkland is praised for its calm, well-organized vibe and top-rated schools. It's a safe suburb with low crime, community policing, and ample green spaces for kids. Proximity to Coral Springs and Boca Raton adds convenience for shopping and jobs. Homes are family-sized, with medians in the $700K range—perfect for those wanting a nurturing environment away from urban edginess.\n\n4. **Orlando Suburbs (e.g., Winter Park or Lake Mary)**  \n   Several Orlando-area suburbs rank highly in Niche's 2024-2025 reports for family raising, with spots like Winter Park offering excellent schools, affordable housing (median ~$500K), and family attractions like theme parks and lakes. Lake Mary stands out for its job market in tech and healthcare, low crime, and community amenities. These areas balance suburban peace with access to city perks.\n\n5. **",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -82,42 +82,43 @@ export function getExtractionSchemaForStage(stage: string) {
 }
 
 // Stage-specific prompts for extraction
+// Note: Brand name is prepended to these prompts in extractor.ts
 export const STAGE_EXTRACTION_PROMPTS: Record<string, string> = {
   explore: `Analyze this AI response about Florida communities/real estate.
 The user was in the EXPLORE stage - just discovering what options exist.
 
 Focus on:
-- Was our brand mentioned at all?
-- If mentioned, was it in the top 3 options listed?
-- How many total options were presented?
-- What competitors were mentioned?
-- How was our brand described/characterized?`,
+- Was the brand mentioned at all? (Look for exact name or aliases)
+- If mentioned, was it in the first 3 options listed?
+- How many total options/communities were listed?
+- What other communities were mentioned (competitors)?
+- How was the brand described?`,
 
   consider: `Analyze this AI response about Florida communities/real estate.
 The user was in the CONSIDER stage - learning more about specific options.
 
 Focus on:
-- What was the overall sentiment toward our brand?
+- What was the overall sentiment toward the brand?
 - What strengths or positive attributes were mentioned?
 - What concerns or negative aspects were raised?
-- How would you summarize the portrayal?`,
+- How would you summarize how the brand was portrayed?`,
 
   compare: `Analyze this AI response about Florida communities/real estate.
 The user was in the COMPARE stage - directly comparing options.
 
 Focus on:
-- What was our brand compared against?
-- Did our brand win, lose, or have mixed results?
-- What attributes did we win on? Lose on?
+- What was the brand compared against?
+- Did the brand win, lose, tie, or have mixed results in comparisons?
+- What attributes did the brand win on? Lose on?
 - What was the AI's overall conclusion?`,
 
   decide: `Analyze this AI response about Florida communities/real estate.
 The user was in the DECIDE stage - ready to make a choice.
 
 Focus on:
-- Was our brand recommended?
+- Was the brand recommended as a choice?
 - How strongly was it recommended?
-- Were there any qualifiers or conditions?
+- Were there any qualifiers or conditions on the recommendation?
 - What alternatives were suggested?
-- What rationale was given?`,
+- What rationale was given for the recommendation?`,
 };
