@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   detectBrandMention,
   scoreBrandVisibility,
-  type BrandMentionResult,
 } from "../scoring";
 
 describe("detectBrandMention", () => {

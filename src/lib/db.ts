@@ -18,8 +18,11 @@ export const sql =
     prepare: false,
   });
 
-export function query<T>(strings: TemplateStringsArray, ...values: any[]): Promise<T[]> {
-  const sqlAny = sql as unknown as (strings: TemplateStringsArray, ...values: any[]) => Promise<T[]>;
+// Helper function for type-safe queries
+// The postgres library uses `any[]` for values, which is acceptable here
+// since SQL parameters can be of varying types
+export function query<T>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T[]> {
+  const sqlAny = sql as unknown as (strings: TemplateStringsArray, ...values: unknown[]) => Promise<T[]>;
   return sqlAny(strings, ...values);
 }
 

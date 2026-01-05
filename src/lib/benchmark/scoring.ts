@@ -197,7 +197,6 @@ export function scoreBrandVisibility(
     };
   }
 
-  const lowerText = text.toLowerCase();
   const textLength = text.length;
   const firstPosition = mention.positions[0];
 

@@ -199,7 +199,6 @@ export default function Home() {
   const [customTriggersText, setCustomTriggersText] = useState("");
   const [queriesText, setQueriesText] = useState(defaultQueries.join("\n"));
   const [runResult, setRunResult] = useState<RunResult | null>(null);
-  const [executeResult, setExecuteResult] = useState<ExecuteResult | null>(null);
   const [summary, setSummary] = useState<RunSummary | null>(null);
   const [responses, setResponses] = useState<ResponseItem[]>([]);
   const [runHistory, setRunHistory] = useState<RunHistoryItem[]>([]);
@@ -527,6 +526,7 @@ export default function Home() {
     if (latest && latest.id) {
       loadRun(latest.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePersona, activePersonaRuns, runResult]);
 
   async function handleAnalyze() {
@@ -650,15 +650,12 @@ export default function Home() {
     });
 
     await Promise.all(providerPromises);
-
-    setExecuteResult({ total, errors });
   }
 
   async function handleRun() {
     setStatus("creating");
     setError(null);
     setRunResult(null);
-    setExecuteResult(null);
     setSummary(null);
     setResponses([]);
     setAnalyses([]);

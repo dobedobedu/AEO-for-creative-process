@@ -21,6 +21,7 @@ async function main() {
 
   try {
     const result = await runBenchmark({
+      stage: "explore",
       queries: [testQuery],
       brand,
       brandAliases: ["LWR"],

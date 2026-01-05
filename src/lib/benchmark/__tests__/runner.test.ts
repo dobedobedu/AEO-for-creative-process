@@ -1,11 +1,19 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import {
   type BenchmarkConfig,
-  type BenchmarkResult,
-  type ProviderResponse,
   runBenchmark,
   runSingleQuery,
 } from "../runner";
+
+vi.mock("@/lib/scoring/extractor", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/scoring/extractor")>(
+    "@/lib/scoring/extractor"
+  );
+  return {
+    ...actual,
+    extractStageMetrics: vi.fn(),
+  };
+});
 
 vi.mock("@/lib/providers/openai", () => ({
   callOpenAIWebSearch: vi.fn(),
@@ -27,6 +35,7 @@ import { callOpenAIWebSearch } from "@/lib/providers/openai";
 import { callAnthropicWebSearch } from "@/lib/providers/anthropic";
 import { callGeminiWebSearch } from "@/lib/providers/gemini";
 import { callXaiSearch } from "@/lib/providers/xai";
+import { extractStageMetrics } from "@/lib/scoring/extractor";
 
 describe("runSingleQuery", () => {
   beforeEach(() => {
@@ -130,6 +139,7 @@ describe("runBenchmark", () => {
     });
 
     const config: BenchmarkConfig = {
+      stage: "explore",
       queries: ["test query 1"],
       brand: "Lakewood Ranch",
       providers: [
@@ -139,6 +149,18 @@ describe("runBenchmark", () => {
         { provider: "xai", model: "grok-3" },
       ],
     };
+
+    vi.mocked(extractStageMetrics).mockResolvedValue({
+      success: true,
+      extraction: {
+        mentioned: false,
+        responseRelevant: true,
+        inTopThree: false,
+        totalOptionsListed: 0,
+        competitors: [],
+        howDescribed: "not mentioned",
+      },
+    });
 
     const results = await runBenchmark(config);
 
@@ -157,6 +179,7 @@ describe("runBenchmark", () => {
     });
 
     const config: BenchmarkConfig = {
+      stage: "explore",
       queries: ["best retirement community"],
       brand: "Lakewood Ranch",
       providers: [
@@ -164,6 +187,30 @@ describe("runBenchmark", () => {
         { provider: "anthropic", model: "claude-sonnet-4-20250514" },
       ],
     };
+
+    vi.mocked(extractStageMetrics)
+      .mockResolvedValueOnce({
+        success: true,
+        extraction: {
+          mentioned: true,
+          responseRelevant: true,
+          inTopThree: true,
+          totalOptionsListed: 3,
+          competitors: [],
+          howDescribed: "Recommended",
+        },
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        extraction: {
+          mentioned: false,
+          responseRelevant: true,
+          inTopThree: false,
+          totalOptionsListed: 3,
+          competitors: [],
+          howDescribed: "not mentioned",
+        },
+      });
 
     const results = await runBenchmark(config);
     const openaiResponse = results.queries[0].responses.find(r => r.provider === "openai");
@@ -187,11 +234,24 @@ describe("runBenchmark", () => {
     });
 
     const config: BenchmarkConfig = {
+      stage: "explore",
       queries: ["q1", "q2", "q3", "q4"],
       brand: "Test",
       providers: [{ provider: "openai", model: "gpt-4o" }],
       concurrency: 2,
     };
+
+    vi.mocked(extractStageMetrics).mockResolvedValue({
+      success: true,
+      extraction: {
+        mentioned: false,
+        responseRelevant: true,
+        inTopThree: false,
+        totalOptionsListed: 0,
+        competitors: [],
+        howDescribed: "not mentioned",
+      },
+    });
 
     await runBenchmark(config);
     expect(maxConcurrent).toBeLessThanOrEqual(2);

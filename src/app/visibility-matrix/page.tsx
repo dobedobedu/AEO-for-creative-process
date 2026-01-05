@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback, Fragment } from "react";
+import { useState, useMemo, useRef, useCallback, Fragment, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,9 +25,18 @@ import {
   ChevronRight,
   Pencil,
   Check,
-  X,
+  FileText,
+  MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { QueryPanel } from "@/components/query-panel";
+import { ChatPanel } from "@/components/chat-panel";
+import type { ChatContext } from "@/lib/chat/types";
 import {
   ChartContainer,
   ChartTooltip,
@@ -40,6 +50,10 @@ import {
   YAxis,
   ReferenceLine,
 } from "recharts";
+
+import type { IntentLibrary } from "@/lib/intents/types";
+import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
+import type { StageExtraction } from "@/lib/scoring/schemas";
 
 // Types
 type Persona = "move_up" | "retiree" | "luxury" | "first_time";
@@ -139,93 +153,40 @@ const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; 
   { id: "xai", label: "Grok 4", color: "text-[#7c6b7c]", bgColor: "bg-[#7c6b7c]", chartColor: "#7c6b7c" },
 ];
 
-// Real queries from research
-const QUERY_BANK: Record<Persona, Record<Stage, string[]>> = {
-  move_up: {
-    explore: [
-      "best places in florida for growing families",
-      "whats the best place in florida to raise a family",
-      "is tampa a good place to raise a family",
-    ],
-    consider: [
-      "master planned communities florida families",
-      "best family neighborhoods and schools in orlando area",
-      "florida communities with good schools not too expensive",
-    ],
-    compare: [
-      "lakewood ranch vs nocatee for families",
-      "wellen park vs lakewood ranch schools",
-      "tampa vs orlando for young families",
-    ],
-    decide: [
-      "best neighborhoods in lakewood ranch for families",
-      "nocatee schools vs lakewood ranch schools",
-    ],
-  },
-  retiree: {
-    explore: [
-      "best places to retire in florida 2025",
-      "best places to retire in florida that arent too hot",
-      "how much do i really need to retire in florida",
-    ],
-    consider: [
-      "55 plus communities florida amenities",
-      "what 55+ communities in florida have lots of clubs and activities",
-      "active adult communities southwest florida",
-    ],
-    compare: [
-      "lakewood ranch vs the villages for retirees",
-      "the villages vs sun city center",
-      "the villages vs on top of the world retirement",
-    ],
-    decide: [
-      "is it hard to find doctors accepting medicare in the villages",
-      "cresswind lakewood ranch reviews",
-    ],
-  },
-  luxury: {
-    explore: [
-      "luxury communities florida gulf coast",
-      "upscale master planned communities florida",
-      "best florida retirement cities culture theater museums restaurants",
-    ],
-    consider: [
-      "florida communities with golf courses",
-      "waterfront homes master planned florida",
-      "sarasota vs naples for retirement",
-    ],
-    compare: [
-      "lakewood ranch country club vs tpc prestancia",
-      "lakewood ranch waterside vs regular lwr",
-      "sarasota vs lakewood ranch traffic and beach access",
-    ],
-    decide: [
-      "luxury homes lakewood ranch waterside",
-      "why is lakewood ranch so expensive",
-    ],
-  },
-  first_time: {
-    explore: [
-      "affordable places to live in florida 2025",
-      "best florida cities for young professionals",
-      "cheapest places to live in florida with good schools",
-    ],
-    consider: [
-      "florida communities low hoa fees",
-      "whats the deal with cdd fees in florida communities",
-      "hidden costs of living in florida besides rent and food",
-    ],
-    compare: [
-      "hoa community vs no hoa in florida",
-      "buying new construction vs older home in florida",
-      "living in tampa vs suburbs like wesley chapel",
-    ],
-    decide: [
-      "new construction under 400k florida",
-      "is it better to rent first before buying in florida 2025",
-    ],
-  },
-};
+type QueryBank = Record<Persona, Record<Stage, string[]>>;
+
+function createEmptyQueryBank(): QueryBank {
+  return {
+    move_up: { explore: [], consider: [], compare: [], decide: [] },
+    retiree: { explore: [], consider: [], compare: [], decide: [] },
+    luxury: { explore: [], consider: [], compare: [], decide: [] },
+    first_time: { explore: [], consider: [], compare: [], decide: [] },
+  };
+}
+
+function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
+  const bank = createEmptyQueryBank();
+
+  // Pick the most recently created active intent per persona×stage.
+  const latestByCell = new Map<string, { createdAt: string; defaultQueries: string[] }>();
+  for (const intent of library.intents) {
+    if (!intent.active) continue;
+    const key = `${intent.persona}::${intent.stage}`;
+    const existing = latestByCell.get(key);
+    if (!existing || intent.createdAt > existing.createdAt) {
+      latestByCell.set(key, { createdAt: intent.createdAt, defaultQueries: intent.defaultQueries });
+    }
+  }
+
+  for (const [key, value] of latestByCell.entries()) {
+    const [persona, stage] = key.split("::") as [Persona, Stage];
+    if (bank[persona] && bank[persona][stage]) {
+      bank[persona][stage] = value.defaultQueries;
+    }
+  }
+
+  return bank;
+}
 
 const BRAND = "Lakewood Ranch";
 const BRAND_ALIASES = ["LWR", "Lakewood"];
@@ -248,6 +209,155 @@ const MOCK_HISTORY: BenchmarkRun[] = [
   { timestamp: 13, label: "W13", providerScores: { openai: { avgScore: 0.60, mentionRate: 0.70 }, anthropic: { avgScore: 0.50, mentionRate: 0.60 }, gemini: { avgScore: 0.56, mentionRate: 0.65 }, xai: { avgScore: 0.36, mentionRate: 0.43 } }, stageData: { positionCounts: { "1st": 9, "2nd": 5, "3rd": 2, later: 2, absent: 3 }, sentimentScore: 0.35, winRate: 0.67, recStrength: 0.62 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
 ];
 
+const PROVIDER_MODELS: Record<Provider, string> = {
+  openai: "gpt-5.2",
+  anthropic: "claude-haiku-4-5",
+  gemini: "gemini-3-flash-preview",
+  xai: "grok-4-latest",
+};
+
+function recommendationStrengthToScore(strength: string): number {
+  switch (strength) {
+    case "strongly_recommended":
+      return 1;
+    case "recommended":
+      return 0.8;
+    case "suggested":
+      return 0.6;
+    case "mentioned":
+      return 0.4;
+    case "not_mentioned":
+    default:
+      return 0;
+  }
+}
+
+function extractionToScalarScore(stage: Stage, extraction: StageExtraction): number {
+  if (stage === "explore" && "inTopThree" in extraction) {
+    return extraction.mentioned ? 1 : 0;
+  }
+  if (stage === "consider" && "sentimentScore" in extraction) {
+    return (extraction.sentimentScore + 1) / 2;
+  }
+  if (stage === "compare" && "outcome" in extraction) {
+    if (extraction.outcome === "win") return 1;
+    if (extraction.outcome === "tie" || extraction.outcome === "mixed") return 0.5;
+    return 0;
+  }
+  if (stage === "decide" && "recommendationStrength" in extraction) {
+    return recommendationStrengthToScore(extraction.recommendationStrength);
+  }
+  return 0;
+}
+
+function extractionCompetitors(extraction: StageExtraction): string[] {
+  if ("competitors" in extraction) return extraction.competitors;
+  if ("comparedTo" in extraction) return extraction.comparedTo;
+  if ("alternativesOffered" in extraction) return extraction.alternativesOffered;
+  return [];
+}
+
+function toUiBenchmarkRun(run: StoredRun): BenchmarkRun {
+  const totals: Record<Provider, { totalScore: number; totalMentions: number; totalCount: number }> = {
+    openai: { totalScore: 0, totalMentions: 0, totalCount: 0 },
+    anthropic: { totalScore: 0, totalMentions: 0, totalCount: 0 },
+    gemini: { totalScore: 0, totalMentions: 0, totalCount: 0 },
+    xai: { totalScore: 0, totalMentions: 0, totalCount: 0 },
+  };
+
+  const positionCounts = { "1st": 0, "2nd": 0, "3rd": 0, later: 0, absent: 0 };
+  const sentimentScores: number[] = [];
+  const compareOutcomes: { win: number; total: number } = { win: 0, total: 0 };
+  const recStrengths: number[] = [];
+  const competitorCounts: Record<string, number> = {};
+
+  for (const [cellKey, cell] of Object.entries(run.cells)) {
+    const parts = cellKey.split("_");
+    const stage = parts[parts.length - 1] as Stage;
+    for (const qr of cell.results) {
+      for (const [provider, resp] of Object.entries(qr.responses) as Array<[
+        Provider,
+        { score: StageExtraction }
+      ]>) {
+        const extraction = resp.score;
+
+        totals[provider].totalCount++;
+        totals[provider].totalScore += extractionToScalarScore(stage, extraction);
+        if (extraction.mentioned) totals[provider].totalMentions++;
+
+        for (const comp of extractionCompetitors(extraction)) {
+          competitorCounts[comp] = (competitorCounts[comp] || 0) + 1;
+        }
+
+        if (stage === "explore" && "inTopThree" in extraction) {
+          if (!extraction.mentioned) positionCounts.absent++;
+          else if (extraction.inTopThree) positionCounts["1st"]++;
+          else positionCounts.later++;
+        }
+
+        if (stage === "consider" && "sentimentScore" in extraction) {
+          sentimentScores.push(extraction.sentimentScore);
+        }
+
+        if (stage === "compare" && "outcome" in extraction && extraction.outcome !== "not_compared") {
+          compareOutcomes.total++;
+          if (extraction.outcome === "win") compareOutcomes.win++;
+          if (extraction.outcome === "tie" || extraction.outcome === "mixed") compareOutcomes.win += 0.5;
+        }
+
+        if (stage === "decide" && "recommendationStrength" in extraction) {
+          recStrengths.push(recommendationStrengthToScore(extraction.recommendationStrength));
+        }
+      }
+    }
+  }
+
+  const providerScores: BenchmarkRun["providerScores"] = {
+    openai: {
+      avgScore: totals.openai.totalCount ? totals.openai.totalScore / totals.openai.totalCount : 0,
+      mentionRate: totals.openai.totalCount ? totals.openai.totalMentions / totals.openai.totalCount : 0,
+    },
+    anthropic: {
+      avgScore: totals.anthropic.totalCount ? totals.anthropic.totalScore / totals.anthropic.totalCount : 0,
+      mentionRate: totals.anthropic.totalCount ? totals.anthropic.totalMentions / totals.anthropic.totalCount : 0,
+    },
+    gemini: {
+      avgScore: totals.gemini.totalCount ? totals.gemini.totalScore / totals.gemini.totalCount : 0,
+      mentionRate: totals.gemini.totalCount ? totals.gemini.totalMentions / totals.gemini.totalCount : 0,
+    },
+    xai: {
+      avgScore: totals.xai.totalCount ? totals.xai.totalScore / totals.xai.totalCount : 0,
+      mentionRate: totals.xai.totalCount ? totals.xai.totalMentions / totals.xai.totalCount : 0,
+    },
+  };
+
+  const competitorRanking = Object.entries(competitorCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name]) => name);
+
+  const runLabel = run.timestamp.split("T")[0];
+
+  return {
+    timestamp: Date.parse(run.timestamp),
+    label: runLabel,
+    providerScores,
+    stageData: {
+      positionCounts,
+      sentimentScore:
+        sentimentScores.length > 0
+          ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length
+          : 0,
+      winRate: compareOutcomes.total > 0 ? compareOutcomes.win / compareOutcomes.total : 0,
+      recStrength:
+        recStrengths.length > 0
+          ? recStrengths.reduce((a, b) => a + b, 0) / recStrengths.length
+          : 0,
+    },
+    competitorRanking,
+  };
+}
+
 // Chart configuration for shadcn/recharts
 const chartConfig: ChartConfig = {
   openai: { label: "GPT 5.2", color: "#1f3b2c" },
@@ -264,13 +374,106 @@ export default function VisibilityMatrixPage() {
     new Set(["openai", "anthropic", "gemini", "xai"])
   );
   const [deepDiveOpen, setDeepDiveOpen] = useState(false);
-  const [benchmarkHistory, setBenchmarkHistory] = useState<BenchmarkRun[]>(MOCK_HISTORY);
-  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(MOCK_HISTORY.length - 1); // Default to "now"
+  const [benchmarkHistory, setBenchmarkHistory] = useState<BenchmarkRun[]>([]);
+  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
   const [personas, setPersonas] = useState<PersonaConfig[]>(DEFAULT_PERSONAS);
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null);
   const [editValue, setEditValue] = useState("");
   const [evidenceModal, setEvidenceModal] = useState<EvidenceModalData | null>(null);
+  const [queryPanelOpen, setQueryPanelOpen] = useState(false);
+  const [queryPanelScope, setQueryPanelScope] = useState<"cell" | "row" | "column" | "all">("cell");
+  const [queryPanelPersona, setQueryPanelPersona] = useState<Persona | undefined>();
+  const [queryPanelStage, setQueryPanelStage] = useState<Stage | undefined>();
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatContext, setChatContext] = useState<ChatContext>({ scope: "global" });
+  const [localQueryBank, setLocalQueryBank] = useState<QueryBank>(() => createEmptyQueryBank());
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/intents/library")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load intents"))))
+      .then((library: IntentLibrary) => {
+        if (cancelled) return;
+        setLocalQueryBank(buildQueryBankFromIntentLibrary(library));
+      })
+      .catch((err) => {
+        console.error("Failed to load intent library:", err);
+      });
+
+    fetch("/api/benchmark/runs/history?limit=13")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load history"))))
+      .then((data: { runs: StoredRun[] }) => {
+        if (cancelled) return;
+        const runs = data.runs.map(toUiBenchmarkRun);
+        const history = runs.length > 0 ? runs.slice().reverse() : MOCK_HISTORY;
+        setBenchmarkHistory(history);
+        setSelectedTimeIndex(history.length - 1);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setBenchmarkHistory(MOCK_HISTORY);
+        setSelectedTimeIndex(MOCK_HISTORY.length - 1);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Helper to open query panel at different scopes
+  const openQueryPanel = (scope: "cell" | "row" | "column" | "all", persona?: Persona, stage?: Stage) => {
+    setQueryPanelScope(scope);
+    setQueryPanelPersona(persona);
+    setQueryPanelStage(stage);
+    setQueryPanelOpen(true);
+  };
+
+  const persistQueryBank = async (queryBank: QueryBank) => {
+    const resp = await fetch("/api/intents/library/queries", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ queryBank }),
+    });
+    if (!resp.ok) {
+      throw new Error("Failed to save intent queries");
+    }
+    setLocalQueryBank(queryBank);
+  };
+
+  // Helper to convert QueryResult[] to the format expected by ChatContext
+  const convertToQueryResultData = (results: QueryResult[]) => {
+    return results.map(qr => ({
+      query: qr.query,
+      responses: qr.responses.map(r => ({
+        provider: r.provider,
+        model: r.model,
+        text: r.text,
+        visibility: {
+          score: r.visibility.score,
+          mentioned: r.visibility.mentioned,
+          position: r.visibility.position as "1st" | "2nd" | "3rd" | "later" | "absent",
+          sentiment: r.visibility.sentiment,
+          competitorsMentioned: r.visibility.competitorsMentioned,
+          recommendationStrength: (r.visibility.recommendationStrength || "none") as "strong" | "moderate" | "weak" | "none",
+          comparisonOutcome: (r.visibility.comparisonOutcome || "none") as "favorable" | "unfavorable" | "neutral" | "none",
+        },
+        error: r.error,
+      })),
+    }));
+  };
+
+  // Helper to open chat at different scopes with data
+  const openChat = (context: Omit<ChatContext, "brand" | "queryResults">, results?: QueryResult[]) => {
+    const fullContext: ChatContext = {
+      ...context,
+      brand: BRAND,
+      queryResults: results ? convertToQueryResultData(results) : undefined,
+    };
+    setChatContext(fullContext);
+    setChatOpen(true);
+  };
 
   // Initialize matrix data
   const initializeMatrix = useCallback(() => {
@@ -281,7 +484,7 @@ export default function VisibilityMatrixPage() {
         data[key] = {
           persona: persona.id,
           stage: stage.id,
-          queries: QUERY_BANK[persona.id][stage.id],
+          queries: localQueryBank[persona.id][stage.id],
           results: [],
           avgScore: 0,
           mentionRate: 0,
@@ -290,19 +493,39 @@ export default function VisibilityMatrixPage() {
       }
     }
     return data;
-  }, [personas]);
+  }, [personas, localQueryBank]);
 
-  // Run benchmark for a single cell
-  const runCellBenchmark = async (cellKey: string, quickTest = false, signal?: AbortSignal) => {
+  useEffect(() => {
+    if (Object.keys(matrixData).length === 0) {
+      setMatrixData(initializeMatrix());
+    }
+  }, [initializeMatrix, matrixData]);
+
+  const runCellsBenchmark = async (cellKeys: string[], quickTest: boolean, signal?: AbortSignal) => {
     const matrix = Object.keys(matrixData).length > 0 ? matrixData : initializeMatrix();
-    const cell = matrix[cellKey];
-    if (!cell) return;
+    setMatrixData(matrix);
 
-    const queriesToRun = quickTest ? [cell.queries[0]] : cell.queries;
+    const targetCells = cellKeys
+      .map((key) => {
+        const cell = matrix[key];
+        if (!cell) return null;
+        return { key, persona: cell.persona, stage: cell.stage };
+      })
+      .filter(Boolean) as Array<{ key: string; persona: Persona; stage: Stage }>;
 
-    setMatrixData(prev => ({
-      ...prev,
-      [cellKey]: { ...cell, status: "running" },
+    if (targetCells.length === 0) return;
+
+    setMatrixData((prev) => {
+      const next = { ...prev };
+      for (const t of targetCells) {
+        next[t.key] = { ...next[t.key], status: "running" };
+      }
+      return next;
+    });
+
+    const providers = Array.from(enabledProviders).map((p) => ({
+      provider: p,
+      model: PROVIDER_MODELS[p],
     }));
 
     try {
@@ -310,59 +533,86 @@ export default function VisibilityMatrixPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          queries: queriesToRun,
           brand: BRAND,
           brandAliases: BRAND_ALIASES,
+          quickTest,
+          providers,
+          cells: targetCells.map((t) => ({ persona: t.persona, stage: t.stage })),
         }),
         signal,
       });
 
       if (!response.ok) throw new Error("Benchmark failed");
 
-      const result = await response.json();
+      const { run, resultsByCell }: { run: StoredRun; resultsByCell: Record<string, { queries: QueryResult[] }> } =
+        await response.json();
 
-      const allScores: number[] = [];
-      let mentionCount = 0;
-      let totalResponses = 0;
+      setMatrixData((prev) => {
+        const next = { ...prev };
 
-      for (const qr of result.queries) {
-        for (const resp of qr.responses) {
-          if (!resp.error) {
-            allScores.push(resp.visibility.score);
-            totalResponses++;
-            if (resp.visibility.mentioned) mentionCount++;
+        for (const t of targetCells) {
+          const result = resultsByCell[t.key];
+          if (!result) {
+            next[t.key] = { ...next[t.key], status: "idle" };
+            continue;
           }
+
+          const allScores: number[] = [];
+          let mentionCount = 0;
+          let totalResponses = 0;
+
+          for (const qr of result.queries) {
+            for (const resp of qr.responses) {
+              if (!resp.error) {
+                allScores.push(resp.visibility.score);
+                totalResponses++;
+                if (resp.visibility.mentioned) mentionCount++;
+              }
+            }
+          }
+
+          const avgScore =
+            allScores.length > 0 ? allScores.reduce((a, b) => a + b, 0) / allScores.length : 0;
+          const mentionRate = totalResponses > 0 ? mentionCount / totalResponses : 0;
+
+          next[t.key] = {
+            ...next[t.key],
+            results: result.queries,
+            avgScore,
+            mentionRate,
+            status: "complete",
+          };
         }
-      }
 
-      const avgScore = allScores.length > 0
-        ? allScores.reduce((a, b) => a + b, 0) / allScores.length
-        : 0;
-      const mentionRate = totalResponses > 0 ? mentionCount / totalResponses : 0;
+        return next;
+      });
 
-      setMatrixData(prev => ({
-        ...prev,
-        [cellKey]: {
-          ...cell,
-          results: result.queries,
-          avgScore,
-          mentionRate,
-          status: "complete",
-        },
-      }));
+      const uiRun = toUiBenchmarkRun(run);
+      setBenchmarkHistory((prev) => {
+        const next = [...prev.slice(-12), uiRun];
+        setSelectedTimeIndex(next.length - 1);
+        return next;
+      });
     } catch (error) {
       if ((error as Error).name === "AbortError") {
-        setMatrixData(prev => ({
-          ...prev,
-          [cellKey]: { ...cell, status: "idle" },
-        }));
+        setMatrixData((prev) => {
+          const next = { ...prev };
+          for (const t of targetCells) {
+            next[t.key] = { ...next[t.key], status: "idle" };
+          }
+          return next;
+        });
         return;
       }
+
       console.error("Benchmark error:", error);
-      setMatrixData(prev => ({
-        ...prev,
-        [cellKey]: { ...cell, status: "idle" },
-      }));
+      setMatrixData((prev) => {
+        const next = { ...prev };
+        for (const t of targetCells) {
+          next[t.key] = { ...next[t.key], status: "idle" };
+        }
+        return next;
+      });
     }
   };
 
@@ -382,54 +632,12 @@ export default function VisibilityMatrixPage() {
     } else if (selection.type === "cell") {
       cellKeys = [`${selection.persona}-${selection.stage}`];
     } else if (selection.type === "row") {
-      cellKeys = STAGES.map(s => `${selection.persona}-${s.id}`);
+      cellKeys = STAGES.map((s) => `${selection.persona}-${s.id}`);
     } else if (selection.type === "column") {
-      cellKeys = personas.map(p => `${p.id}-${selection.stage}`);
+      cellKeys = personas.map((p) => `${p.id}-${selection.stage}`);
     }
 
-    for (const cellKey of cellKeys) {
-      if (signal.aborted) break;
-      await runCellBenchmark(cellKey, quickTest, signal);
-    }
-
-    // Save to history
-    const providerScores: Record<Provider, { total: number; mentions: number; count: number }> = {
-      openai: { total: 0, mentions: 0, count: 0 },
-      anthropic: { total: 0, mentions: 0, count: 0 },
-      gemini: { total: 0, mentions: 0, count: 0 },
-      xai: { total: 0, mentions: 0, count: 0 },
-    };
-
-    for (const cell of Object.values(matrixData)) {
-      if (cell.status === "complete") {
-        for (const qr of cell.results) {
-          for (const resp of qr.responses) {
-            const p = resp.provider as Provider;
-            if (!resp.error) {
-              providerScores[p].total += resp.visibility.score;
-              providerScores[p].count++;
-              if (resp.visibility.mentioned) providerScores[p].mentions++;
-            }
-          }
-        }
-      }
-    }
-
-    const hasData = Object.values(providerScores).some(p => p.count > 0);
-    if (hasData) {
-      const runData: BenchmarkRun = {
-        timestamp: Date.now(),
-        label: `W${benchmarkHistory.length + 1}`,
-        providerScores: {
-          openai: { avgScore: providerScores.openai.count > 0 ? providerScores.openai.total / providerScores.openai.count : 0, mentionRate: providerScores.openai.count > 0 ? providerScores.openai.mentions / providerScores.openai.count : 0 },
-          anthropic: { avgScore: providerScores.anthropic.count > 0 ? providerScores.anthropic.total / providerScores.anthropic.count : 0, mentionRate: providerScores.anthropic.count > 0 ? providerScores.anthropic.mentions / providerScores.anthropic.count : 0 },
-          gemini: { avgScore: providerScores.gemini.count > 0 ? providerScores.gemini.total / providerScores.gemini.count : 0, mentionRate: providerScores.gemini.count > 0 ? providerScores.gemini.mentions / providerScores.gemini.count : 0 },
-          xai: { avgScore: providerScores.xai.count > 0 ? providerScores.xai.total / providerScores.xai.count : 0, mentionRate: providerScores.xai.count > 0 ? providerScores.xai.mentions / providerScores.xai.count : 0 },
-        },
-      };
-      setBenchmarkHistory(prev => [...prev.slice(-12), runData]);
-      setSelectedTimeIndex(prev => prev + 1); // Move to newest
-    }
+    await runCellsBenchmark(cellKeys, quickTest, signal);
 
     setIsRunning(false);
     abortControllerRef.current = null;
@@ -586,7 +794,9 @@ export default function VisibilityMatrixPage() {
       .slice(0, 5);
   }, [selectedCellsData, enabledProviders]);
 
-  const modelStats = useMemo(() => {
+  // Computed for future provider comparison view
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _modelStats = useMemo(() => {
     const stats: Record<Provider, { score: number; mentions: number; total: number }> = {
       openai: { score: 0, mentions: 0, total: 0 },
       anthropic: { score: 0, mentions: 0, total: 0 },
@@ -858,10 +1068,6 @@ export default function VisibilityMatrixPage() {
     return competitorCounts;
   }, [isViewingHistory, selectedHistoricalData, competitorCounts]);
 
-  if (Object.keys(matrixData).length === 0) {
-    setMatrixData(initializeMatrix());
-  }
-
   const selectionLabel = useMemo(() => {
     if (selection.type === "all") return "All Cells";
     if (selection.type === "cell") {
@@ -883,22 +1089,22 @@ export default function VisibilityMatrixPage() {
     if (selection.type === "all") {
       for (const p of personas) {
         for (const s of STAGES) {
-          count += QUERY_BANK[p.id][s.id].length;
+          count += localQueryBank[p.id][s.id].length;
         }
       }
     } else if (selection.type === "cell") {
-      count = QUERY_BANK[selection.persona][selection.stage].length;
+      count = localQueryBank[selection.persona][selection.stage].length;
     } else if (selection.type === "row") {
       for (const s of STAGES) {
-        count += QUERY_BANK[selection.persona][s.id].length;
+        count += localQueryBank[selection.persona][s.id].length;
       }
     } else if (selection.type === "column") {
       for (const p of personas) {
-        count += QUERY_BANK[p.id][selection.stage].length;
+        count += localQueryBank[p.id][selection.stage].length;
       }
     }
     return count;
-  }, [selection, personas]);
+  }, [selection, personas, localQueryBank]);
 
   return (
     <div className="min-h-screen bg-[#f6f1e8]">
@@ -918,6 +1124,30 @@ export default function VisibilityMatrixPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              onClick={() => openQueryPanel("all")}
+              variant="outline"
+              size="sm"
+              className="bg-transparent border-white/30 text-white hover:bg-white/10"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Query Bank
+            </Button>
+            <Button
+              onClick={() => {
+                // Collect all results from all cells
+                const allResults = Object.values(matrixData)
+                  .filter(cell => cell.status === "complete")
+                  .flatMap(cell => cell.results);
+                openChat({ scope: "global" }, allResults);
+              }}
+              variant="outline"
+              size="sm"
+              className="bg-transparent border-white/30 text-white hover:bg-white/10"
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Ask AI
+            </Button>
             {isRunning ? (
               <Button onClick={stopBenchmark} className="bg-[#b86f3a] hover:bg-[#a65f2a] text-white">
                 <Square className="h-4 w-4 mr-2" />
@@ -981,12 +1211,13 @@ export default function VisibilityMatrixPage() {
                 <div
                   key={stage.id}
                   className={`
-                    relative text-center px-3 py-3 cursor-pointer rounded-xl transition-all
+                    relative text-center px-3 py-3 cursor-pointer rounded-xl transition-all group
                     ${isSelected ? "bg-[#1f3b2c]/10" : "hover:bg-[#efe6d9]/50"}
                   `}
                   onClick={() => setSelection(
                     isSelected ? { type: "all" } : { type: "column", stage: stage.id }
                   )}
+                  onDoubleClick={() => openQueryPanel("column", undefined, stage.id)}
                 >
                   {/* Top accent bar for column selection */}
                   {isSelected && (
@@ -995,7 +1226,30 @@ export default function VisibilityMatrixPage() {
                       style={{ boxShadow: '0 0 8px 2px rgba(31, 59, 44, 0.4)' }}
                     />
                   )}
-                  <div className="text-base font-medium text-[#1e1b16]">{stage.label}</div>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-base font-medium text-[#1e1b16]">{stage.label}</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); openQueryPanel("column", undefined, stage.id); }}
+                      className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
+                      title="Edit queries for this stage"
+                    >
+                      <FileText className="h-3.5 w-3.5 text-[#1e1b16]/40" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Get all results for this stage across all personas
+                        const stageResults = Object.values(matrixData)
+                          .filter(cell => cell.stage === stage.id && cell.status === "complete")
+                          .flatMap(cell => cell.results);
+                        openChat({ scope: "column", stage: stage.id }, stageResults);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
+                      title="Ask about this stage"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 text-[#1e1b16]/40" />
+                    </button>
+                  </div>
                   <div className="text-sm text-[#1e1b16]/40">{stage.description}</div>
                 </div>
               );
@@ -1020,6 +1274,7 @@ export default function VisibilityMatrixPage() {
                         );
                       }
                     }}
+                    onDoubleClick={() => openQueryPanel("row", persona.id)}
                   >
                     {/* Left accent bar for row selection */}
                     {rowSelected && (
@@ -1028,7 +1283,30 @@ export default function VisibilityMatrixPage() {
                         style={{ boxShadow: '0 0 8px 2px rgba(31, 59, 44, 0.4)' }}
                       />
                     )}
-                    <div className="text-base font-medium text-[#1e1b16]">{persona.label}</div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-base font-medium text-[#1e1b16]">{persona.label}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openQueryPanel("row", persona.id); }}
+                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
+                        title="Edit queries for this persona"
+                      >
+                        <FileText className="h-3.5 w-3.5 text-[#1e1b16]/40" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Get all results for this persona across all stages
+                          const personaResults = Object.values(matrixData)
+                            .filter(cell => cell.persona === persona.id && cell.status === "complete")
+                            .flatMap(cell => cell.results);
+                          openChat({ scope: "row", persona: persona.id }, personaResults);
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
+                        title="Ask about this persona"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5 text-[#1e1b16]/40" />
+                      </button>
+                    </div>
                     {editingPersona === persona.id ? (
                       <div className="flex items-center gap-1 mt-1">
                         <input
@@ -1067,48 +1345,117 @@ export default function VisibilityMatrixPage() {
                     const stats = cell ? getFilteredCellStats(cell) : { avgScore: 0, mentionRate: 0 };
                     const cellSelected = selection.type === "cell" && selection.persona === persona.id && selection.stage === stage.id;
                     const inSelection = isInSelection(persona.id, stage.id);
+                    const cellQueries = localQueryBank[persona.id][stage.id];
 
                     return (
-                      <button
-                        key={stage.id}
-                        onClick={() => {
-                          if (cell?.status === "idle" && !isRunning) {
-                            runCellBenchmark(cellKey, true);
-                          } else {
-                            setSelection({ type: "cell", persona: persona.id, stage: stage.id });
-                          }
-                        }}
-                        className={`
-                          h-20 rounded-xl transition-all
-                          flex flex-col items-center justify-center gap-0.5
-                          ${cell?.status === "complete"
-                            ? getCellBgColor(stats.avgScore, stats.mentionRate)
-                            : "bg-[#efe6d9]/60"
-                          }
-                          ${inSelection ? "ring-2 ring-[#1f3b2c]/30 ring-inset" : ""}
-                          ${cellSelected ? "ring-2 ring-[#1f3b2c] ring-offset-2 ring-offset-[#fffaf2]" : ""}
-                          hover:scale-[1.02] cursor-pointer
-                          border border-[#e3dacb]/50
-                        `}
-                      >
-                        {cell?.status === "running" ? (
-                          <Loader2 className="h-5 w-5 animate-spin text-[#1e1b16]/40" />
-                        ) : cell?.status === "complete" ? (
-                          <>
-                            <div className="text-xl font-semibold text-[#1e1b16]">
-                              {(stats.avgScore * 100).toFixed(0)}%
+                      <HoverCard key={stage.id} openDelay={300}>
+                        <HoverCardTrigger asChild>
+                          <button
+                            onClick={() => {
+                              if (cell?.status === "idle" && !isRunning) {
+                                runCellsBenchmark([cellKey], true);
+                              } else {
+                                setSelection({ type: "cell", persona: persona.id, stage: stage.id });
+                              }
+                            }}
+                            className={`
+                              h-20 rounded-xl transition-all
+                              flex flex-col items-center justify-center gap-0.5
+                              ${cell?.status === "complete"
+                                ? getCellBgColor(stats.avgScore, stats.mentionRate)
+                                : "bg-[#efe6d9]/60"
+                              }
+                              ${inSelection ? "ring-2 ring-[#1f3b2c]/30 ring-inset" : ""}
+                              ${cellSelected ? "ring-2 ring-[#1f3b2c] ring-offset-2 ring-offset-[#fffaf2]" : ""}
+                              hover:scale-[1.02] cursor-pointer
+                              border border-[#e3dacb]/50
+                            `}
+                          >
+                            {cell?.status === "running" ? (
+                              <Loader2 className="h-5 w-5 animate-spin text-[#1e1b16]/40" />
+                            ) : cell?.status === "complete" ? (
+                              <>
+                                <div className="text-xl font-semibold text-[#1e1b16]">
+                                  {(stats.avgScore * 100).toFixed(0)}%
+                                </div>
+                                <div className="text-xs text-[#1e1b16]/50">
+                                  {(stats.mentionRate * 100).toFixed(0)}% hit
+                                </div>
+                              </>
+                            ) : (
+                              <div className="text-center">
+                                <div className="text-xs text-[#1e1b16]/30">{cellQueries.length} queries</div>
+                                <div className="text-xs text-[#6e7c5b]/60">Click to test</div>
+                              </div>
+                            )}
+                          </button>
+                        </HoverCardTrigger>
+                        <HoverCardContent 
+                          className="w-72 bg-[#fffaf2] border-[#e3dacb]" 
+                          side="bottom" 
+                          align="center"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-[#1e1b16]">
+                                {persona.label} × {stage.label}
+                              </span>
+                              <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/60">
+                                {cellQueries.length} queries
+                              </Badge>
                             </div>
-                            <div className="text-xs text-[#1e1b16]/50">
-                              {(stats.mentionRate * 100).toFixed(0)}% hit
+                            <div className="space-y-1 max-h-24 overflow-y-auto">
+                              {cellQueries.slice(0, 5).map((q, idx) => (
+                                <div key={idx} className="text-xs text-[#1e1b16]/70 flex gap-1">
+                                  <span className="text-[#1e1b16]/30">•</span>
+                                  <span className="line-clamp-1">&quot;{q}&quot;</span>
+                                </div>
+                              ))}
+                              {cellQueries.length > 5 && (
+                                <div className="text-xs text-[#1e1b16]/40">
+                                  +{cellQueries.length - 5} more...
+                                </div>
+                              )}
                             </div>
-                          </>
-                        ) : (
-                          <div className="text-center">
-                            <div className="text-xs text-[#1e1b16]/30">{cell?.queries.length || 0} queries</div>
-                            <div className="text-xs text-[#6e7c5b]/60">Click to test</div>
+                            <div className="pt-2 border-t border-[#e3dacb] flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 h-7 text-xs border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openQueryPanel("cell", persona.id, stage.id);
+                                }}
+                              >
+                                <FileText className="h-3 w-3 mr-1" />
+                                Queries
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 h-7 text-xs border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openChat({ scope: "cell", persona: persona.id, stage: stage.id }, cell.results);
+                                }}
+                              >
+                                <MessageSquare className="h-3 w-3 mr-1" />
+                                Ask
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white px-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  runCellsBenchmark([cellKey], false);
+                                }}
+                              >
+                                <Play className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
-                        )}
-                      </button>
+                        </HoverCardContent>
+                      </HoverCard>
                     );
                   })}
                 </Fragment>
@@ -1536,7 +1883,7 @@ export default function VisibilityMatrixPage() {
                 </h4>
                 {cell.results.map((qr, qIdx) => (
                   <div key={qIdx} className="mb-4 p-4 bg-[#efe6d9] rounded-xl">
-                    <div className="font-medium text-sm text-[#1e1b16] mb-3">"{qr.query}"</div>
+                    <div className="font-medium text-sm text-[#1e1b16] mb-3">&quot;{qr.query}&quot;</div>
                     <div className="space-y-3">
                       {qr.responses
                         .filter(r => enabledProviders.has(r.provider as Provider))
@@ -1589,7 +1936,21 @@ export default function VisibilityMatrixPage() {
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-[#fffaf2] border-[#e3dacb]">
           <DialogHeader>
             <DialogTitle className="text-[#1e1b16] flex items-center justify-between">
-              {evidenceModal?.title}
+              <span>{evidenceModal?.title}</span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
+                onClick={() => {
+                  // Get all results from currently selected cells
+                  const selectedResults = selectedCellsData.flatMap(cell => cell.results);
+                  setEvidenceModal(null);
+                  openChat({ scope: "evidence", evidenceType: evidenceModal?.type }, selectedResults);
+                }}
+              >
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                Ask About This
+              </Button>
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
@@ -1611,7 +1972,7 @@ export default function VisibilityMatrixPage() {
                   <div key={idx} className="border border-[#e3dacb] rounded-xl p-4 bg-white">
                     <div className="mb-3">
                       <div className="text-sm font-medium text-[#1e1b16] mb-1">
-                        Q: "{item.query}"
+                        Q: &quot;{item.query}&quot;
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge className={`${provider?.bgColor} text-white text-xs`}>{item.model}</Badge>
@@ -1633,24 +1994,107 @@ export default function VisibilityMatrixPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Query Panel */}
+      <QueryPanel
+        key={`${queryPanelScope}-${queryPanelPersona ?? "all"}-${queryPanelStage ?? "all"}-${queryPanelOpen ? "open" : "closed"}`}
+        open={queryPanelOpen}
+        onOpenChange={setQueryPanelOpen}
+        initialScope={queryPanelScope}
+        initialPersona={queryPanelPersona}
+        initialStage={queryPanelStage}
+        queryBank={localQueryBank}
+        personas={personas.map(p => ({ id: p.id, label: p.label }))}
+        stages={STAGES.map(s => ({ id: s.id, label: s.label }))}
+        onRunQueries={async (_queries, persona, stage, queryBankOverride) => {
+          try {
+            if (queryBankOverride) {
+              await persistQueryBank(queryBankOverride);
+            }
+
+            let cellKeys: string[] = [];
+            if (persona && stage) {
+              cellKeys = [`${persona}-${stage}`];
+            } else if (persona) {
+              cellKeys = STAGES.map((s) => `${persona}-${s.id}`);
+            } else if (stage) {
+              cellKeys = personas.map((p) => `${p.id}-${stage}`);
+            } else {
+              cellKeys = Object.keys(Object.keys(matrixData).length > 0 ? matrixData : initializeMatrix());
+            }
+
+            await runCellsBenchmark(cellKeys, false);
+          } catch (err) {
+            console.error("Query run failed:", err);
+          }
+        }}
+        onSaveQueries={async (newQueryBank) => {
+          try {
+            await persistQueryBank(newQueryBank);
+            setMatrixData((prev) => {
+              const updated = { ...prev };
+              for (const key of Object.keys(updated)) {
+                const [persona, stage] = key.split("-") as [Persona, Stage];
+                updated[key] = {
+                  ...updated[key],
+                  queries: newQueryBank[persona][stage],
+                };
+              }
+              return updated;
+            });
+          } catch (err) {
+            console.error("Failed to save queries:", err);
+          }
+        }}
+      />
+
+      {/* Chat Panel */}
+      <ChatPanel
+        open={chatOpen}
+        onOpenChange={setChatOpen}
+        context={chatContext}
+      />
     </div>
   );
 }
 
 function highlightBrandMentions(text: string, sentiment: string): React.ReactNode {
-  const brand = BRAND.toLowerCase();
-  const parts = text.split(new RegExp(`(${brand}|lakewood|lwr)`, "gi"));
-
   const bgColor = sentiment === "positive"
     ? "bg-[#d4e5d4]"
     : sentiment === "negative"
     ? "bg-[#f0d9d9]"
     : "bg-[#cde0f0]";
 
-  return parts.map((part, i) => {
-    if (part.toLowerCase() === brand || part.toLowerCase() === "lakewood" || part.toLowerCase() === "lwr") {
-      return <span key={i} className={`${bgColor} px-1 rounded`}>{part}</span>;
-    }
-    return part;
-  });
+  // Custom component to highlight brand mentions within markdown
+  const components = {
+    p: ({ children }: { children?: React.ReactNode }) => (
+      <p className="my-1">{highlightInText(children, bgColor)}</p>
+    ),
+    li: ({ children }: { children?: React.ReactNode }) => (
+      <li className="my-0.5">{highlightInText(children, bgColor)}</li>
+    ),
+    strong: ({ children }: { children?: React.ReactNode }) => (
+      <strong>{highlightInText(children, bgColor)}</strong>
+    ),
+  };
+
+  return (
+    <div className="prose prose-sm prose-stone max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-headings:my-2 prose-headings:text-[#1e1b16] prose-headings:text-sm">
+      <ReactMarkdown components={components}>{text}</ReactMarkdown>
+    </div>
+  );
+}
+
+function highlightInText(children: React.ReactNode, bgColor: string): React.ReactNode {
+  if (typeof children === "string") {
+    const brand = BRAND.toLowerCase();
+    const parts = children.split(new RegExp(`(${brand}|lakewood|lwr)`, "gi"));
+    return parts.map((part, i) => {
+      if (part.toLowerCase() === brand || part.toLowerCase() === "lakewood" || part.toLowerCase() === "lwr") {
+        return <span key={i} className={`${bgColor} px-1 rounded`}>{part}</span>;
+      }
+      return part;
+    });
+  }
+  return children;
 }

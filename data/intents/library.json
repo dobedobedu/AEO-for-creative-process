@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "updatedAt": "2026-01-05T14:00:01.085Z",
+  "intents": [
+    {
+      "id": "int_move_up_explore_mk189ge5",
+      "persona": "move_up",
+      "stage": "explore",
+      "text": "Growing family exploring Florida relocation options",
+      "defaultQueries": [
+        "best places in florida for growing families",
+        "whats the best place in florida to raise a family",
+        "is tampa a good place to raise a family"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_move_up_consider_mk189ge6",
+      "persona": "move_up",
+      "stage": "consider",
+      "text": "Family evaluating master-planned communities with good schools",
+      "defaultQueries": [
+        "master planned communities florida families",
+        "best family neighborhoods and schools in orlando area",
+        "florida communities with good schools not too expensive"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_move_up_compare_mk189ge6",
+      "persona": "move_up",
+      "stage": "compare",
+      "text": "Family comparing specific communities for schools and lifestyle",
+      "defaultQueries": [
+        "lakewood ranch vs nocatee for families",
+        "wellen park vs lakewood ranch schools",
+        "tampa vs orlando for young families"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_move_up_decide_mk189ge6",
+      "persona": "move_up",
+      "stage": "decide",
+      "text": "Family ready to choose a neighborhood in their top community",
+      "defaultQueries": [
+        "best neighborhoods in lakewood ranch for families",
+        "nocatee schools vs lakewood ranch schools"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_retiree_explore_mk189ge6",
+      "persona": "retiree",
+      "stage": "explore",
+      "text": "Retiree exploring Florida retirement destinations",
+      "defaultQueries": [
+        "best places to retire in florida 2025",
+        "best places to retire in florida that arent too hot",
+        "how much do i really need to retire in florida"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_retiree_consider_mk189ge6",
+      "persona": "retiree",
+      "stage": "consider",
+      "text": "Retiree evaluating 55+ communities and active adult options",
+      "defaultQueries": [
+        "55 plus communities florida amenities",
+        "what 55+ communities in florida have lots of clubs and activities",
+        "active adult communities southwest florida"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_retiree_compare_mk189ge6",
+      "persona": "retiree",
+      "stage": "compare",
+      "text": "Retiree comparing specific retirement communities",
+      "defaultQueries": [
+        "lakewood ranch vs the villages for retirees",
+        "the villages vs sun city center",
+        "the villages vs on top of the world retirement"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_retiree_decide_mk189ge6",
+      "persona": "retiree",
+      "stage": "decide",
+      "text": "Retiree ready to choose and gathering final validation",
+      "defaultQueries": [
+        "is it hard to find doctors accepting medicare in the villages",
+        "cresswind lakewood ranch reviews"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_luxury_explore_mk189ge6",
+      "persona": "luxury",
+      "stage": "explore",
+      "text": "Affluent buyer exploring upscale Florida communities",
+      "defaultQueries": [
+        "luxury communities florida gulf coast",
+        "upscale master planned communities florida",
+        "best florida retirement cities culture theater museums restaurants"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_luxury_consider_mk189ge6",
+      "persona": "luxury",
+      "stage": "consider",
+      "text": "Luxury buyer evaluating golf, waterfront, and cultural amenities",
+      "defaultQueries": [
+        "florida communities with golf courses",
+        "waterfront homes master planned florida",
+        "sarasota vs naples for retirement"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_luxury_compare_mk189ge6",
+      "persona": "luxury",
+      "stage": "compare",
+      "text": "Luxury buyer comparing premium communities and country clubs",
+      "defaultQueries": [
+        "lakewood ranch country club vs tpc prestancia",
+        "lakewood ranch waterside vs regular lwr",
+        "sarasota vs lakewood ranch traffic and beach access"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_luxury_decide_mk189ge6",
+      "persona": "luxury",
+      "stage": "decide",
+      "text": "Luxury buyer ready to invest in specific high-end options",
+      "defaultQueries": [
+        "luxury homes lakewood ranch waterside",
+        "why is lakewood ranch so expensive"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_first_time_explore_mk189ge6",
+      "persona": "first_time",
+      "stage": "explore",
+      "text": "First-time buyer exploring affordable Florida options",
+      "defaultQueries": [
+        "affordable places to live in florida 2025",
+        "best florida cities for young professionals",
+        "cheapest places to live in florida with good schools"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_first_time_consider_mk189ge6",
+      "persona": "first_time",
+      "stage": "consider",
+      "text": "First-time buyer understanding costs, fees, and hidden expenses",
+      "defaultQueries": [
+        "florida communities low hoa fees",
+        "whats the deal with cdd fees in florida communities",
+        "hidden costs of living in florida besides rent and food"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_first_time_compare_mk189ge6",
+      "persona": "first_time",
+      "stage": "compare",
+      "text": "First-time buyer comparing new construction vs existing homes",
+      "defaultQueries": [
+        "hoa community vs no hoa in florida",
+        "buying new construction vs older home in florida",
+        "living in tampa vs suburbs like wesley chapel"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_first_time_decide_mk189ge6",
+      "persona": "first_time",
+      "stage": "decide",
+      "text": "First-time buyer ready to purchase within budget",
+      "defaultQueries": [
+        "new construction under 400k florida",
+        "is it better to rent first before buying in florida 2025"
+      ],
+      "temperature": 0.5,
+      "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    }
+  ],
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-01-05",
+      "changes": [
+        {
+          "action": "created",
+          "intentId": "int_move_up_explore_mk189ge5"
+        },
+        {
+          "action": "created",
+          "intentId": "int_move_up_consider_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_move_up_compare_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_move_up_decide_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_retiree_explore_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_retiree_consider_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_retiree_compare_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_retiree_decide_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_luxury_explore_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_luxury_consider_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_luxury_compare_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_luxury_decide_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_first_time_explore_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_first_time_consider_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_first_time_compare_mk189ge6"
+        },
+        {
+          "action": "created",
+          "intentId": "int_first_time_decide_mk189ge6"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { query, sql } from "@/lib/db";
+import { query } from "@/lib/db";
 
 type CitationRow = {
   response_id: string;

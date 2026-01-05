@@ -2,7 +2,10 @@ import { callOpenAIWebSearch } from "@/lib/providers/openai";
 import { callAnthropicWebSearch } from "@/lib/providers/anthropic";
 import { callGeminiWebSearch } from "@/lib/providers/gemini";
 import { callXaiSearch } from "@/lib/providers/xai";
-import { scoreBrandVisibility, type VisibilityScore } from "./scoring";
+import type { VisibilityScore } from "./scoring";
+import type { Stage } from "@/lib/intents/types";
+import { extractStageMetrics, recommendationStrengthToScore } from "@/lib/scoring/extractor";
+import type { StageExtraction } from "@/lib/scoring/schemas";
 
 export type Provider = "openai" | "anthropic" | "gemini" | "xai";
 
@@ -12,6 +15,7 @@ export interface ProviderConfig {
 }
 
 export interface BenchmarkConfig {
+  stage: Stage;
   queries: string[];
   brand: string;
   brandAliases?: string[];
@@ -25,9 +29,101 @@ export interface ProviderResponse {
   text: string;
   citations: string[];
   visibility: VisibilityScore;
+  stageExtraction?: StageExtraction;
   latencyMs: number;
   error?: string;
   raw: unknown;
+}
+
+function computeVisibilityFromExtraction(stage: Stage, extraction: StageExtraction): VisibilityScore {
+  const mentioned = extraction.mentioned;
+
+  // Stage-normalized score (0..1) for UI
+  let score = 0;
+  if ("inTopThree" in extraction) {
+    score = extraction.mentioned ? 1 : 0;
+  } else if ("sentimentScore" in extraction) {
+    score = (extraction.sentimentScore + 1) / 2;
+  } else if ("outcome" in extraction) {
+    if (extraction.outcome === "win") score = 1;
+    else if (extraction.outcome === "tie" || extraction.outcome === "mixed") score = 0.5;
+    else if (extraction.outcome === "lose") score = 0;
+    else score = 0;
+  } else if ("recommendationStrength" in extraction) {
+    score = recommendationStrengthToScore(extraction.recommendationStrength);
+  }
+
+  // Competitors
+  const competitorsMentioned =
+    "competitors" in extraction
+      ? extraction.competitors
+      : "comparedTo" in extraction
+        ? extraction.comparedTo
+        : "alternativesOffered" in extraction
+          ? extraction.alternativesOffered
+          : [];
+
+  // Position (rough approximation for legacy UI)
+  let position: VisibilityScore["position"] = "absent";
+  if (mentioned) {
+    if ("inTopThree" in extraction) {
+      position = extraction.inTopThree ? "1st" : "later";
+    } else {
+      position = "later";
+    }
+  }
+
+  // Sentiment
+  const sentiment: VisibilityScore["sentiment"] =
+    "sentiment" in extraction ? extraction.sentiment : "neutral";
+
+  // Compare outcome
+  const comparisonOutcome: VisibilityScore["comparisonOutcome"] =
+    "outcome" in extraction
+      ? extraction.outcome === "win"
+        ? "favorable"
+        : extraction.outcome === "lose"
+          ? "unfavorable"
+          : extraction.outcome === "not_compared"
+            ? "none"
+            : "neutral"
+      : "none";
+
+  // Recommendation strength
+  const recommendationStrength: VisibilityScore["recommendationStrength"] =
+    "recommendationStrength" in extraction
+      ? extraction.recommendationStrength === "strongly_recommended" || extraction.recommendationStrength === "recommended"
+        ? "strong"
+        : extraction.recommendationStrength === "suggested"
+          ? "moderate"
+          : extraction.recommendationStrength === "mentioned"
+            ? "weak"
+            : "none"
+      : "none";
+
+  const category: VisibilityScore["category"] =
+    !mentioned
+      ? "blind_spot"
+      : recommendationStrength === "strong"
+        ? "preferred"
+        : stage === "compare" && comparisonOutcome === "favorable"
+          ? "preferred"
+          : stage === "decide" && recommendationStrength !== "none"
+            ? "recommended"
+            : "mentioned";
+
+  return {
+    score,
+    category,
+    sentiment,
+    mentioned,
+    mentionCount: mentioned ? 1 : 0,
+    firstMentionPosition: null,
+    position,
+    competitorsMentioned,
+    comparisonOutcome,
+    recommendationStrength,
+  };
 }
 
 export interface QueryResult {
@@ -112,7 +208,7 @@ export async function runSingleQuery(params: {
 }
 
 export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
-  const { queries, brand, brandAliases = [], providers, concurrency = 2 } = config;
+  const { stage, queries, brand, brandAliases = [], providers, concurrency = 2 } = config;
   const startTime = Date.now();
 
   const results: QueryResult[] = [];
@@ -135,8 +231,21 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
             model: providerConfig.model,
           });
 
-          // Score visibility
-          response.visibility = scoreBrandVisibility(response.text, brand, brandAliases);
+          if (!response.error) {
+            const extraction = await extractStageMetrics({
+              stage,
+              query,
+              responseText: response.text,
+              provider: providerConfig.provider,
+              brand,
+              brandTerms: brandAliases,
+            });
+
+            if (extraction.success && extraction.extraction) {
+              response.stageExtraction = extraction.extraction;
+              response.visibility = computeVisibilityFromExtraction(stage, extraction.extraction);
+            }
+          }
 
           // Track stats
           if (!response.error) {

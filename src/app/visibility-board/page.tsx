@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,6 +61,25 @@ type RunData = {
   };
   queries: { id: string; query_text: string }[];
   responses: { query_id: string; provider: string; model: string; count: number }[];
+};
+
+type ResponseWithCitations = {
+  id: string;
+  query_id: string;
+  provider: string;
+  model: string;
+  response_text: string | null;
+  created_at: string;
+  query_text: string;
+  citations: Array<{
+    url: string | null;
+    domain: string | null;
+    title: string | null;
+  }>;
+};
+
+type ResponsesData = {
+  responses: ResponseWithCitations[];
 };
 
 const STATUS_CONFIG: Record<
@@ -195,7 +214,6 @@ function VisibilityCard({
 
 function QueryDetailPanel({
   card,
-  onClose,
 }: {
   card: QueryCard;
   onClose: () => void;
@@ -226,7 +244,7 @@ function QueryDetailPanel({
           Visibility Distribution
         </div>
         <div className="h-8 rounded-lg overflow-hidden flex">
-          {card.providers.map((p, i) => {
+          {card.providers.map((p) => {
             const width = card.totalCitations > 0 
               ? (p.citationCount / card.totalCitations) * 100 
               : 25;
@@ -446,7 +464,7 @@ export default function VisibilityBoard() {
 
         const responsesRes = await fetch(`/api/run/${latestRun.id}/responses`);
         if (!responsesRes.ok) return;
-        const responsesData = await responsesRes.json();
+        const responsesData: ResponsesData = await responsesRes.json();
 
         const lwrRegex = /(lakewood\s*ranch|\blakewood\b|\blwr\b)/i;
         const queryCards: QueryCard[] = [];
@@ -454,7 +472,7 @@ export default function VisibilityBoard() {
 
         for (const query of runData.queries) {
           const queryResponses = responsesData.responses.filter(
-            (r: any) => r.query_id === query.id
+            (r: ResponseWithCitations) => r.query_id === query.id
           );
 
           const providers: QueryCard["providers"] = [];
@@ -467,7 +485,7 @@ export default function VisibilityBoard() {
           for (const response of queryResponses) {
             const mentioned = response.citations?.length > 0;
             const lwrInCitations = response.citations?.some(
-              (c: any) =>
+              (c: { domain: string | null; url: string | null }) =>
                 c.domain?.toLowerCase().includes("lakewoodranch") ||
                 c.url?.toLowerCase().includes("lakewoodranch")
             );
@@ -488,7 +506,11 @@ export default function VisibilityBoard() {
               provider: response.provider,
               model: response.model,
               responseText: response.response_text || "",
-              citations: response.citations || [],
+              citations: response.citations.map(c => ({
+                url: c.url || "unknown",
+                domain: c.domain || "unknown",
+                title: c.title || "unknown",
+              })),
             });
           }
 
@@ -588,7 +610,7 @@ export default function VisibilityBoard() {
                 Visibility Board
               </h1>
               <p className="text-sm text-[var(--ink)]/70 mt-1">
-                Track your brand's presence across AI search providers
+                Track your brand&apos;s presence across AI search providers
               </p>
             </div>
             
