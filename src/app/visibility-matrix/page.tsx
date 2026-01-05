@@ -384,6 +384,7 @@ export default function VisibilityMatrixPage() {
   const [deepDiveOpen, setDeepDiveOpen] = useState(false);
   const [benchmarkHistory, setBenchmarkHistory] = useState<BenchmarkRun[]>([]);
   const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
+  const [trendMetric, setTrendMetric] = useState<"visibility" | "sentiment" | "winrate" | "recommendation">("visibility");
   const [personas, setPersonas] = useState<PersonaConfig[]>(DEFAULT_PERSONAS);
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -1773,91 +1774,144 @@ export default function VisibilityMatrixPage() {
         {/* Trend Chart + Time Slider - Full Width */}
         <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-[#6e7c5b]" />
-              Trend Over Time
-              {isViewingHistory && (
-                <Badge variant="outline" className="bg-[#b86f3a]/10 border-[#b86f3a]/30 text-[#b86f3a] text-xs ml-2">
-                  Viewing {selectedHistoricalData?.label}
-                </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {benchmarkHistory.length > 1 ? (
-              <div className="flex gap-6 items-end">
-                {/* Chart - takes most space */}
-                <div className="flex-1">
-                  <ChartContainer config={chartConfig} className="h-[100px] w-full">
-                    <RechartsLineChart
-                      data={benchmarkHistory.map((run) => ({
-                        label: run.label,
-                        openai: enabledProviders.has("openai") ? Math.round((run.providerScores.openai?.avgScore ?? 0) * 100) : null,
-                        anthropic: enabledProviders.has("anthropic") ? Math.round((run.providerScores.anthropic?.avgScore ?? 0) * 100) : null,
-                        gemini: enabledProviders.has("gemini") ? Math.round((run.providerScores.gemini?.avgScore ?? 0) * 100) : null,
-                        xai: enabledProviders.has("xai") ? Math.round((run.providerScores.xai?.avgScore ?? 0) * 100) : null,
-                      }))}
-                      margin={{ top: 5, right: 10, bottom: 0, left: 0 }}
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-[#6e7c5b]" />
+                Trend Over Time
+                {isViewingHistory && (
+                  <Badge variant="outline" className="bg-[#b86f3a]/10 border-[#b86f3a]/30 text-[#b86f3a] text-xs ml-2">
+                    Viewing {selectedHistoricalData?.label}
+                  </Badge>
+                )}
+              </CardTitle>
+              {/* Metric Selector */}
+              {benchmarkHistory.length > 1 && (
+                <div className="flex gap-1">
+                  {[
+                    { id: "visibility", label: "Visibility" },
+                    { id: "sentiment", label: "Sentiment" },
+                    { id: "winrate", label: "Win Rate" },
+                    { id: "recommendation", label: "Recommend" },
+                  ].map((metric) => (
+                    <button
+                      key={metric.id}
+                      onClick={() => setTrendMetric(metric.id as typeof trendMetric)}
+                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                        trendMetric === metric.id
+                          ? "bg-[#1f3b2c] text-white"
+                          : "bg-[#efe6d9] text-[#1e1b16]/60 hover:bg-[#e3dacb]"
+                      }`}
                     >
-                      <XAxis 
-                        dataKey="label" 
-                        tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <YAxis 
-                        domain={[0, 100]} 
-                        tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
-                        axisLine={false}
-                        tickLine={false}
-                        width={30}
-                        tickFormatter={(v) => `${v}%`}
-                      />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      {selectedTimeIndex < benchmarkHistory.length && (
-                        <ReferenceLine 
-                          x={benchmarkHistory[selectedTimeIndex]?.label} 
-                          stroke="#1f3b2c" 
-                          strokeDasharray="4 4"
-                          strokeWidth={2}
-                        />
-                      )}
-                      {enabledProviders.has("openai") && (
-                        <Line type="monotone" dataKey="openai" stroke="var(--color-openai)" strokeWidth={2} dot={false} connectNulls />
-                      )}
-                      {enabledProviders.has("anthropic") && (
-                        <Line type="monotone" dataKey="anthropic" stroke="var(--color-anthropic)" strokeWidth={2} dot={false} connectNulls />
-                      )}
-                      {enabledProviders.has("gemini") && (
-                        <Line type="monotone" dataKey="gemini" stroke="var(--color-gemini)" strokeWidth={2} dot={false} connectNulls />
-                      )}
-                      {enabledProviders.has("xai") && (
-                        <Line type="monotone" dataKey="xai" stroke="var(--color-xai)" strokeWidth={2} dot={false} connectNulls />
-                      )}
-                    </RechartsLineChart>
-                  </ChartContainer>
+                      {metric.label}
+                    </button>
+                  ))}
                 </div>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {benchmarkHistory.length > 1 ? (
+              <>
+                {/* Chart */}
+                <ChartContainer config={chartConfig} className="h-[180px] w-full">
+                  <RechartsLineChart
+                    data={benchmarkHistory.map((run) => {
+                      // Data depends on selected metric
+                      if (trendMetric === "visibility") {
+                        return {
+                          label: run.label,
+                          openai: enabledProviders.has("openai") ? Math.round((run.providerScores.openai?.avgScore ?? 0) * 100) : null,
+                          anthropic: enabledProviders.has("anthropic") ? Math.round((run.providerScores.anthropic?.avgScore ?? 0) * 100) : null,
+                          gemini: enabledProviders.has("gemini") ? Math.round((run.providerScores.gemini?.avgScore ?? 0) * 100) : null,
+                          xai: enabledProviders.has("xai") ? Math.round((run.providerScores.xai?.avgScore ?? 0) * 100) : null,
+                        };
+                      }
+                      // For stage metrics, show single line (overall)
+                      const val = trendMetric === "sentiment"
+                        ? Math.round(((run.stageData?.sentimentScore ?? 0) + 1) * 50) // -1 to 1 → 0 to 100
+                        : trendMetric === "winrate"
+                        ? Math.round((run.stageData?.winRate ?? 0) * 100)
+                        : Math.round((run.stageData?.recStrength ?? 0) * 100);
+                      return { label: run.label, value: val };
+                    })}
+                    margin={{ top: 10, right: 10, bottom: 5, left: 0 }}
+                  >
+                    <XAxis 
+                      dataKey="label" 
+                      tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis 
+                      domain={[0, 100]} 
+                      tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={30}
+                      tickFormatter={(v) => `${v}%`}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    {selectedTimeIndex < benchmarkHistory.length && (
+                      <ReferenceLine 
+                        x={benchmarkHistory[selectedTimeIndex]?.label} 
+                        stroke="#1f3b2c" 
+                        strokeDasharray="4 4"
+                        strokeWidth={2}
+                      />
+                    )}
+                    {trendMetric === "visibility" ? (
+                      <>
+                        {enabledProviders.has("openai") && (
+                          <Line type="monotone" dataKey="openai" stroke="var(--color-openai)" strokeWidth={2} dot={false} connectNulls />
+                        )}
+                        {enabledProviders.has("anthropic") && (
+                          <Line type="monotone" dataKey="anthropic" stroke="var(--color-anthropic)" strokeWidth={2} dot={false} connectNulls />
+                        )}
+                        {enabledProviders.has("gemini") && (
+                          <Line type="monotone" dataKey="gemini" stroke="var(--color-gemini)" strokeWidth={2} dot={false} connectNulls />
+                        )}
+                        {enabledProviders.has("xai") && (
+                          <Line type="monotone" dataKey="xai" stroke="var(--color-xai)" strokeWidth={2} dot={false} connectNulls />
+                        )}
+                      </>
+                    ) : (
+                      <Line 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke={
+                          trendMetric === "sentiment" ? "#6e7c5b" : 
+                          trendMetric === "winrate" ? "#b86f3a" : 
+                          "#1f3b2c"
+                        } 
+                        strokeWidth={2.5} 
+                        dot={{ fill: trendMetric === "sentiment" ? "#6e7c5b" : trendMetric === "winrate" ? "#b86f3a" : "#1f3b2c", r: 3 }}
+                        connectNulls 
+                      />
+                    )}
+                  </RechartsLineChart>
+                </ChartContainer>
                 
-                {/* Time Slider - vertical on the right */}
-                <div className="w-48 space-y-2">
+                {/* Time Slider - below chart like Keynote */}
+                <div className="px-[30px] space-y-1">
                   <Slider
                     value={[selectedTimeIndex]}
                     onValueChange={([val]) => setSelectedTimeIndex(val)}
                     min={0}
                     max={benchmarkHistory.length - 1}
                     step={1}
-                    className="[&_[data-slot=slider-track]]:bg-[#e3dacb] [&_[data-slot=slider-range]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:shadow-md"
+                    className="[&_[data-slot=slider-track]]:bg-[#e3dacb] [&_[data-slot=slider-range]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:shadow-md [&_[data-slot=slider-thumb]]:w-4 [&_[data-slot=slider-thumb]]:h-4"
                   />
                   <div className="flex justify-between text-[10px] text-[#1e1b16]/40">
                     <span>{benchmarkHistory[0]?.label}</span>
                     <span className="font-medium text-[#1e1b16]/60">
-                      {isViewingHistory ? selectedHistoricalData?.label : "Now"}
+                      {isViewingHistory ? `← ${selectedHistoricalData?.label}` : "Latest"}
                     </span>
+                    <span>{benchmarkHistory[benchmarkHistory.length - 1]?.label}</span>
                   </div>
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="text-sm text-[#1e1b16]/40 text-center py-6">
+              <div className="text-sm text-[#1e1b16]/40 text-center py-8">
                 Run 2+ benchmarks to see trend over time
               </div>
             )}
