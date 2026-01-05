@@ -50,13 +50,16 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 
+  // Enable File Search when there's no current query results (use historical RAG data)
+  const hasCurrentData = context.queryResults && context.queryResults.length > 0;
+  
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        body: () => ({ context }),
+        body: () => ({ context, useFileSearch: !hasCurrentData }),
       }),
-    [context]
+    [context, hasCurrentData]
   );
 
   const {

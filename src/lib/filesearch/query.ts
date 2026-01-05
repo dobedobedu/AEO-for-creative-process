@@ -19,24 +19,26 @@ export interface Citation {
 
 /**
  * Build metadata filter from chat context
+ * Only filters by brand (always available), persona/stage are optional scoping
  */
 function buildMetadataFilter(context: ChatContext): string | undefined {
   const filters: string[] = [];
 
-  if (context.persona) {
-    filters.push(`persona="${context.persona}"`);
-  }
-
-  if (context.stage) {
-    filters.push(`stage="${context.stage}"`);
-  }
-
+  // Only filter by brand - always included if set
+  // persona/stage are useful for scoping but shouldn't block results
   if (context.brand) {
     filters.push(`brand="${context.brand}"`);
   }
 
-  // Could add date range filtering here in the future
-  // filters.push(`run_date>="2026-01-01"`);
+  // Only add persona/stage filters for specific cell/row/column scopes
+  if (context.scope === "cell" && context.persona && context.stage) {
+    filters.push(`persona="${context.persona}"`);
+    filters.push(`stage="${context.stage}"`);
+  } else if (context.scope === "row" && context.persona) {
+    filters.push(`persona="${context.persona}"`);
+  } else if (context.scope === "column" && context.stage) {
+    filters.push(`stage="${context.stage}"`);
+  }
 
   return filters.length > 0 ? filters.join(" AND ") : undefined;
 }
