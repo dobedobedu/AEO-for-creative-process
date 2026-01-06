@@ -22,7 +22,7 @@ async function main() {
   try {
     const result = await runBenchmark({
       stage: "explore",
-      queries: [testQuery],
+      intents: [{ id: "test-intent", queries: [testQuery] }],
       brand,
       brandAliases: ["LWR"],
       providers: [
