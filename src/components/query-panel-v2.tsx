@@ -31,7 +31,12 @@ interface QueryPanelProps {
     queryBankOverride?: Record<Persona, Record<Stage, string[]>>
   ) => void;
   onSaveQueries?: (queryBank: Record<Persona, Record<Stage, string[]>>) => void;
-  onRegenerateQueries?: (persona: Persona, stage: Stage, temperature: number) => Promise<string[]>;
+  onRegenerateQueries?: (
+    persona: Persona,
+    stage: Stage,
+    role: "cpo" | "family_unit",
+    creativity: number
+  ) => Promise<string[]>;
 }
 
 // Mini-matrix component for visual scope selection
@@ -117,8 +122,8 @@ function MiniMatrix({
   );
 }
 
-// Intent interpretation dial - simplified
-function InterpretationDial({
+// Creativity slider - maps to temperature
+function CreativitySlider({
   value,
   onChange,
 }: {
@@ -127,7 +132,7 @@ function InterpretationDial({
 }) {
   return (
     <div className="space-y-2">
-      <span className="text-xs font-medium text-[#1e1b16]/60">Intent Interpretation</span>
+      <span className="text-xs font-medium text-[#1e1b16]/60">Creativity</span>
       
       <Slider
         value={[value]}
@@ -139,8 +144,8 @@ function InterpretationDial({
       />
       
       <div className="flex justify-between">
-        <span className="text-[10px] text-[#1e1b16]/50">Decision Maker</span>
-        <span className="text-[10px] text-[#1e1b16]/50">Family Unit</span>
+        <span className="text-[10px] text-[#1e1b16]/50 italic">Strict</span>
+        <span className="text-[10px] text-[#1e1b16]/50 italic">Creative</span>
       </div>
     </div>
   );
@@ -165,7 +170,8 @@ export function QueryPanelV2({
   const [localQueryBank, setLocalQueryBank] = useState(queryBank);
   const [editingQuery, setEditingQuery] = useState<{ persona: Persona; stage: Stage; index: number } | null>(null);
   const [editValue, setEditValue] = useState("");
-  const [variation, setVariation] = useState(0.5);
+  const [role, setRole] = useState<"cpo" | "family_unit">("cpo");
+  const [creativity, setCreativity] = useState(0.5);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   // Handle mini-matrix cell click
@@ -301,7 +307,7 @@ export function QueryPanelV2({
     
     setIsRegenerating(true);
     try {
-      const newQueries = await onRegenerateQueries(selectedPersona, selectedStage, variation);
+      const newQueries = await onRegenerateQueries(selectedPersona, selectedStage, role, creativity);
       setLocalQueryBank(prev => ({
         ...prev,
         [selectedPersona]: {
@@ -455,24 +461,56 @@ export function QueryPanelV2({
 
           {/* Sidebar - dial and generate (only for cell scope) */}
           {scope === "cell" && selectedPersona && selectedStage && (
-            <div className="w-64 border-l border-[#e3dacb] bg-[#faf7f2] p-5 flex flex-col">
-              <InterpretationDial value={variation} onChange={setVariation} />
+            <div className="w-64 border-l border-[#e3dacb] bg-[#faf7f2] p-5 flex flex-col gap-6">
+              {/* Role Toggle */}
+              <div className="space-y-2">
+                <span className="text-xs font-medium text-[#1e1b16]/60">Perspective</span>
+                <div className="flex p-1 bg-[#efe6d9] rounded-lg">
+                  <button
+                    onClick={() => setRole("cpo")}
+                    className={`flex-1 px-2 py-1.5 text-[10px] font-medium rounded-md transition-all ${
+                      role === "cpo"
+                        ? "bg-white text-[#1e1b16] shadow-sm"
+                        : "text-[#1e1b16]/40 hover:text-[#1e1b16]/60"
+                    }`}
+                  >
+                    CPO
+                  </button>
+                  <button
+                    onClick={() => setRole("family_unit")}
+                    className={`flex-1 px-2 py-1.5 text-[10px] font-medium rounded-md transition-all ${
+                      role === "family_unit"
+                        ? "bg-white text-[#1e1b16] shadow-sm"
+                        : "text-[#1e1b16]/40 hover:text-[#1e1b16]/60"
+                    }`}
+                  >
+                    Family Unit
+                  </button>
+                </div>
+                <p className="text-[9px] text-[#1e1b16]/40 leading-tight">
+                  {role === "cpo" 
+                    ? "Focus on Risk, ROI, and Wealth Preservation" 
+                    : "Focus on Social Flow, Amenities, and Daily Life"}
+                </p>
+              </div>
+
+              <CreativitySlider value={creativity} onChange={setCreativity} />
               
               {onRegenerateQueries && (
                 <Button
                   onClick={handleRegenerate}
                   disabled={isRegenerating}
                   variant="outline"
-                  className="mt-4 w-full border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
+                  className="w-full border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
                 >
                   <RotateCcw className={`h-3.5 w-3.5 mr-2 ${isRegenerating ? "animate-spin" : ""}`} />
                   {isRegenerating ? "Generating..." : "Generate"}
                 </Button>
               )}
               
-              <div className="mt-auto pt-4">
-                <p className="text-[9px] text-[#1e1b16]/30 leading-relaxed">
-                  Click cells in the matrix to switch scope
+              <div className="mt-auto">
+                <p className="text-[9px] text-[#1e1b16]/30 leading-relaxed italic">
+                  Powered by DeepSeek V3
                 </p>
               </div>
             </div>

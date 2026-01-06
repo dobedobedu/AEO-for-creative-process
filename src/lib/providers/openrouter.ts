@@ -15,6 +15,7 @@ const OpenRouterResponseSchema = z.object({
 export async function callOpenRouter(params: {
   model: string;
   messages: Array<{ role: "system" | "user"; content: string }>;
+  temperature?: number;
 }): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -40,7 +41,7 @@ export async function callOpenRouter(params: {
     body: JSON.stringify({
       model: params.model,
       messages: params.messages,
-      temperature: 0.2,
+      temperature: params.temperature ?? 0.2,
     }),
   });
 

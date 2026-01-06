@@ -2062,6 +2062,26 @@ export default function VisibilityMatrixPage() {
         queryBank={localQueryBank}
         personas={personas.map(p => ({ id: p.id, label: p.label }))}
         stages={STAGES.map(s => ({ id: s.id, label: s.label }))}
+        onRegenerateQueries={async (persona, stage, role, creativity) => {
+          const cell = matrixData[`${persona}-${stage}`];
+          const intent = cell?.queries[0] || "homes for sale"; // Fallback to current queries or default
+          
+          const resp = await fetch("/api/intents/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              persona,
+              stage,
+              intent,
+              role,
+              creativity,
+            }),
+          });
+          
+          if (!resp.ok) throw new Error("Failed to regenerate queries");
+          const data = await resp.json();
+          return data.queries;
+        }}
         onRunQueries={async (_queries, persona, stage, queryBankOverride) => {
           try {
             if (queryBankOverride) {
