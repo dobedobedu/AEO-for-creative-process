@@ -89,6 +89,7 @@ interface QueryResult {
 interface CellData {
   persona: Persona;
   stage: Stage;
+  intentText: string;
   queries: string[];
   results: QueryResult[];
   avgScore: number;
@@ -161,14 +162,14 @@ const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; 
   { id: "xai", label: "Grok 4", color: "text-[#7c6b7c]", bgColor: "bg-[#7c6b7c]", chartColor: "#7c6b7c" },
 ];
 
-type QueryBank = Record<Persona, Record<Stage, string[]>>;
+type QueryBank = Record<Persona, Record<Stage, { queries: string[]; intentText: string }>>;
 
 function createEmptyQueryBank(): QueryBank {
   return {
-    move_up: { explore: [], consider: [], compare: [], decide: [] },
-    retiree: { explore: [], consider: [], compare: [], decide: [] },
-    luxury: { explore: [], consider: [], compare: [], decide: [] },
-    first_time: { explore: [], consider: [], compare: [], decide: [] },
+    move_up: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
+    retiree: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
+    luxury: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
+    first_time: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
   };
 }
 
@@ -176,20 +177,20 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
   const bank = createEmptyQueryBank();
 
   // Pick the most recently created active intent per persona×stage.
-  const latestByCell = new Map<string, { createdAt: string; defaultQueries: string[] }>();
+  const latestByCell = new Map<string, { createdAt: string; text: string; defaultQueries: string[] }>();
   for (const intent of library.intents) {
     if (!intent.active) continue;
     const key = `${intent.persona}::${intent.stage}`;
     const existing = latestByCell.get(key);
     if (!existing || intent.createdAt > existing.createdAt) {
-      latestByCell.set(key, { createdAt: intent.createdAt, defaultQueries: intent.defaultQueries });
+      latestByCell.set(key, { createdAt: intent.createdAt, text: intent.text, defaultQueries: intent.defaultQueries });
     }
   }
 
   for (const [key, value] of latestByCell.entries()) {
     const [persona, stage] = key.split("::") as [Persona, Stage];
     if (bank[persona] && bank[persona][stage]) {
-      bank[persona][stage] = value.defaultQueries;
+      bank[persona][stage] = { queries: value.defaultQueries, intentText: value.text };
     }
   }
 
@@ -490,10 +491,12 @@ export default function VisibilityMatrixPage() {
     for (const persona of personas) {
       for (const stage of STAGES) {
         const key = `${persona.id}-${stage.id}`;
+        const entry = localQueryBank[persona.id][stage.id];
         data[key] = {
           persona: persona.id,
           stage: stage.id,
-          queries: localQueryBank[persona.id][stage.id],
+          intentText: entry.intentText,
+          queries: entry.queries,
           results: [],
           avgScore: 0,
           mentionRate: 0,
@@ -1107,18 +1110,18 @@ export default function VisibilityMatrixPage() {
     if (selection.type === "all") {
       for (const p of personas) {
         for (const s of STAGES) {
-          count += localQueryBank[p.id][s.id].length;
+          count += localQueryBank[p.id][s.id].queries.length;
         }
       }
     } else if (selection.type === "cell") {
-      count = localQueryBank[selection.persona][selection.stage].length;
+      count = localQueryBank[selection.persona][selection.stage].queries.length;
     } else if (selection.type === "row") {
       for (const s of STAGES) {
-        count += localQueryBank[selection.persona][s.id].length;
+        count += localQueryBank[selection.persona][s.id].queries.length;
       }
     } else if (selection.type === "column") {
       for (const p of personas) {
-        count += localQueryBank[p.id][selection.stage].length;
+        count += localQueryBank[p.id][selection.stage].queries.length;
       }
     }
     return count;
@@ -1384,7 +1387,7 @@ export default function VisibilityMatrixPage() {
                             <StageCell
                               stage={stage.id}
                               metrics={cell?.stageMetrics ?? {}}
-                              queryCount={cellQueries.length}
+                              queryCount={cellQueries.queries.length}
                               isComplete={cell?.status === "complete"}
                               isRunning={cell?.status === "running"}
                               selected={cellSelected}
@@ -2062,10 +2065,7 @@ export default function VisibilityMatrixPage() {
         queryBank={localQueryBank}
         personas={personas.map(p => ({ id: p.id, label: p.label }))}
         stages={STAGES.map(s => ({ id: s.id, label: s.label }))}
-        onRegenerateQueries={async (persona, stage, role, creativity) => {
-          const cell = matrixData[`${persona}-${stage}`];
-          const intent = cell?.queries[0] || "homes for sale"; // Fallback to current queries or default
-          
+        onRegenerateQueries={async (persona, stage, intent, role, creativity) => {
           const resp = await fetch("/api/intents/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

@@ -4,7 +4,10 @@ import { PersonaSchema, StageSchema, type Persona, type Stage } from "@/lib/inte
 
 const PersonaStageQueryBankSchema = z.record(
   PersonaSchema,
-  z.record(StageSchema, z.array(z.string().min(1)).min(1))
+  z.record(StageSchema, z.object({
+    queries: z.array(z.string()),
+    intentText: z.string(),
+  }))
 );
 
 const RequestSchema = z.object({
@@ -20,9 +23,9 @@ export async function POST(req: Request) {
 
     for (const [persona, stages] of Object.entries(data.queryBank) as Array<[
       Persona,
-      Record<Stage, string[]>
+      Record<Stage, { queries: string[]; intentText: string }>
     ]>) {
-      for (const [stage, queries] of Object.entries(stages) as Array<[Stage, string[]]>) {
+      for (const [stage, entry] of Object.entries(stages) as Array<[Stage, { queries: string[]; intentText: string }]>) {
         const intents = library.intents
           .filter((i) => i.persona === persona && i.stage === stage && i.active)
           .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -30,7 +33,10 @@ export async function POST(req: Request) {
         const intent = intents[0];
         if (!intent) continue;
 
-        library = updateIntent(library, intent.id, { defaultQueries: queries });
+        library = updateIntent(library, intent.id, { 
+          defaultQueries: entry.queries,
+          text: entry.intentText
+        });
       }
     }
 
