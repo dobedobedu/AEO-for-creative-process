@@ -21,6 +21,7 @@ const mockBenchmarkResult: BenchmarkResult = {
   queries: [
     {
       query: "best florida retirement communities with golf courses",
+      intentId: "test-intent-1",
       responses: [
         {
           provider: "openai",
@@ -76,6 +77,7 @@ Creek in Naples.`,
     },
     {
       query: "lakewood ranch vs the villages florida",
+      intentId: "test-intent-2",
       responses: [
         {
           provider: "openai",
@@ -178,7 +180,7 @@ async function runTest() {
 
     const query1 = "What golf communities are mentioned for retirees?";
     console.log(`   Query: "${query1}"`);
-    
+
     const response1 = await queryWithFileSearch(query1, chatContext);
     console.log(`   Response length: ${response1.text.length} chars`);
     console.log(`   Citations: ${response1.citations?.length ?? 0}`);
@@ -189,7 +191,7 @@ async function runTest() {
     console.log("\n6. Testing comparison query...");
     const query2 = "How does Lakewood Ranch compare to The Villages?";
     console.log(`   Query: "${query2}"`);
-    
+
     const response2 = await queryWithFileSearch(query2, chatContext);
     console.log(`   Response length: ${response2.text.length} chars`);
     console.log(`\n   Response preview:`);
