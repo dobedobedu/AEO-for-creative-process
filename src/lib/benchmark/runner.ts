@@ -6,6 +6,7 @@ import type { VisibilityScore } from "./scoring";
 import type { Stage } from "@/lib/intents/types";
 import { extractStageMetrics, recommendationStrengthToScore } from "@/lib/scoring/extractor";
 import type { StageExtraction } from "@/lib/scoring/schemas";
+import { getCachedResponse, setCachedResponse } from "@/lib/cache";
 
 export type Provider = "openai" | "anthropic" | "gemini" | "xai";
 
@@ -62,9 +63,26 @@ export async function runSingleQuery(params: {
   query: string;
   provider: Provider;
   model: string;
+  skipCache?: boolean;
 }): Promise<ProviderResponse> {
-  const { query, provider, model } = params;
+  const { query, provider, model, skipCache = false } = params;
   const start = Date.now();
+
+  // Check cache first (unless explicitly skipped)
+  if (!skipCache) {
+    const cached = getCachedResponse(query, provider, model);
+    if (cached) {
+      return {
+        provider,
+        model,
+        text: cached.text,
+        citations: cached.citations,
+        visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
+        latencyMs: 0, // Instant from cache
+        raw: cached.raw,
+      };
+    }
+  }
 
   try {
     let raw: unknown;
@@ -99,6 +117,9 @@ export async function runSingleQuery(params: {
         break;
       }
     }
+
+    // Store in cache for future deduplication
+    setCachedResponse(query, provider, model, { text, citations, raw });
 
     return {
       provider,
@@ -249,8 +270,18 @@ function computeVisibilityFromExtraction(stage: Stage, extraction: StageExtracti
     if ("inTopThree" in extraction) {
       position = extraction.inTopThree ? "1st" : "later";
     } else {
+      // If mentioned but not "explore" stage (or missing inTopThree), default to "later" 
+      // instead of "absent" which contradicts "mentioned=true"
       position = "later";
     }
+  }
+
+  // Scoring Correction:
+  // If mentioned is TRUE, score should never be 0.
+  // For Explore stage, if mentioned but not in top 3, give partial credit (e.g. 0.5)
+  // instead of 0 which implies "not mentioned".
+  if (mentioned && score === 0 && "inTopThree" in extraction) {
+     score = 0.5;
   }
 
   // Sentiment
