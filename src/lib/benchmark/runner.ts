@@ -16,7 +16,11 @@ export interface ProviderConfig {
 
 export interface BenchmarkConfig {
   stage: Stage;
-  queries: string[];
+  // Multiple intent support: each intent has an ID and a list of queries
+  intents: Array<{
+    id: string;
+    queries: string[];
+  }>;
   brand: string;
   brandAliases?: string[];
   providers: ProviderConfig[];
@@ -33,6 +37,182 @@ export interface ProviderResponse {
   latencyMs: number;
   error?: string;
   raw: unknown;
+}
+
+// ... helper functions ...
+
+export interface QueryResult {
+  query: string;
+  intentId: string; // Associated intent
+  responses: ProviderResponse[];
+}
+
+export interface BenchmarkResult {
+  queries: QueryResult[];
+  summary: {
+    totalQueries: number;
+    providersUsed: Provider[];
+    brandMentionRate: Record<Provider, number>;
+    avgVisibilityScore: Record<Provider, number>;
+    executionTimeMs: number;
+  };
+}
+
+export async function runSingleQuery(params: {
+  query: string;
+  provider: Provider;
+  model: string;
+}): Promise<ProviderResponse> {
+  const { query, provider, model } = params;
+  const start = Date.now();
+
+  try {
+    let raw: unknown;
+    let text = "";
+    let citations: string[] = [];
+
+    switch (provider) {
+      case "openai": {
+        const response = await callOpenAIWebSearch({ model, query });
+        raw = response;
+        text = extractOpenAIText(response);
+        break;
+      }
+      case "anthropic": {
+        const response = await callAnthropicWebSearch({ model, query });
+        raw = response;
+        text = extractAnthropicText(response);
+        citations = response.citations ?? [];
+        break;
+      }
+      case "gemini": {
+        const response = await callGeminiWebSearch({ model, query });
+        raw = response;
+        text = extractGeminiText(response);
+        break;
+      }
+      case "xai": {
+        const response = await callXaiSearch({ model, query });
+        raw = response;
+        text = extractXaiText(response);
+        citations = response.citations ?? [];
+        break;
+      }
+    }
+
+    return {
+      provider,
+      model,
+      text,
+      citations,
+      visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
+      latencyMs: Date.now() - start,
+      raw,
+    };
+  } catch (err) {
+    return {
+      provider,
+      model,
+      text: "",
+      citations: [],
+      visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
+      latencyMs: Date.now() - start,
+      error: err instanceof Error ? err.message : String(err),
+      raw: null,
+    };
+  }
+}
+
+export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
+  const { stage, intents, brand, brandAliases = [], providers, concurrency = 2 } = config;
+  const startTime = Date.now();
+
+  const results: QueryResult[] = [];
+  const mentionCounts: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
+  const scoreSums: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
+  const responseCounts: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
+
+  // Flatten queries with intent metadata
+  const flatQueries: { query: string; intentId: string }[] = [];
+  for (const intent of intents) {
+    for (const q of intent.queries) {
+      if (q.trim()) {
+        flatQueries.push({ query: q, intentId: intent.id });
+      }
+    }
+  }
+
+  // Process queries with concurrency limit
+  const chunks = chunkArray(flatQueries, concurrency);
+
+  for (const chunk of chunks) {
+    const chunkResults = await Promise.all(
+      chunk.map(async ({ query, intentId }) => {
+        const responses: ProviderResponse[] = [];
+
+        for (const providerConfig of providers) {
+          const response = await runSingleQuery({
+            query,
+            provider: providerConfig.provider,
+            model: providerConfig.model,
+          });
+
+          if (!response.error) {
+            const extraction = await extractStageMetrics({
+              stage,
+              query,
+              responseText: response.text,
+              provider: providerConfig.provider,
+              brand,
+              brandTerms: brandAliases,
+            });
+
+            if (extraction.success && extraction.extraction) {
+              response.stageExtraction = extraction.extraction;
+              response.visibility = computeVisibilityFromExtraction(stage, extraction.extraction);
+            }
+          }
+
+          // Track stats
+          if (!response.error) {
+            responseCounts[providerConfig.provider]++;
+            scoreSums[providerConfig.provider] += response.visibility.score;
+            if (response.visibility.mentioned) {
+              mentionCounts[providerConfig.provider]++;
+            }
+          }
+
+          responses.push(response);
+        }
+
+        return { query, intentId, responses };
+      })
+    );
+
+    results.push(...chunkResults);
+  }
+
+  // Calculate summary stats
+  const providersUsed = providers.map(p => p.provider);
+  const brandMentionRate: Record<Provider, number> = {} as Record<Provider, number>;
+  const avgVisibilityScore: Record<Provider, number> = {} as Record<Provider, number>;
+
+  for (const provider of providersUsed) {
+    const count = responseCounts[provider];
+    brandMentionRate[provider] = count > 0 ? mentionCounts[provider] / count : 0;
+    avgVisibilityScore[provider] = count > 0 ? scoreSums[provider] / count : 0;
+  }
+
+  return {
+    queries: results,
+    summary: {
+      totalQueries: flatQueries.length,
+      providersUsed,
+      brandMentionRate,
+      avgVisibilityScore,
+      executionTimeMs: Date.now() - startTime,
+    },
+  };
 }
 
 function computeVisibilityFromExtraction(stage: Stage, extraction: StageExtraction): VisibilityScore {
@@ -123,169 +303,6 @@ function computeVisibilityFromExtraction(stage: Stage, extraction: StageExtracti
     competitorsMentioned,
     comparisonOutcome,
     recommendationStrength,
-  };
-}
-
-export interface QueryResult {
-  query: string;
-  responses: ProviderResponse[];
-}
-
-export interface BenchmarkResult {
-  queries: QueryResult[];
-  summary: {
-    totalQueries: number;
-    providersUsed: Provider[];
-    brandMentionRate: Record<Provider, number>;
-    avgVisibilityScore: Record<Provider, number>;
-    executionTimeMs: number;
-  };
-}
-
-export async function runSingleQuery(params: {
-  query: string;
-  provider: Provider;
-  model: string;
-}): Promise<ProviderResponse> {
-  const { query, provider, model } = params;
-  const start = Date.now();
-
-  try {
-    let raw: unknown;
-    let text = "";
-    let citations: string[] = [];
-
-    switch (provider) {
-      case "openai": {
-        const response = await callOpenAIWebSearch({ model, query });
-        raw = response;
-        text = extractOpenAIText(response);
-        break;
-      }
-      case "anthropic": {
-        const response = await callAnthropicWebSearch({ model, query });
-        raw = response;
-        text = extractAnthropicText(response);
-        citations = response.citations ?? [];
-        break;
-      }
-      case "gemini": {
-        const response = await callGeminiWebSearch({ model, query });
-        raw = response;
-        text = extractGeminiText(response);
-        break;
-      }
-      case "xai": {
-        const response = await callXaiSearch({ model, query });
-        raw = response;
-        text = extractXaiText(response);
-        citations = response.citations ?? [];
-        break;
-      }
-    }
-
-    return {
-      provider,
-      model,
-      text,
-      citations,
-      visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
-      latencyMs: Date.now() - start,
-      raw,
-    };
-  } catch (err) {
-    return {
-      provider,
-      model,
-      text: "",
-      citations: [],
-      visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
-      latencyMs: Date.now() - start,
-      error: err instanceof Error ? err.message : String(err),
-      raw: null,
-    };
-  }
-}
-
-export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
-  const { stage, queries, brand, brandAliases = [], providers, concurrency = 2 } = config;
-  const startTime = Date.now();
-
-  const results: QueryResult[] = [];
-  const mentionCounts: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
-  const scoreSums: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
-  const responseCounts: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
-
-  // Process queries with concurrency limit
-  const chunks = chunkArray(queries, concurrency);
-
-  for (const chunk of chunks) {
-    const chunkResults = await Promise.all(
-      chunk.map(async (query) => {
-        const responses: ProviderResponse[] = [];
-
-        for (const providerConfig of providers) {
-          const response = await runSingleQuery({
-            query,
-            provider: providerConfig.provider,
-            model: providerConfig.model,
-          });
-
-          if (!response.error) {
-            const extraction = await extractStageMetrics({
-              stage,
-              query,
-              responseText: response.text,
-              provider: providerConfig.provider,
-              brand,
-              brandTerms: brandAliases,
-            });
-
-            if (extraction.success && extraction.extraction) {
-              response.stageExtraction = extraction.extraction;
-              response.visibility = computeVisibilityFromExtraction(stage, extraction.extraction);
-            }
-          }
-
-          // Track stats
-          if (!response.error) {
-            responseCounts[providerConfig.provider]++;
-            scoreSums[providerConfig.provider] += response.visibility.score;
-            if (response.visibility.mentioned) {
-              mentionCounts[providerConfig.provider]++;
-            }
-          }
-
-          responses.push(response);
-        }
-
-        return { query, responses };
-      })
-    );
-
-    results.push(...chunkResults);
-  }
-
-  // Calculate summary stats
-  const providersUsed = providers.map(p => p.provider);
-  const brandMentionRate: Record<Provider, number> = {} as Record<Provider, number>;
-  const avgVisibilityScore: Record<Provider, number> = {} as Record<Provider, number>;
-
-  for (const provider of providersUsed) {
-    const count = responseCounts[provider];
-    brandMentionRate[provider] = count > 0 ? mentionCounts[provider] / count : 0;
-    avgVisibilityScore[provider] = count > 0 ? scoreSums[provider] / count : 0;
-  }
-
-  return {
-    queries: results,
-    summary: {
-      totalQueries: queries.length,
-      providersUsed,
-      brandMentionRate,
-      avgVisibilityScore,
-      executionTimeMs: Date.now() - startTime,
-    },
   };
 }
 

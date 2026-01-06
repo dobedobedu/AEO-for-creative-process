@@ -1,12 +1,21 @@
 import { z } from "zod";
-import { loadIntentLibrary, saveIntentLibrary, updateIntent } from "@/lib/intents/library";
+import { loadIntentLibrary, saveIntentLibrary, updateIntent, createIntent, deleteIntent } from "@/lib/intents/library";
 import { PersonaSchema, StageSchema, type Persona, type Stage } from "@/lib/intents/types";
 
+// Schema for an Intent Node (mirrors frontend)
+const IntentNodeSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  manifestations: z.array(z.string()),
+  role: z.enum(["cpo", "family_unit"]).default("cpo"),
+  creativity: z.number().min(0.2).max(1.2).default(0.7)
+});
+
+// The incoming QueryBank is indexed by Persona -> Stage -> List of Intents
 const PersonaStageQueryBankSchema = z.record(
   PersonaSchema,
   z.record(StageSchema, z.object({
-    queries: z.array(z.string()),
-    intentText: z.string(),
+    intents: z.array(IntentNodeSchema)
   }))
 );
 
@@ -23,20 +32,59 @@ export async function POST(req: Request) {
 
     for (const [persona, stages] of Object.entries(data.queryBank) as Array<[
       Persona,
-      Record<Stage, { queries: string[]; intentText: string }>
+      Record<Stage, { intents: Array<{ id: string; text: string; manifestations: string[]; role?: "cpo"|"family_unit"; creativity?: number }> }>
     ]>) {
-      for (const [stage, entry] of Object.entries(stages) as Array<[Stage, { queries: string[]; intentText: string }]>) {
-        const intents = library.intents
-          .filter((i) => i.persona === persona && i.stage === stage && i.active)
-          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      for (const [stage, entry] of Object.entries(stages) as Array<[Stage, { intents: Array<{ id: string; text: string; manifestations: string[]; role?: "cpo"|"family_unit"; creativity?: number }> }]>) {
+        
+        // 1. Get existing intents for this cell
+        const existingIntents = library.intents
+          .filter((i) => i.persona === persona && i.stage === stage && i.active);
+        const existingIds = new Set(existingIntents.map(i => i.id));
+        
+        // 2. Identify incoming IDs
+        const incomingIds = new Set(entry.intents.map(i => i.id));
 
-        const intent = intents[0];
-        if (!intent) continue;
+        // 3. Process Updates & Creations
+        for (const incoming of entry.intents) {
+          if (existingIds.has(incoming.id)) {
+            // Update existing
+            library = updateIntent(library, incoming.id, {
+              text: incoming.text,
+              defaultQueries: incoming.manifestations,
+              role: incoming.role,
+              creativity: incoming.creativity
+            });
+          } else {
+            // Create new (if ID looks like a temp ID or just missing, create fresh)
+            // But if the frontend generates IDs, we might want to respect them or map them.
+            // For now, let's create a new intent with the library's ID generator 
+            // but we need to know which one matches the frontend's ID if we want to return it.
+            // However, this endpoint is a "save all" dump.
+            
+            // NOTE: If the frontend sends a newly generated ID (e.g. "new-uuid"), 
+            // and we treat it as a create, we should just create it.
+            // The library.createIntent generates its own ID.
+            // Ideally, the frontend should use an API to create intents first.
+            // But for this "Save Query Bank" bulk operation, we'll assume unmatched IDs are new.
+            
+            library = createIntent(library, {
+              persona,
+              stage,
+              text: incoming.text,
+              defaultQueries: incoming.manifestations,
+              role: incoming.role || "cpo",
+              creativity: incoming.creativity || 0.7
+            });
+          }
+        }
 
-        library = updateIntent(library, intent.id, { 
-          defaultQueries: entry.queries,
-          text: entry.intentText
-        });
+        // 4. Process Deletions
+        // Any existing ID that is NOT in incoming IDs should be deactivated/deleted
+        for (const existing of existingIntents) {
+          if (!incomingIds.has(existing.id)) {
+            library = deleteIntent(library, existing.id);
+          }
+        }
       }
     }
 

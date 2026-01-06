@@ -97,7 +97,7 @@ export function createIntent(
 export function updateIntent(
   library: IntentLibrary,
   intentId: string,
-  updates: Partial<Pick<Intent, "text" | "defaultQueries" | "temperature">>
+  updates: Partial<Pick<Intent, "text" | "defaultQueries" | "role" | "creativity">>
 ): IntentLibrary {
   const existingIndex = library.intents.findIndex((i) => i.id === intentId);
   if (existingIndex === -1) {
@@ -127,13 +127,23 @@ export function updateIntent(
     });
   }
 
-  if (updates.temperature !== undefined && updates.temperature !== existing.temperature) {
+  if (updates.role !== undefined && updates.role !== existing.role) {
     changes.push({
       action: "modified",
       intentId,
-      field: "temperature",
-      oldValue: existing.temperature,
-      newValue: updates.temperature,
+      field: "role",
+      oldValue: existing.role,
+      newValue: updates.role,
+    });
+  }
+
+  if (updates.creativity !== undefined && updates.creativity !== existing.creativity) {
+    changes.push({
+      action: "modified",
+      intentId,
+      field: "creativity",
+      oldValue: existing.creativity,
+      newValue: updates.creativity,
     });
   }
 

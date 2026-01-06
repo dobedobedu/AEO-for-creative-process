@@ -51,7 +51,7 @@ import {
   ReferenceLine,
 } from "recharts";
 
-import type { IntentLibrary } from "@/lib/intents/types";
+import type { IntentLibrary, IntentNode } from "@/lib/intents/types";
 import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 
@@ -89,8 +89,7 @@ interface QueryResult {
 interface CellData {
   persona: Persona;
   stage: Stage;
-  intentText: string;
-  queries: string[];
+  intents: IntentNode[];
   results: QueryResult[];
   avgScore: number;
   mentionRate: number;
@@ -162,35 +161,35 @@ const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; 
   { id: "xai", label: "Grok 4", color: "text-[#7c6b7c]", bgColor: "bg-[#7c6b7c]", chartColor: "#7c6b7c" },
 ];
 
-type QueryBank = Record<Persona, Record<Stage, { queries: string[]; intentText: string }>>;
+// Updated to support multiple intents
+type QueryBank = Record<Persona, Record<Stage, { intents: IntentNode[] }>>;
 
 function createEmptyQueryBank(): QueryBank {
   return {
-    move_up: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
-    retiree: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
-    luxury: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
-    first_time: { explore: { queries: [], intentText: "" }, consider: { queries: [], intentText: "" }, compare: { queries: [], intentText: "" }, decide: { queries: [], intentText: "" } },
+    move_up: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
+    retiree: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
+    luxury: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
+    first_time: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
   };
 }
 
 function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
   const bank = createEmptyQueryBank();
 
-  // Pick the most recently created active intent per persona×stage.
-  const latestByCell = new Map<string, { createdAt: string; text: string; defaultQueries: string[] }>();
+  // Group all active intents by persona/stage
   for (const intent of library.intents) {
     if (!intent.active) continue;
-    const key = `${intent.persona}::${intent.stage}`;
-    const existing = latestByCell.get(key);
-    if (!existing || intent.createdAt > existing.createdAt) {
-      latestByCell.set(key, { createdAt: intent.createdAt, text: intent.text, defaultQueries: intent.defaultQueries });
-    }
-  }
-
-  for (const [key, value] of latestByCell.entries()) {
-    const [persona, stage] = key.split("::") as [Persona, Stage];
-    if (bank[persona] && bank[persona][stage]) {
-      bank[persona][stage] = { queries: value.defaultQueries, intentText: value.text };
+    
+    if (bank[intent.persona] && bank[intent.persona][intent.stage]) {
+      const node: IntentNode = {
+        id: intent.id,
+        text: intent.text,
+        manifestations: intent.defaultQueries,
+        role: (intent as any).role || "cpo",
+        creativity: (intent as any).creativity || 0.7
+      };
+      
+      bank[intent.persona][intent.stage].intents.push(node);
     }
   }
 
@@ -495,8 +494,7 @@ export default function VisibilityMatrixPage() {
         data[key] = {
           persona: persona.id,
           stage: stage.id,
-          intentText: entry.intentText,
-          queries: entry.queries,
+          intents: entry.intents,
           results: [],
           avgScore: 0,
           mentionRate: 0,
@@ -1110,18 +1108,18 @@ export default function VisibilityMatrixPage() {
     if (selection.type === "all") {
       for (const p of personas) {
         for (const s of STAGES) {
-          count += localQueryBank[p.id][s.id].queries.length;
+          count += localQueryBank[p.id][s.id].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
         }
       }
     } else if (selection.type === "cell") {
-      count = localQueryBank[selection.persona][selection.stage].queries.length;
+      count = localQueryBank[selection.persona][selection.stage].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
     } else if (selection.type === "row") {
       for (const s of STAGES) {
-        count += localQueryBank[selection.persona][s.id].queries.length;
+        count += localQueryBank[selection.persona][s.id].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
       }
     } else if (selection.type === "column") {
       for (const p of personas) {
-        count += localQueryBank[p.id][selection.stage].queries.length;
+        count += localQueryBank[p.id][selection.stage].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
       }
     }
     return count;
@@ -1387,7 +1385,7 @@ export default function VisibilityMatrixPage() {
                             <StageCell
                               stage={stage.id}
                               metrics={cell?.stageMetrics ?? {}}
-                              queryCount={cellQueries.queries.length}
+                              queryCount={cellQueries.intents.reduce((acc, i) => acc + i.manifestations.length, 0)}
                               isComplete={cell?.status === "complete"}
                               isRunning={cell?.status === "running"}
                               selected={cellSelected}
@@ -2114,8 +2112,7 @@ export default function VisibilityMatrixPage() {
                 const entry = newQueryBank[persona][stage];
                 updated[key] = {
                   ...updated[key],
-                  queries: entry.queries,
-                  intentText: entry.intentText,
+                  intents: entry.intents,
                 };
               }
               return updated;

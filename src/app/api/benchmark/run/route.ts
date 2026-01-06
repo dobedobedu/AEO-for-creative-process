@@ -109,18 +109,21 @@ export async function POST(req: Request) {
     const runCells: Record<string, CellResult> = {};
 
     for (const cell of data.cells) {
-      const intents = intentLibrary.intents
+      // Fetch all active intents for this cell from the library
+      const activeIntents = intentLibrary.intents
         .filter((i) => i.persona === cell.persona && i.stage === cell.stage && i.active)
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
-      const intent = intents[0];
-      if (!intent) continue;
+      if (activeIntents.length === 0) continue;
 
-      const queriesToRun = quickTest ? [intent.defaultQueries[0]] : intent.defaultQueries;
+      const intentsToRun = activeIntents.map(intent => ({
+        id: intent.id,
+        queries: quickTest ? [intent.defaultQueries[0]] : intent.defaultQueries
+      }));
 
       const benchmarkResult = await runBenchmark({
         stage: cell.stage,
-        queries: queriesToRun,
+        intents: intentsToRun,
         brand: data.brand,
         brandAliases: data.brandAliases,
         providers,
@@ -130,33 +133,17 @@ export async function POST(req: Request) {
       const uiKey = `${cell.persona}-${cell.stage}`;
       resultsByCell[uiKey] = benchmarkResult;
 
-      // Convert to run storage format
-      const queryResults: CellResult["results"] = benchmarkResult.queries.map((qr) => {
-        const responses: Record<string, { model: string; responseText: string; score: StageExtraction }> = {};
-
-        for (const resp of qr.responses) {
-          responses[resp.provider] = {
-            model: resp.model,
-            responseText: resp.text,
-            score: resp.stageExtraction ?? emptyExtraction(cell.stage),
-          };
-        }
-
-        return { query: qr.query, responses };
-      });
-
+      // Calculate aggregate metrics across ALL intents in this cell
       const allExtractions = benchmarkResult.queries
         .flatMap((qr) => qr.responses)
         .map((r) => r.stageExtraction)
         .filter((e): e is StageExtraction => Boolean(e));
 
       const relevantExtractions = allExtractions.filter((e) => e.responseRelevant);
-
-      const extractionsForMetrics = (relevantExtractions.length > 0
-        ? relevantExtractions
-        : allExtractions) as StageExtraction[];
+      const extractionsForMetrics = (relevantExtractions.length > 0 ? relevantExtractions : allExtractions) as StageExtraction[];
 
       const metrics: CellResult["metrics"] = {};
+      
       if (cell.stage === "explore") {
         const { discoveryRate, topThreeRate } = calculateExploreMetrics(extractionsForMetrics as ExploreExtraction[]);
         metrics.discoveryRate = discoveryRate;
@@ -172,10 +159,33 @@ export async function POST(req: Request) {
         metrics.recommendationRate = recommendationRate;
       }
 
+      // Convert to run storage format
+      // Note: We currently store one intent text as "primary" for the cell summary in old format
+      // but queries now have intentId attached.
+      const queryResults: CellResult["results"] = benchmarkResult.queries.map((qr) => {
+        const responses: Record<string, { model: string; responseText: string; score: StageExtraction }> = {};
+
+        for (const resp of qr.responses) {
+          responses[resp.provider] = {
+            model: resp.model,
+            responseText: resp.text,
+            score: resp.stageExtraction ?? emptyExtraction(cell.stage),
+          };
+        }
+
+        return { 
+          query: qr.query, 
+          // Inject intentId if available from runner, otherwise fallback to first intent
+          intentId: qr.intentId,
+          responses 
+        };
+      });
+
       runCells[getCellKey(cell.persona, cell.stage)] = {
-        intentId: intent.id,
-        intentText: intent.text,
-        queriesUsed: queriesToRun,
+        // Use the most recent intent as the "primary" label for legacy views
+        intentId: activeIntents[0].id,
+        intentText: activeIntents[0].text,
+        queriesUsed: benchmarkResult.queries.map(q => q.query),
         metrics,
         results: queryResults,
       };

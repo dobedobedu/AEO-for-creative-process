@@ -140,7 +140,7 @@ describe("runBenchmark", () => {
 
     const config: BenchmarkConfig = {
       stage: "explore",
-      queries: ["test query 1"],
+      intents: [{ id: "intent-1", queries: ["test query 1"] }],
       brand: "Lakewood Ranch",
       providers: [
         { provider: "openai", model: "gpt-4o" },
@@ -180,7 +180,7 @@ describe("runBenchmark", () => {
 
     const config: BenchmarkConfig = {
       stage: "explore",
-      queries: ["best retirement community"],
+      intents: [{ id: "intent-1", queries: ["best retirement community"] }],
       brand: "Lakewood Ranch",
       providers: [
         { provider: "openai", model: "gpt-4o" },
@@ -235,7 +235,7 @@ describe("runBenchmark", () => {
 
     const config: BenchmarkConfig = {
       stage: "explore",
-      queries: ["q1", "q2", "q3", "q4"],
+      intents: [{ id: "intent-1", queries: ["q1", "q2", "q3", "q4"] }],
       brand: "Test",
       providers: [{ provider: "openai", model: "gpt-4o" }],
       concurrency: 2,

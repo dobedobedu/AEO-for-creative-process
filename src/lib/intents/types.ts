@@ -12,12 +12,22 @@ export const IntentSchema = z.object({
   stage: StageSchema,
   text: z.string().min(1).max(200),
   defaultQueries: z.array(z.string()).min(1),
-  temperature: z.number().min(0.1).max(0.9).default(0.5),
+  role: z.enum(["cpo", "family_unit"]).default("cpo"),
+  creativity: z.number().min(0.2).max(1.2).default(0.7),
   createdAt: z.string().datetime(),
   active: z.boolean().default(true),
 });
 
 export type Intent = z.infer<typeof IntentSchema>;
+
+// New hierarchical type for UI and Runtime state
+export interface IntentNode {
+  id: string;
+  text: string;
+  manifestations: string[];
+  role: "cpo" | "family_unit";
+  creativity: number;
+}
 
 export const IntentChangeSchema = z.object({
   action: z.enum(["created", "modified", "deactivated", "reactivated"]),

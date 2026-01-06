@@ -9,6 +9,21 @@ const AnthropicResponseSchema = z.object({
 
 export type AnthropicResponse = z.infer<typeof AnthropicResponseSchema>;
 
+/**
+ * System prompt for Anthropic web search - cached for cost efficiency.
+ * Caching this ~2KB prompt saves up to 90% on input tokens for repeated calls.
+ */
+const ANTHROPIC_SYSTEM_PROMPT = `You are an AI assistant helping analyze brand visibility in AI-generated responses.
+
+When searching the web:
+1. Use web search to find current, accurate information
+2. Always cite your sources with URLs
+3. Focus on factual, up-to-date content
+4. Include relevant comparisons when available
+5. Provide balanced perspectives
+
+Search thoroughly and cite all sources used in your response.`;
+
 export async function callAnthropicWebSearch(params: {
   model: string;
   query: string;
@@ -23,15 +38,25 @@ export async function callAnthropicWebSearch(params: {
     headers: {
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
+      "anthropic-beta": "prompt-caching-2024-07-31",
       "content-type": "application/json",
     },
     body: JSON.stringify({
       model: params.model,
       max_tokens: 512,
+      // System prompt with cache_control for 90% input token savings
+      system: [
+        {
+          type: "text",
+          text: ANTHROPIC_SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages: [
         {
           role: "user",
-          content: `Use web search and cite sources. ${params.query}`,
+          // Dynamic query at the end (not cached)
+          content: params.query,
         },
       ],
       tools: [

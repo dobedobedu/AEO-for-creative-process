@@ -254,7 +254,8 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
       `Metrics Config Version: ${run.metricsConfigVersion}`,
       ``,
       `## Cell: ${persona.charAt(0).toUpperCase() + persona.slice(1)} × ${stage.charAt(0).toUpperCase() + stage.slice(1)}`,
-      `Intent: "${cell.intentText}"`,
+      `Intent ID: ${cell.intentId}`,
+      `Intent Text: "${cell.intentText}"`,
       ``,
       `### Metrics`,
     ];
@@ -307,6 +308,7 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
       { key: "persona", stringValue: persona },
       { key: "stage", stringValue: stage },
       { key: "intent_id", stringValue: cell.intentId },
+      { key: "intent_text", stringValue: cell.intentText.slice(0, 500) },
       { key: "intent_library_version", numericValue: run.intentLibraryVersion },
       { key: "metrics_config_version", numericValue: run.metricsConfigVersion },
       { key: "query_count", numericValue: cell.queriesUsed.length },
