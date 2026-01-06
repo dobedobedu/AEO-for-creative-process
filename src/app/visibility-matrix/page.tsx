@@ -179,7 +179,7 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
   // Group all active intents by persona/stage
   for (const intent of library.intents) {
     if (!intent.active) continue;
-    
+
     if (bank[intent.persona] && bank[intent.persona][intent.stage]) {
       const node: IntentNode = {
         id: intent.id,
@@ -188,7 +188,7 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
         role: (intent as any).role || "cpo",
         creativity: (intent as any).creativity || 0.7
       };
-      
+
       bank[intent.persona][intent.stage].intents.push(node);
     }
   }
@@ -1196,11 +1196,10 @@ export default function VisibilityMatrixPage() {
             <button
               key={p.id}
               onClick={() => toggleProvider(p.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                enabledProviders.has(p.id)
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${enabledProviders.has(p.id)
                   ? `${p.bgColor} text-white shadow-sm`
                   : "bg-[#efe6d9] text-[#1e1b16]/50"
-              }`}
+                }`}
             >
               {p.label}
             </button>
@@ -1240,7 +1239,7 @@ export default function VisibilityMatrixPage() {
                 >
                   {/* Top accent bar for column selection */}
                   {isSelected && (
-                    <div 
+                    <div
                       className="absolute left-0 right-0 top-0 h-1.5 bg-[#1f3b2c] rounded-t-xl"
                       style={{ boxShadow: '0 0 8px 2px rgba(31, 59, 44, 0.4)' }}
                     />
@@ -1277,7 +1276,7 @@ export default function VisibilityMatrixPage() {
             {/* Data Rows: Persona Label + Cells */}
             {personas.map(persona => {
               const rowSelected = isRowSelected(persona.id);
-              
+
               return (
                 <Fragment key={persona.id}>
                   {/* Persona Label - Editable */}
@@ -1297,7 +1296,7 @@ export default function VisibilityMatrixPage() {
                   >
                     {/* Left accent bar for row selection */}
                     {rowSelected && (
-                      <div 
+                      <div
                         className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1f3b2c] rounded-l-xl"
                         style={{ boxShadow: '0 0 8px 2px rgba(31, 59, 44, 0.4)' }}
                       />
@@ -1392,9 +1391,9 @@ export default function VisibilityMatrixPage() {
                             />
                           </div>
                         </HoverCardTrigger>
-                        <HoverCardContent 
-                          className="w-72 bg-[#fffaf2] border-[#e3dacb]" 
-                          side="bottom" 
+                        <HoverCardContent
+                          className="w-72 bg-[#fffaf2] border-[#e3dacb]"
+                          side="bottom"
                           align="center"
                         >
                           <div className="space-y-2">
@@ -1403,19 +1402,19 @@ export default function VisibilityMatrixPage() {
                                 {persona.label} × {stage.label}
                               </span>
                               <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/60">
-                                {cellQueries.queries.length} queries
+                                {cellQueries.intents.reduce((acc, i) => acc + i.manifestations.length, 0)} queries
                               </Badge>
                             </div>
                             <div className="space-y-1 max-h-24 overflow-y-auto">
-                              {cellQueries.queries.slice(0, 5).map((q, idx) => (
+                              {cellQueries.intents.flatMap(i => i.manifestations).slice(0, 5).map((q, idx) => (
                                 <div key={idx} className="text-xs text-[#1e1b16]/70 flex gap-1">
                                   <span className="text-[#1e1b16]/30">•</span>
                                   <span className="line-clamp-1">&quot;{q}&quot;</span>
                                 </div>
                               ))}
-                              {cellQueries.queries.length > 5 && (
+                              {cellQueries.intents.flatMap(i => i.manifestations).length > 5 && (
                                 <div className="text-xs text-[#1e1b16]/40">
-                                  +{cellQueries.queries.length - 5} more...
+                                  +{cellQueries.intents.flatMap(i => i.manifestations).length - 5} more...
                                 </div>
                               )}
                             </div>
@@ -1569,7 +1568,7 @@ export default function VisibilityMatrixPage() {
               <CardContent>
                 {displayInsights.totalResponses === 0 && !isViewingHistory ? (
                   <div className="text-sm text-[#1e1b16]/40 text-center py-4">
-                    {stageInsights.targetStage 
+                    {stageInsights.targetStage
                       ? "Run benchmark to see insights"
                       : "Select a stage column for insights"}
                   </div>
@@ -1631,8 +1630,8 @@ export default function VisibilityMatrixPage() {
                       </div>
                       <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 pt-2 border-t border-[#e3dacb]">
                         <span>
-                          {displayInsights.sentimentScore > 0.3 ? "Generally favorable" : 
-                           displayInsights.sentimentScore < -0.3 ? "Generally unfavorable" : "Mixed sentiment"}
+                          {displayInsights.sentimentScore > 0.3 ? "Generally favorable" :
+                            displayInsights.sentimentScore < -0.3 ? "Generally unfavorable" : "Mixed sentiment"}
                         </span>
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
@@ -1667,7 +1666,7 @@ export default function VisibilityMatrixPage() {
                       <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 pt-2 border-t border-[#e3dacb]">
                         <span>
                           {displayInsights.winRate >= 0.6 ? "Favored in comparisons" :
-                           displayInsights.winRate <= 0.4 ? "Losing head-to-head" : "Mixed outcomes"}
+                            displayInsights.winRate <= 0.4 ? "Losing head-to-head" : "Mixed outcomes"}
                         </span>
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
@@ -1702,7 +1701,7 @@ export default function VisibilityMatrixPage() {
                       <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 pt-2 border-t border-[#e3dacb]">
                         <span>
                           {stageInsights.recCounts.strong > stageInsights.recCounts.weak ? "Actively recommended" :
-                           stageInsights.recCounts.none > stageInsights.totalRecs / 2 ? "Rarely recommended" : "Moderately endorsed"}
+                            stageInsights.recCounts.none > stageInsights.totalRecs / 2 ? "Rarely recommended" : "Moderately endorsed"}
                         </span>
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
@@ -1797,11 +1796,10 @@ export default function VisibilityMatrixPage() {
                     <button
                       key={metric.id}
                       onClick={() => setTrendMetric(metric.id as typeof trendMetric)}
-                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
-                        trendMetric === metric.id
+                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${trendMetric === metric.id
                           ? "bg-[#1f3b2c] text-white"
                           : "bg-[#efe6d9] text-[#1e1b16]/60 hover:bg-[#e3dacb]"
-                      }`}
+                        }`}
                     >
                       {metric.label}
                     </button>
@@ -1831,20 +1829,20 @@ export default function VisibilityMatrixPage() {
                       const val = trendMetric === "sentiment"
                         ? Math.round(((run.stageData?.sentimentScore ?? 0) + 1) * 50) // -1 to 1 → 0 to 100
                         : trendMetric === "winrate"
-                        ? Math.round((run.stageData?.winRate ?? 0) * 100)
-                        : Math.round((run.stageData?.recStrength ?? 0) * 100);
+                          ? Math.round((run.stageData?.winRate ?? 0) * 100)
+                          : Math.round((run.stageData?.recStrength ?? 0) * 100);
                       return { label: run.label, value: val };
                     })}
                     margin={{ top: 10, right: 10, bottom: 5, left: 0 }}
                   >
-                    <XAxis 
-                      dataKey="label" 
+                    <XAxis
+                      dataKey="label"
                       tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
                       axisLine={false}
                       tickLine={false}
                     />
-                    <YAxis 
-                      domain={[0, 100]} 
+                    <YAxis
+                      domain={[0, 100]}
                       tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
                       axisLine={false}
                       tickLine={false}
@@ -1853,9 +1851,9 @@ export default function VisibilityMatrixPage() {
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     {selectedTimeIndex < benchmarkHistory.length && (
-                      <ReferenceLine 
-                        x={benchmarkHistory[selectedTimeIndex]?.label} 
-                        stroke="#1f3b2c" 
+                      <ReferenceLine
+                        x={benchmarkHistory[selectedTimeIndex]?.label}
+                        stroke="#1f3b2c"
                         strokeDasharray="4 4"
                         strokeWidth={2}
                       />
@@ -1876,22 +1874,22 @@ export default function VisibilityMatrixPage() {
                         )}
                       </>
                     ) : (
-                      <Line 
-                        type="monotone" 
-                        dataKey="value" 
+                      <Line
+                        type="monotone"
+                        dataKey="value"
                         stroke={
-                          trendMetric === "sentiment" ? "#6e7c5b" : 
-                          trendMetric === "winrate" ? "#b86f3a" : 
-                          "#1f3b2c"
-                        } 
-                        strokeWidth={2.5} 
+                          trendMetric === "sentiment" ? "#6e7c5b" :
+                            trendMetric === "winrate" ? "#b86f3a" :
+                              "#1f3b2c"
+                        }
+                        strokeWidth={2.5}
                         dot={{ fill: trendMetric === "sentiment" ? "#6e7c5b" : trendMetric === "winrate" ? "#b86f3a" : "#1f3b2c", r: 3 }}
-                        connectNulls 
+                        connectNulls
                       />
                     )}
                   </RechartsLineChart>
                 </ChartContainer>
-                
+
                 {/* Time Slider - below chart like Keynote */}
                 <div className="px-[30px] space-y-1">
                   <Slider
@@ -2018,13 +2016,13 @@ export default function VisibilityMatrixPage() {
             ) : (
               evidenceModal?.items.map((item, idx) => {
                 const provider = PROVIDERS.find(p => p.id === item.provider);
-                const metricColor = 
+                const metricColor =
                   item.metricValue === "positive" || item.metricValue === "favorable" || item.metricValue === "1st" || item.metricValue === "strong"
                     ? "bg-[#d4e5d4] text-[#3b5a3b]"
                     : item.metricValue === "negative" || item.metricValue === "unfavorable" || item.metricValue === "absent" || item.metricValue === "none"
-                    ? "bg-[#f0d9d9] text-[#8b4a4a]"
-                    : "bg-[#efe6d9] text-[#1e1b16]/70";
-                
+                      ? "bg-[#f0d9d9] text-[#8b4a4a]"
+                      : "bg-[#efe6d9] text-[#1e1b16]/70";
+
                 return (
                   <div key={idx} className="border border-[#e3dacb] rounded-xl p-4 bg-white">
                     <div className="mb-3">
@@ -2039,9 +2037,9 @@ export default function VisibilityMatrixPage() {
                       </div>
                     </div>
                     <div className="text-sm text-[#1e1b16]/80 leading-relaxed border-t border-[#e3dacb] pt-3">
-                      {highlightBrandMentions(item.excerpt, 
-                        item.metricValue === "positive" ? "positive" : 
-                        item.metricValue === "negative" ? "negative" : "neutral"
+                      {highlightBrandMentions(item.excerpt,
+                        item.metricValue === "positive" ? "positive" :
+                          item.metricValue === "negative" ? "negative" : "neutral"
                       )}
                     </div>
                   </div>
@@ -2075,7 +2073,7 @@ export default function VisibilityMatrixPage() {
               creativity,
             }),
           });
-          
+
           if (!resp.ok) throw new Error("Failed to regenerate queries");
           const data = await resp.json();
           return data.queries;
@@ -2137,8 +2135,8 @@ function highlightBrandMentions(text: string, sentiment: string): React.ReactNod
   const bgColor = sentiment === "positive"
     ? "bg-[#d4e5d4]"
     : sentiment === "negative"
-    ? "bg-[#f0d9d9]"
-    : "bg-[#cde0f0]";
+      ? "bg-[#f0d9d9]"
+      : "bg-[#cde0f0]";
 
   // Custom component to highlight brand mentions within markdown
   const components = {
