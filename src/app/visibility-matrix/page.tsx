@@ -1405,19 +1405,19 @@ export default function VisibilityMatrixPage() {
                                 {persona.label} × {stage.label}
                               </span>
                               <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/60">
-                                {cellQueries.length} queries
+                                {cellQueries.queries.length} queries
                               </Badge>
                             </div>
                             <div className="space-y-1 max-h-24 overflow-y-auto">
-                              {cellQueries.slice(0, 5).map((q, idx) => (
+                              {cellQueries.queries.slice(0, 5).map((q, idx) => (
                                 <div key={idx} className="text-xs text-[#1e1b16]/70 flex gap-1">
                                   <span className="text-[#1e1b16]/30">•</span>
                                   <span className="line-clamp-1">&quot;{q}&quot;</span>
                                 </div>
                               ))}
-                              {cellQueries.length > 5 && (
+                              {cellQueries.queries.length > 5 && (
                                 <div className="text-xs text-[#1e1b16]/40">
-                                  +{cellQueries.length - 5} more...
+                                  +{cellQueries.queries.length - 5} more...
                                 </div>
                               )}
                             </div>
@@ -2111,9 +2111,11 @@ export default function VisibilityMatrixPage() {
               const updated = { ...prev };
               for (const key of Object.keys(updated)) {
                 const [persona, stage] = key.split("-") as [Persona, Stage];
+                const entry = newQueryBank[persona][stage];
                 updated[key] = {
                   ...updated[key],
-                  queries: newQueryBank[persona][stage],
+                  queries: entry.queries,
+                  intentText: entry.intentText,
                 };
               }
               return updated;

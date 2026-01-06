@@ -256,16 +256,6 @@ export function QueryPanelV2({
     return "Full Matrix";
   };
 
-  // Get intent text for current cell
-  const getIntentText = () => {
-    if (scope === "cell" && selectedPersona && selectedStage) {
-      const personaLabel = personas.find(p => p.id === selectedPersona)?.label;
-      const stageLabel = stages.find(s => s.id === selectedStage)?.label;
-      return `${personaLabel} buyer in ${stageLabel?.toLowerCase()} stage`;
-    }
-    return null;
-  };
-
   const startEditQuery = (persona: Persona, stage: Stage, index: number, value: string) => {
     setEditingQuery({ persona, stage, index });
     setEditValue(value);
