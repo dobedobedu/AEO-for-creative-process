@@ -75,10 +75,23 @@ async function uploadFormattedBenchmark(
       documentName: response?.documentName,
     };
   } catch (error) {
-    console.error("[FileSearch] Upload failed:", error);
+    // Safely extract error message to avoid issues with read-only error objects
+    let errorMessage = "Unknown upload error";
+    try {
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (error && typeof error === "object" && "message" in error) {
+        errorMessage = String((error as { message: unknown }).message);
+      } else {
+        errorMessage = String(error);
+      }
+    } catch {
+      errorMessage = "Upload error (details unavailable)";
+    }
+    console.error("[FileSearch] Upload failed:", errorMessage);
     return {
       success: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: errorMessage,
     };
   }
 }
@@ -115,7 +128,14 @@ export function uploadBenchmarkResultsAsync(
       }
     })
     .catch((error) => {
-      console.error("[FileSearch] Background upload error:", error);
+      // Safely log error without passing the raw object
+      let msg = "Unknown error";
+      try {
+        msg = error instanceof Error ? error.message : String(error);
+      } catch {
+        msg = "Error details unavailable";
+      }
+      console.error("[FileSearch] Background upload error:", msg);
     });
 }
 
@@ -148,6 +168,13 @@ export function uploadRunAsync(run: BenchmarkRun): void {
       }
     })
     .catch((error) => {
-      console.error("[FileSearch] Run background upload error:", error);
+      // Safely log error without passing the raw object
+      let msg = "Unknown error";
+      try {
+        msg = error instanceof Error ? error.message : String(error);
+      } catch {
+        msg = "Error details unavailable";
+      }
+      console.error("[FileSearch] Run background upload error:", msg);
     });
 }

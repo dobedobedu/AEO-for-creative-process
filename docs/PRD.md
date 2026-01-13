@@ -1,63 +1,154 @@
-# AI Visibility Baseline - MVP PRD
+# AI Visibility Baseline - Product Requirements Document
+
+> **Last Updated**: January 2026 | **Version**: 2.0
 
 ## Goal
-Build a baseline audit workflow for Lakewood Ranch AI visibility. The MVP runs a single-persona simulation, generates 5 queries from selected triggers, executes those queries across OpenAI and Gemini search-grounded models, stores raw responses + citations, and produces an insight summary with charts.
 
-## Primary user
-Marketing/brand stakeholder who wants to understand AI visibility and the citations that shape AI answers.
+Build a recurring audit system for Lakewood Ranch AI visibility across the buyer journey. The product runs scheduled benchmarks, scores AI responses, powers insight dashboards, and enables RAG-based chat for stakeholder queries.
 
-## Non-goals (MVP)
-- Multi-tenant billing or RBAC
-- Accuracy scoring against proprietary docs
-- Competitor benchmarking beyond what models surface organically
+## Primary User
+
+Marketing/brand stakeholders who want to understand how AI platforms represent their brand across the buyer decision journey.
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         INTENT LIBRARY                          │
+│  4 Personas × 4 Stages = 16 Cells                               │
+│  Each cell: Intent + "Buyer Might Ask" queries                  │
+│  Controls: CPO/Family Unit toggle, Temperature dial             │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      QUERY GENERATION                           │
+│  DeepSeek interprets intents → actual search queries            │
+│  System prompt varies by CPO vs Family Unit role                │
+│  Temperature controls creativity                                │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      AI PROVIDERS (4)                           │
+│  OpenAI (gpt-5.2) | Anthropic (claude-haiku-4-5)                │
+│  Gemini (gemini-3-flash) | xAI (grok-4-latest)                  │
+│  Web search enabled, batch processing, response cache           │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   STAGE-AWARE SCORING                           │
+│  Gemini 3 Flash structured output                               │
+│  Stage-specific metrics:                                        │
+│    Explore: Discovery Rate, Top-3 Rate                          │
+│    Consider: Sentiment Score                                    │
+│    Compare: Win Rate                                            │
+│    Decide: Recommendation Rate                                  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    ▼                   ▼
+┌───────────────────────────┐ ┌───────────────────────────┐
+│     RUN HISTORY (JSON)    │ │   GEMINI FILE SEARCH      │
+│  Powers metrics panels    │ │  Scores + structured data │
+│  Powers trend charts      │ │  Powers RAG chat          │
+│  Powers insight cards     │ │  Semantic search          │
+└───────────────────────────┘ └───────────────────────────┘
+```
+
+---
+
+## Personas (4)
+
+| Persona | Description |
+|---------|-------------|
+| `move_up` | Growing family, upgrading from starter home |
+| `retiree` | Active adult buyer seeking 55+ community |
+| `luxury` | High-net-worth buyer seeking premium amenities |
+| `first_time` | First-time homebuyer entering market |
+
+## Stages (4)
+
+| Stage | Buyer State | Key Metric |
+|-------|-------------|------------|
+| `explore` | Awareness, life events triggering search | Discovery Rate |
+| `consider` | Evaluating specific options | Sentiment Score |
+| `compare` | Weighing alternatives | Win Rate |
+| `decide` | Ready to commit, handoff to agent | Recommendation Rate |
+
+---
+
+## Intent Library Model
+
+Each cell in the 4×4 matrix contains:
+
+```typescript
+interface Intent {
+  id: string;
+  persona: "move_up" | "retiree" | "luxury" | "first_time";
+  stage: "explore" | "consider" | "compare" | "decide";
+  text: string;                    // The core intent
+  role: "cpo" | "family_unit";     // Decision lens
+  queryStyle: number;              // 0.5 (common) to 1.0 (niche)
+  active: boolean;
+}
+```
+
+**Query Generation Flow**:
+1. User writes intent text: "Find active adult communities"
+2. User selects role toggle: CPO / Family Unit
+3. User sets query style slider: Common ↔ Niche
+4. DeepSeek generates search queries based on all inputs
+5. UI displays queries under "Buyer Might Ask"
+6. Queries sent to all 4 AI providers
+
+**Role Toggle**:
+- **CPO**: The pragmatic decision-maker focused on finances, risks, and investment protection
+- **Family Unit**: The lifestyle architect focused on daily life, community, and well-being
+
+**Query Style Slider**:
+- **Common (0.5)**: High-volume, predictable queries many buyers would type
+- **Niche (1.0)**: Long-tail, specific queries revealing deep concerns
+
+---
+
+## Cost Optimization
+
+| Strategy | Implementation | Savings |
+|----------|----------------|---------|
+| Anthropic Prompt Caching | `cache_control` on system prompt | ~90% input tokens |
+| Response Deduplication | 24h TTL cache by query+provider+model | Avoids duplicate calls |
+| Scheduled Runs | Vercel Cron (10PM SGT daily) | Off-peak, batched |
+
+---
+
+## Hybrid Storage
+
+| Store | Purpose | Format |
+|-------|---------|--------|
+| `data/runs/*.json` | Run history, metrics, trends | JSON files |
+| `data/intent-library.json` | Intent definitions + versions | JSON file |
+| Gemini FileSearchStore | RAG chat, semantic search | Embedded markdown |
+
+---
+
+## Non-Goals (Current)
+
+- Multi-tenant / RBAC
+- Deep Research mode (deferred)
 - Real-time streaming UI
+- Accuracy scoring against proprietary docs
+- "Decide" stage optimization (placeholder for future)
 
-## Scope
-- Persona count: 1
-- Query count: 5 per run
-- Providers/models:
-  - OpenAI: gpt-5.2, gpt-5-mini (web search tool)
-  - Gemini: gemini-2.5-flash, gemini-3-flash (google_search grounding)
-- Optional mode: Deep Research toggle
-  - OpenAI: o3-deep-research and o4-mini-deep-research
-  - Gemini: Deep Research Agent via Interactions API
- - Insight model: models/gemini-3-pro-preview
+---
 
-## User flow
-1. Create persona (free text + optional structured template).
-2. Select trigger stage (Explore / Consider / Compare) and optional sub-triggers.
-3. Generate queries with DeepSeek (OpenRouter) or edit manually.
-4. Review and edit 5 generated queries.
-5. Launch run (client-side sequential execution in MVP for streaming updates).
-6. Review graph UI (persona -> queries -> responses -> insight).
-7. Read insight summary and charts; inspect citations and raw responses.
-8. Trigger Gemini 3 Pro analysis for narrative + charts.
-9. Runs execute with per-provider concurrency (1 per provider default).
+## Success Metrics
 
-## Success metrics
-- Run completes reliably with all 4 model responses per query.
-- Citations are stored and visible per response.
-- Insight summary is generated with at least 3 chart specs.
-- UI clearly communicates status and results without advanced configuration.
-
-## Constraints / assumptions
-- Vercel deployment (use Vercel DB or marketplace DB).
-- Daily runs are acceptable; no strict latency requirements.
-- Compliance requirements deferred for MVP.
-
-## Acceptance criteria
-- Single persona can be created and edited.
-- Trigger selection generates 5 queries and user can edit them.
-- 20 model calls per run (5 queries * 4 models).
-- Raw responses + tool metadata are persisted.
-- Citation table is populated and viewable.
-- Insight summary generated by Gemini 3 Pro with chart specs.
-- React Flow UI displays nodes and edges with status.
-- DeepSeek (OpenRouter) query generation works and updates the UI.
-- Run status shows completed/total calls.
-- Raw responses and citations are visible in the UI.
-- Gemini 3 Pro analysis returns narrative + charts and persists in insights.
-- Provider concurrency executes one lane per provider in parallel.
-
-## Trigger library
-See docs/Trigger-Library.md for the MVP trigger set.
+- Scheduled runs complete daily without intervention
+- All 4 providers respond per query
+- Insight dashboards update automatically
+- Chat correctly retrieves historical data via RAG
+- Cost per run < $5 (target)

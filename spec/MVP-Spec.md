@@ -1,45 +1,27 @@
 # MVP Spec
 
-## Functional requirements
-- Single persona input (free text + optional structured normalization).
-- Trigger selection by buying stage (Explore / Consider / Compare).
-- Generate 5 queries per run; allow user edits.
-- Generate queries with DeepSeek (OpenRouter) and parse JSON with fallback extraction.
-- Execute 4 model calls per query in standard mode.
-- Deep Research toggle routes all queries to deep research models.
-- Persist raw responses + tool metadata.
-- Extract citations into a normalized table.
-- Generate insights using Gemini 3 Pro (narrative + charts).
-- React Flow UI displays the pipeline with node status.
-- OpenRouter model selector for query generation (default deepseek/deepseek-v3.2).
-- Run status shows completed/total calls.
-- UI displays raw responses and citations.
-- Add Gemini 3 Pro analysis endpoint and store insights.
-- Client-side sequential execution updates UI after each call.
-- Provider concurrency runs one lane per provider (expandable).
+> ⚠️ **SUPERSEDED** - This document reflects the original MVP scope from Dec 2025.
+> See **[docs/PRD.md](../docs/PRD.md)** for current architecture.
 
-## Non-functional requirements
-- Vercel deployable
-- Async queue fallback if batch not available
-- Observability: run_id, cost estimate, latency, status
+---
 
-## Test plan (MVP)
-### Unit
-- Persona normalization returns required fields.
-- Trigger -> query generation returns 5 queries.
-- Citation parser extracts url/domain/title/snippet.
+## Original MVP (Archived)
 
-### Integration
-- OpenAI standard mode returns tool metadata when web search is enabled.
-- Gemini standard mode returns grounding_metadata.
-- Deep Research mode returns plain-text response and metadata.
+The original MVP targeted:
+- Single persona input (free text)
+- 3 stages (Explore / Consider / Compare)
+- 5 queries per run via DeepSeek generation
+- 4 model calls per query
+- OpenAI + Gemini only
 
-### End-to-end
-- 1 persona -> 5 queries -> 20 responses recorded.
-- pending_count hits 0 -> analysis job runs.
-- Insight summary and charts saved and visible.
+## Current State (Jan 2026)
 
-## Acceptance criteria
-- Run completes without manual intervention.
-- Insight node displays narrative + 3+ charts.
-- User can view raw responses + citations per query.
+The product has evolved to:
+- 4 fixed personas × 4 stages (16-cell matrix)
+- Intent Library with versioned queries
+- 4 AI providers (OpenAI, Anthropic, Gemini, xAI)
+- Stage-aware LLM scoring (Gemini 3 Flash)
+- Hybrid storage (file + FileSearchStore)
+- RAG-based chat for insights
+
+See [docs/PRD.md](../docs/PRD.md) for full specification.

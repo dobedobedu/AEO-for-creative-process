@@ -11,6 +11,7 @@ interface StageCellProps {
     winRate?: number;
     recommendationRate?: number;
   };
+  mentionRate?: number;
   queryCount: number;
   completedCount?: number;
   isComplete: boolean;
@@ -47,6 +48,23 @@ function formatMetric(stage: Stage, value: number): string {
   }
   // Others are 0-1 percentages
   return `${(value * 100).toFixed(0)}%`;
+}
+
+// Get color tone based on mention rate
+function getMentionTone(mentionRate?: number): { bg: string; border: string } {
+  if (mentionRate === undefined || Number.isNaN(mentionRate)) {
+    return { bg: "bg-white", border: "border-[#e3dacb]/50" };
+  }
+  if (mentionRate >= 0.6) {
+    return { bg: "bg-[#e3f1e6]", border: "border-[#b6d7bf]" };
+  }
+  if (mentionRate >= 0.4) {
+    return { bg: "bg-[#edf1e0]", border: "border-[#cfd8b4]" };
+  }
+  if (mentionRate >= 0.2) {
+    return { bg: "bg-[#f6efe0]", border: "border-[#e3dacb]" };
+  }
+  return { bg: "bg-[#f7e6e3]", border: "border-[#e6c3bb]" };
 }
 
 // Progress dots component
@@ -86,6 +104,7 @@ function ProgressDots({
 export function StageCell({
   stage,
   metrics,
+  mentionRate,
   queryCount,
   completedCount = 0,
   isComplete,
@@ -94,6 +113,7 @@ export function StageCell({
 }: StageCellProps) {
   const primaryMetric = getPrimaryMetric(stage, metrics);
   const stageLabel = STAGE_LABELS[stage];
+  const mentionTone = getMentionTone(mentionRate);
 
   // Idle state - empty dots showing query count
   if (!isComplete && !isRunning) {
@@ -134,7 +154,7 @@ export function StageCell({
     <div className={`
       w-full h-full min-h-[80px] p-3 rounded-xl
       flex flex-col items-center justify-center gap-1
-      bg-white border border-[#e3dacb]/50
+      ${mentionTone.bg} border ${mentionTone.border}
       ${selected ? "ring-2 ring-[#1f3b2c]" : ""}
     `}>
       <span className="text-xl font-semibold text-[#1e1b16]">
@@ -142,6 +162,9 @@ export function StageCell({
       </span>
       <span className="text-[10px] text-[#1e1b16]/50 uppercase tracking-wide">
         {stageLabel}
+      </span>
+      <span className="text-[10px] text-[#1e1b16]/45">
+        Mention rate {mentionRate !== undefined ? `${Math.round(mentionRate * 100)}%` : "—"}
       </span>
     </div>
   );

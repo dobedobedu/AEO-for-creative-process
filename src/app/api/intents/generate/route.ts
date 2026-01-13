@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { generateQueries } from "@/lib/intents/generator";
+import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
 import { PersonaSchema, StageSchema } from "@/lib/intents/types";
 
 const GenerateRequestSchema = z.object({
@@ -7,7 +7,7 @@ const GenerateRequestSchema = z.object({
   stage: StageSchema,
   intent: z.string(),
   role: z.enum(["cpo", "family_unit"]),
-  creativity: z.number().min(0).max(1),
+  queryStyle: z.number().min(0.5).max(1),
 });
 
 export async function POST(req: Request) {
@@ -15,9 +15,15 @@ export async function POST(req: Request) {
     const body = await req.json();
     const params = GenerateRequestSchema.parse(body);
 
-    const queries = await generateQueries(params);
+    const result = await generateQueriesFromIntent({
+      persona: params.persona,
+      stage: params.stage,
+      intent: params.intent,
+      role: params.role,
+      queryStyle: params.queryStyle,
+    });
 
-    return Response.json({ queries });
+    return Response.json({ queries: result.queries, reasoning: result.reasoning });
   } catch (err) {
     console.error("[API Intent Generate] Error:", err);
     if (err instanceof z.ZodError) {

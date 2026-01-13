@@ -143,3 +143,27 @@ The chat API automatically chooses the right mode:
 | Input/output tokens | Standard Gemini pricing | Every chat |
 
 Typical full benchmark (~1600 responses): ~$0.12 embedding cost
+
+## Cost Optimization Strategies
+
+| Strategy | Location | Effect |
+|----------|----------|--------|
+| Anthropic Prompt Caching | `lib/providers/anthropic.ts` | ~90% input token savings |
+| Response Deduplication | `lib/cache/responseCache.ts` | Avoids duplicate API calls (24h TTL) |
+| Scheduled Runs | `vercel.json` cron | Daily batch at 10PM SGT |
+
+**Anthropic Caching**: Uses `cache_control: { type: "ephemeral" }` and `anthropic-beta` header. System prompt is cached; query is dynamic.
+
+**Response Cache**: In-memory with file persistence. Key = SHA256(`provider:model:query`).
+
+**Vercel Cron**: Requires Pro plan. Endpoint at `/api/benchmark/scheduled`. Set `CRON_SECRET` env var for auth.
+
+## Terminology
+
+| Term | Meaning |
+|------|---------|
+| Intent | What the buyer wants (e.g., "Find communities for retirement") |
+| "Buyer Might Ask" | Example queries derived from intent (formerly "manifestations") |
+| CPO | Chief Purchasing Officer role - analytical, practical queries |
+| Family Unit | Emotional, lifestyle-focused queries |
+| Cell | One persona × stage intersection in the 4×4 matrix |

@@ -131,6 +131,20 @@ export async function runSingleQuery(params: {
       raw,
     };
   } catch (err) {
+    // Defensive error message extraction to handle read-only error objects
+    let errorMessage = "Unknown error";
+    try {
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (err && typeof err === "object" && "message" in err) {
+        errorMessage = String((err as { message: unknown }).message);
+      } else {
+        errorMessage = String(err);
+      }
+    } catch {
+      errorMessage = "Provider call failed";
+    }
+
     return {
       provider,
       model,
@@ -138,7 +152,7 @@ export async function runSingleQuery(params: {
       citations: [],
       visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
       latencyMs: Date.now() - start,
-      error: err instanceof Error ? err.message : String(err),
+      error: errorMessage,
       raw: null,
     };
   }

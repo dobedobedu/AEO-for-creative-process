@@ -14,6 +14,9 @@ import {
   calculateDecideMetrics,
 } from "@/lib/scoring/extractor";
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
+import { DEFAULT_PROVIDERS, getCellKey, emptyExtraction } from "@/lib/runs/utils";
+import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
+import { initProgress, logProgress, incrementProgress, completeProgress, failProgress } from "@/lib/benchmark/progress";
 
 const RequestSchema = z.object({
   brand: z.string().min(1),
@@ -38,62 +41,10 @@ const RequestSchema = z.object({
     .optional(),
 });
 
-const DEFAULT_PROVIDERS: Array<{ provider: Provider; model: string }> = [
-  { provider: "openai", model: "gpt-5.2" },
-  { provider: "anthropic", model: "claude-haiku-4-5" },
-  { provider: "gemini", model: "gemini-3-flash-preview" },
-  { provider: "xai", model: "grok-4-latest" },
-];
-
-function getCellKey(persona: Persona, stage: Stage): string {
-  return `${persona}_${stage}`;
-}
-
-function emptyExtraction(stage: Stage): StageExtraction {
-  switch (stage) {
-    case "explore":
-      return {
-        mentioned: false,
-        responseRelevant: false,
-        inTopThree: false,
-        totalOptionsListed: 0,
-        competitors: [],
-        howDescribed: "not mentioned",
-      };
-    case "consider":
-      return {
-        mentioned: false,
-        responseRelevant: false,
-        sentiment: "neutral",
-        sentimentScore: 0,
-        strengthsMentioned: [],
-        concernsRaised: [],
-        overallPortrayal: "not mentioned",
-      };
-    case "compare":
-      return {
-        mentioned: false,
-        responseRelevant: false,
-        comparedTo: [],
-        outcome: "not_compared",
-        winsOn: [],
-        losesOn: [],
-        aiConclusion: "not compared",
-      };
-    case "decide":
-      return {
-        mentioned: false,
-        responseRelevant: false,
-        recommended: false,
-        recommendationStrength: "not_mentioned",
-        qualifiers: [],
-        alternativesOffered: [],
-        decisionRationale: "not mentioned",
-      };
-  }
-}
-
 export async function POST(req: Request) {
+  // Generate runId early for progress tracking (accessible in catch block)
+  const id = generateRunId();
+
   try {
     const payload = await req.json();
     const data = RequestSchema.parse(payload);
@@ -104,6 +55,10 @@ export async function POST(req: Request) {
     const metricsConfig = loadMetricsConfig();
 
     const quickTest = data.quickTest ?? false;
+
+    // Estimate total steps: cells * providers (rough estimate before we know query counts)
+    const estimatedSteps = data.cells.length * providers.length;
+    initProgress(id, estimatedSteps, "cells");
 
     const resultsByCell: Record<string, BenchmarkResult> = {};
     const runCells: Record<string, CellResult> = {};
@@ -116,10 +71,23 @@ export async function POST(req: Request) {
 
       if (activeIntents.length === 0) continue;
 
-      const intentsToRun = activeIntents.map(intent => ({
-        id: intent.id,
-        queries: quickTest ? [intent.defaultQueries[0]] : intent.defaultQueries
-      }));
+      // Generate queries via DeepSeek for each intent
+      const intentsToRun = await Promise.all(
+        activeIntents.map(async (intent) => {
+          const generated = await generateQueriesFromIntent({
+            persona: cell.persona,
+            stage: cell.stage,
+            intent: intent.text,
+            role: intent.role,
+            queryStyle: intent.queryStyle,
+            count: quickTest ? 1 : 5,
+          });
+          return {
+            id: intent.id,
+            queries: generated.queries,
+          };
+        })
+      );
 
       const benchmarkResult = await runBenchmark({
         stage: cell.stage,
@@ -143,7 +111,7 @@ export async function POST(req: Request) {
       const extractionsForMetrics = (relevantExtractions.length > 0 ? relevantExtractions : allExtractions) as StageExtraction[];
 
       const metrics: CellResult["metrics"] = {};
-      
+
       if (cell.stage === "explore") {
         const { discoveryRate, topThreeRate } = calculateExploreMetrics(extractionsForMetrics as ExploreExtraction[]);
         metrics.discoveryRate = discoveryRate;
@@ -173,11 +141,11 @@ export async function POST(req: Request) {
           };
         }
 
-        return { 
-          query: qr.query, 
+        return {
+          query: qr.query,
           // Inject intentId if available from runner, otherwise fallback to first intent
           intentId: qr.intentId,
-          responses 
+          responses
         };
       });
 
@@ -189,9 +157,16 @@ export async function POST(req: Request) {
         metrics,
         results: queryResults,
       };
+
+      // Track progress
+      incrementProgress(id, 1);
+      logProgress(id, {
+        message: `Completed ${cell.persona}/${cell.stage}`,
+        persona: cell.persona,
+        stage: cell.stage,
+      });
     }
 
-    const id = generateRunId();
     const timestamp = new Date().toISOString();
 
     // Overall summary across all returned cells
@@ -232,14 +207,41 @@ export async function POST(req: Request) {
     saveRun(run);
     uploadRunAsync(run);
 
+    // Mark progress complete
+    completeProgress(id);
+
     return Response.json({ run, resultsByCell });
   } catch (err) {
+    // Log error message safely without passing raw error object
+    let logMsg = "Unknown error";
+    try {
+      logMsg = err instanceof Error ? err.message : String(err);
+    } catch {
+      logMsg = "Error details unavailable";
+    }
+    console.error("[benchmark/run] Error:", logMsg);
+
+    // Mark progress as failed
+    failProgress(id, logMsg);
+
     if (err instanceof z.ZodError) {
       return Response.json({ error: "Invalid request", details: err.errors }, { status: 400 });
     }
-    return Response.json(
-      { error: err instanceof Error ? err.message : "Unknown error" },
-      { status: 500 }
-    );
+
+    // Defensive error message extraction to handle read-only error objects
+    let errorMessage = "Unknown error";
+    try {
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (err && typeof err === "object" && "message" in err) {
+        errorMessage = String((err as { message: unknown }).message);
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      }
+    } catch {
+      errorMessage = "Error processing failed";
+    }
+
+    return Response.json({ error: errorMessage }, { status: 500 });
   }
 }

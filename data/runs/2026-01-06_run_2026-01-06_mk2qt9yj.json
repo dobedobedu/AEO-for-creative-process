@@ -1,0 +1,83 @@
+{
+  "id": "run_2026-01-06_mk2qt9yj",
+  "timestamp": "2026-01-06T15:27:05.131Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "retiree_explore": {
+      "intentId": "int_retiree_explore_mk189ge6",
+      "intentText": "Retiree exploring Florida retirement destinations",
+      "queriesUsed": [
+        "Are there golf cart-friendly neighborhoods in Bradenton with easy access to coffee shops and village centers?"
+      ],
+      "metrics": {
+        "discoveryRate": 0,
+        "topThreeRate": 0
+      },
+      "results": [
+        {
+          "query": "Are there golf cart-friendly neighborhoods in Bradenton with easy access to coffee shops and village centers?",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Yes—**but in Bradenton proper, “golf-cart-friendly” is usually neighborhood-by-neighborhood (HOA rules + which roads you must cross)**. If your goal is **carting to coffee and a real village/town center**, there are a few areas that fit better than others.\n\n## Best matches (cart-friendly feel + “village center / coffee” access)\n\n### 1) **Lakewood Ranch (east of Bradenton) — villages + true town centers**\nIf you’re open to the Bradenton-area (not strictly inside Bradenton city limits), **Lakewood Ranch is the most “designed-for-villages” option**, with multiple town centers (Main Street, Waterside Place, etc.) and lots of cafés/shops. ([lakewoodranch.com](https://lakewoodranch.com/life-on-the-ranch/shopping-dining/?utm_source=openai))  \nIt’s also explicitly **golf-cart used within villages**, with rules about not using higher-speed main roads (generally >35 mph) and equipment/registration requirements if you go outside your village. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n\n**Why it works:** you get an actual “village center” concept, events, and café clusters.  \n**Watch-outs:** carting *between* villages/town centers may be limited depending on the roads you’d need to use. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n\n### 2) **Village of the Arts / downtown Bradenton — best “coffee + village vibe,” but cart use is the question**\nFor “coffee shops and village center” *feel*, **the Village of the Arts** is the most village-like district in/near downtown Bradenton (historic cottages, galleries, restaurants, events). ([villageofthearts.org](https://www.villageofthearts.org/?utm_source=openai))  \nThis is the area where you’re more likely to **walk or bike** to coffee/food rather than rely on a cart.\n\n**Why it works:** genuine neighborhood “center” energy and regular events. ([villageofthearts.org](https://www.villageofthearts.org/?utm_source=openai))  \n**Watch-outs:** golf-cart friendliness here depends on street-by-street comfort, parking, and local rules (not an HOA-designed cart network).\n\n### 3) **“Golf-cart rides” communities in Bradenton (55+) — cart-friendly inside, but not always café-close**\nSome age-restricted communities market themselves around **golf cart rides and internal carting**—for example **Village on the Greens** in Bradenton. ([villageonthegreens.com](https://villageonthegreens.com/?utm_source=openai))\n\n**Why it works:** cart culture inside the community. ([villageonthegreens.com](https://villageonthegreens.com/?utm_source=openai))  \n**Watch-outs:** these aren’t always adjacent to a walkable “village center” with multiple coffee options; you may still be crossing bigger roads for cafés.\n\n## A solid West Bradenton option (more “close-to-shops” than “village center”)\n### 4) **Palma Sola area (NW Bradenton) — convenience, coastal access**\nSome Palma Sola-area neighborhoods emphasize proximity to shops/restaurants (more “convenient location” than “planned village center”). For example, Palma Sola Bay Club notes residents can walk to shops/restaurants. ([palmasolabayclub.org](https://palmasolabayclub.org/about-psbc?utm_source=openai))\n\n**Why it works:** West Bradenton convenience + near beaches. ([palmasolabayclub.org](https://palmasolabayclub.org/about-psbc?utm_source=openai))  \n**Watch-outs:** not necessarily a cart-network / cart-to-café setup; depends on your exact subdivision and road crossings.\n\n---\n\n## 3 quick questions so I can narrow this to 2–4 specific neighborhoods for you\n1) Do you mean **Bradenton city limits only**, or is **Lakewood Ranch** (Bradenton-area) acceptable?  \n2) Is this for a **street-legal LSV** (registered, lights/turn signals, etc.) or a **standard golf cart**? (This changes what roads you can legally/safely use.) ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n3) What matters most: **cart-to-coffee** (within ~1–2 miles) or **cart culture inside the neighborhood**?\n\nIf you answer those, I’ll give a short list of neighborhoods + the most likely “cart route” realities (major road barriers, where the coffee clusters are, and which areas are realistically cartable).",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about golf cart-friendly neighborhoods in Bradenton, Florida that have convenient access to coffee shops and village centers.\nLet me search for more specific information about golf cart residential communities in Bradenton.\nBased on my research, I found several excellent golf cart-friendly neighborhoods in Bradenton with convenient access to coffee shops and village centers:\n\n## Key Golf Cart-Friendly Communities\n\n### Lakewood Ranch\n\nLakewood Ranch offers a 150+ mile network of trails, sidewalks and bike lanes\n, making it ideal for golf cart use. \nThe community is made up of more than 20 unique villages, some with golf courses, and all are close to Lakewood Ranch \"town centers\" where you can find convenient shopping, dining, and local activities\n. However, \nthe rules around golf carts vary depending on the village/neighborhood where you live in Lakewood Ranch, and many neighborhoods do allow them, but they are not allowed on major county roads\n.\n\n\nIn Tara Golf and Country Club neighborhood, golf carts have become more popular as an easy way to get around, and the club is adding at least 50 parking spaces dedicated to golf carts\n.\n\n### SeaFlower\n\nSeaFlower is uniquely designed to encourage slower traffic and pedestrian movement where golf carts, bikes, and walking are the preferred way to get around, with multi-modal trails winding throughout the development that allow residents to easily access parks, the Village Center for shopping and dining\n.\n\n### Cortez Village\n\nYou can cruise through the historic village of Cortez, where time seems to stand still\n, and \nNextdoor Neighbors describe Cortez Village as a walkable neighborhood\n. \nFoxi Coffee is located inside The Fox Mercantile in the heart of historic Cortez Village and is known for its artisan-style handcrafted beverages, and offers a perfect",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Yes, Bradenton has several golf cart-friendly neighborhoods where you can easily reach coffee shops and village centers. However, there is a legal distinction you should keep in mind: **unregistered golf carts** (max 20 mph) are generally restricted to internal community roads, while **Low-Speed Vehicles (LSVs)** (registered, tagged, max 25 mph) can be driven on any public street with a speed limit of 35 mph or less.\n\nHere are the best neighborhoods for this lifestyle:\n\n### 1. Lakewood Ranch (Waterside & Main Street)\nLakewood Ranch is the most prominent \"village-style\" development in the area. It is specifically designed with multi-use paths and low-speed road networks.\n*   **The Experience:** Residents in villages like **Lakehouse Cove** or **Shoreview** frequently use golf carts to visit **Waterside Place**, a lakeside town center. \n*   **Coffee Access:** You can cart directly to **Atria Bread + Coffee** or **Starbucks** at Waterside.\n*   **Village Center:** Waterside Place acts as the primary hub with a Sunday Farmers Market, retail, and waterfront dining.\n\n### 2. Village Green (West Bradenton)\nThis established neighborhood in West Bradenton is well-known for its \"Golf Carts OK\" atmosphere and wide, quiet streets.\n*   **The Experience:** It is common to see neighbors \"zipping\" to the nearby shopping plazas. \n*   **Coffee Access:** Residents often cart to the **Beachway Plaza** (at 75th St W & Manatee Ave), which features a **Starbucks** and several local breakfast spots.\n*   **Village Center:** While it doesn't have a curated \"village square,\" the proximity to the Palma Sola area and the 75th Street corridor makes it highly functional for daily errands.\n\n### 3. Harbour Isle (Perico Island)\nLocated just before the bridge to Anna Maria Island, this is a gated, coastal community designed for \"resort-style\" mobility.\n*   **The Experience:** Neighborhoods like **Edgewater Walk** and **Mangrove Walk** are engineered for low-speed vehicles.\n*   **Coffee Access:** You can cart to the **Harbour Isle Beach Club** for coffee or snacks. To reach off-site shops like **Fifty Three Fifty The Pourhouse**, you would ideally want a street-legal LSV to safely navigate the short stretch of Manatee Avenue.\n*   **Village Center:** The community has its own internal \"village\" feel with a marina, restaurant, and fitness center.\n\n### 4. Village of the Arts (VOTA)\nVOTA is an eclectic, live-work artist colony located just south of Downtown Bradenton. \n*   **The Experience:** The streets are narrow and the speed limits are very low (usually 20–25 mph), making it very cart-friendly. \n*   **Coffee Access:** You can drive a cart directly to **Adobe Graffiti Lounge** (a kava and coffee bar) or **Birdrock Taco Shack**.\n*   **Village Center:** The entire neighborhood is the \"center,\" filled with galleries and studios. It is also a very short distance from **Old Main Street** in downtown.\n\n### 5. Heritage Harbour / River Strand\nLocated in East Bradenton, this master-planned community is heavily centered around golf cart transport.\n*   **The Experience:** It features a massive network of internal roads where carts are the primary way people reach the clubhouse and community events.\n*   **Coffee Access:** Access is primarily to the community’s own cafes and clubhouses (like the **River Strand Clubhouse**). For external coffee shops, a street-legal LSV is recommended to reach the nearby **Heritage Harbour Marketplace**.\n\n### Important Legal Tips:\n*   **Downtown Bradenton:** If you plan to drive into the heart of downtown (Old Main Street or near the Riverwalk), you **must use a street-legal LSV**. These require a license plate, insurance, and safety equipment (headlights, turn signals, mirrors). \n*   **Parking:** Downtown Bradenton and the Riverwalk have specific areas where golf carts can park more easily than full-sized cars, often allowing you to get closer to coffee spots like **Tellers** or **The Daily Dose**.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Yes, Bradenton, Florida, has several golf cart-friendly neighborhoods, particularly in planned communities designed for easy, low-speed transportation. These areas often feature dedicated paths or streets where golf carts are permitted (and sometimes encouraged), making it simple to access local amenities like coffee shops, village centers, and retail spots. Based on information from sources like 55places.com and local real estate blogs, I'll highlight some top options below. Keep in mind that local regulations can vary, so it's a good idea to check with community associations or the City of Bradenton for the latest rules on golf cart usage.\n\n### Key Golf Cart-Friendly Neighborhoods in Bradenton\n1. **Lakewood Ranch**  \n   - This is one of the most prominent golf cart-friendly communities in the area, often highlighted in resources like palmparadiserealty.com and buylakewoodranch.com. It's a large master-planned development with miles of trails and low-speed roads where golf carts are commonly used for getting around.  \n   - **Access to Coffee Shops and Village Centers**: Lakewood Ranch has multiple \"village\" areas, such as Main Street at Lakewood Ranch, which includes coffee spots like Starbucks, local cafes (e.g., Another Broken Egg Cafe), and boutique shops. You can easily cart to grocery stores, restaurants, and community centers. It's also near larger hubs like Waterside Place, with events, dining, and more. Proximity to downtown Bradenton adds even more options.  \n   - **Why It's Great**: Ideal for active adults or retirees, with a mix of homes, condos, and 55+ sections. It's eco-friendly and promotes a car-free lifestyle for short trips.\n\n2. **Harbour Isle**  \n   - Located on Anna Maria Island (just west of Bradenton), this waterfront community is noted in neighborhood guides like those on bradentonlongtable.com. Golf carts are a popular way to navigate the neighborhood and nearby island paths. Rentals are readily available through services like AMI Golf Cart Rentals (golfcartrentalami.com).  \n   - **Access to Coffee Shops and Village Centers**: You'll find easy access to local coffee shops and eateries in Bradenton Beach, including spots like Island Coffee Haus or beachside cafes. The community is close to village-like centers with shops, markets, and dining, all reachable by golf cart.  \n   - **Why It's Great**: It's more relaxed and coastal, with a focus on resort-style living. Great for those who want beach access alongside neighborhood amenities.\n\n3. **Greyhawk Landing or",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

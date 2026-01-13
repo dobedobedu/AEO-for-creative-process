@@ -34,12 +34,10 @@ export async function generateQueries(params: GenerationParams): Promise<string[
 
   const roleDirectives =
     role === "cpo"
-      ? `Adopt the persona of the 'She-Elite' Chief Purchasing Officer. You are evaluating the property as a strategic legacy asset. 
-         Focus on risk (insurance premiums, flood zones), ROI (resale liquidity, CDD fees), and infrastructure (healthcare security, hurricane resilience). 
-         Your tone is skeptical, financially literate, and protective of family wealth.`
-      : `Adopt the persona of the Family Operations Manager. Focus on the 'Ecosystem' and the 'Ideal Tuesday Morning'. 
-         Focus on social flow, 'Third Places' (village centers, coffee shops), connectivity (golf cart paths, biking to school), 
-         and daily logistics (finding doctors, kid-friendly social scene, pet amenities).`;
+      ? `Adopt the perspective of a chief purchasing officer. Focus on budget, risks, fees, and rational trade-offs.
+         Consider total cost of ownership, long-term value, and downside scenarios.`
+      : `Adopt the perspective of a family unit. Focus on lifestyle fit, schools, community feel, and day-to-day happiness.
+         Consider the lived experience, social connections, and quality-of-life trade-offs.`;
 
   const creativityDirective =
     creativity < 0.3

@@ -22,7 +22,7 @@ function ensureDataDir(): void {
 
 export function loadIntentLibrary(): IntentLibrary {
   ensureDataDir();
-  
+
   if (!existsSync(LIBRARY_PATH)) {
     const empty: IntentLibrary = {
       version: 0,
@@ -63,7 +63,7 @@ export function createIntent(
   input: Omit<Intent, "id" | "createdAt" | "active">
 ): IntentLibrary {
   const validated = IntentSchema.omit({ id: true, createdAt: true, active: true }).parse(input);
-  
+
   const newIntent: Intent = {
     ...validated,
     id: generateIntentId(validated.persona, validated.stage),
@@ -97,7 +97,7 @@ export function createIntent(
 export function updateIntent(
   library: IntentLibrary,
   intentId: string,
-  updates: Partial<Pick<Intent, "text" | "defaultQueries" | "role" | "creativity">>
+  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle">>
 ): IntentLibrary {
   const existingIndex = library.intents.findIndex((i) => i.id === intentId);
   if (existingIndex === -1) {
@@ -117,16 +117,6 @@ export function updateIntent(
     });
   }
 
-  if (updates.defaultQueries !== undefined) {
-    changes.push({
-      action: "modified",
-      intentId,
-      field: "defaultQueries",
-      oldValue: existing.defaultQueries,
-      newValue: updates.defaultQueries,
-    });
-  }
-
   if (updates.role !== undefined && updates.role !== existing.role) {
     changes.push({
       action: "modified",
@@ -137,13 +127,13 @@ export function updateIntent(
     });
   }
 
-  if (updates.creativity !== undefined && updates.creativity !== existing.creativity) {
+  if (updates.queryStyle !== undefined && updates.queryStyle !== existing.queryStyle) {
     changes.push({
       action: "modified",
       intentId,
-      field: "creativity",
-      oldValue: existing.creativity,
-      newValue: updates.creativity,
+      field: "queryStyle",
+      oldValue: existing.queryStyle,
+      newValue: updates.queryStyle,
     });
   }
 

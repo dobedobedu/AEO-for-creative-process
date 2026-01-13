@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, ChevronUp, Plus, Pencil, History, Expand } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, Plus, Pencil, History, Expand, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Image from "next/image";
 
@@ -174,6 +174,16 @@ const defaultPersonas = [
     id: "persona-4",
     name: "First-Time",
     text: "Gen Z or Millennial, college or high school education, HHI $100-200K, some married with kids, some single. Seeking their first home in a community where they can grow. Follows trends and celebrities. Eager to get ahead and become successful. A risk taker and thrill seeker.",
+  },
+  {
+    id: "persona-5",
+    name: "Relocating Pro",
+    text: "Millennial or Gen X, college or grad school education, HHI $150-300K, often married. Relocating for a new job opportunity or remote work flexibility. Researches extensively online before making decisions. Values convenience, schools, and proximity to airports. Tech-savvy and relies on digital tools for the home search.",
+  },
+  {
+    id: "persona-6",
+    name: "Investor",
+    text: "Gen X or Boomer, college education, HHI $200K+, experienced in real estate or financial investments. Looking for rental properties, vacation homes, or appreciation potential. Analyzes market data, cap rates, and rental yields. Prefers communities with strong HOAs and appreciating property values. May own multiple properties.",
   },
 ];
 
@@ -501,6 +511,20 @@ export default function Home() {
     setNewPersonaName("");
     setNewPersonaText("");
     setActivePersonaId(id);
+  }
+
+  function handleDeletePersona(personaId: string) {
+    if (personas.length <= 1) return; // Prevent deleting the last persona
+    const next = personas.filter((p) => p.id !== personaId);
+    setPersonas(next);
+    // If we deleted the active persona, switch to the first remaining one
+    if (activePersonaId === personaId && next.length > 0) {
+      setActivePersonaId(next[0].id);
+    }
+    // Clear editing state if we were editing the deleted persona
+    if (editingPersonaId === personaId) {
+      setEditingPersonaId(null);
+    }
   }
 
   useEffect(() => {
@@ -995,19 +1019,34 @@ export default function Home() {
                                   <div className="font-display text-base text-[var(--forest)]">{persona.name}</div>
                                   <div className="mt-1 text-xs text-[var(--ink)]/60">{persona.text.slice(0, 80)}</div>
                                 </button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-6 w-6 shrink-0"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditName(persona.name);
-                                    setEditText(persona.text);
-                                    setEditingPersonaId(persona.id);
-                                  }}
-                                >
-                                  <Pencil className="h-3 w-3" />
-                                </Button>
+                                <div className="flex shrink-0 gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditName(persona.name);
+                                      setEditText(persona.text);
+                                      setEditingPersonaId(persona.id);
+                                    }}
+                                  >
+                                    <Pencil className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeletePersona(persona.id);
+                                    }}
+                                    disabled={personas.length <= 1}
+                                    title={personas.length <= 1 ? "Cannot delete the last persona" : "Delete persona"}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
                               </div>
                             )}
                           </div>

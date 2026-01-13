@@ -1,0 +1,108 @@
+{
+  "id": "run_2026-01-13_mkcermk1",
+  "timestamp": "2026-01-13T09:49:26.832Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 1,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_explore": {
+      "intentId": "int_move_up_explore_mk189ge5",
+      "intentText": "Growing family exploring Florida relocation options",
+      "queriesUsed": [
+        "best family-friendly neighborhoods Sarasota Bradenton area with good schools"
+      ],
+      "metrics": {
+        "discoveryRate": 1,
+        "topThreeRate": 0.75
+      },
+      "results": [
+        {
+          "query": "best family-friendly neighborhoods Sarasota Bradenton area with good schools",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some of the most consistently **family-friendly, “good schools”** areas people target in the **Sarasota–Bradenton** region (I’ll note the general vibe + why families like them). I’m focusing on neighborhoods that tend to pair **day-to-day livability** (parks, sidewalks, kids’ activities, low-stress errands) with access to **higher-performing public schools**.\n\n## Top picks (Sarasota side)\n\n### 1) **Southside / Hillview (Sarasota, “West of the Trail”)**\n- **Why families like it:** very walkable, classic “raise kids here” feel, Southside Village shops, near downtown without feeling downtown.\n- **School draw:** anchored by **Southside Elementary**, which is widely regarded as one of the strongest elementary options in the area. ([greatschools.org](https://www.greatschools.org/florida/sarasota/2783-Southside-Elementary-School/?utm_source=openai))\n- **Tradeoffs:** usually pricier; older homes (great charm, but check flood zone/insurance).\n\n### 2) **Arlington Park (Sarasota)**\n- **Why families like it:** central, community park/pool/playground, lots of families, quick access to downtown + beaches.\n- **Schools:** commonly zoned near well-known Sarasota schools (varies by exact street—zoning matters a lot). ([visitsarasota.com](https://www.visitsarasota.com/article/best-neighborhoods-school-districts-families?utm_source=openai))\n- **Tradeoffs:** some streets are busier; inventory can be tight.\n\n### 3) **Gulf Gate Estates (South Sarasota)**\n- **Why families like it:** more “neighborhood/suburban” pricing compared with West-of-Trail, close to Siesta Key access, tons of practical shopping/dining.\n- **Schools:** generally good nearby options depending on your exact address. ([visitsarasota.com](https://www.visitsarasota.com/article/best-neighborhoods-school-districts-families?utm_source=openai))\n- **Tradeoffs:** less “storybook walkability” than Southside/Hillview, but very convenient.\n\n### 4) **Palmer Ranch (South Sarasota – large area with many subdivisions)**\n- **Why families like it:** planned-community feel, trails/parks, generally newer housing stock than central Sarasota, easy I‑75 access.\n- **Schools:** often a key reason families choose it, but it’s subdivision-by-subdivision for zoning.\n\n### 5) **Wellen Park / North Port edge (Sarasota County)**\n- **Why families like it:** newer builds, amenities, community events, “everything is new” vibe.\n- **Schools/district:** Sarasota County Schools has continued earning an overall **“A” district grade** in the most recent FLDOE releases (including July 2025). ([sarasotacountyschools.net](https://www.sarasotacountyschools.net/article/2300107?utm_source=openai))\n- **Tradeoffs:** farther from Sarasota proper/beaches.\n\n## Top picks (Bradenton / Manatee side)\n\n### 6) **Lakewood Ranch (Manatee side + some Sarasota side)**\n- **Why families like it:** master-planned, tons of parks/trails, sports, community events, very “kid infrastructure” (sidewalks, playgrounds, activities).\n- **Schools:** multiple well-regarded public schools; specific ratings vary by school and year, so it’s worth checking the exact assigned schools for the address you’re considering. ([greatschools.org](https://www.greatschools.org/florida/bradenton/1817-Lakewood-Ranch-High-School/?utm_source=openai))\n- **Tradeoffs:** HOA/CDD fees in many sections; “planned” vibe isn’t for everyone.\n\n### 7) **Palma Sola / NW Bradenton**\n- **Why families like it:** quieter, more established feel; closer to beaches/Anna Maria area than most of Bradenton.\n- **Tradeoffs:** housing stock varies widely; some areas are older and you’ll want to watch flood/insurance factors.\n\n---\n\n## Two quick questions so I can tailor this to *your* family\n1) Do you want to prioritize **elementary school quality**, **middle**, or **high school** (or all equally)?\n2) What’s your target: **walkable older Sarasota neighborhoods** (Southside/Arlington Park) or **planned suburbs/newer homes** (Palmer Ranch/Lakewood Ranch/Wellen Park)?\n\nIf you tell me your budget range and whether you need a short commute to a specific area (downtown Sarasota, UTC, SRQ airport, beaches, etc.), I can narrow this to a short list of **3–5 neighborhoods** and the **most likely school zones** to verify for each.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 7,
+                "competitors": [
+                  "Southside / Hillview",
+                  "Arlington Park",
+                  "Gulf Gate Estates",
+                  "Palmer Ranch",
+                  "Wellen Park / North Port edge",
+                  "Palma Sola / NW Bradenton"
+                ],
+                "howDescribed": "A master-planned community described as having extensive parks, trails, sports, and 'kid infrastructure' such as sidewalks and playgrounds. It is noted for having multiple well-regarded public schools, though mentions tradeoffs like HOA/CDD fees and a 'planned' vibe that may not suit everyone."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on current research, here are the best family-friendly neighborhoods in the Sarasota-Bradenton area with good schools:\n\n## Top Neighborhoods in Sarasota\n\n**Lakewood Ranch**\n\nThis master-planned community spans over 30,000 acres across Sarasota and Manatee Counties and offers a range of housing options from single-family homes to townhouses and apartments.\n \nLakewood Ranch High School boasts a 97% graduation rate and strong proficiency scores.\n \nFamilies are drawn to its A-rated schools including public, private, and charter options, plus parks, greenways, and playgrounds designed with safety in mind.\n\n\n**Fruitville**\n\nFruitville boasts excellent schools like Sarasota Academy of the Arts, Fruitville Elementary School, and McIntosh Middle School.\n \nOffering a blend of residential charm and suburban convenience, Fruitville is close to major roadways like Fruitville Road and I-75, with scenic parks like the Celery Fields and recreational facilities nearby.\n\n\n**Wellen Park**\n\nIf you're looking for quiet with a vibrant downtown scene and friendly neighbors, Wellen Park consists of native Sarasotas, longtime locals and newly-relocated residents, with easy accessibility, low traffic compared to Downtown, lots of great public schools to choose from, many retailers, restaurants and services, and affordable housing.\n\n\n**Southside Village**\n\nSouthside Village stands out as one of Sarasota's premier family neighborhoods, offering an A-rated elementary school, diverse architectural styles, and walkable access to shops, restaurants, and downtown Sarasota.\n\n\n## Top Neighborhoods in Bradenton\n\n**Greyhawk Landing**",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Fruitville",
+                  "Wellen Park",
+                  "Southside Village",
+                  "Greyhawk Landing"
+                ],
+                "howDescribed": "A master-planned community spanning 30,000 acres across Sarasota and Manatee Counties, highlighted for its A-rated public, private, and charter schools, high graduation rates, diverse housing options, and safety-oriented amenities like parks and greenways."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "The Sarasota-Bradenton area consistently ranks as one of the best places in the U.S. for families due to a rare combination of **\"A-rated\" school districts**, master-planned amenities, and safety. \n\nSarasota County Schools was recently ranked as the **#1 school district in Florida** by Niche (2024), and it has maintained an \"A\" grade from the state for over 20 consecutive years.\n\n### 1. Lakewood Ranch (Sarasota/Manatee County)\nThe nation’s top-selling master-planned community, \"The Ranch\" is specifically designed for families. It feels like a self-contained town with 150+ miles of trails and a massive sports campus.\n*   **Best Neighborhoods:** \n    *   **Greenbrook & Summerfield:** More established, mature trees, and walkable to Adventure Park.\n    *   **Central Park:** Features a massive park/splash pad in the center; very popular for young kids.\n    *   **Mallory Park:** Known for a very tight-knit social scene and direct golf cart access to schools.\n*   **Top Schools:** Gullett Elementary (A), Willis Elementary (A), McNeal Elementary (A), Nolan Middle (A), and Lakewood Ranch High School (A).\n\n### 2. Palmer Ranch (South Sarasota)\nThis 10,000-acre community is the premier choice for families who want to be in the Sarasota County school district while remaining close to Siesta Key.\n*   **Best Neighborhoods:** \n    *   **Turtle Rock:** Gated with a classic suburban feel and excellent sidewalks.\n    *   **Silver Oak:** Offers larger estate homes for families needing more space.\n    *   **Promenade Estates:** A newer option with modern amenities and a resident-only pool/fitness center.\n*   **Top Schools:** **Ashton Elementary** (10/10 rating) and **Sarasota Middle** (9/10). It is also home to **Pine View School for the Gifted**, consistently ranked as the #1 public school in Florida.\n\n### 3. Southside Village / West of Trail (Sarasota City)\nIf you prefer a walkable, historic neighborhood over a planned community, this is the gold standard. It’s located near Sarasota Memorial Hospital and downtown.\n*   **Lifestyle:** Families bike to \"The Village\" for ice cream at Morton’s Market or to Southside Park.\n*   **Top Schools:** **Southside Elementary** (10/10) is one of the most coveted school assignments in the county.\n\n### 4. West Bradenton & Palma Sola (Bradenton)\nThis area offers a more relaxed, \"old Florida\" coastal vibe and is generally more affordable than comparable Sarasota neighborhoods.\n*   **Best Neighborhoods:** \n    *   **Palma Sola Park:** Quiet, safe, and just minutes from Anna Maria Island.\n    *   **Northwest Bradenton:** Known for larger lots and proximity to Robinson Preserve (hiking/kayaking).\n*   **Top Schools:** Palma Sola Elementary and Martha B. King Middle are well-regarded. **Manatee High School** is famous locally for its strong tradition in both academics and football.\n\n### 5. Wellen Park / Grand Palm (Venice Area)\nLocated just south of Sarasota in Venice, this is the newest \"hot spot\" for families looking for new construction at a better price point than Lakewood Ranch.\n*   **Top School:** **Taylor Ranch Elementary** is a consistent A-rated school that serves the area.\n\n---\n\n### Comparison of School Options\n\n| Category | Top Recommendations |\n| :--- | :--- |\n| **Top Public Elementary** | Southside (Sarasota), Ashton (Palmer Ranch), Willis (Lakewood Ranch) |\n| **Specialty Public** | **Pine View School** (Gifted, Grades 2-12), Suncoast Polytechnical High |\n| **Private Schools** | **The Out-of-Door Academy (ODA)**, **Saint Stephen’s Episcopal** (Bradenton), Cardinal Mooney (Catholic) |\n| **Charter Schools** | Sarasota School of Arts & Sciences, Sarasota Suncoast Academy |\n\n### Pro-Tip for Families\nIn Florida, school districts are county-wide. If you live in **Sarasota County**, you are in the #1 rated district in the state. If you live in **Manatee County** (most of Bradenton), the district as a whole is rated \"B,\" but individual schools in **Lakewood Ranch** and **West Bradenton** often perform as well as the best in Sarasota. Always verify the specific school zone for a house before buying, as boundaries can change with new developments.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Palmer Ranch",
+                  "Southside Village",
+                  "West of Trail",
+                  "West Bradenton",
+                  "Palma Sola",
+                  "Wellen Park",
+                  "Grand Palm",
+                  "The Out-of-Door Academy (ODA)",
+                  "Saint Stephen’s Episcopal",
+                  "Cardinal Mooney"
+                ],
+                "howDescribed": "The nation’s top-selling master-planned community, described as a self-contained town specifically designed for families with 150+ miles of trails and a massive sports campus."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information from real estate and local guides (including sources like Extra Space Storage, BuyLakewoodRanch.com, and Visit Sarasota County, updated as of late 2025), the Sarasota-Bradenton area in Florida is a fantastic spot for families, offering beautiful beaches, cultural attractions, and a high quality of life. It's known for its safe, community-oriented neighborhoods with strong school systems—Sarasota County Schools and Manatee County Schools both rank highly in Florida, with many schools earning A or B ratings from the state Department of Education.\n\nI'll break down some of the best family-friendly neighborhoods in the Sarasota and Bradenton areas, focusing on those praised for safety, affordability, kid-friendly amenities (like parks, playgrounds, and family events), and access to top-rated schools. These recommendations draw from 2025-2026 data, but keep in mind that real estate markets can fluctuate, so I suggest checking current listings and school ratings via sites like GreatSchools.org or consulting a local realtor for the latest details. Neighborhoods are grouped by area for clarity.\n\n### Top Family-Friendly Neighborhoods in Sarasota\nSarasota emphasizes walkable communities, proximity to beaches, and excellent public and private schools. Many families appreciate the blend of suburban feel with urban access to arts, museums, and outdoor activities.\n\n1. **Palmer Ranch**  \n   - Why it's great for families: Safe, master-planned community with low crime rates, abundant green spaces, trails, and family-oriented amenities like community pools and playgrounds. It's affordable for Sarasota standards, with homes starting around $400K-$600K.  \n   - Schools: Highly rated options like Ashton Elementary (A-rated) and Sarasota Middle School. Proximity to Pine View School, one of Florida's top gifted programs.  \n   - Source: Featured in Extra Space Storage's 2026 lists for safe, affordable suburbs and family neighborhoods.\n\n2. **Lakewood Ranch (extends into both Sarasota and Bradenton)**  \n   - Why it's great for families: A massive, family-focused development with parks, sports fields, farmers' markets, and events like movie nights. It's very safe and has a strong sense of community. Home prices range from $300K for condos to $800K+ for larger homes.  \n   - Schools: Excellent access to A-rated schools like Gilbert W. McNeal Elementary and Lakewood Ranch High School.  \n   - Source: Highlighted in BuyLakewoodRanch.com's 2025 guides",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 2,
+                "competitors": [
+                  "Palmer Ranch"
+                ],
+                "howDescribed": "A massive, family-focused development with parks, sports fields, farmers' markets, and events like movie nights. It's very safe and has a strong sense of community."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -49,6 +49,8 @@ function getMessageText(message: { parts?: Array<{ type: string; text?: string }
 export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
+  const [ragStatus, setRagStatus] = useState<{ hasDocuments: boolean } | null>(null);
+  const [ragError, setRagError] = useState<string | null>(null);
 
   // Enable File Search when there's no current query results (use historical RAG data)
   const hasCurrentData = context.queryResults && context.queryResults.length > 0;
@@ -79,6 +81,26 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
     }
   };
 
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setRagError(null);
+    fetch("/api/benchmark/rag/status")
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("RAG status unavailable"))))
+      .then((data: { hasDocuments: boolean }) => {
+        if (cancelled) return;
+        setRagStatus(data);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setRagError(err instanceof Error ? err.message : String(err));
+        setRagStatus(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -100,13 +122,41 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl h-[80vh] bg-[#fffaf2] border-[#e3dacb] flex flex-col p-0">
+      <DialogContent className="h-[82vh] w-full max-w-[calc(100%-var(--dialog-gutter))] sm:max-w-[calc(100%-var(--dialog-gutter))] bg-[#fffaf2] border-[#e3dacb] flex flex-col p-0">
         <DialogHeader className="px-6 py-4 border-b border-[#e3dacb] flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-[#1e1b16]">Field Intelligence</DialogTitle>
-            <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/70">
-              {getScopeLabel(context)}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/70">
+                {getScopeLabel(context)}
+              </Badge>
+              <Badge
+                variant="outline"
+                className={`border-transparent ${
+                  hasCurrentData ? "bg-[#1f3b2c]/10 text-[#1f3b2c]" : "bg-[#6e7c5b]/15 text-[#6e7c5b]"
+                }`}
+              >
+                {hasCurrentData ? "Mode: Session" : "Mode: File Search"}
+              </Badge>
+              <Badge
+                variant="outline"
+                className={`border-transparent ${
+                  ragError
+                    ? "bg-[#b86f3a]/15 text-[#b86f3a]"
+                    : ragStatus?.hasDocuments
+                    ? "bg-[#1f3b2c]/10 text-[#1f3b2c]"
+                    : "bg-[#efe6d9] text-[#1e1b16]/60"
+                }`}
+              >
+                {ragError
+                  ? "RAG: Error"
+                  : ragStatus
+                  ? ragStatus.hasDocuments
+                    ? "RAG: Ready"
+                    : "RAG: No docs"
+                  : "RAG: Checking"}
+              </Badge>
+            </div>
           </div>
         </DialogHeader>
 

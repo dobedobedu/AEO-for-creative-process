@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "mcp__zai-web-search__webSearchPrime",
-      "mcp__web-reader__webReader"
+      "mcp__web-reader__webReader",
+      "Bash(npx tsc:*)",
+      "Bash(rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__list_projects",
+      "mcp__vercel__list_deployments",
+      "Bash(git push:*)",
+      "mcp__vercel__get_deployment_build_logs",
+      "Bash(git fetch:*)"
     ]
   }
 }

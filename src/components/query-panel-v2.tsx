@@ -37,7 +37,7 @@ interface QueryPanelProps {
     stage: Stage,
     intent: string,
     role: "cpo" | "family_unit",
-    creativity: number
+    queryStyle: number
   ) => Promise<string[]>;
 }
 
@@ -82,7 +82,7 @@ function MiniMatrix({
           </div>
         ))}
       </div>
-      
+
       {/* Grid with persona labels */}
       <div className="flex gap-0.5">
         <div className="flex flex-col gap-0.5">
@@ -94,22 +94,22 @@ function MiniMatrix({
             </div>
           ))}
         </div>
-        
+
         <div className="grid grid-cols-4 gap-0.5">
           {personas.map((persona) =>
             stages.map((stage) => {
               const selected = isCellSelected(persona.id, stage.id);
               const highlighted = isCellHighlighted(persona.id, stage.id);
-              
+
               return (
                 <button
                   key={`${persona.id}-${stage.id}`}
                   onClick={() => onCellClick(persona.id, stage.id)}
                   className={`
                     w-5 h-5 rounded transition-all duration-150 
-                    ${selected 
+                    ${selected
                       ? highlighted
-                        ? "bg-[#1f3b2c]" 
+                        ? "bg-[#1f3b2c]"
                         : "bg-[#1f3b2c]/60"
                       : "bg-[#e3dacb]/50 hover:bg-[#e3dacb]"
                     }
@@ -124,8 +124,8 @@ function MiniMatrix({
   );
 }
 
-// Creativity slider - maps to temperature
-function CreativitySlider({
+// Query Style slider - maps to temperature
+function QueryStyleSlider({
   value,
   onChange,
 }: {
@@ -134,20 +134,20 @@ function CreativitySlider({
 }) {
   return (
     <div className="space-y-2">
-      <span className="text-xs font-medium text-[#1e1b16]/60">Creativity</span>
-      
+      <span className="text-xs font-medium text-[#1e1b16]/60">Query Style</span>
+
       <Slider
         value={[value]}
         onValueChange={([v]) => onChange(v)}
-        min={0}
+        min={0.5}
         max={1}
-        step={0.1}
+        step={0.05}
         className="w-full"
       />
-      
+
       <div className="flex justify-between">
-        <span className="text-[10px] text-[#1e1b16]/50 italic">Strict</span>
-        <span className="text-[10px] text-[#1e1b16]/50 italic">Creative</span>
+        <span className="text-[10px] text-[#1e1b16]/50 italic">Common</span>
+        <span className="text-[10px] text-[#1e1b16]/50 italic">Niche</span>
       </div>
     </div>
   );
@@ -170,17 +170,58 @@ export function QueryPanelV2({
   const [selectedPersona, setSelectedPersona] = useState<Persona | undefined>(initialPersona);
   const [selectedStage, setSelectedStage] = useState<Stage | undefined>(initialStage);
   const [localQueryBank, setLocalQueryBank] = useState(queryBank);
-  const [editingQuery, setEditingQuery] = useState<{ persona: Persona; stage: Stage; intentIndex: number; queryIndex: number } | null>(null);
+  const [editingQuery, setEditingQuery] = useState<{ persona: Persona; stage: Stage; intentId: string; queryIndex: number } | null>(null);
   const [editValue, setEditValue] = useState("");
   const [activeIntentId, setActiveIntentId] = useState<string | null>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
-  // Sync active intent when selection changes
+  // Query bank merge: preserve local edits when props update
+  useEffect(() => {
+    setLocalQueryBank(prev => {
+      // Deep merge: for each cell, preserve local queries if they exist
+      const merged = { ...prev };
+      for (const persona of Object.keys(queryBank) as Persona[]) {
+        if (!merged[persona]) merged[persona] = {} as Record<Stage, { intents: IntentNode[] }>;
+        for (const stage of Object.keys(queryBank[persona]) as Stage[]) {
+          const incoming = queryBank[persona][stage].intents;
+          const existing = prev[persona]?.[stage]?.intents || [];
+
+          // Merge strategy: prefer local intents that have been modified
+          const mergedIntents = incoming.map(inc => {
+            const local = existing.find(e => e.id === inc.id);
+            if (local) {
+              // Keep local generated queries if they exist and incoming doesn't
+              const mergedQueries = (local.generatedQueries?.length ?? 0) > 0
+                ? local.generatedQueries
+                : inc.generatedQueries;
+              return { ...inc, ...local, generatedQueries: mergedQueries };
+            }
+            return inc;
+          });
+
+          // Add any new local intents that don't exist in incoming
+          const newLocalIntents = existing.filter(e =>
+            e.id.startsWith('new_') && !incoming.some(inc => inc.id === e.id)
+          );
+
+          merged[persona] = {
+            ...merged[persona],
+            [stage]: { intents: [...newLocalIntents, ...mergedIntents] }
+          };
+        }
+      }
+      return merged;
+    });
+  }, [queryBank]);
+
+  // Sync active intent when selection changes - prefer intents with queries
   useEffect(() => {
     if (scope === "cell" && selectedPersona && selectedStage) {
       const intents = localQueryBank[selectedPersona][selectedStage].intents;
       if (intents.length > 0 && (!activeIntentId || !intents.find(i => i.id === activeIntentId))) {
-        setActiveIntentId(intents[0].id);
+        // Prefer intent with generated queries, fall back to first
+        const intentWithQueries = intents.find(i => (i.generatedQueries?.length ?? 0) > 0);
+        setActiveIntentId(intentWithQueries?.id || intents[0].id);
       }
     } else {
       setActiveIntentId(null);
@@ -216,41 +257,41 @@ export function QueryPanelV2({
 
   // Get queries based on current scope and active intent
   const displayQueries = useMemo(() => {
-    const result: { 
-      persona: Persona; 
-      stage: Stage; 
+    const result: {
+      persona: Persona;
+      stage: Stage;
       intentId: string;
       intentText: string;
-      queries: string[]; 
+      queries: string[];
       role: "cpo" | "family_unit";
-      creativity: number;
+      queryStyle: number;
     }[] = [];
 
     if (scope === "cell" && selectedPersona && selectedStage) {
       const intents = localQueryBank[selectedPersona][selectedStage].intents;
       // If cell scope, only show queries for the ACTIVE intent
       const targetIntent = intents.find(i => i.id === activeIntentId) || intents[0];
-      
+
       if (targetIntent) {
         result.push({
           persona: selectedPersona,
           stage: selectedStage,
           intentId: targetIntent.id,
           intentText: targetIntent.text,
-          queries: targetIntent.manifestations,
+          queries: targetIntent.generatedQueries || [],
           role: targetIntent.role,
-          creativity: targetIntent.creativity,
+          queryStyle: targetIntent.queryStyle,
         });
       }
     } else {
       // For broader scopes, flatten all intents
-      const targetPersonas = scope === "row" && selectedPersona ? [selectedPersona] 
-        : scope === "all" || scope === "column" ? personas.map(p => p.id as Persona) 
-        : [];
-      
+      const targetPersonas = scope === "row" && selectedPersona ? [selectedPersona]
+        : scope === "all" || scope === "column" ? personas.map(p => p.id as Persona)
+          : [];
+
       const targetStages = scope === "column" && selectedStage ? [selectedStage]
         : scope === "all" || scope === "row" ? stages.map(s => s.id as Stage)
-        : [];
+          : [];
 
       for (const p of targetPersonas) {
         for (const s of targetStages) {
@@ -261,9 +302,9 @@ export function QueryPanelV2({
               stage: s,
               intentId: intent.id,
               intentText: intent.text,
-              queries: intent.manifestations,
+              queries: intent.generatedQueries || [],
               role: intent.role,
-              creativity: intent.creativity,
+              queryStyle: intent.queryStyle,
             });
           }
         }
@@ -290,21 +331,24 @@ export function QueryPanelV2({
     return "Full Matrix";
   };
 
-  const startEditQuery = (persona: Persona, stage: Stage, intentIndex: number, queryIndex: number, value: string) => {
-    setEditingQuery({ persona, stage, intentIndex, queryIndex });
+  const startEditQuery = (persona: Persona, stage: Stage, intentId: string, queryIndex: number, value: string) => {
+    setEditingQuery({ persona, stage, intentId, queryIndex });
     setEditValue(value);
   };
 
   const saveEditQuery = () => {
     if (!editingQuery) return;
-    const { persona, stage, intentIndex, queryIndex } = editingQuery;
-    
+    const { persona, stage, intentId, queryIndex } = editingQuery;
+
     setLocalQueryBank(prev => {
       const cellIntents = [...prev[persona][stage].intents];
+      const intentIndex = cellIntents.findIndex(i => i.id === intentId);
+      if (intentIndex === -1) return prev;
+
       const intent = { ...cellIntents[intentIndex] };
-      const newManifestations = [...intent.manifestations];
-      newManifestations[queryIndex] = editValue;
-      intent.manifestations = newManifestations;
+      const newQueries = [...(intent.generatedQueries || [])];
+      newQueries[queryIndex] = editValue;
+      intent.generatedQueries = newQueries;
       cellIntents[intentIndex] = intent;
 
       return {
@@ -322,11 +366,14 @@ export function QueryPanelV2({
     setEditValue("");
   };
 
-  const deleteQuery = (persona: Persona, stage: Stage, intentIndex: number, queryIndex: number) => {
+  const deleteQuery = (persona: Persona, stage: Stage, intentId: string, queryIndex: number) => {
     setLocalQueryBank(prev => {
       const cellIntents = [...prev[persona][stage].intents];
+      const intentIndex = cellIntents.findIndex(i => i.id === intentId);
+      if (intentIndex === -1) return prev;
+
       const intent = { ...cellIntents[intentIndex] };
-      intent.manifestations = intent.manifestations.filter((_, i) => i !== queryIndex);
+      intent.generatedQueries = (intent.generatedQueries || []).filter((_, i) => i !== queryIndex);
       cellIntents[intentIndex] = intent;
 
       return {
@@ -343,16 +390,20 @@ export function QueryPanelV2({
   };
 
   const addQuery = (persona: Persona, stage: Stage, intentId: string) => {
-    const intentIndex = localQueryBank[persona][stage].intents.findIndex(i => i.id === intentId);
-    if (intentIndex === -1) return;
+    const intent = localQueryBank[persona][stage].intents.find(i => i.id === intentId);
+    if (!intent) return;
 
-    const newIndex = localQueryBank[persona][stage].intents[intentIndex].manifestations.length;
-    
+    const currentQueries = intent.generatedQueries || [];
+    const newIndex = currentQueries.length;
+
     setLocalQueryBank(prev => {
       const cellIntents = [...prev[persona][stage].intents];
-      const intent = { ...cellIntents[intentIndex] };
-      intent.manifestations = [...intent.manifestations, ""];
-      cellIntents[intentIndex] = intent;
+      const intentIndex = cellIntents.findIndex(i => i.id === intentId);
+      if (intentIndex === -1) return prev;
+
+      const updatedIntent = { ...cellIntents[intentIndex] };
+      updatedIntent.generatedQueries = [...(updatedIntent.generatedQueries || []), ""];
+      cellIntents[intentIndex] = updatedIntent;
 
       return {
         ...prev,
@@ -365,7 +416,7 @@ export function QueryPanelV2({
         },
       };
     });
-    startEditQuery(persona, stage, intentIndex, newIndex, "");
+    startEditQuery(persona, stage, intentId, newIndex, "");
   };
 
   const updateIntentText = (persona: Persona, stage: Stage, intentId: string, text: string) => {
@@ -373,7 +424,7 @@ export function QueryPanelV2({
       const cellIntents = [...prev[persona][stage].intents];
       const index = cellIntents.findIndex(i => i.id === intentId);
       if (index === -1) return prev;
-      
+
       cellIntents[index] = { ...cellIntents[index], text };
 
       return {
@@ -391,13 +442,13 @@ export function QueryPanelV2({
 
   const addNewIntent = () => {
     if (!selectedPersona || !selectedStage) return;
-    
+
     const newIntent: IntentNode = {
       id: `new_${Date.now()}`,
       text: "New Research Intent",
-      manifestations: [],
+      generatedQueries: [],
       role: "cpo",
-      creativity: 0.7
+      queryStyle: 0.75
     };
 
     setLocalQueryBank(prev => ({
@@ -432,7 +483,7 @@ export function QueryPanelV2({
         }
       };
     });
-    
+
     if (activeIntentId === intentId) {
       const remaining = localQueryBank[selectedPersona][selectedStage].intents.filter(i => i.id !== intentId);
       setActiveIntentId(remaining[0]?.id || null);
@@ -464,15 +515,15 @@ export function QueryPanelV2({
 
   const handleRegenerate = async () => {
     if (!onRegenerateQueries || scope !== "cell" || !selectedPersona || !selectedStage || !activeIntent) return;
-    
+
     setIsRegenerating(true);
     try {
       const newQueries = await onRegenerateQueries(
-        selectedPersona, 
-        selectedStage, 
-        activeIntent.text, 
-        activeIntent.role, 
-        activeIntent.creativity
+        selectedPersona,
+        selectedStage,
+        activeIntent.text,
+        activeIntent.role,
+        activeIntent.queryStyle
       );
 
       setLocalQueryBank(prev => {
@@ -480,7 +531,7 @@ export function QueryPanelV2({
         const index = cellIntents.findIndex(i => i.id === activeIntent.id);
         if (index === -1) return prev;
 
-        cellIntents[index] = { ...cellIntents[index], manifestations: newQueries };
+        cellIntents[index] = { ...cellIntents[index], generatedQueries: newQueries };
 
         return {
           ...prev,
@@ -520,10 +571,10 @@ export function QueryPanelV2({
                 {getScopeLabel()}
               </DialogTitle>
               <p className="text-xs text-[#1e1b16]/50 mt-0.5 font-medium uppercase tracking-wider">
-                Research Command Center • {totalQueryCount} manifestations
+                Research Command Center • {totalQueryCount} queries
               </p>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <MiniMatrix
                 personas={personas}
@@ -535,11 +586,10 @@ export function QueryPanelV2({
               />
               <button
                 onClick={selectAll}
-                className={`text-[11px] px-3 py-1.5 font-bold rounded-lg transition-all ${
-                  scope === "all" 
-                    ? "bg-[#1f3b2c] text-white shadow-md" 
-                    : "text-[#1e1b16]/50 hover:bg-[#efe6d9] hover:text-[#1e1b16]"
-                }`}
+                className={`text-[11px] px-3 py-1.5 font-bold rounded-lg transition-all ${scope === "all"
+                  ? "bg-[#1f3b2c] text-white shadow-md"
+                  : "text-[#1e1b16]/50 hover:bg-[#efe6d9] hover:text-[#1e1b16]"
+                  }`}
               >
                 ALL CELLS
               </button>
@@ -549,7 +599,7 @@ export function QueryPanelV2({
 
         {/* Main content - 3 Column Cascading Flow */}
         <div className="flex-1 flex min-h-0 overflow-hidden bg-white/40 backdrop-blur-sm">
-          
+
           {/* Column 1: Research Intent (Seed) */}
           <div className="w-80 border-r border-[#e3dacb] bg-[#1f3b2c]/5 flex flex-col">
             <div className="p-6 flex-1 overflow-y-auto">
@@ -557,22 +607,22 @@ export function QueryPanelV2({
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1f3b2c]/60 text-wrap">Research Intents</span>
-                    <button 
+                    <button
                       onClick={addNewIntent}
                       className="text-[10px] font-bold text-[#1f3b2c] hover:bg-[#1f3b2c]/10 px-2 py-1 rounded transition-colors flex items-center gap-1"
                     >
                       <Plus className="h-3 w-3" /> ADD
                     </button>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {localQueryBank[selectedPersona][selectedStage].intents.map((intent) => (
-                      <div 
+                      <div
                         key={intent.id}
                         className={`
                           group relative rounded-xl p-4 border transition-all cursor-pointer
-                          ${intent.id === activeIntentId 
-                            ? "bg-white border-[#1f3b2c] shadow-md ring-1 ring-[#1f3b2c]/10" 
+                          ${intent.id === activeIntentId
+                            ? "bg-white border-[#1f3b2c] shadow-md ring-1 ring-[#1f3b2c]/10"
                             : "bg-white/40 border-[#e3dacb] hover:bg-white/80 hover:border-[#1f3b2c]/30"
                           }
                         `}
@@ -583,14 +633,14 @@ export function QueryPanelV2({
                           onChange={(e) => updateIntentText(selectedPersona, selectedStage, intent.id, e.target.value)}
                           className="w-full text-sm font-medium text-[#1e1b16] bg-transparent border-none focus:ring-0 resize-none p-0 min-h-[60px] leading-relaxed cursor-text"
                           placeholder="Enter intent..."
-                          onClick={(e) => e.stopPropagation()} 
+                          onClick={(e) => e.stopPropagation()}
                         />
-                        
+
                         <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/5">
                           <span className="text-[9px] font-bold text-[#1e1b16]/40 uppercase tracking-wider">
-                            {intent.manifestations.length} manifestations
+                            {(intent.generatedQueries || []).length} queries
                           </span>
-                          
+
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={(e) => {
@@ -612,7 +662,7 @@ export function QueryPanelV2({
                   </div>
 
                   <p className="text-[10px] italic text-[#1e1b16]/40 leading-relaxed mt-4 px-1">
-                    Select an intent to view and manage its specific search manifestations.
+                    Select an intent to view and manage its specific search queries (Buyer Might Ask).
                   </p>
                 </div>
               ) : (
@@ -629,11 +679,11 @@ export function QueryPanelV2({
             </div>
           </div>
 
-          {/* Column 2: Search Manifestations (Queries) */}
+          {/* Column 2: Buyer Might Ask (Queries) */}
           <div className="flex-1 overflow-y-auto p-8 border-r border-[#e3dacb]">
             <div className="max-w-3xl mx-auto space-y-8">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1f3b2c]/60">Search Manifestations</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1f3b2c]/60">Buyer Might Ask</span>
                 {activeIntentId && scope === "cell" && (
                   <span className="text-[10px] font-medium text-[#1e1b16]/40 italic">
                     For: &quot;{activeIntent?.text.slice(0, 40)}{activeIntent?.text.length! > 40 ? "..." : ""}&quot;
@@ -664,13 +714,13 @@ export function QueryPanelV2({
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="grid gap-3">
                       {queries.map((query, idx) => {
-                        const isEditing = editingQuery?.persona === persona && 
-                                        editingQuery?.stage === stage && 
-                                        editingQuery?.queryIndex === idx; // Simplified check, strictly speaking need intent check too but good enough for now given strict scoping
-                        
+                        const isEditing = editingQuery?.persona === persona &&
+                          editingQuery?.stage === stage &&
+                          editingQuery?.queryIndex === idx; // Simplified check, strictly speaking need intent check too but good enough for now given strict scoping
+
                         return (
                           <div
                             key={idx}
@@ -703,21 +753,14 @@ export function QueryPanelV2({
                               />
                             ) : (
                               <span
-                                onClick={() => {
-                                  // Find current intent index
-                                  const intentIdx = localQueryBank[persona][stage].intents.findIndex(i => i.id === intentId);
-                                  startEditQuery(persona, stage, intentIdx, idx, query);
-                                }}
+                                onClick={() => startEditQuery(persona, stage, intentId, idx, query)}
                                 className="flex-1 text-sm text-[#1e1b16] cursor-text leading-relaxed font-medium"
                               >
                                 {query || <span className="text-[#1e1b16]/20 italic font-normal">Enter query...</span>}
                               </span>
                             )}
                             <button
-                              onClick={() => {
-                                const intentIdx = localQueryBank[persona][stage].intents.findIndex(i => i.id === intentId);
-                                deleteQuery(persona, stage, intentIdx, idx);
-                              }}
+                              onClick={() => deleteQuery(persona, stage, intentId, idx)}
                               className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-[#f0d9d9] rounded-lg transition-all flex-shrink-0 -mr-1"
                             >
                               <X className="h-3.5 w-3.5 text-[#8b4a4a]" />
@@ -725,14 +768,14 @@ export function QueryPanelV2({
                           </div>
                         );
                       })}
-                      
+
                       {scope === "cell" && (
                         <button
                           onClick={() => addQuery(persona, stage, intentId)}
                           className="flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#1f3b2c]/40 hover:text-[#1f3b2c] py-4 px-5 rounded-xl border-2 border-dashed border-[#e3dacb] hover:border-[#1f3b2c]/30 hover:bg-white transition-all w-full"
                         >
                           <Plus className="h-4 w-4" />
-                          Add Manifestation
+                          Add Query
                         </button>
                       )}
                     </div>
@@ -747,50 +790,48 @@ export function QueryPanelV2({
             <div className="p-8 space-y-8 flex-1 overflow-y-auto">
               {scope === "cell" && selectedPersona && selectedStage && activeIntent ? (
                 <>
-                  {/* Role Toggle */}
+                  {/* Perspective Toggle */}
                   <div className="space-y-4">
-                    <span className="text-[10px] font-bold text-[#1e1b16]/60 uppercase tracking-[0.2em]">Interpretation Mode</span>
+                    <span className="text-[10px] font-bold text-[#1e1b16]/60 uppercase tracking-[0.2em]">Perspective</span>
                     <div className="flex p-1.5 bg-[#efe6d9] rounded-xl shadow-inner">
                       <button
                         onClick={() => updateActiveIntentSettings({ role: "cpo" })}
-                        className={`flex-1 px-3 py-2.5 text-[11px] font-bold rounded-lg transition-all ${
-                          activeIntent.role === "cpo"
-                            ? "bg-white text-[#1f3b2c] shadow-md"
-                            : "text-[#1e1b16]/40 hover:text-[#1e1b16]/60"
-                        }`}
+                        className={`flex-1 px-2 py-2.5 text-[10px] font-bold rounded-lg transition-all ${activeIntent.role === "cpo"
+                          ? "bg-white text-[#1f3b2c] shadow-md"
+                          : "text-[#1e1b16]/40 hover:text-[#1e1b16]/60"
+                          }`}
                       >
                         CPO
                       </button>
                       <button
                         onClick={() => updateActiveIntentSettings({ role: "family_unit" })}
-                        className={`flex-1 px-3 py-2.5 text-[11px] font-bold rounded-lg transition-all ${
-                          activeIntent.role === "family_unit"
-                            ? "bg-white text-[#1f3b2c] shadow-md"
-                            : "text-[#1e1b16]/40 hover:text-[#1e1b16]/60"
-                        }`}
+                        className={`flex-1 px-2 py-2.5 text-[10px] font-bold rounded-lg transition-all ${activeIntent.role === "family_unit"
+                          ? "bg-white text-[#1f3b2c] shadow-md"
+                          : "text-[#1e1b16]/40 hover:text-[#1e1b16]/60"
+                          }`}
                       >
-                        FAMILY UNIT
+                        FAMILY
                       </button>
                     </div>
                     <div className="p-4 bg-white/60 rounded-xl border border-[#e3dacb]/50">
                       <p className="text-[10px] font-medium text-[#1e1b16]/70 leading-relaxed text-wrap">
-                        {activeIntent.role === "cpo" 
-                          ? "Analyzing through the 'She-Elite' lens: Risk, ROI, and Wealth Preservation." 
-                          : "Analyzing through the Family Operations lens: Social Flow and Daily Ecosystem."}
+                        {activeIntent.role === "cpo"
+                          ? "CPO perspective: budget discipline, risks, fees, and rational trade-offs."
+                          : "Family Unit perspective: lifestyle fit, schools, community feel, and day-to-day happiness."}
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
-                    <CreativitySlider 
-                      value={activeIntent.creativity} 
-                      onChange={(val) => updateActiveIntentSettings({ creativity: val })} 
+                    <QueryStyleSlider
+                      value={activeIntent.queryStyle}
+                      onChange={(val: number) => updateActiveIntentSettings({ queryStyle: val })}
                     />
                     <p className="text-[10px] text-[#1e1b16]/40 leading-relaxed italic">
-                      Creativity affects the &apos;temperature&apos; of DeepSeek V3, driving variety and long-tail manifestations.
+                      Query Style controls DeepSeek temperature: Common = predictable, Niche = long-tail variations.
                     </p>
                   </div>
-                  
+
                   {onRegenerateQueries && (
                     <Button
                       onClick={handleRegenerate}
@@ -798,7 +839,7 @@ export function QueryPanelV2({
                       className="w-full bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white h-12 shadow-lg shadow-[#1f3b2c]/20 font-bold"
                     >
                       <RotateCcw className={`h-4 w-4 mr-2 ${isRegenerating ? "animate-spin" : ""}`} />
-                      {isRegenerating ? "GENERATING..." : "REGENERATE MANIFESTATIONS"}
+                      {isRegenerating ? "GENERATING..." : "GENERATE QUERIES"}
                     </Button>
                   )}
                 </>

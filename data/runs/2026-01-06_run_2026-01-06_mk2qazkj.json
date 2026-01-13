@@ -1,0 +1,191 @@
+{
+  "id": "run_2026-01-06_mk2qazkj",
+  "timestamp": "2026-01-06T15:12:51.859Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "retiree_explore": {
+      "intentId": "int_retiree_explore_mk189ge6",
+      "intentText": "Retiree exploring Florida retirement destinations",
+      "queriesUsed": [
+        "Are there golf cart-friendly neighborhoods in Bradenton with easy access to coffee shops and village centers?",
+        "How pet-friendly are the communities in Lakewood Ranch for retirees who want to bring their dogs?",
+        "Which Sarasota-area neighborhoods have the best healthcare facilities within biking distance for active retirees?"
+      ],
+      "metrics": {
+        "discoveryRate": 0,
+        "topThreeRate": 0
+      },
+      "results": [
+        {
+          "query": "Are there golf cart-friendly neighborhoods in Bradenton with easy access to coffee shops and village centers?",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Yes—*but* in the Bradenton area it’s much easier to live a “golf-cart-to-coffee” lifestyle in **specific master-planned villages** or on/near **Anna Maria Island**, and you’ll want to confirm what’s legal on the exact roads you’d need (some key corridors are not golf-cart friendly).\n\n## Best fits for “village center + coffee” access\n\n### 1) **Lakewood Ranch (east of Bradenton) — best “village center” setup**\nLakewood Ranch is known for its **town-center style hubs** (notably Main Street/Lakewood Ranch Main Street area and surrounding retail) with multiple coffee options nearby. ([explorelakewoodranch.com](https://explorelakewoodranch.com/coffee-shops/?utm_source=openai))  \n**Why it’s a good match:** it’s one of the few areas in the region that consistently feels like “neighborhoods built around a walkable village.”\n\n**Golf cart reality check:** Many residents do use carts within communities, but whether you can legally/comfortably take a cart all the way to Main Street depends on your starting village and which roads you’d have to cross (some roads are higher-speed/arterials). So this is “golf-cart-friendly” in practice in some pockets, not universally.\n\n### 2) **Tara (Bradenton) — golf-course community, close to shopping/dining by car**\nTara Golf & Country Club is a large golf community in Bradenton. ([taragcc.com](https://www.taragcc.com/about?utm_source=openai))  \n**Why it might work:** if your priority is a *golf community lifestyle* (neighbors in carts inside the community), Tara fits that vibe.\n\n**Limitation:** Tara isn’t a “village center” community in the same way as Lakewood Ranch—most coffee/shop trips are typically **short car rides** rather than a cart ride to a central main street.\n\n### 3) **Anna Maria Island (Holmes Beach / Bradenton Beach / Anna Maria) — strongest “cart culture,” but city-by-city rules matter**\nIf you mean “drive a cart to coffee and shops” in the most literal way, **Anna Maria Island** is where you see that culture most.\n\n**Important legal nuance:** even on the island, rules vary a lot by city and road speed limits. For example, Holmes Beach has had tighter restrictions and discussions around golf cart operation, and Florida law/municipal rules interact in ways that can limit where standard golf carts can operate. ([islander.org](https://www.islander.org/2019/03/golf-cart-restrictions-tightened-in-holmes-beach/?utm_source=openai))  \nAlso, **LSVs (street-legal low-speed vehicles)** are a different category (registered/insured/etc.) and can be allowed where golf carts aren’t. ([islander.org](https://www.islander.org/2021/09/island-elected-officials-collaborate-on-lsv-woes-solutions/?utm_source=openai))\n\n**Bottom line:** AMI can be excellent for cart-to-coffee, but you must pick the right area and vehicle type (golf cart vs LSV) for the roads you’ll actually use.\n\n## Quick short-list (if you want me to narrow it down)\nTell me:\n1) Are you looking **inside Bradenton city**, or is **Lakewood Ranch** (Bradenton/Sarasota border area) acceptable?  \n2) Do you mean a **regular golf cart**, or are you open to a **street-legal LSV**? ([islander.org](https://www.islander.org/2021/09/island-elected-officials-collaborate-on-lsv-woes-solutions/?utm_source=openai))  \n3) “Easy access” = under **5 minutes by cart**, or under **15 minutes**?\n\nWith those answers, I can suggest 3–5 specific neighborhoods/areas and the most realistic “cart route” style (and what to double-check in local ordinances/HOA rules).",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Bradenton offers several golf cart-friendly neighborhoods where residents use carts not just for recreation, but as a primary way to reach coffee shops, restaurants, and village centers.\n\nIn Florida, there is a distinction between **Golf Carts** (unregistered, allowed only on designated streets) and **Low-Speed Vehicles (LSVs)** (registered, street-legal on any road with a speed limit of 35 mph or less). Most communities below accommodate both.\n\n### 1. Lakewood Ranch (The Villages & Town Centers)\nLakewood Ranch is the most prominent \"cart-friendly\" area in the region. While the community is massive, specific villages are designed with internal paths and connections to three primary \"village centers\":\n*   **Neighborhoods:** **Star Farms**, **Lakewood National**, and **Esplanade at the Heights** are particularly known for their golf cart culture.\n*   **Easy Access to:** \n    *   **Main Street:** A traditional village center with **Starbucks**, boutiques, and restaurants.\n    *   **Waterside Place:** A waterfront town center featuring **Atria Café** (specialty coffee/sourdough) and **Kahwa Coffee**.\n    *   **The Green:** A walkable shopping district with a **Bad Ass Coffee of Hawaii**.\n\n### 2. Palma Sola Trace & West Bradenton\nLocated in West Bradenton, this area offers a more laid-back, coastal vibe with excellent proximity to both local shops and the beaches.\n*   **Palma Sola Trace:** This community was specifically developed to be golf cart-friendly. It is situated directly adjacent to a remodeled shopping center (The Shoppes at Palma Sola).\n*   **Easy Access to:** Residents can take their carts to the nearby shopping plaza which hosts local cafes, restaurants, and grocery stores. **Palma Sola Grande** and **Palma Sola Harbor** are also nearby and share this \"low-speed\" connectivity.\n\n### 3. Harbour Isle (Perico Island)\nThis is a newer, gated coastal community located on the road to Anna Maria Island. It is designed for low-speed travel throughout its various enclaves like **Edgewater Walk** and **Mangrove Walk**.\n*   **Village Center:** The community has its own \"Beach Club\" and Marina with a sky bar and dining.\n*   **Easy Access to:** While restricted to the island, it is only a short hop (via an LSV) to the **Floridays Woodfire Grill & Bar** and other waterfront coffee spots just across the bridge in the Anna Maria Sound area.\n\n### 4. Bradenton Beach & Anna Maria Island\nThe entire island is effectively one large golf cart community. Bradenton Beach, the southernmost city on the island, is particularly dense with \"village\" charm.\n*   **Neighborhoods:** Almost any residential street in **Bradenton Beach** or nearby **Holmes Beach**.\n*   **Easy Access to:** **Bridge Street**, a historic village center filled with coffee shops like **Back Alley Treasures** and **Anna Maria Island Coffee Shack**. You can legally traverse the entire island in a cart as every road is 35 mph or less.\n\n### 5. Cortez Fishing Village\nJust across the bridge from the islands, the historic **Cortez Village** is an unincorporated area with narrow, low-speed streets where golf carts are the norm.\n*   **Easy Access to:** **Foxi Coffee** (located inside The Fox Mercantile), a popular artisan coffee spot in the heart of the village. Residents can zip between the docks, seafood markets, and local cafes without ever needing a car.\n\n### Summary of Requirements\n| Community | Type of \"Village Center\" | Top Coffee Spot |\n| :--- | :--- | :--- |\n| **Lakewood Ranch** | Master-Planned Town Centers | Atria Café / Kahwa |\n| **Palma Sola Trace** | Suburban Shopping Plaza | Local Cafes in Shoppes at Palma Sola |\n| **Bradenton Beach** | Historic Bridge Street | Back Alley Treasures |\n| **Cortez Village** | Historic Fishing Village | Foxi Coffee |\n\n**Pro Tip:** If you want to travel *between* these neighborhoods (e.g., from Palma Sola to the beach), you will need a **street-legal LSV** with a license plate, as you will likely need to cross roads or bridges with 35 mph limits. Unregistered \"standard\" golf carts are typically limited to the internal streets of their specific community.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Yes, Bradenton, Florida, has several golf cart-friendly neighborhoods that offer convenient access to coffee shops, village centers, and other amenities. These areas are popular among retirees and families for their walkable (or cart-able) layouts, community vibes, and proximity to daily conveniences. Based on recent information from sites like 55places.com and local real estate resources, here are some standout options:\n\n### Lakewood Ranch\n- **Why it's golf cart-friendly**: This master-planned community is designed with golf cart paths and low-speed vehicle allowances, making it easy to navigate without a car. Many residents use carts for errands, socializing, and getting around.\n- **Access to coffee shops and village centers**: Lakewood Ranch features multiple village centers like Main Street at Lakewood Ranch, which has coffee spots (e.g., independent cafes and chains like Starbucks), restaurants, shops, and events. It's all within a short cart ride.\n- **Other perks**: Proximity to schools, parks, and healthcare. It's one of the top-rated areas in Bradenton for this lifestyle, with homes ranging from condos to single-family options.\n- **More info**: Check out resources like buylakewoodranch.com for current listings and details.\n\n### Harbour Isle\n- **Why it's golf cart-friendly**: Located on Anna Maria Island (just west of Bradenton), this gated community allows golf carts on internal roads and has easy access to nearby beaches and paths.\n- **Access to coffee shops and village centers**: Nearby Bradenton Beach and Holmes Beach have village-like centers with coffee shops, boutiques, and eateries. You can cart to places like local roasters or spots in the Bridge Street area.\n- **Other perks**: Waterfront living with a resort feel, ideal for those seeking a relaxed, island vibe. Rentals for golf carts are available through services like AMI Golf Cart Rentals for visitors testing the area.\n\n### Palma Sola and Greyhawk Landing\n- **Why it's golf cart-friendly**: These neighborhoods have cart-accessible streets and are part of Bradenton's growing network of low-speed vehicle-friendly zones. Greyhawk Landing, in particular, has community paths.\n- **Access to coffee shops and village centers**: Close to downtown Bradenton, which acts as a village center with coffee shops (like independent spots and chains), markets, and cultural hubs. Palma Sola is near Palma Sola Bay, with easy access to cafes in the Manatee Avenue area.\n- **Other perks**: Family-oriented with good schools nearby, as noted in local guides like buylakewood",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "How pet-friendly are the communities in Lakewood Ranch for retirees who want to bring their dogs?",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Lakewood Ranch (Manatee/Sarasota area) is generally **very dog-friendly for retirees**, but *how easy it is* depends on the **specific neighborhood/HOA rules** and the kind/size of dog you have.\n\n## What’s pet-friendly about Lakewood Ranch overall\n- **Lots of places to walk**: Lakewood Ranch advertises **150+ miles of multi-use trails/bike lanes** and a large amount of open space, which tends to make daily dog-walking practical. ([lakewoodranch.com](https://lakewoodranch.com/life-on-the-ranch/parks-trails/?utm_source=openai))  \n- **Dedicated dog-park options**: Some of the main community parks include **dog parks** (for example, Bob Gardner Community Park is listed with a dog park). ([lakewoodranch.com](https://lakewoodranch.com/life-on-the-ranch/parks-trails/?utm_source=openai))  \n- **Dog-walking in parks/trails is explicitly part of the lifestyle**: Some parks (e.g., Silver Falls Nature Park) are promoted as good places to **walk your dog**. ([lakewoodranch.com](https://lakewoodranch.com/our-parks/?utm_source=openai))  \n\n## The big “gotcha”: rules vary by community (especially for retirees/55+)\nLakewood Ranch isn’t one single HOA—there are many villages/communities (including 55+), and **pet rules are set at the community/association level**. The most common differences you’ll see are:\n- **Number of pets allowed** (often 1–2, sometimes more/less)\n- **Weight limits** (some communities have them; others don’t)\n- **Breed restrictions** (common in some HOAs and especially common in rentals/apartments)\n- **Leash rules and where pets are allowed** in amenities (clubhouses, courts, etc.)\n\nExample of “pets allowed but not everywhere”: a Del Webb Lakewood Ranch tennis-club rules page states **no pets are allowed on the tennis courts**. ([app.playbypoint.com](https://app.playbypoint.com/f/lakewood-ranch-club/pages/rules-and-regulation?utm_source=openai))  \n\n## If you’re considering specific neighborhoods\nBecause policies differ, it’s worth verifying *before* you buy/lease. If you tell me:\n1) which Lakewood Ranch community (e.g., **Del Webb**, **Esplanade**, etc.),  \n2) your dog’s **breed** and **weight**, and  \n3) whether you’re buying or renting,  \nI can help you make a quick checklist of what to ask for (CCR/Rules & Regs items) and what tends to trip retirees up (limits, guests’ dogs, walking routes, etc.).",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Lakewood Ranch is widely considered one of the most pet-friendly master-planned communities in the United States, particularly for retirees. The community is designed with a \"canine-inclusive\" lifestyle that extends from the private neighborhoods to the public shopping and dining districts.\n\n### **1. Top Pet-Friendly Retirement Communities**\nMost retirees in Lakewood Ranch gravitate toward these three major \"active adult\" (55+) or maintenance-free villages, all of which feature dedicated pet amenities:\n\n*   **Cresswind Lakewood Ranch:** This 55+ gated community is highly pet-focused. It features an on-site dog park with separate sections for large and small breeds. Its **\"Set Yourself F.R.E.E.\"** lifestyle program often includes walking clubs and social events where dogs are welcome. \n*   **Del Webb (Catalina & original village):** Del Webb communities are famous for being dog-friendly. They typically feature their own private dog parks, miles of wide, lit walking trails, and a \"Lifestyle Director\" who often organizes community pet parades or \"Yappy Hours.\"\n*   **Esplanade at Azario:** While not strictly age-restricted in all sections, it is a favorite for retirees. It offers a \"resort-lifestyle\" that includes a pet park and sprawling nature trails.\n\n### **2. Common Pet Restrictions**\nWhile \"pet-friendly,\" every community has Homeowners Association (HOA) rules that retirees should review before buying:\n*   **Breed Restrictions:** Most communities (including Cresswind) prohibit breeds classified as \"aggressive,\" such as Pit Bulls (American Staffordshire Terriers), Doberman Pinschers, and Rottweilers.\n*   **Weight Limits:** While many single-family home villages have no weight limits, **condo or villa-style** residences often impose a 25–50 lb limit.\n*   **Quantity:** Most HOAs allow 2 to 3 domestic pets per household.\n\n### **3. Public \"Canine Districts\" & Social Life**\nBeyond your immediate neighborhood, Lakewood Ranch offers high-density \"dog-friendly\" zones:\n*   **Main Street at Lakewood Ranch:** This is the community’s \"downtown.\" Most restaurants here (e.g., **Ed’s Tavern**, **Remy’s on Main**, **Station 400**) have pet-friendly outdoor patios where water bowls and treats are standard.\n*   **Waterside Place:** This newer lakefront district is arguably the most dog-friendly spot in the area. It features wide sidewalks, a weekend Farmers’ Market where dogs are the star attraction, and **\"Ranch Nites\"** with food trucks and live music where leashed pups are common.\n*   **The Dog Bar:** A unique social venue in Lakewood Ranch where dogs can play in a supervised off-leash area while owners enjoy drinks and socialization.\n\n### **4. Parks and Outdoor Exercise**\nLakewood Ranch maintains over **150 miles of trails**. Specific dog-dedicated parks include:\n*   **Bob Gardner Community Park:** Features a large, fenced-in dog park with agility equipment and separate areas for different sizes.\n*   **Greenbrook Adventure Park:** Offers a gated dog park and miles of shaded forest trails perfect for walking in the Florida heat.\n*   **Paw Park:** Centrally located and popular for its \"social hour\" feel among resident retirees.\n\n### **5. Healthcare and Support Services**\nRetirees often appreciate the high density of specialized veterinary care in the immediate area:\n*   **24/7 Emergency Care:** The **Veterinary Medical Center at Lakewood Ranch** provides 24-hour emergency and critical care.\n*   **Urgent Care:** **UrgentVet** offers after-hours care for non-life-threatening issues, filling the gap between regular vet hours and emergency hospitals.\n*   **High-End Boarding:** Facilities like **Bayside Pet Resort** and **Woofdorf Astoria** offer luxury boarding, doggy daycare, and grooming.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information available online, Lakewood Ranch in Florida is quite pet-friendly, making it an appealing spot for retirees who want to bring their dogs along. It's a master-planned community with a strong emphasis on outdoor living, and many neighborhoods and facilities cater specifically to pet owners. I'll break it down below, drawing from sources like community websites, pet resort info, and retirement living guides.\n\n### Overall Pet-Friendliness for Retirees\n- **Retirement Communities and 55+ Options**: Lakewood Ranch has several senior living options that welcome dogs. For example, communities like Lakewood West End (as highlighted on their blog) emphasize pet-inclusive amenities, such as on-site dog parks where pups can socialize and play, and terraces for outdoor lounging with your dog while you enjoy meals or relax. Broader resources, like BringFido's guide to dog-friendly retirement communities, note that around 75% of assisted living facilities in similar areas allow pets, and Lakewood Ranch aligns with this trend. Sites like 55places.com also list active adult communities in the region with dog parks, promoting a lifestyle where retirees and their furry companions can thrive together.\n  \n- **Pet-Friendly Housing**: If you're looking to rent or buy, there are plenty of options. Apartments.com shows about 10 pet-friendly townhomes available in Lakewood Ranch, with features like verified availability and photos. ForRent.com lists over 250 pet-friendly houses for rent, including high-quality photos, virtual tours, and details on amenities. These often include breed and size restrictions, but many are flexible for dogs, especially in retiree-focused areas.\n\n### Activities and Amenities for Dogs\n- **Local Pet Services and Fun Spots**: The area is packed with dog-oriented activities. Bayside Pet Resort in Lakewood Ranch offers boarding, grooming, training, and spa services, which is great for retirees who might travel or need occasional pet care. The University Animal Clinic's blog highlights pet-friendly outings in Lakewood Ranch, such as parks, trails, and events where dogs are welcome—perfect for staying active with your pup.\n  \n- **Community-Wide Appeal**: Lakewood Ranch is often ranked among the top pet-friendly master-planned communities in the South (per CommunityFinder.com), with dog parks becoming a standard feature. This fits well for retirees, as it supports an active, social lifestyle—think walks along scenic paths or community events that include pets.\n\n### Things to Consider\n- **Restrictions and Policies**: While generally welcoming, individual communities or rentals may have rules on",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "Which Sarasota-area neighborhoods have the best healthcare facilities within biking distance for active retirees?",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Sarasota is pretty spread out, so for “within biking distance” I’m going to assume **~0–5 miles on mostly flat roads** (and ideally with multi-use paths/low-stress streets). Based on where the biggest hospital and “one-stop” outpatient hubs actually sit, these Sarasota-area neighborhoods tend to work best for **active retirees who want healthcare access without needing to drive**:\n\n## 1) Southside Village / Arlington Park / East of Trail (near SMH-Sarasota)\n**Why it’s strong:** You’re close to the region’s flagship full-service hospital: **Sarasota Memorial Hospital – Sarasota Campus (1700 S. Tamiami Trail)**. ([smh.com](https://www.smh.com/Home/Contact-Us?utm_source=openai))  \n**Good fit if you want:** quick access to **ER + inpatient + specialists** and you also like biking to downtown/bayfront.\n\n**Typical bike-to care:** SMH main campus is often an easy ride from these neighborhoods, and you’ll also be near many medical offices around the hospital/downtown core (traffic can be the main downside).\n\n## 2) Palmer Ranch / Gulf Gate / Beneva–Clark corridor (near SMH Health Care Center at Clark Road)\n**Why it’s strong:** The **SMH Health Care Center at Clark Road (5880 Rand Blvd)** is a major outpatient hub with imaging, primary & specialty care, rehab, and HealthFit. ([smh.com](https://www.smh.com/Home/Locations/Health-Care-Center-at-Clark-Road?utm_source=openai))  \n**Good fit if you want:** a **suburban, trail-friendly** lifestyle with lots of “day-to-day healthcare” close by (primary care, imaging, rehab), plus access to services along Clark Rd.\n\n**Note:** This is more “outpatient-centric” than living right by a hospital campus, but many retirees prefer that for routine care.\n\n## 3) Lakewood Ranch (Sarasota/Manatee area) — especially near University Pkwy\n**Why it’s strong:** You have multiple high-value options:\n- **Lakewood Ranch Medical Center** (8330 Lakewood Ranch Blvd, Bradenton) ([business.sarasotachamber.com](https://business.sarasotachamber.com/active-member-directory/Details/lakewood-ranch-medical-center-3813233?utm_source=openai))  \n- **Sarasota Memorial Health Care Center at University Parkway** (5350 University Pkwy, Sarasota) ([smh.com](https://www.smh.com/Home/Locations/Health-Care-Center-at-University-Parkway?utm_source=openai))  \n- **Sarasota Memorial ER at Lakewood Ranch** (7250 University Parkway) ([smh.com](https://www.smh.com/Home/News-Events/Release/smh-expands-emergency-care-in-rapidly-growing-lakewood-ranch?utm_source=openai))  \n\n**Good fit if you want:** a **master-planned community** where biking infrastructure is generally better than much of central Sarasota, and you can reach a hospital/ER and lots of outpatient care.\n\n## 4) Venice Island / South Venice / Nokomis (Venice “in-town” side)\n**Why it’s strong:** You get a very bikeable lifestyle plus strong SMH access:\n- **SMH Health Care Center at Venice / Venice Urgent Care** (997 N US 41 Bypass, Venice) ([smh.com](https://www.smh.com/Home/Locations/Health-Care-Center-at-Venice?utm_source=openai))  \n- **Sarasota Memorial Hospital–Venice** (2600 Laurel Rd E., North Venice) ([smhvenice.com](https://www.smhvenice.com/smh-venice?utm_source=openai))  \n\n**Good fit if you want:** **coastal, active-retiree biking** with urgent care/outpatient close, and a full hospital campus that’s bike-reachable from parts of Venice/Nokomis (distance varies a lot depending on exact neighborhood).\n\n## 5) Bee Ridge corridor / Bee Ridge–Cattlemen area (near HCA Florida Sarasota Doctors Hospital)\n**Why it’s strong:** **HCA Florida Sarasota Doctors Hospital (5731 Bee Ridge Rd)** provides another full-service hospital option on the east/southeast side of Sarasota. ([hcafloridahealthcare.com](https://www.hcafloridahealthcare.com/locations/sarasota-doctors-hospital/about-us/contact-us/?utm_source=openai))  \n**Good fit if you want:** to be closer to I‑75 and east-side shopping/services while keeping a hospital within a reasonable bike radius.\n\n---\n\n### Quick “best picks” by retiree style\n- **Most hospital-centric / specialist access:** *Southside Village / Arlington Park / East of Trail* (near SMH-Sarasota). ([smh.com](https://www.smh.com/Home/Contact-Us?utm_source=openai))  \n- **Most “medical hub + fitness/rehab” suburban setup:** *Palmer Ranch / Beneva–Clark area* (near SMH Clark Rd). ([smh.com](https://www.smh.com/Home/Locations/Health-Care-Center-at-Clark-Road?utm_source=openai))  \n- **Most planned-community + multiple facilities nearby:** *Lakewood Ranch*. ([business.sarasotachamber.com](https://business.sarasotachamber.com/active-member-directory/Details/lakewood-ranch-medical-center-3813233?utm_source=openai))  \n- **Most coastal + active-retiree vibe with strong SMH south-county options:** *Venice/Nokomis*. ([smh.com](https://www.smh.com/Home/Locations/Health-Care-Center-at-Venice?utm_source=openai))  \n\nIf you tell me **(a)** your preferred max biking distance (3 miles? 5? 8?) and **(b)** whether you mean “bike to a *full hospital ER*” vs “bike to *primary care + urgent care + imaging*,” I can narrow this to the **top 3 neighborhoods** and give specific “from neighborhood → facility” bikeability notes.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "For active retirees, the best Sarasota-area neighborhoods for healthcare access via bicycle are those situated near the **Sarasota Memorial Hospital (SMH)** medical cluster, the **Lakewood Ranch Medical Center**, or along the **Legacy Trail** corridor.\n\n### 1. Arlington Park (Best for Proximity to Flagship Healthcare)\nArlington Park is widely considered the top choice for retirees who want to be \"next door\" to world-class medical care.\n*   **Healthcare Proximity:** It is immediately adjacent to **Sarasota Memorial Hospital (SMH)**, which is consistently ranked as one of the best hospitals in Florida. The surrounding area is densely packed with specialized clinics, rehabilitation centers, and diagnostic labs.\n*   **Bikeability:** The neighborhood features quiet, canopy-shaded residential streets that are easy to navigate. It is a very short, low-stress ride to the hospital’s main campus and the various medical offices along the Tamiami Trail.\n\n### 2. Lakewood Ranch (Best Master-Planned Connectivity)\nThis massive master-planned community is designed with active seniors in mind, offering miles of dedicated, paved bike paths that are physically separated from car traffic.\n*   **Healthcare Proximity:** **Lakewood Ranch Medical Center** is located in the heart of the community. In addition to the hospital, there are several \"Medical Office Buildings\" (MOBs) housing everything from cardiology to senior-focused primary care.\n*   **Bikeability:** Almost every village within Lakewood Ranch is connected by a network of trails. Villages like **Waterside** or those near the **Town Center** offer the shortest rides (under 2 miles) to medical facilities on safe, wide paths.\n\n### 3. Venice Island (Best for Comprehensive Bike Infrastructure)\nWhile technically just south of Sarasota, Venice is a nationally recognized \"Bicycle Friendly Community\" and a favorite for active retirees.\n*   **Healthcare Proximity:** **Sarasota Memorial Hospital - Venice** (a newer, state-of-the-art campus) is located nearby at Laurel Road. The island itself is also home to many independent clinics and wellness centers.\n*   **Bikeability:** The **Venetian Waterway Park** and **The Legacy Trail** converge here. You can ride from almost anywhere on the island to medical services without ever competing with heavy traffic. The \"Island Loop\" is a 13-mile trail that circles the entire historic district.\n\n### 4. Palmer Ranch & Bee Ridge (Best for Trail-Centric Living)\nThese neighborhoods are situated along the recently extended **Legacy Trail**, which now functions as a \"bike highway\" through the county.\n*   **Healthcare Proximity:** Residents in Palmer Ranch are near the **SMH Health Care Center at Heritage Harbour** and several urgent care centers. The trail extension now connects these neighborhoods directly to the **Payne Park** trailhead near downtown, which is a short bike ride from the main SMH campus.\n*   **Bikeability:** The Legacy Trail provides a 20+ mile paved, car-free corridor. Retirees in communities like **VillageWalk** or **The Isles** can jump on the trail and reach medical offices in the Clark Road or Bee Ridge Road areas (home to specialized centers like ArchWell Health) within minutes.\n\n### 5. The Meadows (Best for Wellness-Focused Seniors)\nThe Meadows is an established community with a high population of active retirees and its own extensive internal trail system.\n*   **Healthcare Proximity:** It is minutes away from the **University Parkway** medical corridor and the medical offices near Nathan Benderson Park.\n*   **Bikeability:** The community features over 14 miles of internal biking and walking trails. It is a very safe environment for daily exercise, with \"The Shopping Village\" inside the community providing local professional and health-related services.\n\n### Summary Comparison\n| Neighborhood | Primary Healthcare Facility | Bike Infrastructure Type |\n| :--- | :--- | :--- |\n| **Arlington Park** | Sarasota Memorial Hospital (SMH) | Quiet residential streets / Sidepaths |\n| **Lakewood Ranch** | Lakewood Ranch Medical Center | Dedicated paved multi-use trails |\n| **Venice Island** | SMH Venice / Island Clinics | Venetian Waterway Park / Legacy Trail |\n| **Palmer Ranch** | Clark Rd Medical Cluster / SMH | Direct access to Legacy Trail |\n| **The Meadows** | University Pkwy Medical Offices | 14 miles of internal private trails |",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information from real estate and retirement-focused sources like Movoto, Zachos Realty, and 55places.com (as of late 2025 data), Sarasota and its surrounding areas in Florida are popular for active retirees due to their mild climate, cultural amenities, and access to quality healthcare. The region boasts facilities like Sarasota Memorial Hospital (one of the top-rated in the state), Doctors Hospital of Sarasota, and various clinics affiliated with networks like HCA Florida or BayCare. For active retirees prioritizing biking distance (typically 1-5 miles for easy access via bike paths or low-traffic roads), several neighborhoods stand out for their proximity to healthcare while offering bike-friendly infrastructure, such as dedicated trails, flat terrain, and community shuttles.\n\nHere's a breakdown of some of the best Sarasota-area neighborhoods that fit your criteria, focusing on those with strong healthcare access within biking range. I've prioritized communities known for retiree appeal, including 55+ options, and noted key features. Keep in mind that \"biking distance\" can vary by personal fitness level, but these areas generally have safe, scenic routes (e.g., via the Legacy Trail or local bike lanes).\n\n### 1. **Palmer Ranch**\n   - **Why it's great for active retirees**: This master-planned community in south Sarasota is designed for an active lifestyle, with golf courses, walking/biking trails, and proximity to Siesta Key beaches. It's central and offers a mix of condos, villas, and single-family homes.\n   - **Healthcare access**: Within 2-4 miles (easy biking), you'll find Sarasota Memorial Hospital's Palmer Ranch campus, urgent care centers, and specialty clinics. The area is connected by bike paths like the Legacy Trail.\n   - **Retiree vibe**: Affordable and vibrant, with many 55+ communities like Prestancia or Turtle Beach.\n\n### 2. **Lakewood Ranch**\n   - **Why it's great for active retirees**: A large, resort-style development east of Sarasota with lakes, parks, and over 150 miles of trails for biking and walking. It's known for its active adult communities and events.\n   - **Healthcare access**: Lakewood Ranch Medical Center (part of Manatee Memorial Hospital) is centrally located, often within 1-3 miles by bike from many neighborhoods. Additional clinics and wellness centers are scattered throughout.\n   - **Retiree vibe**: Upscale with options like Del Webb or Esplanade, emphasizing fitness and social activities. It's a bit more suburban but",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

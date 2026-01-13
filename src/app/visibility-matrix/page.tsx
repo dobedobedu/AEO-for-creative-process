@@ -184,9 +184,8 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
       const node: IntentNode = {
         id: intent.id,
         text: intent.text,
-        manifestations: intent.defaultQueries,
-        role: (intent as any).role || "cpo",
-        creativity: (intent as any).creativity || 0.7
+        role: intent.role || "cpo",
+        queryStyle: intent.queryStyle || 0.75
       };
 
       bank[intent.persona][intent.stage].intents.push(node);
@@ -1108,18 +1107,18 @@ export default function VisibilityMatrixPage() {
     if (selection.type === "all") {
       for (const p of personas) {
         for (const s of STAGES) {
-          count += localQueryBank[p.id][s.id].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
+          count += localQueryBank[p.id][s.id].intents.length;
         }
       }
     } else if (selection.type === "cell") {
-      count = localQueryBank[selection.persona][selection.stage].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
+      count = localQueryBank[selection.persona][selection.stage].intents.length;
     } else if (selection.type === "row") {
       for (const s of STAGES) {
-        count += localQueryBank[selection.persona][s.id].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
+        count += localQueryBank[selection.persona][s.id].intents.length;
       }
     } else if (selection.type === "column") {
       for (const p of personas) {
-        count += localQueryBank[p.id][selection.stage].intents.reduce((acc, i) => acc + i.manifestations.length, 0);
+        count += localQueryBank[p.id][selection.stage].intents.length;
       }
     }
     return count;
@@ -1197,8 +1196,8 @@ export default function VisibilityMatrixPage() {
               key={p.id}
               onClick={() => toggleProvider(p.id)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${enabledProviders.has(p.id)
-                  ? `${p.bgColor} text-white shadow-sm`
-                  : "bg-[#efe6d9] text-[#1e1b16]/50"
+                ? `${p.bgColor} text-white shadow-sm`
+                : "bg-[#efe6d9] text-[#1e1b16]/50"
                 }`}
             >
               {p.label}
@@ -1384,7 +1383,8 @@ export default function VisibilityMatrixPage() {
                             <StageCell
                               stage={stage.id}
                               metrics={cell?.stageMetrics ?? {}}
-                              queryCount={cellQueries.intents.reduce((acc, i) => acc + i.manifestations.length, 0)}
+                              mentionRate={cell?.mentionRate}
+                              queryCount={cellQueries.intents.length}
                               isComplete={cell?.status === "complete"}
                               isRunning={cell?.status === "running"}
                               selected={cellSelected}
@@ -1402,19 +1402,19 @@ export default function VisibilityMatrixPage() {
                                 {persona.label} × {stage.label}
                               </span>
                               <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/60">
-                                {cellQueries.intents.reduce((acc, i) => acc + i.manifestations.length, 0)} queries
+                                {cellQueries.intents.length} intents
                               </Badge>
                             </div>
                             <div className="space-y-1 max-h-24 overflow-y-auto">
-                              {cellQueries.intents.flatMap(i => i.manifestations).slice(0, 5).map((q, idx) => (
+                              {cellQueries.intents.slice(0, 5).map((intent, idx) => (
                                 <div key={idx} className="text-xs text-[#1e1b16]/70 flex gap-1">
                                   <span className="text-[#1e1b16]/30">•</span>
-                                  <span className="line-clamp-1">&quot;{q}&quot;</span>
+                                  <span className="line-clamp-1">&quot;{intent.text}&quot;</span>
                                 </div>
                               ))}
-                              {cellQueries.intents.flatMap(i => i.manifestations).length > 5 && (
+                              {cellQueries.intents.length > 5 && (
                                 <div className="text-xs text-[#1e1b16]/40">
-                                  +{cellQueries.intents.flatMap(i => i.manifestations).length - 5} more...
+                                  +{cellQueries.intents.length - 5} more...
                                 </div>
                               )}
                             </div>
@@ -1797,8 +1797,8 @@ export default function VisibilityMatrixPage() {
                       key={metric.id}
                       onClick={() => setTrendMetric(metric.id as typeof trendMetric)}
                       className={`px-2.5 py-1 text-xs rounded-md transition-colors ${trendMetric === metric.id
-                          ? "bg-[#1f3b2c] text-white"
-                          : "bg-[#efe6d9] text-[#1e1b16]/60 hover:bg-[#e3dacb]"
+                        ? "bg-[#1f3b2c] text-white"
+                        : "bg-[#efe6d9] text-[#1e1b16]/60 hover:bg-[#e3dacb]"
                         }`}
                     >
                       {metric.label}
@@ -2061,7 +2061,7 @@ export default function VisibilityMatrixPage() {
         queryBank={localQueryBank}
         personas={personas.map(p => ({ id: p.id, label: p.label }))}
         stages={STAGES.map(s => ({ id: s.id, label: s.label }))}
-        onRegenerateQueries={async (persona, stage, intent, role, creativity) => {
+        onRegenerateQueries={async (persona, stage, intent, role, queryStyle) => {
           const resp = await fetch("/api/intents/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -2070,7 +2070,7 @@ export default function VisibilityMatrixPage() {
               stage,
               intent,
               role,
-              creativity,
+              queryStyle,
             }),
           });
 

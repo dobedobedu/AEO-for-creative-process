@@ -5,7 +5,7 @@
  * metrics from AI responses. Replaces all local heuristic scoring.
  */
 
-import { google } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import {
   getExtractionSchemaForStage,
@@ -17,6 +17,7 @@ import {
   type DecideExtraction,
 } from "./schemas";
 import type { Stage } from "../intents/types";
+import { safeAsync } from "../utils";
 
 interface ExtractionInput {
   stage: Stage;
@@ -32,6 +33,10 @@ interface ExtractionResult {
   extraction: StageExtraction | null;
   error?: string;
 }
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 export async function extractStageMetrics(input: ExtractionInput): Promise<ExtractionResult> {
   const { stage, query, responseText, provider, brand, brandTerms = [] } = input;
@@ -65,23 +70,26 @@ ${responseText}
 
 Extract the metrics. Remember: the brand is ${brandInfo}.`;
 
-  try {
-    const result = await generateObject({
+  // Use safeAsync to isolate SDK errors with read-only properties
+  const result = await safeAsync(
+    () => generateObject({
       model: google("gemini-3-flash-preview"),
       schema,
       prompt,
-    });
+    }),
+    `Extraction/${stage}/${provider}`
+  );
 
+  if (result.success) {
     return {
       success: true,
-      extraction: result.object as StageExtraction,
+      extraction: result.data.object as StageExtraction,
     };
-  } catch (error) {
-    console.error(`Extraction failed for ${stage}/${provider}:`, error);
+  } else {
     return {
       success: false,
       extraction: null,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: result.error,
     };
   }
 }
