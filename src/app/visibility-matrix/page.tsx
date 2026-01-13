@@ -19,7 +19,6 @@ import {
   EyeOff,
   Square,
   Zap,
-  TrendingUp,
   Lightbulb,
   ChevronRight,
   Pencil,
@@ -44,11 +43,10 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
-  LineChart as RechartsLineChart,
-  Line,
+  AreaChart as RechartsAreaChart,
+  Area,
+  CartesianGrid,
   XAxis,
-  YAxis,
-  ReferenceLine,
 } from "recharts";
 
 import type { IntentLibrary, IntentNode } from "@/lib/intents/types";
@@ -382,8 +380,8 @@ export default function VisibilityMatrixPage() {
   );
   const [deepDiveOpen, setDeepDiveOpen] = useState(false);
   const [benchmarkHistory, setBenchmarkHistory] = useState<BenchmarkRun[]>([]);
-  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
-  const [trendMetric, setTrendMetric] = useState<"visibility" | "sentiment" | "winrate" | "recommendation">("visibility");
+  const [kpiMetric, setKpiMetric] = useState<"mention" | "sentiment" | "winrate" | "top3">("mention");
+  const [kpiRange, setKpiRange] = useState<"day" | "week" | "month">("week");
   const [personas, setPersonas] = useState<PersonaConfig[]>(DEFAULT_PERSONAS);
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -677,6 +675,10 @@ export default function VisibilityMatrixPage() {
     });
   };
 
+  const selectAllProviders = useCallback(() => {
+    setEnabledProviders(new Set(PROVIDERS.map(p => p.id)));
+  }, []);
+
   const startEditingPersona = (persona: PersonaConfig) => {
     setEditingPersona(persona.id);
     setEditValue(persona.description);
@@ -812,9 +814,8 @@ export default function VisibilityMatrixPage() {
       .slice(0, 5);
   }, [selectedCellsData, enabledProviders]);
 
-  // Computed for future provider comparison view
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _modelStats = useMemo(() => {
+  // Provider-level KPIs from current selection
+  const modelStats = useMemo(() => {
     const stats: Record<Provider, { score: number; mentions: number; total: number }> = {
       openai: { score: 0, mentions: 0, total: 0 },
       anthropic: { score: 0, mentions: 0, total: 0 },
@@ -842,6 +843,18 @@ export default function VisibilityMatrixPage() {
       total: stats[p.id].total,
     }));
   }, [selectedCellsData]);
+
+  const modelTrendData = useMemo(() => {
+    const full = benchmarkHistory.map(run => ({
+      label: run.label,
+      openai: Math.round((run.providerScores.openai?.mentionRate ?? 0) * 100),
+      anthropic: Math.round((run.providerScores.anthropic?.mentionRate ?? 0) * 100),
+      gemini: Math.round((run.providerScores.gemini?.mentionRate ?? 0) * 100),
+      xai: Math.round((run.providerScores.xai?.mentionRate ?? 0) * 100),
+    }));
+    const windowSize = kpiRange === "day" ? 30 : kpiRange === "week" ? 13 : 12;
+    return full.slice(-windowSize);
+  }, [benchmarkHistory, kpiRange]);
 
   // Stage-specific insights
   const stageInsights = useMemo(() => {
@@ -1052,39 +1065,8 @@ export default function VisibilityMatrixPage() {
     return { type: "recommendation", title: "Recommendation Strength Evidence", items };
   }, [selectedCellsData, enabledProviders]);
 
-  // Get selected historical data point for time slider
-  const selectedHistoricalData = useMemo(() => {
-    if (benchmarkHistory.length === 0) return null;
-    const idx = Math.min(selectedTimeIndex, benchmarkHistory.length - 1);
-    return benchmarkHistory[idx];
-  }, [benchmarkHistory, selectedTimeIndex]);
-
-  const isViewingHistory = selectedTimeIndex < benchmarkHistory.length - 1;
-
-  // Display insights - use historical data when viewing past, live data for "now"
-  const displayInsights = useMemo(() => {
-    if (isViewingHistory && selectedHistoricalData?.stageData) {
-      const hist = selectedHistoricalData.stageData;
-      const totalPos = Object.values(hist.positionCounts).reduce((a, b) => a + b, 0);
-      return {
-        ...stageInsights,
-        positionCounts: hist.positionCounts,
-        firstRate: totalPos > 0 ? hist.positionCounts["1st"] / totalPos : 0,
-        sentimentScore: hist.sentimentScore,
-        winRate: hist.winRate,
-        totalResponses: totalPos, // So we show something
-      };
-    }
-    return stageInsights;
-  }, [isViewingHistory, selectedHistoricalData, stageInsights]);
-
-  // Display competitors - use historical data when viewing past
-  const displayCompetitors = useMemo(() => {
-    if (isViewingHistory && selectedHistoricalData?.competitorRanking) {
-      return selectedHistoricalData.competitorRanking.map((name, idx) => [name, 10 - idx] as [string, number]);
-    }
-    return competitorCounts;
-  }, [isViewingHistory, selectedHistoricalData, competitorCounts]);
+  const displayInsights = stageInsights;
+  const displayCompetitors = competitorCounts;
 
   const selectionLabel = useMemo(() => {
     if (selection.type === "all") return "All Cells";
@@ -1188,21 +1170,107 @@ export default function VisibilityMatrixPage() {
       </div>
 
       <div className="max-w-6xl mx-auto p-6 space-y-6">
-        {/* Model Filter - Pill toggles */}
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-[#1e1b16]/60">Models:</span>
-          {PROVIDERS.map(p => (
-            <button
-              key={p.id}
-              onClick={() => toggleProvider(p.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${enabledProviders.has(p.id)
-                ? `${p.bgColor} text-white shadow-sm`
-                : "bg-[#efe6d9] text-[#1e1b16]/50"
+        {/* Provider KPI Strip */}
+        <div className="rounded-2xl border border-[#e3dacb] bg-[#fffaf2] p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-sm font-semibold text-[#1e1b16]">Provider KPIs</h2>
+              <p className="text-xs text-[#1e1b16]/50">Metric trends by model.</p>
+            </div>
+            <div className="flex gap-1">
+              {[
+                { id: "mention", label: "Mention" },
+                { id: "sentiment", label: "Sentiment" },
+                { id: "winrate", label: "Win Rate" },
+                { id: "top3", label: "Top 3 Rec" },
+              ].map((metric) => (
+                <button
+                  key={metric.id}
+                  onClick={() => setKpiMetric(metric.id as typeof kpiMetric)}
+                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
+                    kpiMetric === metric.id
+                      ? "bg-[#1f3b2c] text-white"
+                      : "bg-[#efe6d9] text-[#1e1b16]/60 hover:bg-[#e3dacb]"
+                  }`}
+                >
+                  {metric.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mb-3">
+            {(["day", "week", "month"] as const).map(range => (
+              <button
+                key={range}
+                onClick={() => setKpiRange(range)}
+                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${
+                  kpiRange === range
+                    ? "bg-[#1f3b2c] text-white border-[#1f3b2c]"
+                    : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#1f3b2c]/40"
                 }`}
-            >
-              {p.label}
-            </button>
-          ))}
+              >
+                {range === "day" ? "Daily" : range === "week" ? "Weekly" : "Monthly"}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 h-[220px]">
+              <ChartContainer config={chartConfig} className="h-full w-full">
+                <RechartsAreaChart data={modelTrendData} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+                  <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="#efe6d9" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={6} fontSize={10} />
+                  <ChartTooltip cursor={{ stroke: "#d4c9b8", strokeDasharray: "4 4" }} content={<ChartTooltipContent />} />
+                  {enabledProviders.has("openai") && (
+                    <Area type="monotone" stackId="mentions" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.2} strokeWidth={2} />
+                  )}
+                  {enabledProviders.has("anthropic") && (
+                    <Area type="monotone" stackId="mentions" dataKey="anthropic" stroke="#b86f3a" fill="#b86f3a" fillOpacity={0.2} strokeWidth={2} />
+                  )}
+                  {enabledProviders.has("gemini") && (
+                    <Area type="monotone" stackId="mentions" dataKey="gemini" stroke="#6e7c5b" fill="#6e7c5b" fillOpacity={0.2} strokeWidth={2} />
+                  )}
+                  {enabledProviders.has("xai") && (
+                    <Area type="monotone" stackId="mentions" dataKey="xai" stroke="#7c6b7c" fill="#7c6b7c" fillOpacity={0.2} strokeWidth={2} />
+                  )}
+                </RechartsAreaChart>
+              </ChartContainer>
+            </div>
+            <div className="w-full lg:w-44 flex flex-col gap-2 justify-center">
+              <button
+                onClick={selectAllProviders}
+                className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                  enabledProviders.size === PROVIDERS.length
+                    ? "bg-[#2b6cb0] text-white border-[#2b6cb0]"
+                    : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#2b6cb0]/40"
+                }`}
+              >
+                <span>All Models</span>
+              </button>
+              {PROVIDERS.map(p => {
+                const isEnabled = enabledProviders.has(p.id);
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => toggleProvider(p.id)}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                      isEnabled
+                        ? `${p.bgColor} text-white border-transparent`
+                        : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#1f3b2c]/40"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: p.chartColor }} />
+                      {p.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <p className="text-[11px] text-[#1e1b16]/40 mt-3">
+            Selector acts as legend; range controls window size.
+          </p>
         </div>
 
         {/* MATRIX - CSS Grid with dotted canvas */}
@@ -1548,7 +1616,7 @@ export default function VisibilityMatrixPage() {
 
           {/* Stage Insights - Adaptive & Clickable */}
           <div className="col-span-4">
-            <Card className={`bg-[#fffaf2] border-[#e3dacb] shadow-none h-full ${isViewingHistory ? "ring-2 ring-[#b86f3a]/20" : ""}`}>
+            <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
                   <span>
@@ -1558,25 +1626,20 @@ export default function VisibilityMatrixPage() {
                     {stageInsights.targetStage === "decide" && "Recommendation Strength"}
                     {!stageInsights.targetStage && "Stage Insights"}
                   </span>
-                  {isViewingHistory && (
-                    <Badge variant="outline" className="bg-[#b86f3a]/10 border-[#b86f3a]/30 text-[#b86f3a] text-xs ml-auto">
-                      {selectedHistoricalData?.label}
-                    </Badge>
-                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {displayInsights.totalResponses === 0 && !isViewingHistory ? (
+                {displayInsights.totalResponses === 0 ? (
                   <div className="text-sm text-[#1e1b16]/40 text-center py-4">
                     {stageInsights.targetStage
                       ? "Run benchmark to see insights"
                       : "Select a stage column for insights"}
                   </div>
-                ) : stageInsights.targetStage === "explore" || isViewingHistory ? (
+                ) : stageInsights.targetStage === "explore" ? (
                   /* EXPLORE: Position Distribution - Clickable */
                   <button
-                    onClick={() => !isViewingHistory && setEvidenceModal(buildPositionEvidence())}
-                    className={`w-full text-left rounded-lg p-2 -m-2 transition-colors ${isViewingHistory ? "cursor-default" : "hover:bg-[#efe6d9]/50 cursor-pointer group"}`}
+                    onClick={() => setEvidenceModal(buildPositionEvidence())}
+                    className="w-full text-left rounded-lg p-2 -m-2 transition-colors hover:bg-[#efe6d9]/50 cursor-pointer group"
                   >
                     <div className="space-y-2">
                       {(["1st", "2nd", "3rd", "later", "absent"] as const).map(pos => {
@@ -1597,7 +1660,7 @@ export default function VisibilityMatrixPage() {
                       })}
                       <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 mt-3 pt-2 border-t border-[#e3dacb]">
                         <span>First mention in {(displayInsights.firstRate * 100).toFixed(0)}% of responses</span>
-                        {!isViewingHistory && <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />}
+                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
                   </button>
@@ -1719,15 +1782,10 @@ export default function VisibilityMatrixPage() {
 
           {/* Competitors - Clickable */}
           <div className="col-span-4">
-            <Card className={`bg-[#fffaf2] border-[#e3dacb] shadow-none h-full ${isViewingHistory ? "ring-2 ring-[#b86f3a]/20" : ""}`}>
+            <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
                   <span>Top Competitors</span>
-                  {isViewingHistory && (
-                    <Badge variant="outline" className="bg-[#b86f3a]/10 border-[#b86f3a]/30 text-[#b86f3a] text-xs ml-auto">
-                      {selectedHistoricalData?.label}
-                    </Badge>
-                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1736,18 +1794,17 @@ export default function VisibilityMatrixPage() {
                     {displayCompetitors.map(([name, count], idx) => (
                       <button
                         key={name}
-                        onClick={() => !isViewingHistory && setEvidenceModal(buildCompetitorEvidence(name))}
-                        className={`w-full flex items-center gap-3 rounded-lg p-1.5 -mx-1.5 transition-colors ${isViewingHistory ? "cursor-default" : "hover:bg-[#efe6d9]/50 cursor-pointer group"}`}
+                        onClick={() => setEvidenceModal(buildCompetitorEvidence(name))}
+                        className="w-full flex items-center gap-3 rounded-lg p-1.5 -mx-1.5 transition-colors hover:bg-[#efe6d9]/50 cursor-pointer group"
                       >
                         <div className="flex-1">
                           <div className="flex justify-between text-sm">
                             <span className="text-[#1e1b16]">
-                              {isViewingHistory && <span className="text-[#1e1b16]/40 mr-1">#{idx + 1}</span>}
                               {name}
                             </span>
                             <div className="flex items-center gap-1">
-                              {!isViewingHistory && <span className="text-[#1e1b16]/50">{count}</span>}
-                              {!isViewingHistory && <ChevronRight className="h-3 w-3 text-[#1e1b16]/30 opacity-0 group-hover:opacity-100 transition-opacity" />}
+                              <span className="text-[#1e1b16]/50">{count}</span>
+                              <ChevronRight className="h-3 w-3 text-[#1e1b16]/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                           </div>
                           <div className="h-1.5 bg-[#efe6d9] rounded-full mt-1 overflow-hidden">
@@ -1770,152 +1827,6 @@ export default function VisibilityMatrixPage() {
           </div>
 
         </div>
-
-        {/* Trend Chart + Time Slider - Full Width */}
-        <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[#6e7c5b]" />
-                Trend Over Time
-                {isViewingHistory && (
-                  <Badge variant="outline" className="bg-[#b86f3a]/10 border-[#b86f3a]/30 text-[#b86f3a] text-xs ml-2">
-                    Viewing {selectedHistoricalData?.label}
-                  </Badge>
-                )}
-              </CardTitle>
-              {/* Metric Selector */}
-              {benchmarkHistory.length > 1 && (
-                <div className="flex gap-1">
-                  {[
-                    { id: "visibility", label: "Visibility" },
-                    { id: "sentiment", label: "Sentiment" },
-                    { id: "winrate", label: "Win Rate" },
-                    { id: "recommendation", label: "Recommend" },
-                  ].map((metric) => (
-                    <button
-                      key={metric.id}
-                      onClick={() => setTrendMetric(metric.id as typeof trendMetric)}
-                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${trendMetric === metric.id
-                        ? "bg-[#1f3b2c] text-white"
-                        : "bg-[#efe6d9] text-[#1e1b16]/60 hover:bg-[#e3dacb]"
-                        }`}
-                    >
-                      {metric.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {benchmarkHistory.length > 1 ? (
-              <>
-                {/* Chart */}
-                <ChartContainer config={chartConfig} className="h-[180px] w-full">
-                  <RechartsLineChart
-                    data={benchmarkHistory.map((run) => {
-                      // Data depends on selected metric
-                      if (trendMetric === "visibility") {
-                        return {
-                          label: run.label,
-                          openai: enabledProviders.has("openai") ? Math.round((run.providerScores.openai?.avgScore ?? 0) * 100) : null,
-                          anthropic: enabledProviders.has("anthropic") ? Math.round((run.providerScores.anthropic?.avgScore ?? 0) * 100) : null,
-                          gemini: enabledProviders.has("gemini") ? Math.round((run.providerScores.gemini?.avgScore ?? 0) * 100) : null,
-                          xai: enabledProviders.has("xai") ? Math.round((run.providerScores.xai?.avgScore ?? 0) * 100) : null,
-                        };
-                      }
-                      // For stage metrics, show single line (overall)
-                      const val = trendMetric === "sentiment"
-                        ? Math.round(((run.stageData?.sentimentScore ?? 0) + 1) * 50) // -1 to 1 → 0 to 100
-                        : trendMetric === "winrate"
-                          ? Math.round((run.stageData?.winRate ?? 0) * 100)
-                          : Math.round((run.stageData?.recStrength ?? 0) * 100);
-                      return { label: run.label, value: val };
-                    })}
-                    margin={{ top: 10, right: 10, bottom: 5, left: 0 }}
-                  >
-                    <XAxis
-                      dataKey="label"
-                      tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      domain={[0, 100]}
-                      tick={{ fontSize: 10, fill: "#1e1b16", opacity: 0.5 }}
-                      axisLine={false}
-                      tickLine={false}
-                      width={30}
-                      tickFormatter={(v) => `${v}%`}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    {selectedTimeIndex < benchmarkHistory.length && (
-                      <ReferenceLine
-                        x={benchmarkHistory[selectedTimeIndex]?.label}
-                        stroke="#1f3b2c"
-                        strokeDasharray="4 4"
-                        strokeWidth={2}
-                      />
-                    )}
-                    {trendMetric === "visibility" ? (
-                      <>
-                        {enabledProviders.has("openai") && (
-                          <Line type="monotone" dataKey="openai" stroke="var(--color-openai)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                        {enabledProviders.has("anthropic") && (
-                          <Line type="monotone" dataKey="anthropic" stroke="var(--color-anthropic)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                        {enabledProviders.has("gemini") && (
-                          <Line type="monotone" dataKey="gemini" stroke="var(--color-gemini)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                        {enabledProviders.has("xai") && (
-                          <Line type="monotone" dataKey="xai" stroke="var(--color-xai)" strokeWidth={2} dot={false} connectNulls />
-                        )}
-                      </>
-                    ) : (
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke={
-                          trendMetric === "sentiment" ? "#6e7c5b" :
-                            trendMetric === "winrate" ? "#b86f3a" :
-                              "#1f3b2c"
-                        }
-                        strokeWidth={2.5}
-                        dot={{ fill: trendMetric === "sentiment" ? "#6e7c5b" : trendMetric === "winrate" ? "#b86f3a" : "#1f3b2c", r: 3 }}
-                        connectNulls
-                      />
-                    )}
-                  </RechartsLineChart>
-                </ChartContainer>
-
-                {/* Time Slider - below chart like Keynote */}
-                <div className="px-[30px] space-y-1">
-                  <Slider
-                    value={[selectedTimeIndex]}
-                    onValueChange={([val]) => setSelectedTimeIndex(val)}
-                    min={0}
-                    max={benchmarkHistory.length - 1}
-                    step={1}
-                    className="[&_[data-slot=slider-track]]:bg-[#e3dacb] [&_[data-slot=slider-range]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:shadow-md [&_[data-slot=slider-thumb]]:w-4 [&_[data-slot=slider-thumb]]:h-4"
-                  />
-                  <div className="flex justify-between text-[10px] text-[#1e1b16]/40">
-                    <span>{benchmarkHistory[0]?.label}</span>
-                    <span className="font-medium text-[#1e1b16]/60">
-                      {isViewingHistory ? `← ${selectedHistoricalData?.label}` : "Latest"}
-                    </span>
-                    <span>{benchmarkHistory[benchmarkHistory.length - 1]?.label}</span>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="text-sm text-[#1e1b16]/40 text-center py-8">
-                Run 2+ benchmarks to see trend over time
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Query Bank Info */}
         <div className="flex items-center justify-center gap-2 text-xs text-[#1e1b16]/50">

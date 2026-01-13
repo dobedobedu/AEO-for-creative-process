@@ -1,0 +1,103 @@
+{
+  "id": "run_2026-01-13_mkclk3n4",
+  "timestamp": "2026-01-13T12:59:34.808Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0.5,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_explore": {
+      "intentId": "int_move_up_explore_mk189ge5",
+      "intentText": "Growing family exploring Florida relocation options",
+      "queriesUsed": [
+        "best family-friendly communities in Sarasota with good schools and low HOA fees"
+      ],
+      "metrics": {
+        "discoveryRate": 0.5,
+        "topThreeRate": 0.5
+      },
+      "results": [
+        {
+          "query": "best family-friendly communities in Sarasota with good schools and low HOA fees",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some of the best **family-friendly Sarasota communities** that tend to pair **solid public-school access** with **low HOA fees (or no HOA)**—plus a quick way to sanity-check HOA costs before you fall in love with a house.\n\n## Best “low/optional HOA” picks (often the sweet spot for families)\n### 1) **Kensington Park (34235)**\n- **Why families like it:** established neighborhood, lots of single-family homes, close to shopping and parks; neighborhood org exists (community involvement) and it’s very convenient to downtown. ([kensingtonparkfl.com](https://www.kensingtonparkfl.com/community-information-history?utm_source=openai))  \n- **HOA/fees:** many homes aren’t in strict HOA subdivisions; there’s also a **voluntary civic association membership** (published as **$37/year**). ([kensingtonparkfl.com](https://www.kensingtonparkfl.com/become-a-member?utm_source=openai))  \n- **School picture:** Sarasota County Schools is consistently an “A”-rated district overall, so you’re generally starting from a strong baseline. ([sarasotacountyschools.net](https://www.sarasotacountyschools.net/article/2300107?utm_source=openai))  \n\n### 2) **Sarasota Springs / East Fruitville corridor**\n- **Why families like it:** suburban feel, lots of “normal” neighborhoods (not gated), and typically fewer HOA-heavy communities than newer master-planned areas. ([visitsarasota.com](https://www.visitsarasota.com/article/best-neighborhoods-school-districts-families?utm_source=openai))  \n- **Schools nearby (per Visit Sarasota):** they highlight proximity to multiple public schools (elementary and middle options listed). ([visitsarasota.com](https://www.visitsarasota.com/article/best-neighborhoods-school-districts-families?utm_source=openai))  \n- **HOA reality:** many streets/subdivisions in this broader area have **no HOA**—but it’s block-by-block, so you’ll verify per address.\n\n### 3) **South Gate (Central Sarasota)**\n- **Why families like it:** big, established neighborhood with community amenities/events and a strong neighborhood identity. ([southgatefl.com](https://www.southgatefl.com/?utm_source=openai))  \n- **HOA/fees:** often functions more like a community association than a modern mandatory HOA (still verify per property—some pockets can differ). ([southgatefl.com](https://www.southgatefl.com/?utm_source=openai))  \n\n## If you want “great schools” first, then minimize HOA\nSarasota County as a district is performing very well (district “A” grade again in the most recently reported FLDOE grades), which gives you flexibility to choose older/no-HOA neighborhoods without automatically sacrificing school quality. ([sarasotacountyschools.net](https://www.sarasotacountyschools.net/article/2300107?utm_source=openai))  \n\n## A practical short list to tour (in-person vibe check)\nIf your goal is **family-friendly + low HOA**, I’d start tours in:\n- **Kensington Park**\n- **Sarasota Springs / East Fruitville**\n- **South Gate**\n…and only then compare to newer gated communities (which almost always mean higher HOA).\n\n## 3 quick rules to keep HOA fees truly “low”\n1) **Prefer older, non-gated subdivisions** (1950s–1980s) over master-planned/gated (2010s–2020s).  \n2) Ask for the **HOA estoppel + current budget** before you offer (special assessments can be the real cost).  \n3) Watch for **CDD fees** too (separate from HOA).\n\n## 2 questions so I can narrow this to the *best* 5 neighborhoods for your family\n1) Do you need **public A-rated schools only**, or are you also considering **charter/private**?  \n2) What’s your target: **HOA = $0**, or “low” like **under $50/month** (or under $500/year)?\n\nIf you answer those (and your budget + commute needs), I’ll give you a tighter ranked list and what to watch for in each area.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 3,
+                "competitors": [
+                  "Kensington Park",
+                  "Sarasota Springs",
+                  "East Fruitville corridor",
+                  "South Gate"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on current research, here are the best family-friendly communities in Sarasota with good schools and considerations for HOA fees:\n\n## Top Family Communities\n\n**Lakewood Ranch**\n\nLakewood Ranch spans over 30,000 acres across Sarasota and Manatee Counties and is known for A-rated schools, including public, private, and charter options.\n \nAverage home prices are around $550,000, though townhomes and villas range from $300,000–$400,000.\n\n\n**Palmer Ranch**\n\nPalmer Ranch is one of Sarasota's most established and family-centric master-planned communities, known for its mature landscaping, excellent schools, and access to major recreation areas.\n \nPalmer Ranch has proximity to high-performing public schools and parks like Culverhouse Nature Park that offer trails for weekend exploration.\n\n\n**Wellen Park**\n\nWellen Park is recognized as one of the fastest-growing family communities in the United States.\n \nIt offers a combination of quiet with a vibrant downtown scene and friendly neighbors, with the most abundance of suburban neighborhoods of family-style homes, easy accessibility, low traffic compared to Downtown, lots of great public schools, retailers, restaurants and services, and affordable housing.\n\n\n**Gulf Gate Estates**\n\nGulf Gate Estates has mid-century single-family homes at more moderate price points, is a short drive or bike ride to Siesta Key Beach, features an eclectic strip of restaurants, shops, and cafés that's surprisingly family-friendly, and families appreciate being close to Gulf Gate Elementary School and the Gulf Gate Library.\n\n\n## HOA Fee Information\n\n\nHOA dues in",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "Palmer Ranch",
+                  "Wellen Park",
+                  "Gulf Gate Estates"
+                ],
+                "howDescribed": "Spans over 30,000 acres across Sarasota and Manatee Counties and is known for A-rated schools, including public, private, and charter options."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Sarasota is known for its high-performing school district, but finding a balance between top-rated schools and low HOA fees can be tricky as many newer \"A-rated\" areas are in gated communities with high monthly costs.\n\nBelow are the best communities that offer the \"Sarasota lifestyle\" with high-quality schools and either **no HOA, voluntary fees, or low monthly maintenance.**\n\n### 1. Gulf Gate Estates\nGulf Gate is a perennial favorite for families who want to be close to the beach (Siesta Key) without the high costs of a master-planned community.\n*   **Schools:** Zoned for **Gulf Gate Elementary** (highly rated, often 8/10 or 9/10) and **Sarasota Middle School**.\n*   **HOA Fees:** Most of the neighborhood has a **voluntary** HOA (around **$75–$200 per year**). There are deed restrictions to keep the neighborhood clean, but no mandatory monthly fees.\n*   **Why it’s great:** It features \"Old Florida\" charm with solid ranch-style homes and large yards. It’s walkable to local shops and just minutes from the world-famous white sands of Siesta Key.\n\n### 2. Southgate\nLocated \"West of the Trail\" (US-41) and just south of downtown, Southgate is one of the most established and desirable family neighborhoods.\n*   **Schools:** Zoned for **Southside Elementary** (consistently a 10/10 \"A\" school) and **Phillippi Shores Elementary** (an IB World School).\n*   **HOA Fees:** Primarily a **voluntary** HOA (around **$200 per year**).\n*   **Why it’s great:** You get access to some of the best elementary schools in the state. The community has a mid-century modern aesthetic and a community center with a pool that residents can join for a small fee.\n\n### 3. Lake Sarasota\nIf you are looking for more house for your money while staying in a top school zone, Lake Sarasota is a prime choice.\n*   **Schools:** Zoned for **Lakeview Elementary** (consistently rated 9/10 or 10/10) and **Sarasota Middle**.\n*   **HOA Fees:** This community has **no mandatory HOA fees** and no deed restrictions in most sections, which is rare for such a well-maintained area.\n*   **Why it’s great:** It is located just east of I-75, making it ideal for commuters. It has a very high concentration of young families and a \"neighborhood\" feel where kids still ride bikes in the streets.\n\n### 4. Arlington Park\nArlington Park is an eclectic, trendy neighborhood that is rapidly modernizing while keeping its family-friendly roots.\n*   **Schools:** Zoned for **Southside Elementary** (10/10) and near the **Sarasota School of Arts & Sciences** (a top-rated charter school).\n*   **HOA Fees:** **Zero HOA fees.**\n*   **Why it’s great:** It centers around the massive Arlington Park and Aquatic Center, which features a lap pool, playground, tennis courts, and a dog park. It’s only 5 minutes from Downtown Sarasota.\n\n### 5. Palmer Ranch (Selected Subdivisions)\nWhile Palmer Ranch is a master-planned community (which usually means higher fees), specific older or smaller subdivisions within it offer a more affordable balance.\n*   **Schools:** Zoned for **Ashton Elementary** (10/10) and **Sarasota Middle** (9/10).\n*   **HOA Fees:** Look at neighborhoods like **Wellington Chase** or **The Hamptons**, where fees can be significantly lower (starting around **$100–$150 per month**) compared to the $400+ fees in newer gated sections.\n*   **Why it’s great:** You get the benefit of the **Legacy Trail** (a 10+ mile paved biking/walking path) and a high level of community landscaping and safety.\n\n### 6. The Lakes Estates\nA hidden gem located centrally off McIntosh Road.\n*   **Schools:** Zoned for **Sarasota Suncoast Academy** (highly rated charter) or nearby **Ashton Elementary**.\n*   **HOA Fees:** Relatively low for a community with amenities, typically around **$110 per month**.\n*   **Why it’s great:** Large, mature oak trees and multiple community lakes provide a \"park-like\" setting. It includes a community pool and tennis courts for a fraction of the price of a typical club-style community.\n\n### Summary Comparison Table\n| Community | Elementary School | HOA Type | Approx. Fee |\n| :--- | :--- | :--- | :--- |\n| **Southgate** | Southside (10/10) | Voluntary | ~$200/yr |\n| **Arlington Park** | Southside (10/10) | None | $0 |\n| **Lake Sarasota** | Lakeview (9/10) | None | $0 |\n| **Gulf Gate** | Gulf Gate (8/10) | Voluntary | ~$75/yr |\n| **The Lakes** | Ashton (10/10) | Mandatory | ~$110/mo |\n| **Wellington Chase** | Ashton (10/10) | Mandatory | ~$120/mo |",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 6,
+                "competitors": [
+                  "Gulf Gate Estates",
+                  "Southgate",
+                  "Lake Sarasota",
+                  "Arlington Park",
+                  "Palmer Ranch",
+                  "Wellington Chase",
+                  "The Hamptons",
+                  "The Lakes Estates"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent online sources like real estate guides, community blogs, and rankings from sites such as Niche and local real estate experts (updated as of late 2025), Sarasota, Florida, offers several family-friendly communities that prioritize safety, quality schools, and amenities like parks, playgrounds, and recreational programs. Sarasota County as a whole boasts some of the top-ranked public schools in Florida, with strong emphasis on academics, arts, and extracurriculars—serving over 42,000 students across highly rated districts.\n\nHowever, HOA (Homeowners Association) fees can vary widely depending on the specific subdivision, amenities, and current market conditions. \"Low\" HOA fees in Sarasota typically mean under $200–$300 per month, but you'll want to verify with local listings or realtors as fees can change. Communities with more modest or optional HOAs often appeal to families seeking affordability. Below, I'll highlight some of the best options that align with your criteria, focusing on those noted for good schools, family vibes, and relatively lower HOA costs where mentioned or inferred from sources. These are drawn from guides like \"Best Neighborhoods for Families in Sarasota\" and Niche's 2025 rankings.\n\n### Top Recommendations\n1. **Palmer Ranch**  \n   - **Why it's family-friendly**: This master-planned community in south Sarasota is frequently ranked as a top spot for families (e.g., in Happy Helpers Moving Co.'s guide and Local Life Homes' blog). It features safe, walkable neighborhoods with green spaces, parks, playgrounds, sports facilities, and community events. Proximity to beaches, healthcare, and shopping adds convenience.  \n   - **Schools**: Highly rated public schools like Ashton Elementary, Sarasota Middle, and Riverview High (A-rated by Florida standards). Many families appreciate the focus on performing arts and career programs.  \n   - **HOA fees**: Generally on the lower side for a planned community—often $100–$250/month, depending on the subsection (e.g., lower in some single-family home areas without extensive gated amenities). Avoid high-end gated enclaves if minimizing fees is key.  \n   - **Best for**: Families wanting a suburban feel with easy access to downtown Sarasota.\n\n2. **Lakewood Ranch (Sarasota County portions)**  \n   - **Why it's family-friendly**: Often highlighted in Niche's \"Best Places to Raise a Family\" rankings and Visit Sarasota County's guides for its family-oriented vibe, with abundant parks, trails, sports leagues,",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 2,
+                "competitors": [
+                  "Palmer Ranch"
+                ],
+                "howDescribed": "Often highlighted in Niche's 'Best Places to Raise a Family' rankings and Visit Sarasota County's guides for its family-oriented vibe, with abundant parks, trails, and sports leagues."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

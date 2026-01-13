@@ -1,0 +1,401 @@
+{
+  "id": "run_2026-01-13_mkclmgl2",
+  "timestamp": "2026-01-13T13:05:17.119Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0.55,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_explore": {
+      "intentId": "int_move_up_explore_mk189ge5",
+      "intentText": "Growing family exploring Florida relocation options",
+      "queriesUsed": [
+        "best family-friendly neighborhoods in Sarasota Bradenton area",
+        "new construction homes Southwest Florida no CDD fees",
+        "flood zone map Lakewood Ranch area Florida",
+        "comparing HOA fees and amenities in Florida master-planned communities",
+        "how much does hurricane insurance cost in Sarasota County"
+      ],
+      "metrics": {
+        "discoveryRate": 0.55,
+        "topThreeRate": 0.55
+      },
+      "results": [
+        {
+          "query": "best family-friendly neighborhoods in Sarasota Bradenton area",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some of the most consistently **family-friendly neighborhoods/areas in the Sarasota–Bradenton market**, grouped by vibe and location (schools/commute/parks/sidewalks/community amenities tend to be the big drivers here).\n\n## Top “default answer” for many families (planned communities + amenities)\n### **Lakewood Ranch (Sarasota/Manatee line)**\nA huge master-planned community with lots of **parks, trails, community events, and strong school options**, plus newer housing inventory across many villages. If you want “easy mode” for families (pools, playgrounds, sidewalks, sports courts, kids activities), LWR is usually the first place people look. ([sarasotarealhomes.com](https://sarasotarealhomes.com/family-friendly-neighborhoods-in-sarasota-florida/?utm_source=openai))\n\n**Good to know:** it’s broad—specific villages can feel very different (fees, lot sizes, age mix).\n\n## Sarasota options (close to beaches/downtown while still family-oriented)\n### **Palmer Ranch (South Sarasota)**\nA large, established area with many subdivisions, **access to the Legacy Trail**, and a “suburban but close-in” feel. Lots of gated communities and newer-enough homes without being far from the beach corridor. ([exprealty.com](https://www.exprealty.com/guides/here-are-the-best-11-sarasota-fl-neighborhoods-around?utm_source=openai))\n\n**Family-leaning subdivisions often mentioned:** **Arbor Lakes**, **Deer Creek**, **Turtle Rock**, etc. (amenities and HOA style vary a lot by subdivision). ([zachosre.com](https://zachosre.com/palmer-ranch-sarasota-the-complete-guide-to-southwest-floridas-premier-master-planned-community/?utm_source=openai))\n\n### **Gulf Gate / Gulf Gate Estates (Sarasota)**\nPopular for families who want a more “normal neighborhood” feel (not a mega master plan) while staying fairly close to Siesta Key access and having its own little village-style restaurant/shopping cluster nearby. ([sarasotaneighborhoodexperts.com](https://sarasotaneighborhoodexperts.com/blog/your-guide-to-the-10-most-popular-sarasota-neighborhoods?utm_source=openai))\n\n### **Arlington Park / Southgate / Southside Village (Central Sarasota)**\nThese are **closer-to-downtown** options with established streets and parks nearby—often appealing if you want walkability/character more than brand-new houses. ([exprealty.com](https://www.exprealty.com/guides/here-are-the-best-11-sarasota-fl-neighborhoods-around?utm_source=openai))\n\n## Bradenton side (family-friendly + more value in some pockets)\n### **Palma Sola (West Bradenton)**\nOften cited as a quiet, residential west-side area with a laid-back feel and access toward beaches/preserves. ([bradentonlongtable.com](https://www.bradentonlongtable.com/discover-the-best-family-friendly-neighborhoods-in-bradenton-florida?utm_source=openai))\n\n### **Near Riverwalk / Downtown Bradenton (for “activities nearby” families)**\nIf you prioritize being near events, waterfront walks, and kid-friendly outings, the Riverwalk/downtown adjacency can be a plus (though exact block-by-block feel varies more than in planned communities). ([southernliving.com](https://www.southernliving.com/bradenton-fl-11858398?utm_source=openai))\n\n---\n\n## 4 quick questions so I can narrow this to a tight shortlist (like 3–5 best matches)\n1) Are you commuting (where to)?  \n2) Kids’ ages (daycare/elementary/middle/high)?  \n3) Budget range and preferred home type (SFH vs townhome; need a pool; gated vs non-gated)?  \n4) Prefer **newer master-planned amenities** (Lakewood Ranch/Palmer Ranch) or **older/central/walkable** (Arlington Park/Southgate/Gulf Gate)?\n\nIf you answer those, I’ll recommend specific neighborhoods **and** a few “avoid unless you want X tradeoff” areas based on your priorities.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 6,
+                "competitors": [
+                  "Palmer Ranch",
+                  "Arbor Lakes",
+                  "Deer Creek",
+                  "Turtle Rock",
+                  "Gulf Gate",
+                  "Arlington Park",
+                  "Southgate",
+                  "Southside Village",
+                  "Palma Sola",
+                  "Riverwalk",
+                  "Downtown Bradenton"
+                ],
+                "howDescribed": "Characterized as the top 'default answer' and 'easy mode' for families; described as a huge master-planned community featuring parks, trails, community events, strong schools, and newer housing inventory."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current information about family-friendly neighborhoods in the Sarasota-Bradenton area.\nBased on current information, here are the best family-friendly neighborhoods in the Sarasota-Bradenton area:\n\n## Top Family Neighborhoods in Sarasota\n\n**Lakewood Ranch**\n\nOften cited as one of the fastest-growing master-planned communities in the U.S., Lakewood Ranch spans over 30,000 acres across Sarasota and Manatee Counties, with families drawn to its A-rated schools, including public, private, and charter options.\n \nThe community features a busy event calendar with Music on Main, holiday parades, and farmer's markets, with a robust HOA network that organizes various kids' sports programs.\n\n\n**Southside Village**\n\nSouthside Village stands out as one of Sarasota's premier family neighborhoods, offering an A-rated elementary school, diverse architectural styles, and walkable access to shops, restaurants, and downtown Sarasota.\n \nIt's the closest to downtown Sarasota, the bay, and beaches.\n\n\n**Indian Beach-Sapphire Shores**\n\nThis upscale neighborhood on the shores of Sarasota Bay offers good walkability, local restaurants, and convenient access to Indian Beach Park, with family-friendly attractions including Smugglers Cove Adventure Golf and Sarasota Jungle Gardens.\n\n\n**Palmer Ranch & Turtle Rock**\n\nTurtle Rock is a family-oriented gated community with a crime rate significantly lower than the national average at 17 percent chance of involvement in personal crime, providing guarded entrances for resident security.\n\n\n## Bradenton Area\n\n**Manatee River District**\n\nThe Manatee River District in Bradenton offers better value compared to Sarasota neighborhoods while families enjoy walking trails along the Manatee River, proximity to downtown",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Southside Village",
+                  "Indian Beach-Sapphire Shores",
+                  "Palmer Ranch",
+                  "Turtle Rock",
+                  "Manatee River District"
+                ],
+                "howDescribed": "One of the fastest-growing master-planned communities in the U.S. spanning 30,000 acres with A-rated schools, a busy event calendar, and a robust HOA network for kids' sports."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "The Sarasota-Bradenton area is one of the fastest-growing regions for families in Florida, offering a mix of master-planned communities, historic coastal neighborhoods, and affordable suburban pockets.\n\nThe best neighborhood for your family typically depends on whether you prioritize **beach proximity**, **top-tier schools**, or **modern amenities**.\n\n### 1. The Gold Standard: Lakewood Ranch\nSpanning both Sarasota and Manatee counties, Lakewood Ranch is consistently ranked as the #1 multi-generational master-planned community in the U.S.\n*   **Best for:** Families who want a \"city within a city\" feel with everything at their fingertips.\n*   **Why it’s family-friendly:** It features A-rated schools (like Robert E. Willis Elementary and Lakewood Ranch High), over 150 miles of trails, and dozens of parks.\n*   **Key Spots:** **Waterside Place** and **Main Street** host weekly farmers' markets, outdoor movies, and festivals. Neighborhoods like **Mallory Park** and **Greenbrook** are particularly popular for their high concentration of young families.\n\n### 2. Best for Schools & Beach Access: Palmer Ranch (Sarasota)\nLocated in South Sarasota, Palmer Ranch is a massive 10,000-acre master-planned community that is slightly more established and quieter than Lakewood Ranch.\n*   **Best for:** Families prioritizing Sarasota County’s top-rated schools and proximity to Siesta Key.\n*   **Why it’s family-friendly:** It is zoned for elite schools like **Ashton Elementary** and **Sarasota Middle**. It also provides direct access to **The Legacy Trail**, a paved 18-mile path perfect for family bike rides.\n*   **Vibe:** Lush, manicured, and safe. It’s only a 15–20 minute drive to the world-famous Siesta Key Beach.\n\n### 3. The Walkable \"Old Florida\" Vibe: Southside Village / West of Trail\nIf you prefer historic charm and walkability over gated community life, this is the premier choice in Sarasota.\n*   **Best for:** High-budget families who want an urban-suburban mix near downtown.\n*   **Why it’s family-friendly:** The neighborhood is anchored by **Southside Elementary**, one of the most prestigious public schools in the district. You can walk or bike to gourmet markets (Morton’s), boutiques, and local parks.\n*   **Vibe:** Tree-lined streets with a mix of 1940s bungalows and modern luxury estates.\n\n### 4. Coastal Lifestyle: West Bradenton & Palma Sola\nFor families who want to be \"on the water\" without the price tag of a private island, West Bradenton is the place to look.\n*   **Best for:** Families who spend their weekends boating or at the beach.\n*   **Why it’s family-friendly:** It is the gateway to **Anna Maria Island** (AMI). Neighborhoods like **Palma Sola** offer larger lots and mature oak trees. You’re close to **Robinson Preserve**, which features a massive playground, lookout towers, and kayaking trails.\n*   **Vibe:** Laid-back, unpretentious, and \"Old Florida.\"\n\n### 5. Emerging & Modern: Wellen Park (Venice/South Sarasota)\nOften called \"the next Lakewood Ranch,\" Wellen Park is a newer development in the southern part of the county.\n*   **Best for:** Families looking for brand-new construction and resort-style amenities.\n*   **Why it’s family-friendly:** The new **Downtown Wellen** features a massive lake with a splash pad, playground, and the Atlanta Braves’ spring training stadium (CoolToday Park), which hosts many youth events.\n*   **Value:** Generally offers more \"house for your money\" compared to neighborhoods closer to downtown Sarasota.\n\n### 6. Best Value & Suburban Comfort: Greyhawk Landing & Mill Creek (Bradenton)\nLocated just east of I-75, these communities offer a high quality of life with more space.\n*   **Best for:** Families who want large backyards and gated security.\n*   **Why it’s family-friendly:** **Greyhawk Landing** is a gated community with resort-style pools, fitness centers, and soccer/baseball fields. **Mill Creek** is famous for its \"one-acre plus\" lots, giving kids plenty of room to roam.\n*   **Vibe:** Friendly, active, and focused on outdoor recreation.\n\n### Summary of Key Factors (2024-2025)\n| Neighborhood | Top Priority | Primary School Zone | Beach Distance |\n| :--- | :--- | :--- | :--- |\n| **Lakewood Ranch** | Amenities & Youth Sports | Willis / Gullett | 30–40 mins |\n| **Palmer Ranch** | Schools & Biking | Ashton / Riverview | 15 mins |\n| **Southside Village** | Walkability & Prestige | Southside Elementary | 10 mins |\n| **West Bradenton** | Boating & Nature | Palma Sola / Stewart | 5–10 mins |\n| **Wellen Park** | New Construction | Taylor Ranch | 15 mins |\n| **Gulf Gate** | Affordability (Sarasota) | Gulf Gate Elementary | 10 mins |",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 7,
+                "competitors": [
+                  "Palmer Ranch",
+                  "Southside Village",
+                  "West of Trail",
+                  "West Bradenton",
+                  "Palma Sola",
+                  "Wellen Park",
+                  "Greyhawk Landing",
+                  "Mill Creek",
+                  "Gulf Gate"
+                ],
+                "howDescribed": "Characterized as 'The Gold Standard' and the #1 multi-generational master-planned community in the U.S. It is described as a 'city within a city' with A-rated schools, over 150 miles of trails, and vibrant community hubs like Waterside Place and Main Street."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent web sources and local insights (as of early 2026), the Sarasota-Bradenton area offers a variety of family-friendly neighborhoods known for good schools, low crime rates, parks, community amenities, and proximity to beaches and family activities. This region in Florida is popular for its coastal vibe, with Sarasota focusing more on arts and culture, while Bradenton leans toward suburban affordability. I'll highlight some of the top picks for families, drawing from resources like Extra Space Storage's 2026 guides, Reddit discussions, and local real estate blogs. Keep in mind that \"best\" can vary based on budget, school preferences, and lifestyle—median home prices here range from $400K to $800K, and it's wise to check current listings or visit in person.\n\n### Top Family-Friendly Neighborhoods in Sarasota\nSarasota emphasizes walkable areas with excellent public schools (like those in the Sarasota County School District) and kid-oriented spots like parks, museums, and beaches.\n\n1. **Palmer Ranch**  \n   A master-planned community in southern Sarasota, it's highly rated for families due to its top-rated schools (e.g., Ashton Elementary), extensive green spaces, trails, and family events. It's safe, with low crime, and offers a mix of single-family homes and townhouses. Affordable compared to downtown, with easy access to Siesta Key Beach. (Source: Extra Space Storage's \"5 Best Sarasota Neighborhoods for Families in 2026\" and Luxury Homes by Carol blog.)\n\n2. **Laurel Park**  \n   In downtown Sarasota, this historic district is trendy yet family-oriented, with walkable streets, parks, and a mix of homes from bungalows to apartments. It's great for families who want urban convenience without sacrificing safety or community feel—think nearby schools, farmers' markets, and cultural spots like the Ringling Museum. Designated a historic place, it's evolving with more family amenities. (Source: Quora discussions and Local Life Homes blog.)\n\n3. **Gulf Gate**  \n   A suburban gem with affordable housing, excellent schools, and proximity to Gulf Gate Library and parks. It's known for its quiet, tree-lined streets and family-friendly vibe, plus quick drives to beaches and shopping. Ideal for budget-conscious families seeking safety and community events. (Source: Extra Space Storage's \"5 Best Safe, Affordable Suburbs in Sarasota in 2026\".)\n\n4. **Fruitville**  \n   East of downtown, this area offers spacious homes, good",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "Palmer Ranch",
+                  "Laurel Park",
+                  "Gulf Gate",
+                  "Fruitville"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "new construction homes Southwest Florida no CDD fees",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are a few **good “starting points” for new construction in Southwest Florida with *no CDD fees*** (CDD = Community Development District assessments). Availability changes fast, so I’m listing options that explicitly market **“No CDD”** or are typically **non-HOA scattered-lot/new builds** where CDD is uncommon.\n\n## New construction / builders advertising “No CDD” (SWFL)\n\n### Cape Coral (Lee County) — scattered-lot new builds (often no HOA / no CDD)\n- **Maronda Homes – Burnt Store (Cape Coral 33993)**: advertises **“No HOA” + “No CDD”** (scattered homesites). ([marondahomes.com](https://www.marondahomes.com/fl/cape-coral/burnt-store-33993.html?utm_source=openai))  \n- **Maronda Homes – Cape Coral (scattered homesites)**: another Maronda “Cape Coral” scattered homesite offering (useful if you want a builder doing infill-style construction). ([pre-constructionhomes.com](https://pre-constructionhomes.com/new/florida/cape-coral/cape-coral/?utm_source=openai))  \n\n### Naples area (Collier County) — “No CDD” shows up on some listings\n- **Naples Park (Naples 34108)**: Redfin listings there sometimes explicitly note **“No CDD fees”** (these can be newer builds/renovations depending on the listing). ([redfin.com](https://www.redfin.com/city/24296/FL/Naples-Park/amenity/move%2Bin%2Bready?utm_source=openai))  \n\n## A quick caution (so you don’t get surprised)\n- Some areas can have **a CDD created/authorized** even if it’s currently developer-funded, and later it can be assessed to properties inside the boundary. So it’s important to confirm the specific property address isn’t within a CDD boundary. ([cc-cdd.com](https://cc-cdd.com/?utm_source=openai))  \n\n## To narrow this to real, buyable options\nTell me:\n1) Which county/cities: **Cape Coral / Fort Myers / Estero / Bonita / Naples / North Port / Port Charlotte / Punta Gorda?**  \n2) Budget range + beds/baths  \n3) Do you also want **no HOA**, or HOA is okay as long as **no CDD**?\n\nOnce you answer, I can pull a tighter list of **specific communities/builders** that currently advertise **no CDD** in your exact target area.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 3,
+                "competitors": [
+                  "Maronda Homes",
+                  "Naples Park",
+                  "Cape Coral",
+                  "Fort Myers",
+                  "Estero",
+                  "Bonita",
+                  "Naples",
+                  "North Port",
+                  "Port Charlotte",
+                  "Punta Gorda"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about new construction homes in Southwest Florida without CDD fees.\nBased on my search, here are options for **new construction homes in Southwest Florida with no CDD fees**:\n\n## Specific Communities with No CDD Fees:\n\n### Central/Tampa Bay Area:\n- **\nGracelyn Grove (Highland Homes) in Haines City offers 3-6 bedroom new construction homes priced from the $300s with no CDD fees plus all closing costs paid\n**\n\n- **\nFieldstone in Plant City offers homes with no CDD fees and an easy commute to Tampa, Lakeland and Orlando\n**\n\n- **\nHidden Lakes in Brandon, FL features award-winning floorplans with tile roofs, paver driveways, 75' wide homesites, and no CDD fees\n**\n\n### St. Augustine/Northeast Florida Area:\n- **\nCherry Elm at SilverLeaf is a gated community that offers an exceptional living experience without any CDD fees\n** in the St. Johns County area\n\n### Greater Tampa Bay Area:\n\nThere are several communities in the Greater Tampa Bay area where you can enjoy all the benefits of new construction without worrying about CDD fees\n\n\n## Key Takeaway:\n\n\nWhile CDD fees fund community infrastructure, they are typically passed on to homeowners through property taxes, adding to your overall housing costs. By selecting a community without these fees, you can enjoy all the benefits of living in a new, well-planned neighborhood without the extra financial burden\n.\n\nFor the most current listings of no CDD communities in Southwest Florida, I recommend checking real estate platforms like Zillow (which has filters for \"no CDD fees\") or contacting local builders directly.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "Gracelyn Grove",
+                  "Fieldstone",
+                  "Hidden Lakes",
+                  "Cherry Elm at SilverLeaf"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Searching for new construction in Southwest Florida without **Community Development District (CDD)** fees is a smart financial move. CDD fees are essentially a 20–30 year property tax assessment used by developers to pay for infrastructure (roads, utilities, and amenities). Avoiding them can save you $1,500 to $4,000+ per year on your property tax bill.\n\nIn Southwest Florida, you generally find \"no CDD\" homes in three categories: **Boutique Gated Communities**, **Spot-Lot Builds**, and **Rural Estates**.\n\n### 1. Boutique Gated Communities (Private Infrastructure)\nSome master-planned communities choose to fund their infrastructure privately rather than through government bonds. These often have HOA fees to maintain amenities but **zero CDD** fees.\n\n*   **Naples:**\n    *   **Valencia Sky / Valencia Trails (GL Homes):** These 55+ communities in North Naples are popular specifically for having no CDD fees while offering high-end amenities.\n    *   **The Enclave of Distinction:** A small, luxury gated community with only 27 residences and no CDD.\n*   **Fort Myers:**\n    *   **Tide Marsh (Neal Communities):** A boutique coastal-themed community off Winkler Road with no CDD fees.\n    *   **Bayshore Ranch (Lennar):** Located in North Fort Myers, this community offers larger homesites and a \"rustic luxury\" feel with no CDD.\n*   **Bonita Springs:**\n    *   **Solis Grande (Pulte):** A newer townhome community in a prime location with no CDD and low HOA fees.\n    *   **Bonita Del Sol (Pulte):** A gated community of 248 homes featuring a community pool and no CDD fees.\n\n### 2. \"Spot-Lot\" New Construction (Cape Coral & Lehigh Acres)\nThis is the most common way to find a new home without CDD or HOA fees. Builders buy individual lots in established neighborhoods and build brand-new homes.\n*   **Location:** Cape Coral (North & NW sections) and Lehigh Acres.\n*   **Builders:** **Lennar**, **D.R. Horton**, **Holiday Builders**, and **Coaston Homes**.\n*   **Features:** You own the land outright. There are no gated entrances or shared clubhouses, so there is **no CDD** and usually **no HOA** fee at all.\n\n### 3. Non-Gated Rural Estates (Naples & Alva)\nIf you want acreage and no \"extra\" fees, look at \"Urban Estates.\"\n*   **Golden Gate Estates (Naples):** Many local custom builders (like **Nova Homes**) build here. You get brand-new construction on 1.14 to 5+ acres with no HOA and no CDD.\n*   **Alva / North Fort Myers:** Similar to Golden Gate Estates, areas like **Owl Creek** or **Babcock Ranch-adjacent** lots often feature new construction on large lots without the district assessments.\n\n### Summary of Popular Builders with \"No CDD\" Options\n| Builder | Known No-CDD Communities / Areas |\n| :--- | :--- |\n| **Neal Communities** | Tide Marsh (Fort Myers), various boutique communities. |\n| **Pulte Homes** | Solis Grande (Bonita), Bonita Del Sol (Bonita). |\n| **GL Homes** | Valencia Sky & Valencia Trails (Naples). |\n| **Lennar** | Bayshore Ranch (N. Fort Myers), Cape Coral/Lehigh Spot-Lots. |\n| **Coaston Homes** | Cape Coral Spot-Lots (High-value entry point). |\n\n### Important Warning: CDD vs. Stewardship Fees\nIf you look at **Ave Maria** or **Babcock Ranch**, they may technically say they have \"no CDD,\" but they often have **Stewardship District Fees** or **Master HOA assessments** that function almost identically to a CDD. Always ask for a \"sample tax bill\" for any community you are considering to see the non-ad valorem assessments.\n\n**Pro Tip:** In areas like **Estero** (e.g., *Verdana Village*, *RiverCreek*) and **East Fort Myers** (e.g., *Portico*, *Timber Creek*), almost all large resort-style communities **DO** have CDD fees. If the community has a massive lagoon or 20+ pickleball courts, a CDD fee is very likely.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 18,
+                "competitors": [
+                  "Valencia Sky",
+                  "Valencia Trails",
+                  "The Enclave of Distinction",
+                  "Tide Marsh",
+                  "Bayshore Ranch",
+                  "Solis Grande",
+                  "Bonita Del Sol",
+                  "Cape Coral",
+                  "Lehigh Acres",
+                  "Golden Gate Estates",
+                  "Alva",
+                  "Owl Creek",
+                  "Babcock Ranch",
+                  "Ave Maria",
+                  "Verdana Village",
+                  "RiverCreek",
+                  "Portico",
+                  "Timber Creek"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on your query for new construction homes in Southwest Florida without Community Development District (CDD) fees, I'll break this down with some helpful info drawn from current real estate resources and listings (as of early 2026). CDD fees are common in many Florida developments, as they fund infrastructure and amenities in master-planned communities (like roads, parks, and utilities) and are often passed on to homeowners via assessments or taxes. However, not all new builds have them—especially in non-CDD areas or smaller subdivisions. Finding options without CDD can save on long-term costs, but it might limit choices to certain builders or locations.\n\n### Quick Overview of CDD in Southwest Florida\nFrom resources like Highland Homes and Sinclair Custom Homes, a CDD is essentially a special district that finances the upfront costs for new community development. It's prevalent in places like Cape Coral, Fort Myers, Naples, and Sarasota, but you can avoid it by focusing on:\n- Established neighborhoods or infill developments.\n- Builders that operate outside CDD districts.\n- Areas where impact fees (one-time charges for new development, per Orange County guidelines) might apply instead, but these aren't ongoing like CDD.\n\nIf you're set on no CDD, expect to look at scattered-site homes or communities that aren't master-planned.\n\n### Recommended Options for New Construction Without CDD\nBased on web searches and builder sites, here are some current leads in Southwest Florida (focusing on areas like Fort Myers, Cape Coral, Naples, and Sarasota). I've prioritized those that appear to avoid CDD based on available details—always verify with the builder or a realtor, as fees can change. Prices and availability fluctuate, so check directly.\n\n1. **Deep Creek by Adams Homes (Fort Myers Area)**\n   - This community offers affordable new construction homes starting around $300,000–$500,000 (depending on floor plans).\n   - Features: Single-family homes with 3–5 bedrooms, modern designs, and options for customization. It's in a growing part of Fort Myers with Gulf access nearby.\n   - CDD Status: Listings from Adams Homes don't mention CDD fees, suggesting it's not part of a CDD district (common for some non-master-planned builds). It's highlighted as an option for buyers seeking no ongoing district assessments.\n   - More info: Visit adamshomes.com or contact them for current inventory. They emphasize \"affordable Florida homes\" without heavy fees.\n\n2. **Other Builder Options in Non-CDD Areas**\n   - **Z",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 1,
+                "competitors": [
+                  "Adams Homes",
+                  "Highland Homes",
+                  "Sinclair Custom Homes",
+                  "Deep Creek"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "flood zone map Lakewood Ranch area Florida",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "For the **Lakewood Ranch (Manatee/Sarasota County) area**, the most reliable “official” flood zone maps are FEMA’s NFHL viewer and the county flood zone locator tools.\n\n## 1) FEMA (official) flood zone map – best starting point\nUse **FEMA Flood Map Service Center (MSC)** and search your address; it shows the current effective flood hazard layers and lets you print a “FIRMette.” ([sarasotafl.gov](https://www.sarasotafl.gov/Department-Pages/Development-Services/Flood-Information/Map-Information?utm_source=openai))\n\n## 2) Manatee County flood zone map (Lakewood Ranch is largely in Manatee)\nManatee County’s page for “Find my Flood zone” points to their floodzone map/locator. ([manateecountyfl.qscend.com](https://manateecountyfl.qscend.com/311/knowledgebase/article/218287?utm_source=openai))\n\n## 3) Sarasota County flood zone locator (if you’re on the Sarasota side of LWR)\nSarasota County provides a **Flood Zone Locator** tool to determine whether an address/parcel falls in a FEMA-designated flood hazard area. ([sarasotafl.gov](https://www.sarasotafl.gov/Department-Pages/Development-Services/Flood-Information/Map-Information?utm_source=openai))\n\n### If you tell me **an address or nearest cross-street** in Lakewood Ranch (and whether it’s **Manatee or Sarasota County**, if you know), I can point you to the exact viewer to use and what to click to see the zone (X, AE, etc.).",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 1,
+                "competitors": [],
+                "howDescribed": "The brand is the central focus of the response, identified as a community spanning both Manatee and Sarasota Counties for which flood mapping resources are available."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Here's information about flood zones in the Lakewood Ranch area of Florida:\n\n## Flood Zone Classification\n\n\nLakewood Ranch has a Severe Flood Risk score with a FEMA floodzone of AE, which is vulnerable to the 100-year flood event (Base Flood)\n. However, \nsome areas within the community are in \"Flood Zone X\" - described as a \"low-risk area that does not typically require flood insurance\"\n.\n\n## Flood Insurance Requirements\n\n\nIf the flood zone starts with \"A\" or \"V\", these are high-risk zones and flood insurance is typically required; X5 is considered moderate risk and X is low risk and flood insurance is not typically required\n. \nFor AE zones, insurance is REQUIRED\n.\n\n## Finding Flood Zone Information\n\n\nLand information maps showing flood zones are available on the county website. You will need to activate \"FEMA Flood\" on the Live Maps tile and can search by owner, address, or property tax ID number\n.\n\nHere are the key resources for accessing detailed flood zone maps:\n\n- **Manatee County Flood Zone Information Tool**: https://www.mymanatee.org/departments/building___development_services/floodplain_management/floodzone/flood_zone_information_tool\n- **First Street Foundation Interactive Flood Maps**: https://firststreet.org/city/lakewood-ranch-fl/1239067_fsid/flood\n- **LWR CERT Flood Zone Locator**: https://lwrcert.org/document/flood-maps/\n- **Manatee County Development Services**: https://www.mymanatee.org/departments/development-services-department/building-division/flood-zone-and-floodplain-management-section\n\nTo check the specific flood zone for a particular property, use the Manatee County's online mapping tool by searching with",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 1,
+                "competitors": [],
+                "howDescribed": "Described as having a Severe Flood Risk score with a FEMA floodzone of AE in some areas (requiring insurance), while other parts of the community are in the low-risk Flood Zone X."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Lakewood Ranch spans both **Manatee County** and **Sarasota County**. Because flood maps are updated by the Federal Emergency Management Agency (FEMA) and managed at the county level, you must check the specific county portal for your address.\n\nRecent updates (especially in March 2024 for Sarasota) have shifted many Lakewood Ranch properties from \"minimal risk\" to \"high risk\" zones.\n\n### **1. Official Map Search by County**\n*   **Manatee County (North of University Pkwy):** Use the [Manatee County Flood Zone Locator](https://www.mymanatee.org/departments/development_services/floodplain_management/find_my_flood_zone). \n    *   *Note:* Manatee County last adopted major map changes in August 2021, but is currently using new LiDAR data to further update maps following Hurricane Debby (2024).\n*   **Sarasota County (South of University Pkwy):** Use the [Sarasota County Interactive Flood Map](https://scgov.net/government/public-works/flood-maps).\n    *   *Major Update:* New FEMA maps went into effect on **March 27, 2024**. Many areas previously in Zone X were moved into Zone AE.\n\n### **2. Common Flood Zones in Lakewood Ranch**\n*   **Zone X (Unshaded):** Minimal risk. Flood insurance is typically not required by lenders, though highly recommended in Florida.\n*   **Zone X (Shaded/500-year):** Moderate risk. This is the area between the 100-year and 500-year flood limits.\n*   **Zone AE or A (100-year):** **High risk.** If you have a federally backed mortgage, flood insurance is **mandatory**. These areas have a 1% annual chance of flooding.\n\n### **3. Recent Flood Events & Risk Analysis**\n*   **Hurricane Debby (August 2024):** This storm caused significant \"riverine\" flooding in Lakewood Ranch, specifically near the **Braden River** and **Manatee River** corridors. Areas like Summerfield, River Club, and newer sections near Lorraine Rd saw record water levels, even in some areas previously labeled as low-risk (Zone X).\n*   **Topography:** While Lakewood Ranch is at a higher elevation than coastal Sarasota or Bradenton, its risk comes from **heavy rainfall and drainage overflow** rather than storm surge. The community utilizes a complex system of retention ponds and spillways designed to move water toward the Braden River.\n\n### **4. Key Difference: Flood vs. Evacuation Zones**\n*   **Flood Zones (FEMA):** Used for insurance and building codes. They measure the risk of rising water from rain or rivers.\n*   **Evacuation Levels:** Based on **hurricane storm surge**. Most of Lakewood Ranch is in high evacuation levels (Level D or E) or \"No Zone,\" meaning it is generally one of the last areas ordered to evacuate during a hurricane.\n\n**Recommendation:** If you are buying a home or renewing insurance, always request an **Elevation Certificate**. This document provides the exact height of your home's floor relative to the base flood elevation, which can significantly lower your insurance premiums even if you are in a high-risk zone.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 1,
+                "competitors": [
+                  "Sarasota",
+                  "Bradenton",
+                  "Manatee County",
+                  "Sarasota County",
+                  "Summerfield",
+                  "River Club"
+                ],
+                "howDescribed": "Spans Manatee and Sarasota counties; noted for being at a higher elevation than coastal areas but subject to rainfall and drainage overflow risk; utilizes a complex system of retention ponds and spillways."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on your query about flood zone maps for the Lakewood Ranch area in Florida (which spans parts of Manatee and Sarasota counties), I'll provide some up-to-date resources and guidance. Flood zones are determined by factors like elevation, proximity to water bodies, and historical data, and they can influence insurance requirements and building regulations. Note that flood maps are regularly updated (e.g., FEMA made updates for Sarasota County in 2024), so always verify with official sources for the most current information as of 2026.\n\n### Official Tools and Interactive Maps\n1. **FEMA Flood Map Service Center**  \n   The Federal Emergency Management Agency (FEMA) provides the National Flood Hazard Layer (NFHL) maps, which are the standard for determining flood zones (e.g., high-risk zones like A or V, or lower-risk like X). You can search by address here: [FEMA MSC Search](https://msc.fema.gov/portal/search). Enter a specific Lakewood Ranch address for a detailed report, including effective dates and panel numbers. As of recent data, many areas in Lakewood Ranch are in moderate- to low-risk zones, but some spots near lakes or rivers may be higher risk.\n\n2. **Manatee County \"Find My Flood Zone\" Tool**  \n   Since much of Lakewood Ranch is in Manatee County, use their official interactive tool to check flood zones, evacuation zones, and more. It's updated as of 2025: [Manatee County Flood Zone Finder](https://www.mymanatee.org/services-and-amenities/service-listing/service-details/find-my-flood-zone). This distinguishes between flood zones (for insurance) and evacuation zones (for storms).\n\n3. **First Street Foundation Flood Maps**  \n   For high-resolution, interactive maps focused on climate risk and future projections, check First Street's tool. It shows property-specific flood risks in Lakewood Ranch, including prevention tips: [First Street Lakewood Ranch Flood Map](https://firststreet.org/city/lakewood-ranch-fl/1239067_fsid/flood) or their neighborhood view: [Neighborhood Flood Map](https://firststreet.org/neighborhood/lakewood-ranch-fl/79969_fsid/flood). Recent data indicates varying risks, with some areas prone to flooding from heavy rains or hurricanes.\n\n4. **Augurisk Natural Disaster Risk Tool**  \n   This provides flood, hurricane, and other risk assessments for Lakewood Ranch: [Augurisk Lakewood Ranch](https://www.a",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 1,
+                "competitors": [],
+                "howDescribed": "Lakewood Ranch is described as a community spanning Manatee and Sarasota counties with flood risks ranging from moderate-to-low in many areas to higher risk near lakes, rivers, or areas prone to heavy rain and hurricanes."
+              }
+            }
+          }
+        },
+        {
+          "query": "comparing HOA fees and amenities in Florida master-planned communities",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Florida master‑planned communities are tricky to compare because your “monthly HOA” is often only **one** of 3–5 recurring charges that fund amenities. A clean comparison separates:\n\n1) **Master/community fee** (master association / CDD / stewardship district)  \n2) **Neighborhood/sub‑HOA fee** (your village/condo/townhome association)  \n3) **Club memberships** (golf/fitness/social—sometimes optional, sometimes mandatory)  \n4) **One‑time fees** (capital contributions at closing, transfer/app fees)  \n5) **What’s included** (amenities vs. “maintenance‑free” services)\n\nBelow is a practical way to compare, plus real examples from well‑known Florida MPCs.\n\n---\n\n## 1) What to compare (apples‑to‑apples checklist)\n\n### A. Recurring cost “stack” (ask for each line item)\n- **HOA / master association dues** (often billed monthly or quarterly)\n- **CDD / ISD / Stewardship district** amounts **on the tax bill** (not your HOA invoice)\n- **Neighborhood HOA** (can add a second layer)\n- **Amenity/club fee** (if separate)\n- **Bundled utilities** (bulk internet/cable sometimes included)\n\n**Tip:** Convert everything to a single number: **all‑in monthly**  \n(all annual tax‑bill assessments ÷ 12) + monthly HOAs + club dues.\n\n### B. What the fees actually buy\n- **Amenity centers**: pools, fitness, courts, waterparks, clubhouses, trails\n- **Programming**: events, classes, lifestyle staff\n- **Maintenance**: lawn/irrigation, exterior building, pest control (big cost driver)\n- **Security**: gates, patrols\n- **Technology**: bulk internet/cable\n- **Reserves** (esp. condos/townhomes): affects future special assessments\n\n---\n\n## 2) Examples: Lakewood Ranch and Babcock Ranch (how fees/amenities are structured)\n\n### Lakewood Ranch (Sarasota/Manatee)\n- Lakewood Ranch states HOA fees are **village‑specific** and vary widely; they cite ranges roughly **$100–$800/month**, with most **$200–$300/month**, depending on home type and amenities/maintenance level. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n- They also state there is a **Stewardship District fee** (similar concept to a CDD/assessment) that funds/maintains community infrastructure and features across the Ranch (parks, trails, lakes/stormwater, arterial road enhancements, conservation, etc.). ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n\n**How this impacts comparisons:** In Lakewood Ranch you can find anything from “basic HOA” to “amenity‑rich + maintenance‑free,” and your **district fee** may be a meaningful add‑on beyond HOA.\n\n### Babcock Ranch (near Fort Myers/Punta Gorda)\n- Babcock Ranch explains “total cost” includes a **master HOA** billed quarterly by the **Babcock Ranch Residential Association (BRRA)**, while an **independent special district (BRCISD)** has debt service and O&M that appear on the **property tax bill** (varies by homesite). ([babcockranch.com](https://babcockranch.com/faqs-buying-a-home-sustainability-storm-safety-and-life-at-babcock-ranch/?utm_source=openai))  \n- They list examples of master‑fee inclusions: on‑site management, lifestyle programming, patrol, **1‑gig internet**, major community pools/club facilities, and community landscaping. ([babcockranch.com](https://babcockranch.com/faqs-buying-a-home-sustainability-storm-safety-and-life-at-babcock-ranch/?utm_source=openai))\n\n**How this impacts comparisons:** Even if a neighborhood’s “HOA” looks moderate, the **tax‑bill district assessments** can materially change the all‑in number—and Babcock Ranch often includes bulk internet at the master level.\n\n---\n\n## 3) A simple scoring framework (so amenities aren’t subjective)\n\nCreate a 1–5 score for each category, then divide by all‑in monthly cost:\n\n**Amenity breadth**\n- Pools (lap + resort + kids features)\n- Fitness (size, hours, classes)\n- Courts (pickleball/tennis/basketball)\n- Trails/parks/water access\n\n**Lifestyle/programming quality**\n- Dedicated lifestyle director/team\n- Frequency/variety of events\n\n**Maintenance coverage**\n- None / partial / full (lawn + irrigation + pest + exterior)\n\n**Convenience**\n- Included internet/cable\n- Onsite schools/retail/healthcare (if relevant)\n\nThen compute:\n- **Value index = (Amenity + Lifestyle + Maintenance + Convenience score) ÷ all‑in monthly**\n\nThis prevents “$300/mo is cheap/expensive” arguments without context.\n\n---\n\n## 4) If you tell me these 5 details, I can build a side‑by‑side table for the specific communities you’re considering\n1) Which communities (e.g., Nocatee, Lakewood Ranch, The Villages, Babcock Ranch, etc.)  \n2) Home type (single‑family vs townhome vs condo)  \n3) New build vs resale  \n4) Need “maintenance‑free” or not?  \n5) Any must‑have amenities (pickleball, fitness classes, gated, kids amenities, golf)\n\nIf you share your shortlist, I’ll format an **all‑in monthly** comparison (HOA + district fees + club dues) and a concise amenity matrix.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "Babcock Ranch",
+                  "Nocatee",
+                  "The Villages"
+                ],
+                "howDescribed": "Lakewood Ranch is described as having village-specific HOA fees ranging from $100 to $800 per month, supplemented by a Stewardship District fee for community infrastructure. It is noted for offering a variety of lifestyles from basic HOA to amenity-rich and maintenance-free living in the Sarasota/Manatee area."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current information about HOA fees and amenities in Florida master-planned communities.\nLet me search for more specific information about amenities offered in these communities.\nNow let me search for specific HOA fee ranges in The Villages to complete the comparison.\nBased on my research, here's a comprehensive comparison of HOA fees and amenities in Florida master-planned communities:\n\n## HOA Fee Ranges\n\n\nA reasonable HOA fee in Florida typically ranges from $150-$400 monthly for basic communities with standard amenities like pools and landscaping.\n However, \nHOA fees in some Florida gated communities range from $500 per month to over $5,000 per quarter — and that's before membership dues for golf or country clubs.\n\n\n\nSingle-family homes typically see $170-300 monthly as reasonable, while townhomes often run slightly less at $150-250, and condominiums cost $300-400 due to shared building maintenance.\n\n\n### Fee Variation by Property Type\n\nTypical ranges are $100–$400 per month in most Florida suburbs; luxury or resort-style communities can exceed $600.\n\n\n## Important Fee Distinction: HOA vs. CDD Fees\n\nA critical point when comparing communities: \nThe problem with comparing fees across different communities is that they are called different things in different communities, and they're not called HOA fees everywhere.\n For example, \nThe Villages (Florida's most popular retirement community) does not have a formal HOA, and refers to their fees as \"Amenity Fees,\" but also has Community Development District (CDD) fees that can range from below $100/month to more than $500/month depending on the home type and location.\n\n\n## Top Master-Planned Communities: Lakewood Ranch vs. The Villages\n\n### **The Villages (55+ Age-Restricted)**\n\nThe monthly amenity fee is $189.00 and includes swimming, tennis, pickleball, bocce and many more facilities throughout the community.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 2,
+                "competitors": [
+                  "The Villages"
+                ],
+                "howDescribed": "Mentioned in a primary section heading as one of the 'Top Master-Planned Communities' in Florida being compared against The Villages."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Comparing HOA fees and amenities in Florida's master-planned communities (MPCs) requires looking at three distinct costs: **monthly HOA dues**, **annual CDD fees** (Community Development District), and **amenity-specific fees**.\n\nIn Florida, newer communities often utilize CDD fees to fund infrastructure (roads, pools, utilities) through long-term bonds, while HOA fees cover ongoing maintenance like landscaping and security.\n\n### **Comparison of Top Florida Master-Planned Communities**\n\n| Community | Region | Estimated HOA/Amenity Fee | CDD Fee (Annual) | Key Amenities |\n| :--- | :--- | :--- | :--- | :--- |\n| **The Villages** | Central (Sumter) | ~$199/mo (Amenity Fee) | ~$1,500 – $4,000+ | 700+ holes of golf, 100+ pools, 3,000+ clubs, 3 town squares. |\n| **Lakewood Ranch** | Southwest (Sarasota) | $125 – $880+/mo | ~$1,500 – $3,000 | 150+ miles of trails, 9 golf courses, polo fields, 3 town centers. |\n| **Nocatee** | Northeast (St. Johns) | $80 – $350/mo | ~$1,500 – $3,500 | Massive water parks (Splash & Spray), kayak launches, electric vehicle trails. |\n| **Wellen Park** | Southwest (Venice) | $170 – $1,500/mo | ~$400 – $3,000 | Downtown Wellen (80-acre lake), Braves Spring Training, resort pools. |\n| **Babcock Ranch** | Southwest (Ft. Myers) | $260 – $840/mo | ~$1,300 – $3,500 | Solar-powered town, 1-Gig fiber internet included, sustainable trails. |\n| **Viera** | East (Melbourne) | $175 – $1,200/mo | Varies (mostly newer) | Golf cart-friendly, Addison Village Club, proximity to Space Coast. |\n| **Ave Maria** | Southwest (Naples) | $150 – $700+/mo | ~$1,000 – $1,500 | Town center with cathedral, water park, University access, golf. |\n\n---\n\n### **Key Cost Components Explained**\n1.  **HOA Fees:** These vary wildly by neighborhood. A \"gated\" village with private security and its own pool will cost significantly more than an \"un-gated\" village that shares community-wide facilities.\n2.  **CDD Fees:** These are non-ad valorem assessments added to your property tax bill. They typically have two parts: a **debt portion** (paying off the bond for infrastructure) and an **O&M portion** (operations and maintenance).\n3.  **Amenity Fees:** Unique to **The Villages**, this is a flat monthly fee (currently ~$199) that covers access to almost all recreational facilities across the massive community, regardless of which village you live in.\n\n### **Factors Influencing the Price**\n*   **Golf Membership:** Communities like *Wellen Park Golf & Country Club* or *Lakewood Ranch Golf & Country Club* often bundle golf memberships into the HOA, pushing monthly fees toward $1,000+. Communities where golf is \"public\" or \"pay-to-play\" (like Nocatee or portions of Viera) have much lower base HOAs.\n*   **55+ vs. Multigenerational:** Age-restricted \"active adult\" sections (like Del Webb or Esplanade) usually have higher HOA fees because they include a full-time \"lifestyle director,\" high-frequency social events, and extensive fitness programming.\n*   **Maintenance-Included Living:** If the HOA covers lawn care, irrigation, and exterior painting (common in villas and townhomes), expect the fee to be $200–$300 higher per month than a standard single-family home.\n\n### **Which One is Best For You?**\n*   **Best for Golfers:** **The Villages** (free golf on 40+ executive courses) or **Lakewood Ranch** (9 championship courses).\n*   **Best for Families:** **Nocatee** (top-rated schools and massive water parks) or **Wellen Park** (walkable downtown and youth sports).\n*   **Best for Sustainability:** **Babcock Ranch** (low energy costs and hurricane-resilient solar infrastructure).\n*   **Best Value for Low Fees:** **Ave Maria** or **Viera**, which offer \"amenity-lean\" neighborhoods for buyers who want lower monthly carrying costs.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 7,
+                "competitors": [
+                  "The Villages",
+                  "Nocatee",
+                  "Wellen Park",
+                  "Babcock Ranch",
+                  "Viera",
+                  "Ave Maria",
+                  "Del Webb",
+                  "Esplanade"
+                ],
+                "howDescribed": "Characterized as a major Southwest Florida community with 150+ miles of trails, 9 golf courses, polo fields, and 3 town centers; it was specifically recommended as a top choice for golfers."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Below, I'll provide a comparison of HOA (Homeowners Association) fees and amenities in some popular master-planned communities in Florida, based on recent data from sources like RubyHome's 2026 HOA statistics report and Yahoo Finance's analysis of Florida's gated communities (as of late 2025). Keep in mind that HOA fees can vary widely based on community size, location, property type, and specific amenities, and they often increase annually. The average HOA fee in Florida is around $300–$500 per month (per RubyHome's 2026 stats), but in premium master-planned communities, they can range from $200 to over $1,000 monthly, especially in high-end gated developments. These fees typically cover maintenance, security, landscaping, and shared facilities.\n\nI'll focus on a few well-known Florida master-planned communities for comparison, drawing from 2025–2026 rankings and reports (e.g., John Burns Research and Consulting's Top 50 Master-Planned Communities list, which highlights Florida standouts like Lakewood Ranch and Nocatee). This is a high-level overview—exact fees can fluctuate, so I recommend checking community websites or a realtor for the latest details.\n\n### 1. **Lakewood Ranch (Sarasota/Bradenton Area)**\n   - **Average HOA Fees**: $250–$600 per month (varies by neighborhood; higher in golf-oriented sections with club dues adding $100–$300 more).\n   - **Key Amenities**: This massive 31,000-acre community emphasizes a family-friendly, active lifestyle. Perks include multiple golf courses, tennis and pickleball courts, over 150 miles of trails, community pools, fitness centers, parks, and on-site schools. It's booming with young professionals and families, offering security gates, events, and retail villages. Demand is high, with home prices 10–20% above nearby areas (Yahoo Finance, 2025).\n   - **Comparison Note**: Fees are mid-range but justified by extensive amenities; it's ranked highly in national master-planned lists for its balance of recreation and convenience.\n\n### 2. **The Villages (Central Florida, near Ocala)**\n   - **Average HOA Fees**: $150–$400 per month (often lower for basic maintenance, but add-ons like golf memberships can push it to $500+; many are 55+ communities).\n   - **Key Amenities**: Known as one of the largest retirement communities, it features over 100 miles of golf cart paths, dozens of",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 2,
+                "competitors": [
+                  "The Villages",
+                  "Nocatee"
+                ],
+                "howDescribed": "A massive 31,000-acre community focused on family-friendly, active lifestyles with extensive amenities including golf, trails, and parks; described as having mid-range fees that are justified by the recreation and convenience provided."
+              }
+            }
+          }
+        },
+        {
+          "query": "how much does hurricane insurance cost in Sarasota County",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "“Hurricane insurance” in Sarasota County is usually **the wind (hurricane) portion of homeowners insurance** (sometimes included in a standard HO-3 policy; sometimes bought as a separate **wind-only** policy). The cost varies a lot by distance to the coast, home age/roof, construction type, insured value, and (especially) your **hurricane deductible**.\n\n### Typical price ranges you’ll see (Sarasota / Sarasota County area)\n- **All-in homeowners policy that includes hurricane/wind coverage:** often **~$2,000–$4,000+ per year** for many homes, with higher-end/coastal homes running higher. One published rate analysis shows **Sarasota city averaging about $2,410/year** (this is homeowners insurance pricing, which typically includes wind/hurricane coverage). ([nerdwallet.com](https://www.nerdwallet.com/insurance/homeowners/florida-home-insurance?utm_source=openai))  \n- **Example “includes windstorm & hail” by dwelling coverage in Sarasota (illustrative):** about **$2,834/year** at **$200k–$299k** dwelling coverage, rising to **~$6,198/year** at **$700k–$799k** coverage. ([tgsinsurance.com](https://tgsinsurance.com/home-insurance/FL/sarasota/?utm_source=openai))  \n\n### Why your “hurricane insurance” cost can swing by thousands\n- **Hurricane deductible** is commonly **2%–5% of Coverage A (dwelling)** in Florida (so a $400k dwelling with a 2% hurricane deductible means you pay the first **$8,000** of hurricane damage). Choosing a higher deductible usually lowers premium.\n- **Wind-only vs multiperil:** Some properties end up with a separate wind-only policy (plus a separate homeowners/fire policy), which changes what you think of as the “hurricane insurance” line item.\n- **Flood is separate:** Hurricane flooding is **not covered** by standard homeowners/wind coverage; it requires a separate flood policy. ([theguardian.com](https://www.theguardian.com/us-news/2024/oct/12/flood-insurance-hurricane-milton-helene?utm_source=openai))  \n\n### If you tell me these 5 details, I can give a tighter estimate\n1) ZIP code (or nearest cross-streets)  \n2) Home type (single-family / condo / townhouse)  \n3) Year built + roof year/type  \n4) Approx. dwelling coverage (or square footage + build quality)  \n5) Desired hurricane deductible (2%, 5%, etc.)  \n\nIf you share those, I’ll ballpark a realistic premium range for Sarasota County and explain what’s driving it.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on the search results, here's what I found about hurricane insurance costs in Sarasota County:\n\n## Homeowners Insurance Costs in Sarasota County\n\n\nIn Sarasota County, homeowners can expect to pay rates as low as $1,517 per year for a smaller home around 1,800 square feet or less.\n \nHigh value homes with larger square footage and high-end upgrades usually have premiums in the range of $2,906 per year.\n\n\nMore broadly, \nthe average annual cost of home insurance in Sarasota is $6,826 for a policy with $300,000 in dwelling coverage and a $1,000 deductible.\n\n\n## Hurricane Coverage Details\n\nIt's important to understand that \nhurricane insurance isn't a separate insurance plan but refers to various coverages in homeowners insurance policies that protect against damage caused by hurricanes and other high-wind events.\n\n\n\nWith a 2% hurricane deductible, the average cost of homeowners insurance in Florida is $4,419 annually.\n Additionally, \nthe average cost of flood insurance in Florida is $544 annually for a policy from the National Flood Insurance Program (NFIP).\n This is important because \nhomeowners insurance doesn't cover overland flooding caused by heavy rain and storm surges, even if you have windstorm coverage.\n\n\nThe exact cost will depend on your specific home's characteristics, location within the county, and the coverage limits you choose. I recommend getting quotes from multiple insurance providers to compare specific rates for your property.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "In Sarasota County, there is no single \"hurricane insurance\" policy. Instead, protection comes from a combination of your **standard homeowners insurance** (which covers hurricane wind) and a **separate flood insurance policy** (which covers storm surge).\n\nFor 2025–2026, the average cost to fully insure a home against hurricanes in Sarasota County typically ranges from **$6,000 to over $9,000 per year** when combining both wind and flood coverage.\n\n### 1. Homeowners Insurance (Wind Coverage)\nStandard policies in Florida include \"windstorm\" coverage, which pays for damage from hurricane-force winds. \n*   **Average Cost:** The typical annual premium for a single-family home in Sarasota County is between **$5,485 and $6,826**.\n*   **Location Variation:** If you live on a barrier island (Siesta Key, Longboat Key, Casey Key), your premium can be significantly higher, often exceeding $10,000. Inland homes (east of I-75) may see rates closer to $3,500–$4,500.\n*   **Home Age:** Newer homes built to modern hurricane codes (post-2002) average around **$2,160**, while homes older than 25 years average nearly **$4,000** for the same dwelling limit.\n\n### 2. Flood Insurance (Storm Surge)\nStandard homeowners insurance **does not cover flood damage** or storm surge, which is a major risk in Sarasota.\n*   **Average Cost:** A policy through the National Flood Insurance Program (NFIP) averages about **$700 to $900 per year**. \n*   **High-Risk Zones:** If your home is in a high-risk flood zone (Zone AE or V), premiums can range from **$2,000 to $5,000+** depending on the home’s elevation.\n\n### 3. The \"Hidden\" Cost: Hurricane Deductibles\nUnlike a standard $1,000 deductible for a fire or theft, hurricane claims use a **percentage-based deductible** (usually 2%, 5%, or 10% of your home's insured value).\n*   **Example:** If your home is insured for **$500,000** with a **2% hurricane deductible**, you must pay the first **$10,000** of damage out-of-pocket before insurance pays a dime.\n*   **Trigger:** This deductible is only \"triggered\" when the National Weather Service declares a hurricane in Florida.\n\n### How to Lower Your Costs\nSarasota homeowners can drastically reduce these premiums by:\n*   **Wind Mitigation Inspection:** This is the #1 way to save. Features like \"hurricane straps\" (clips that tie your roof to your walls), impact-resistant windows, and a newer roof can trigger discounts of **30% to 50%** off the wind portion of your premium.\n*   **Higher Deductibles:** Choosing a 5% or 10% hurricane deductible will lower your annual premium, but ensure you have the cash on hand to cover it if a storm hits.\n*   **Private Flood Insurance:** In some cases, private flood insurers offer lower rates than the federal NFIP for homes that are well-elevated.\n\n**Summary Table for Sarasota County (Estimated)**\n| Insurance Component | Typical Annual Cost | Coverage Type |\n| :--- | :--- | :--- |\n| **Homeowners Policy** | $5,500 – $6,800 | Wind, Rain, Theft, Fire |\n| **Flood Insurance** | $700 – $2,500 | Storm Surge, Rising Water |\n| **Total Annual Cost** | **$6,200 – $9,300** | **Comprehensive Protection** |",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 3,
+                "competitors": [
+                  "Siesta Key",
+                  "Longboat Key",
+                  "Casey Key"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent web information and data from 2025-2026, hurricane insurance costs in Sarasota County, Florida, can vary widely depending on factors like your home's value, location (e.g., proximity to the coast), construction type, deductible choices, and the insurer. In Florida, \"hurricane insurance\" typically refers to windstorm coverage, which is often included in standard homeowners policies or purchased separately through options like Citizens Property Insurance or private carriers. It's not always a standalone policy but protects against high winds, storm surges, and related damage.\n\n### Average Costs\n- **Statewide Florida Average**: As of early 2026, the average annual cost for homeowners insurance (which often includes hurricane/windstorm coverage) is around $10,384, according to estimates from MoneyGeek's home insurance calculator. However, this is a broad figure and can be higher in high-risk coastal areas like Sarasota County due to frequent storms.\n  \n- **Sarasota County-Specific Estimates**: Recent data from sources like the South Florida Sun-Sentinel (February 2025) shows average homeowners insurance premiums in Sarasota County have been rising since 2022, but they're still below some South Florida counties. While exact 2026 figures aren't universally published, averages in similar Gulf Coast counties range from $8,000 to $12,000 annually for a typical single-family home valued at $300,000–$500,000. For hurricane-specific add-ons or deductibles (often 2–5% of the home's value), you might pay an extra $1,000–$3,000 per year on top of base homeowners coverage.\n\n- **Recent Trends**: Good news—multiple insurers are planning rate decreases for 2026, potentially by 5–15% in some areas, per reports from News 13 (December 2025). This follows high recovery costs from 2025 hurricanes like Helene and Milton, which exceeded $15 billion statewide (Herald-Tribune, November 2025). However, flood insurance (separate from hurricane/windstorm and often required in Sarasota) is seeing increases, with averages around $800–$1,500 annually through the National Flood Insurance Program (NFIP), as noted in Miami Herald coverage (December 2025).\n\n### Factors Influencing Costs\n- **Home Details**: Older homes or those without hurricane-resistant features (e.g., impact windows, reinforced roofs) face higher premiums.\n- **Deductibles**: Hurricane deductibles are percentage-based (e.g.,",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
