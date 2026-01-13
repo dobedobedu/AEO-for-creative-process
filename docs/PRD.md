@@ -57,6 +57,14 @@ Marketing/brand stakeholders who want to understand how AI platforms represent t
 │  Powers trend charts      │ │  Powers RAG chat          │
 │  Powers insight cards     │ │  Semantic search          │
 └───────────────────────────┘ └───────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     FEATURE KANBAN UI                            │
+│  Single board with 4 visibility tiers                            │
+│  Category tabs: All / Amenity / Activities / Schools / Nature     │
+│  Cards: builders, villages, facilities, schools, parks            │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -152,3 +160,4 @@ interface Intent {
 - Insight dashboards update automatically
 - Chat correctly retrieves historical data via RAG
 - Cost per run < $5 (target)
+- Feature Kanban reflects coverage gaps clearly by category

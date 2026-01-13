@@ -19,6 +19,13 @@ Column-based dashboard layout with collapsible panels and a KPI row.
 - Column 4: Responses
 - Column 5: Insight
 
+## Feature Kanban (Coverage)
+- Single board with 4 visibility tiers: Blind Spot / Mentioned / Recommended / Preferred
+- Category tabs (document-organizer style): All, Amenity, Activities, Schools, Nature, Villages, Builders
+- Cards show only title + mention rate; click opens detail modal for example citations
+- Vertical dividers between tiers instead of boxed columns
+- Legend shows mention-rate bands (0–10%, 11–30%, 31–60%, 61%+)
+
 Behavior:
 - One column expanded by default; others collapsed to summary state.
 - Clicking a column header expands it and collapses others.

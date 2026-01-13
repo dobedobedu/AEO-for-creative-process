@@ -2,6 +2,18 @@
 
 ## January 2026
 
+### 2026-01-13 (Feature Kanban UI)
+- Added Feature Kanban board with 4 visibility tiers and category tabs
+- Simplified cards to title + mention rate with detail modal placeholder
+- Switched to vertical divider layout inspired by vibe-kanban
+
+### 2026-01-13 (KPI Chart + Selector Simplification)
+- Replaced KPI selector pills with right-side model selector/legend next to stacked area chart
+- Added Daily/Weekly/Monthly range toggle for KPI chart windowing
+- Removed Trend Over Time card (streamlined to a single KPI chart)
+- Added KPI metric tabs (Mention/Sentiment/Win Rate/Top 3 Rec)
+- Note: KPI metric tabs are UI-only for now; wire to real series per metric + date buckets
+
 ### 2026-01-06 (Cost Optimizations + Debugging)
 - Added Anthropic prompt caching with `cache_control` header (~90% input token savings)
 - Added response deduplication cache with 24h TTL (`lib/cache/responseCache.ts`)
