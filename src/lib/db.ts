@@ -29,3 +29,20 @@ export function query<T>(strings: TemplateStringsArray, ...values: unknown[]): P
 if (process.env.NODE_ENV !== "production") {
   globalForSql.sql = sql;
 }
+
+// Auto-migration: Add result_json column if it doesn't exist
+let migrationRun = false;
+export async function ensureSchema(): Promise<void> {
+  if (migrationRun) return;
+  migrationRun = true;
+
+  try {
+    await sql`
+      ALTER TABLE runs
+      ADD COLUMN IF NOT EXISTS result_json JSONB;
+    `;
+  } catch (e) {
+    // Column may already exist or table doesn't exist yet
+    console.warn("Schema migration warning:", e);
+  }
+}

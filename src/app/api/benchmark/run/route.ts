@@ -204,7 +204,7 @@ export async function POST(req: Request) {
     };
 
     // Persist + upload
-    saveRun(run);
+    await saveRun(run);
     uploadRunAsync(run);
 
     // Mark progress complete

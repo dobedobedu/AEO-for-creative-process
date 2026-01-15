@@ -189,7 +189,7 @@ export async function GET(req: Request) {
         };
 
         // Persist + upload
-        saveRun(run);
+        await saveRun(run);
         uploadRunAsync(run);
 
         const executionTimeMs = Date.now() - startTime;

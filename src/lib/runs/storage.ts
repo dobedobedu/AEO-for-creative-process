@@ -1,5 +1,4 @@
-import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync, unlinkSync } from "fs";
-import { join } from "path";
+import { sql, ensureSchema } from "@/lib/db";
 import {
   BenchmarkRun,
   BenchmarkRunSchema,
@@ -8,71 +7,82 @@ import {
   getRunFilename,
 } from "./types";
 
-const DATA_DIR = join(process.cwd(), "data", "runs");
-
-function ensureDataDir(): void {
-  if (!existsSync(DATA_DIR)) {
-    mkdirSync(DATA_DIR, { recursive: true });
+// Ensure schema is up to date on first query
+let schemaReady = false;
+async function ensureReady(): Promise<void> {
+  if (!schemaReady) {
+    await ensureSchema();
+    schemaReady = true;
   }
 }
 
-export function saveRun(run: BenchmarkRun): string {
-  ensureDataDir();
-  
+export async function saveRun(run: BenchmarkRun): Promise<string> {
+  await ensureReady();
+
   const validated = BenchmarkRunSchema.parse(run);
-  const filename = getRunFilename(validated);
-  const filepath = join(DATA_DIR, filename);
-  
-  writeFileSync(filepath, JSON.stringify(validated, null, 2), "utf-8");
-  return filepath;
+
+  // Check if run exists (update) or needs insert
+  const existing = await sql`
+    SELECT id FROM runs WHERE id = ${validated.id}::text::uuid
+    LIMIT 1;
+  `;
+
+  if (existing.length > 0) {
+    // Update existing run with result
+    await sql`
+      UPDATE runs
+      SET result_json = ${JSON.stringify(validated)}::jsonb,
+          completed_at = NOW()
+      WHERE id = ${validated.id}::text::uuid;
+    `;
+  } else {
+    // Insert new run with result
+    await sql`
+      INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
+      VALUES (
+        ${validated.id}::text::uuid,
+        'completed',
+        ${JSON.stringify({ brand: validated.brand })}::jsonb,
+        ${JSON.stringify(validated)}::jsonb,
+        0,
+        NOW()
+      );
+    `;
+  }
+
+  return validated.id;
 }
 
-export function loadRun(runId: string): BenchmarkRun | null {
-  ensureDataDir();
-  
-  const files = readdirSync(DATA_DIR).filter((f) => f.endsWith(".json"));
-  const matchingFile = files.find((f) => f.includes(runId));
-  
-  if (!matchingFile) {
+export async function loadRun(runId: string): Promise<BenchmarkRun | null> {
+  await ensureReady();
+
+  const rows = await sql`
+    SELECT result_json FROM runs
+    WHERE id = ${runId}::text::uuid AND result_json IS NOT NULL
+    LIMIT 1;
+  `;
+
+  if (rows.length === 0 || !rows[0].result_json) {
     return null;
   }
-  
-  const filepath = join(DATA_DIR, matchingFile);
-  const raw = readFileSync(filepath, "utf-8");
-  const parsed = JSON.parse(raw);
-  return BenchmarkRunSchema.parse(parsed);
+
+  return BenchmarkRunSchema.parse(rows[0].result_json);
 }
 
-export function loadRunByFilename(filename: string): BenchmarkRun | null {
-  ensureDataDir();
-  
-  const filepath = join(DATA_DIR, filename);
-  if (!existsSync(filepath)) {
-    return null;
-  }
-  
-  const raw = readFileSync(filepath, "utf-8");
-  const parsed = JSON.parse(raw);
-  return BenchmarkRunSchema.parse(parsed);
-}
+export async function listRunMetadata(): Promise<RunMetadata[]> {
+  await ensureReady();
 
-export function listRunMetadata(): RunMetadata[] {
-  ensureDataDir();
-  
-  const files = readdirSync(DATA_DIR)
-    .filter((f) => f.endsWith(".json"))
-    .sort()
-    .reverse();
-  
+  const rows = await sql`
+    SELECT result_json FROM runs
+    WHERE result_json IS NOT NULL
+    ORDER BY completed_at DESC NULLS LAST, created_at DESC;
+  `;
+
   const metadata: RunMetadata[] = [];
-  
-  for (const file of files) {
+
+  for (const row of rows) {
     try {
-      const filepath = join(DATA_DIR, file);
-      const raw = readFileSync(filepath, "utf-8");
-      const parsed = JSON.parse(raw);
-      const run = BenchmarkRunSchema.parse(parsed);
-      
+      const run = BenchmarkRunSchema.parse(row.result_json);
       metadata.push({
         id: run.id,
         timestamp: run.timestamp,
@@ -82,72 +92,76 @@ export function listRunMetadata(): RunMetadata[] {
         summary: run.summary,
       });
     } catch {
-      // Skip invalid files
+      // Skip invalid entries
     }
   }
-  
+
   return metadata;
 }
 
-export function loadAllRuns(): BenchmarkRun[] {
-  ensureDataDir();
-  
-  const files = readdirSync(DATA_DIR)
-    .filter((f) => f.endsWith(".json"))
-    .sort();
-  
+export async function loadAllRuns(): Promise<BenchmarkRun[]> {
+  await ensureReady();
+
+  const rows = await sql`
+    SELECT result_json FROM runs
+    WHERE result_json IS NOT NULL
+    ORDER BY completed_at ASC NULLS LAST, created_at ASC;
+  `;
+
   const runs: BenchmarkRun[] = [];
-  
-  for (const file of files) {
+
+  for (const row of rows) {
     try {
-      const filepath = join(DATA_DIR, file);
-      const raw = readFileSync(filepath, "utf-8");
-      const parsed = JSON.parse(raw);
-      runs.push(BenchmarkRunSchema.parse(parsed));
+      runs.push(BenchmarkRunSchema.parse(row.result_json));
     } catch {
-      // Skip invalid files
+      // Skip invalid entries
     }
   }
-  
+
   return runs;
 }
 
-export function getRunsForDateRange(startDate: string, endDate: string): BenchmarkRun[] {
-  const allRuns = loadAllRuns();
-  
+export async function getRunsForDateRange(startDate: string, endDate: string): Promise<BenchmarkRun[]> {
+  const allRuns = await loadAllRuns();
+
   return allRuns.filter((run) => {
     const runDate = run.timestamp.split("T")[0];
     return runDate >= startDate && runDate <= endDate;
   });
 }
 
-export function getLatestRun(): BenchmarkRun | null {
-  const metadata = listRunMetadata();
-  if (metadata.length === 0) {
+export async function getLatestRun(): Promise<BenchmarkRun | null> {
+  await ensureReady();
+
+  const rows = await sql`
+    SELECT result_json FROM runs
+    WHERE result_json IS NOT NULL
+    ORDER BY completed_at DESC NULLS LAST, created_at DESC
+    LIMIT 1;
+  `;
+
+  if (rows.length === 0 || !rows[0].result_json) {
     return null;
   }
-  
-  return loadRun(metadata[0].id);
+
+  return BenchmarkRunSchema.parse(rows[0].result_json);
 }
 
-export function getRunsByIntentLibraryVersion(version: number): BenchmarkRun[] {
-  const allRuns = loadAllRuns();
+export async function getRunsByIntentLibraryVersion(version: number): Promise<BenchmarkRun[]> {
+  const allRuns = await loadAllRuns();
   return allRuns.filter((run) => run.intentLibraryVersion === version);
 }
 
-export function deleteRun(runId: string): boolean {
-  ensureDataDir();
+export async function deleteRun(runId: string): Promise<boolean> {
+  await ensureReady();
 
-  const files = readdirSync(DATA_DIR).filter((f) => f.endsWith(".json"));
-  const matchingFile = files.find((f) => f.includes(runId));
+  const result = await sql`
+    DELETE FROM runs
+    WHERE id = ${runId}::text::uuid
+    RETURNING id;
+  `;
 
-  if (!matchingFile) {
-    return false;
-  }
-
-  const filepath = join(DATA_DIR, matchingFile);
-  unlinkSync(filepath);
-  return true;
+  return result.length > 0;
 }
 
 export function createEmptyRun(
@@ -156,7 +170,7 @@ export function createEmptyRun(
   metricsConfigVersion: number
 ): BenchmarkRun {
   const id = generateRunId();
-  
+
   return {
     id,
     timestamp: new Date().toISOString(),

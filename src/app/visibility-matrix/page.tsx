@@ -382,6 +382,7 @@ export default function VisibilityMatrixPage() {
   const [benchmarkHistory, setBenchmarkHistory] = useState<BenchmarkRun[]>([]);
   const [kpiMetric, setKpiMetric] = useState<"mention" | "sentiment" | "winrate" | "top3">("mention");
   const [kpiRange, setKpiRange] = useState<"day" | "week" | "month">("week");
+  const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
   const [personas, setPersonas] = useState<PersonaConfig[]>(DEFAULT_PERSONAS);
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -845,16 +846,48 @@ export default function VisibilityMatrixPage() {
   }, [selectedCellsData]);
 
   const modelTrendData = useMemo(() => {
-    const full = benchmarkHistory.map(run => ({
-      label: run.label,
-      openai: Math.round((run.providerScores.openai?.mentionRate ?? 0) * 100),
-      anthropic: Math.round((run.providerScores.anthropic?.mentionRate ?? 0) * 100),
-      gemini: Math.round((run.providerScores.gemini?.mentionRate ?? 0) * 100),
-      xai: Math.round((run.providerScores.xai?.mentionRate ?? 0) * 100),
-    }));
+    const baseMockDate = new Date(Date.UTC(2026, 0, 1));
+    const full = benchmarkHistory.map(run => {
+      const rawTs = run.timestamp;
+      let dateISO = run.label;
+      if (rawTs > 1_000_000_000_000) {
+        dateISO = new Date(rawTs).toISOString().slice(0, 10);
+      } else if (rawTs > 0) {
+        const offsetDays = (rawTs - 1) * 7;
+        const d = new Date(baseMockDate);
+        d.setUTCDate(baseMockDate.getUTCDate() + offsetDays);
+        dateISO = d.toISOString().slice(0, 10);
+      }
+      return {
+        label: run.label,
+        date: dateISO,
+        openai: Math.round((run.providerScores.openai?.mentionRate ?? 0) * 100),
+        anthropic: Math.round((run.providerScores.anthropic?.mentionRate ?? 0) * 100),
+        gemini: Math.round((run.providerScores.gemini?.mentionRate ?? 0) * 100),
+        xai: Math.round((run.providerScores.xai?.mentionRate ?? 0) * 100),
+      };
+    });
     const windowSize = kpiRange === "day" ? 30 : kpiRange === "week" ? 13 : 12;
     return full.slice(-windowSize);
   }, [benchmarkHistory, kpiRange]);
+
+  const kpiTickInterval = useMemo(() => {
+    if (kpiRange === "day") return 2; // show every 3rd day
+    if (kpiRange === "week") return 0; // show every week
+    return 0; // show every month
+  }, [kpiRange]);
+
+  const formatKpiTick = useCallback((label: string) => {
+    const date = new Date(`${label}T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) return label;
+    if (kpiRange === "month") {
+      return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+    }
+    if (kpiRange === "week") {
+      return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }, [kpiRange]);
 
   // Stage-specific insights
   const stageInsights = useMemo(() => {
@@ -1216,9 +1249,18 @@ export default function VisibilityMatrixPage() {
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 h-[220px]">
               <ChartContainer config={chartConfig} className="h-full w-full">
-                <RechartsAreaChart data={modelTrendData} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+                <RechartsAreaChart data={modelTrendData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
                   <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="#efe6d9" />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={6} fontSize={10} />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={6}
+                    fontSize={10}
+                    interval={kpiTickInterval}
+                    tickFormatter={formatKpiTick}
+                    padding={{ left: 12, right: 12 }}
+                  />
                   <ChartTooltip cursor={{ stroke: "#d4c9b8", strokeDasharray: "4 4" }} content={<ChartTooltipContent />} />
                   {enabledProviders.has("openai") && (
                     <Area type="monotone" stackId="mentions" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.2} strokeWidth={2} />
