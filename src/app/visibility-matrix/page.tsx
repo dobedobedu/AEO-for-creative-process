@@ -25,8 +25,10 @@ import {
   Check,
   FileText,
   MessageSquare,
+  Library,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   HoverCard,
   HoverCardContent,
@@ -35,6 +37,7 @@ import {
 import { QueryPanelV2 } from "@/components/query-panel-v2";
 import { StageCell } from "@/components/stage-cell";
 import { ChatPanel } from "@/components/chat-panel";
+import { IntentLibraryModal } from "@/components/intent-library-modal";
 import type { ChatContext } from "@/lib/chat/types";
 import {
   ChartContainer,
@@ -152,11 +155,11 @@ const STAGES: { id: Stage; label: string; description: string }[] = [
   { id: "decide", label: "Decide", description: "Ready to buy" },
 ];
 
-const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; chartColor: string }[] = [
-  { id: "openai", label: "GPT 5.2", color: "text-[#1f3b2c]", bgColor: "bg-[#1f3b2c]", chartColor: "#1f3b2c" },
-  { id: "anthropic", label: "Haiku 4.5", color: "text-[#b86f3a]", bgColor: "bg-[#b86f3a]", chartColor: "#b86f3a" },
-  { id: "gemini", label: "Gemini 3", color: "text-[#6e7c5b]", bgColor: "bg-[#6e7c5b]", chartColor: "#6e7c5b" },
-  { id: "xai", label: "Grok 4", color: "text-[#7c6b7c]", bgColor: "bg-[#7c6b7c]", chartColor: "#7c6b7c" },
+const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; chartColor: string; logo: string }[] = [
+  { id: "openai", label: "GPT 5.2", color: "text-[#1f3b2c]", bgColor: "bg-[#1f3b2c]", chartColor: "#1f3b2c", logo: "/OpenAI-black-monoblossom.svg" },
+  { id: "anthropic", label: "Haiku 4.5", color: "text-[#b86f3a]", bgColor: "bg-[#b86f3a]", chartColor: "#b86f3a", logo: "/claude-color.svg" },
+  { id: "gemini", label: "Gemini 3", color: "text-[#6e7c5b]", bgColor: "bg-[#6e7c5b]", chartColor: "#6e7c5b", logo: "/gemini-color.svg" },
+  { id: "xai", label: "Grok 4", color: "text-[#7c6b7c]", bgColor: "bg-[#7c6b7c]", chartColor: "#7c6b7c", logo: "/Grok_Logomark_Dark.svg" },
 ];
 
 // Updated to support multiple intents
@@ -394,6 +397,8 @@ export default function VisibilityMatrixPage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<ChatContext>({ scope: "global" });
   const [localQueryBank, setLocalQueryBank] = useState<QueryBank>(() => createEmptyQueryBank());
+  const [intentLibrary, setIntentLibrary] = useState<IntentLibrary | null>(null);
+  const [intentLibraryModalOpen, setIntentLibraryModalOpen] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -403,6 +408,7 @@ export default function VisibilityMatrixPage() {
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load intents"))))
       .then((library: IntentLibrary) => {
         if (cancelled) return;
+        setIntentLibrary(library);
         setLocalQueryBank(buildQueryBankFromIntentLibrary(library));
       })
       .catch((err) => {
@@ -447,6 +453,19 @@ export default function VisibilityMatrixPage() {
       throw new Error("Failed to save intent queries");
     }
     setLocalQueryBank(queryBank);
+  };
+
+  const saveIntentLibrary = async (library: IntentLibrary) => {
+    const resp = await fetch("/api/intents/library", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(library),
+    });
+    if (!resp.ok) {
+      throw new Error("Failed to save intent library");
+    }
+    setIntentLibrary(library);
+    setLocalQueryBank(buildQueryBankFromIntentLibrary(library));
   };
 
   // Helper to convert QueryResult[] to the format expected by ChatContext
@@ -1158,6 +1177,15 @@ export default function VisibilityMatrixPage() {
           </div>
           <div className="flex items-center gap-2">
             <Button
+              onClick={() => setIntentLibraryModalOpen(true)}
+              variant="outline"
+              size="sm"
+              className="bg-transparent border-white/30 text-white hover:bg-white/10"
+            >
+              <Library className="h-4 w-4 mr-2" />
+              Intent Library
+            </Button>
+            <Button
               onClick={() => openQueryPanel("all")}
               variant="outline"
               size="sm"
@@ -1301,7 +1329,13 @@ export default function VisibilityMatrixPage() {
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                      <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: p.chartColor }} />
+                      <Image
+                        src={p.logo}
+                        alt={p.label}
+                        width={16}
+                        height={16}
+                        className={`h-4 w-auto ${isEnabled ? "brightness-0 invert" : ""}`}
+                      />
                       {p.label}
                     </span>
                   </button>
@@ -2080,6 +2114,37 @@ export default function VisibilityMatrixPage() {
         onOpenChange={setChatOpen}
         context={chatContext}
       />
+
+      {/* Intent Library Modal */}
+      {intentLibrary && (
+        <IntentLibraryModal
+          open={intentLibraryModalOpen}
+          onOpenChange={setIntentLibraryModalOpen}
+          intentLibrary={intentLibrary}
+          queryBank={localQueryBank}
+          onSave={saveIntentLibrary}
+          onRegenerateQueries={async (persona, stage, intentId) => {
+            const intent = intentLibrary.intents.find((i) => i.id === intentId);
+            if (!intent) return [];
+
+            const resp = await fetch("/api/intents/generate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                persona,
+                stage,
+                intent: intent.text,
+                role: intent.role,
+                queryStyle: intent.queryStyle,
+              }),
+            });
+
+            if (!resp.ok) throw new Error("Failed to regenerate queries");
+            const data = await resp.json();
+            return data.queries;
+          }}
+        />
+      )}
     </div>
   );
 }
