@@ -511,7 +511,7 @@ describe("QueryPanelV2", () => {
         "retiree",
         "explore",
         "Retiree Explore intent",
-        "buyer",
+        "cpo",
         0.75
       );
     });
