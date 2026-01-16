@@ -12,7 +12,8 @@
       "mcp__vercel__list_deployments",
       "Bash(git push:*)",
       "mcp__vercel__get_deployment_build_logs",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "WebFetch(domain:www.humanlayer.dev)"
     ]
   }
 }

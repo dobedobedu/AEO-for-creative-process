@@ -16,6 +16,7 @@ Run `npm run build` to verify no TypeScript errors.
 ## Reference
 
 - `docs/PRD.md` - product requirements, data model, metrics, what's next
+- `docs/UI.md` - design language, colors, component patterns, UX rules
 - `docs/diagrams.md` - architecture and page structure visuals
 
 Skip `AGENTS.md` - that file is for Codex.
