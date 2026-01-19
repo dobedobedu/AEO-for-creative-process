@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useCallback, Fragment, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,26 +19,20 @@ import {
   Eye,
   EyeOff,
   Square,
-  Zap,
-  Lightbulb,
   ChevronRight,
   Pencil,
   Check,
-  FileText,
   MessageSquare,
-  Library,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { QueryPanelV2 } from "@/components/query-panel-v2";
-import { StageCell } from "@/components/stage-cell";
 import { ChatPanel } from "@/components/chat-panel";
-import { IntentLibraryModal } from "@/components/intent-library-modal";
+import { ViewModeToggle } from "@/components/visibility-matrix/ViewModeToggle";
+import { MatrixCell } from "@/components/visibility-matrix/MatrixCell";
+import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor";
+import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
+import { InsightModal } from "@/components/visibility-matrix/InsightModal";
+import { GlobalProgressBar, useGlobalProgress } from "@/components/global-progress-bar";
 import type { ChatContext } from "@/lib/chat/types";
 import {
   ChartContainer,
@@ -186,7 +181,8 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
         id: intent.id,
         text: intent.text,
         role: intent.role || "cpo",
-        queryStyle: intent.queryStyle || 0.75
+        queryStyle: intent.queryStyle || 0.75,
+        generatedQueries: intent.generatedQueries
       };
 
       bank[intent.persona][intent.stage].intents.push(node);
@@ -390,15 +386,34 @@ export default function VisibilityMatrixPage() {
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null);
   const [editValue, setEditValue] = useState("");
   const [evidenceModal, setEvidenceModal] = useState<EvidenceModalData | null>(null);
-  const [queryPanelOpen, setQueryPanelOpen] = useState(false);
-  const [queryPanelScope, setQueryPanelScope] = useState<"cell" | "row" | "column" | "all">("cell");
-  const [queryPanelPersona, setQueryPanelPersona] = useState<Persona | undefined>();
-  const [queryPanelStage, setQueryPanelStage] = useState<Stage | undefined>();
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<ChatContext>({ scope: "global" });
   const [localQueryBank, setLocalQueryBank] = useState<QueryBank>(() => createEmptyQueryBank());
   const [intentLibrary, setIntentLibrary] = useState<IntentLibrary | null>(null);
-  const [intentLibraryModalOpen, setIntentLibraryModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"summary" | "intents" | "queries">("summary");
+  // Cell Selection and Focus Mode
+  const [selectedCell, setSelectedCell] = useState<{ persona: Persona; stage: Stage } | null>(null);
+  const [intentEditorOpen, setIntentEditorOpen] = useState(false);
+  const [insightModalOpen, setInsightModalOpen] = useState(false);
+
+  // Global progress bar state
+  const { state: progressState, startProgress, completeProgress: completeProgressBar, failProgress: failProgressBar } = useGlobalProgress();
+
+  // Derived statuses for the matrix and navigation
+  const cellStatus = useMemo(() => {
+    const status: Record<string, "empty" | "has-intents" | "has-queries"> = {};
+    personas.forEach((p) => {
+      STAGES.forEach((s) => {
+        const intents = localQueryBank[p.id][s.id].intents;
+        const hasQueries = intents.some((i) => (i.generatedQueries?.length || 0) > 0);
+
+        if (hasQueries) status[`${p.id}-${s.id}`] = "has-queries";
+        else if (intents.length > 0) status[`${p.id}-${s.id}`] = "has-intents";
+        else status[`${p.id}-${s.id}`] = "empty";
+      });
+    });
+    return status;
+  }, [localQueryBank, personas]);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -435,13 +450,6 @@ export default function VisibilityMatrixPage() {
     };
   }, []);
 
-  // Helper to open query panel at different scopes
-  const openQueryPanel = (scope: "cell" | "row" | "column" | "all", persona?: Persona, stage?: Stage) => {
-    setQueryPanelScope(scope);
-    setQueryPanelPersona(persona);
-    setQueryPanelStage(stage);
-    setQueryPanelOpen(true);
-  };
 
   const persistQueryBank = async (queryBank: QueryBank) => {
     const resp = await fetch("/api/intents/library/queries", {
@@ -452,20 +460,16 @@ export default function VisibilityMatrixPage() {
     if (!resp.ok) {
       throw new Error("Failed to save intent queries");
     }
-    setLocalQueryBank(queryBank);
-  };
 
-  const saveIntentLibrary = async (library: IntentLibrary) => {
-    const resp = await fetch("/api/intents/library", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(library),
-    });
-    if (!resp.ok) {
-      throw new Error("Failed to save intent library");
+    // The API returns the canonical intent library (including server-generated IDs for new intents).
+    const data = await resp.json().catch(() => null);
+    if (data?.library) {
+      setIntentLibrary(data.library);
+      setLocalQueryBank(buildQueryBankFromIntentLibrary(data.library));
+      return;
     }
-    setIntentLibrary(library);
-    setLocalQueryBank(buildQueryBankFromIntentLibrary(library));
+
+    setLocalQueryBank(queryBank);
   };
 
   // Helper to convert QueryResult[] to the format expected by ChatContext
@@ -542,6 +546,15 @@ export default function VisibilityMatrixPage() {
 
     if (targetCells.length === 0) return;
 
+    // Start progress bar
+    const tempRunId = `client-${Date.now()}`;
+    startProgress(
+      tempRunId,
+      targetCells.length * enabledProviders.size,
+      `Running benchmark on ${targetCells.length} cells...`,
+      "cells"
+    );
+
     setMatrixData((prev) => {
       const next = { ...prev };
       for (const t of targetCells) {
@@ -569,7 +582,10 @@ export default function VisibilityMatrixPage() {
         signal,
       });
 
-      if (!response.ok) throw new Error("Benchmark failed");
+      if (!response.ok) {
+        failProgressBar("Benchmark request failed");
+        throw new Error("Benchmark failed");
+      }
 
       const { run, resultsByCell }: { run: StoredRun; resultsByCell: Record<string, { queries: QueryResult[] }> } =
         await response.json();
@@ -627,6 +643,9 @@ export default function VisibilityMatrixPage() {
         setSelectedTimeIndex(next.length - 1);
         return next;
       });
+
+      // Complete progress bar
+      completeProgressBar(`Completed ${targetCells.length} cells`);
     } catch (error) {
       if ((error as Error).name === "AbortError") {
         setMatrixData((prev) => {
@@ -636,6 +655,7 @@ export default function VisibilityMatrixPage() {
           }
           return next;
         });
+        failProgressBar("Benchmark cancelled");
         return;
       }
 
@@ -647,6 +667,7 @@ export default function VisibilityMatrixPage() {
         }
         return next;
       });
+      failProgressBar("Benchmark failed");
     }
   };
 
@@ -1161,118 +1182,95 @@ export default function VisibilityMatrixPage() {
   return (
     <div className="min-h-screen bg-[#f6f1e8]">
       {/* Header */}
-      <div className="bg-[#1f3b2c] text-white px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">AI Visibility Matrix</h1>
-              <p className="text-sm text-white/60">{BRAND} • Persona × Stage</p>
+      <div className="bg-white border-b border-[#e3dacb]">
+        <div className="max-w-6xl mx-auto">
+          {/* Top row: Title + Back button */}
+          <div className="flex items-center justify-between px-6 py-3 border-b border-[#e3dacb]/50">
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="text-[#1e1b16]/70 hover:text-[#1e1b16] hover:bg-[#f6f1e8]">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-lg font-semibold text-[#1e1b16]">AI Visibility Matrix</h1>
+                <p className="text-xs text-[#1e1b16]/60">{BRAND} • Persona × Stage</p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setIntentLibraryModalOpen(true)}
-              variant="outline"
-              size="sm"
-              className="bg-transparent border-white/30 text-white hover:bg-white/10"
-            >
-              <Library className="h-4 w-4 mr-2" />
-              Intent Library
-            </Button>
-            <Button
-              onClick={() => openQueryPanel("all")}
-              variant="outline"
-              size="sm"
-              className="bg-transparent border-white/30 text-white hover:bg-white/10"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Query Bank
-            </Button>
-            <Button
-              onClick={() => {
-                // Collect all results from all cells
-                const allResults = Object.values(matrixData)
-                  .filter(cell => cell.status === "complete")
-                  .flatMap(cell => cell.results);
-                openChat({ scope: "global" }, allResults);
-              }}
-              variant="outline"
-              size="sm"
-              className="bg-transparent border-white/30 text-white hover:bg-white/10"
-            >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Ask AI
-            </Button>
-            {isRunning ? (
-              <Button onClick={stopBenchmark} className="bg-[#b86f3a] hover:bg-[#a65f2a] text-white">
-                <Square className="h-4 w-4 mr-2" />
-                Stop
+
+
+          {/* Action toolbar */}
+          <div className="flex items-center justify-between px-6 py-3">
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => {
+                  // Collect all results from all cells
+                  const allResults = Object.values(matrixData)
+                    .filter(cell => cell.status === "complete")
+                    .flatMap(cell => cell.results);
+                  openChat({ scope: "global" }, allResults);
+                }}
+                variant="outline"
+                size="sm"
+                className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#f6f1e8] hover:text-[#1f3b2c]"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Ask AI
               </Button>
-            ) : (
-              <>
-                <Button onClick={() => runBenchmark(true)} variant="outline" size="sm" className="bg-transparent border-white/30 text-white hover:bg-white/10">
-                  <Zap className="h-4 w-4 mr-2" />
-                  Quick Test
+            </div>
+            <div className="flex items-center gap-2">
+              {isRunning ? (
+                <Button onClick={stopBenchmark} className="bg-[#b86f3a] hover:bg-[#a65f2a] text-white">
+                  <Square className="h-4 w-4 mr-2" />
+                  Stop
                 </Button>
+              ) : (
                 <Button onClick={() => runBenchmark(false)} size="sm" className="bg-[#6e7c5b] hover:bg-[#5e6c4b] text-white">
                   <Play className="h-4 w-4 mr-2" />
                   Run {selection.type === "all" ? "All" : selectionLabel}
                 </Button>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto p-6 space-y-6">
         {/* Provider KPI Strip */}
-        <div className="rounded-2xl border border-[#e3dacb] bg-[#fffaf2] p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="text-sm font-semibold text-[#1e1b16]">Provider KPIs</h2>
-              <p className="text-xs text-[#1e1b16]/50">Metric trends by model.</p>
+        <div className="rounded-none border border-[#e3dacb] bg-white p-8">
+          <div className="flex flex-col gap-6 mb-12">
+            {/* Top Row: Title Only */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-black">AI Performance History</h2>
+                <p className="text-[10px] text-black/40 font-medium uppercase tracking-wider mt-1">Cross-model benchmarks over time</p>
+              </div>
             </div>
-            <div className="flex gap-1">
-              {[
-                { id: "mention", label: "Mention" },
-                { id: "sentiment", label: "Sentiment" },
-                { id: "winrate", label: "Win Rate" },
-                { id: "top3", label: "Top 3 Rec" },
-              ].map((metric) => (
-                <button
-                  key={metric.id}
-                  onClick={() => setKpiMetric(metric.id as typeof kpiMetric)}
-                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
-                    kpiMetric === metric.id
-                      ? "bg-[#1f3b2c] text-white"
-                      : "bg-[#efe6d9] text-[#1e1b16]/60 hover:bg-[#e3dacb]"
-                  }`}
-                >
-                  {metric.label}
-                </button>
-              ))}
+
+            {/* Middle Row: Centered Metric Selector */}
+            <div className="flex justify-center">
+              <div className="flex gap-8 border-b border-[#e3dacb] px-12">
+                {[
+                  { id: "mention", label: "Mention" },
+                  { id: "sentiment", label: "Sentiment" },
+                  { id: "winrate", label: "Win Rate" },
+                  { id: "top3", label: "Top 3 Rec" },
+                ].map((metric) => (
+                  <button
+                    key={metric.id}
+                    onClick={() => setKpiMetric(metric.id as typeof kpiMetric)}
+                    className={`px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-all border-b-2 -mb-[2px] ${kpiMetric === metric.id
+                      ? "text-[#1f3b2c] border-[#1f3b2c]"
+                      : "text-black/30 border-transparent hover:text-black/50"
+                      }`}
+                  >
+                    {metric.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2 mb-3">
-            {(["day", "week", "month"] as const).map(range => (
-              <button
-                key={range}
-                onClick={() => setKpiRange(range)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${
-                  kpiRange === range
-                    ? "bg-[#1f3b2c] text-white border-[#1f3b2c]"
-                    : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#1f3b2c]/40"
-                }`}
-              >
-                {range === "day" ? "Daily" : range === "week" ? "Weekly" : "Monthly"}
-              </button>
-            ))}
           </div>
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 h-[220px]">
@@ -1308,11 +1306,10 @@ export default function VisibilityMatrixPage() {
             <div className="w-full lg:w-44 flex flex-col gap-2 justify-center">
               <button
                 onClick={selectAllProviders}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                  enabledProviders.size === PROVIDERS.length
-                    ? "bg-[#2b6cb0] text-white border-[#2b6cb0]"
-                    : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#2b6cb0]/40"
-                }`}
+                className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${enabledProviders.size === PROVIDERS.length
+                  ? "bg-[#2b6cb0] text-white border-[#2b6cb0]"
+                  : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#2b6cb0]/40"
+                  }`}
               >
                 <span>All Models</span>
               </button>
@@ -1322,11 +1319,10 @@ export default function VisibilityMatrixPage() {
                   <button
                     key={p.id}
                     onClick={() => toggleProvider(p.id)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                      isEnabled
-                        ? `${p.bgColor} text-white border-transparent`
-                        : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#1f3b2c]/40"
-                    }`}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${isEnabled
+                      ? `${p.bgColor} text-white border-transparent`
+                      : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#1f3b2c]/40"
+                      }`}
                   >
                     <span className="flex items-center gap-2">
                       <Image
@@ -1344,570 +1340,219 @@ export default function VisibilityMatrixPage() {
             </div>
           </div>
 
-          <p className="text-[11px] text-[#1e1b16]/40 mt-3">
-            Selector acts as legend; range controls window size.
+          {/* Bottom Row: Centered Range Selector (Time Scale) */}
+          <div className="flex justify-center mt-8 border-t border-[#e3dacb]/50 pt-6">
+            <div className="flex gap-4 border-b border-[#e3dacb]">
+              {(["day", "week", "month"] as const).map(range => (
+                <button
+                  key={range}
+                  onClick={() => setKpiRange(range)}
+                  className={`px-6 py-2 text-[11px] font-bold uppercase tracking-widest transition-all border-b-2 -mb-[2px] ${kpiRange === range
+                    ? "text-black border-black"
+                    : "text-black/30 border-transparent hover:text-black/50"
+                    }`}
+                >
+                  {range === "day" ? "Daily" : range === "week" ? "Weekly" : "Monthly"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-[10px] text-black/20 font-bold uppercase tracking-widest mt-6 text-center">
+            Legend: Select models to filter trend lines • Range: View window size
           </p>
         </div>
 
-        {/* MATRIX - CSS Grid with dotted canvas */}
-        <div
-          className="rounded-2xl border border-[#e3dacb] bg-[#fffaf2] p-6"
-          style={{
-            backgroundImage: `radial-gradient(circle, #d4c9b820 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
-          }}
-        >
-          {/* CSS Grid Matrix */}
-          <div
-            className="grid gap-2"
-            style={{
-              gridTemplateColumns: `180px repeat(${STAGES.length}, 1fr)`,
-            }}
-          >
-            {/* Row 0: Empty corner + Stage Headers */}
-            <div /> {/* Empty corner cell */}
-            {STAGES.map(stage => {
-              const isSelected = isColumnSelected(stage.id);
-              return (
-                <div
-                  key={stage.id}
-                  className={`
-                    relative text-center px-3 py-3 cursor-pointer rounded-xl transition-all group
-                    ${isSelected ? "bg-[#1f3b2c]/10" : "hover:bg-[#efe6d9]/50"}
-                  `}
-                  onClick={() => setSelection(
-                    isSelected ? { type: "all" } : { type: "column", stage: stage.id }
-                  )}
-                  onDoubleClick={() => openQueryPanel("column", undefined, stage.id)}
-                >
-                  {/* Top accent bar for column selection */}
-                  {isSelected && (
-                    <div
-                      className="absolute left-0 right-0 top-0 h-1.5 bg-[#1f3b2c] rounded-t-xl"
-                      style={{ boxShadow: '0 0 8px 2px rgba(31, 59, 44, 0.4)' }}
-                    />
-                  )}
-                  <div className="flex items-center justify-center gap-1">
-                    <span className="text-base font-medium text-[#1e1b16]">{stage.label}</span>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); openQueryPanel("column", undefined, stage.id); }}
-                      className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
-                      title="Edit queries for this stage"
-                    >
-                      <FileText className="h-3.5 w-3.5 text-[#1e1b16]/40" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // Get all results for this stage across all personas
-                        const stageResults = Object.values(matrixData)
-                          .filter(cell => cell.stage === stage.id && cell.status === "complete")
-                          .flatMap(cell => cell.results);
-                        openChat({ scope: "column", stage: stage.id }, stageResults);
-                      }}
-                      className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
-                      title="Ask about this stage"
-                    >
-                      <MessageSquare className="h-3.5 w-3.5 text-[#1e1b16]/40" />
-                    </button>
-                  </div>
-                  <div className="text-sm text-[#1e1b16]/40">{stage.description}</div>
-                </div>
-              );
-            })}
+        {/* Group Tabs and Workspace for Cohesion */}
+        <div className="mt-8">
+          <div className="flex justify-center">
+            <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
+          </div>
 
-            {/* Data Rows: Persona Label + Cells */}
-            {personas.map(persona => {
-              const rowSelected = isRowSelected(persona.id);
+          <div className="flex-1 mt-0">
+            {(() => {
+              // Transform matrixData into a format SplitViewEditor can use for the 'summary' mode
+              const cellResults: Record<string, Record<string, { visibilityScore: number; sentimentScore: number; topCompetitor?: string; winRate?: number; answerRate?: number }>> = {};
 
-              return (
-                <Fragment key={persona.id}>
-                  {/* Persona Label - Editable */}
-                  <div
-                    className={`
-                      relative px-3 py-3 rounded-xl cursor-pointer transition-all group
-                      ${rowSelected ? "bg-[#1f3b2c]/10" : "hover:bg-[#efe6d9]/50"}
-                    `}
-                    onClick={() => {
-                      if (editingPersona !== persona.id) {
-                        setSelection(
-                          rowSelected ? { type: "all" } : { type: "row", persona: persona.id }
-                        );
+              Object.keys(matrixData).forEach(key => {
+                const [pId, sId] = key.split("-") as [Persona, Stage];
+                const cell = matrixData[key];
+                if (!cellResults[pId]) cellResults[pId] = {};
+
+                const results = cell.results || [];
+                let totalSentimentScore = 0;
+                let totalResponses = 0;
+                let winCount = 0;
+                let comparisonCount = 0;
+                let recommendedCount = 0;
+                let decideCount = 0;
+
+                results.forEach(r => {
+                  r.responses?.forEach(resp => {
+                    totalResponses++;
+
+                    // Sentiment
+                    const s = resp.visibility?.sentiment;
+                    const score = s === "positive" ? 1 : s === "negative" ? -1 : 0;
+                    totalSentimentScore += score;
+
+                    // Win Rate (Compare Stage)
+                    if (sId === "compare") {
+                      comparisonCount++;
+                      if (resp.visibility?.comparisonOutcome === "favorable") {
+                        winCount++;
                       }
-                    }}
-                    onDoubleClick={() => openQueryPanel("row", persona.id)}
-                  >
-                    {/* Left accent bar for row selection */}
-                    {rowSelected && (
-                      <div
-                        className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1f3b2c] rounded-l-xl"
-                        style={{ boxShadow: '0 0 8px 2px rgba(31, 59, 44, 0.4)' }}
-                      />
-                    )}
-                    <div className="flex items-center gap-1">
-                      <span className="text-base font-medium text-[#1e1b16]">{persona.label}</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); openQueryPanel("row", persona.id); }}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
-                        title="Edit queries for this persona"
-                      >
-                        <FileText className="h-3.5 w-3.5 text-[#1e1b16]/40" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Get all results for this persona across all stages
-                          const personaResults = Object.values(matrixData)
-                            .filter(cell => cell.persona === persona.id && cell.status === "complete")
-                            .flatMap(cell => cell.results);
-                          openChat({ scope: "row", persona: persona.id }, personaResults);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
-                        title="Ask about this persona"
-                      >
-                        <MessageSquare className="h-3.5 w-3.5 text-[#1e1b16]/40" />
-                      </button>
-                    </div>
-                    {editingPersona === persona.id ? (
-                      <div className="flex items-center gap-1 mt-1">
-                        <input
-                          type="text"
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && savePersonaEdit()}
-                          className="flex-1 text-xs bg-white border border-[#e3dacb] rounded px-1.5 py-0.5 text-[#1e1b16] focus:outline-none focus:ring-1 focus:ring-[#1f3b2c]"
-                          autoFocus
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <button
-                          onClick={(e) => { e.stopPropagation(); savePersonaEdit(); }}
-                          className="p-0.5 hover:bg-[#d4e5d4] rounded"
-                        >
-                          <Check className="h-3 w-3 text-[#3b5a3b]" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm text-[#1e1b16]/50">{persona.description}</span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); startEditingPersona(persona); }}
-                          className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#efe6d9] rounded transition-opacity"
-                        >
-                          <Pencil className="h-3.5 w-3.5 text-[#1e1b16]/40" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                    }
 
-                  {/* Matrix Cells */}
-                  {STAGES.map(stage => {
-                    const cellKey = `${persona.id}-${stage.id}`;
-                    const cell = matrixData[cellKey];
-                    const cellSelected = selection.type === "cell" && selection.persona === persona.id && selection.stage === stage.id;
-                    const inSelection = isInSelection(persona.id, stage.id);
-                    const cellQueries = localQueryBank[persona.id][stage.id];
+                    // Answer Rate (Decide Stage)
+                    if (sId === "decide") {
+                      decideCount++;
+                      if (resp.visibility?.recommendationStrength && resp.visibility.recommendationStrength !== "none") {
+                        recommendedCount++;
+                      }
+                    }
+                  });
+                });
 
-                    return (
-                      <HoverCard key={stage.id} openDelay={300}>
-                        <HoverCardTrigger asChild>
-                          <div
-                            onClick={() => {
-                              if (cell?.status === "idle" && !isRunning) {
-                                runCellsBenchmark([cellKey], true);
-                              } else {
-                                setSelection({ type: "cell", persona: persona.id, stage: stage.id });
-                              }
-                            }}
-                            className={`
-                              rounded-xl transition-all cursor-pointer
-                              ${inSelection ? "ring-2 ring-[#1f3b2c]/30 ring-inset" : ""}
-                              hover:scale-[1.02]
-                            `}
-                          >
-                            <StageCell
-                              stage={stage.id}
-                              metrics={cell?.stageMetrics ?? {}}
-                              mentionRate={cell?.mentionRate}
-                              queryCount={cellQueries.intents.length}
-                              isComplete={cell?.status === "complete"}
-                              isRunning={cell?.status === "running"}
-                              selected={cellSelected}
-                            />
-                          </div>
-                        </HoverCardTrigger>
-                        <HoverCardContent
-                          className="w-72 bg-[#fffaf2] border-[#e3dacb]"
-                          side="bottom"
-                          align="center"
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-[#1e1b16]">
-                                {persona.label} × {stage.label}
-                              </span>
-                              <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/60">
-                                {cellQueries.intents.length} intents
-                              </Badge>
-                            </div>
-                            <div className="space-y-1 max-h-24 overflow-y-auto">
-                              {cellQueries.intents.slice(0, 5).map((intent, idx) => (
-                                <div key={idx} className="text-xs text-[#1e1b16]/70 flex gap-1">
-                                  <span className="text-[#1e1b16]/30">•</span>
-                                  <span className="line-clamp-1">&quot;{intent.text}&quot;</span>
-                                </div>
-                              ))}
-                              {cellQueries.intents.length > 5 && (
-                                <div className="text-xs text-[#1e1b16]/40">
-                                  +{cellQueries.intents.length - 5} more...
-                                </div>
-                              )}
-                            </div>
-                            <div className="pt-2 border-t border-[#e3dacb] flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="flex-1 h-7 text-xs border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openQueryPanel("cell", persona.id, stage.id);
-                                }}
-                              >
-                                <FileText className="h-3 w-3 mr-1" />
-                                Queries
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="flex-1 h-7 text-xs border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openChat({ scope: "cell", persona: persona.id, stage: stage.id }, cell.results);
-                                }}
-                              >
-                                <MessageSquare className="h-3 w-3 mr-1" />
-                                Ask
-                              </Button>
-                              <Button
-                                size="sm"
-                                className="h-7 text-xs bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white px-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  runCellsBenchmark([cellKey], false);
-                                }}
-                              >
-                                <Play className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        </HoverCardContent>
-                      </HoverCard>
-                    );
-                  })}
-                </Fragment>
+                const avgSentiment = totalResponses > 0 ? totalSentimentScore / totalResponses : 0;
+
+                // Find top competitor
+                const compCounts: Record<string, number> = {};
+                results.forEach(r => {
+                  r.responses?.forEach(resp => {
+                    const comps = resp.visibility?.competitorsMentioned || [];
+                    comps.forEach((c: string) => {
+                      compCounts[c] = (compCounts[c] || 0) + 1;
+                    });
+                  });
+                });
+                const topComp = Object.entries(compCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+
+                cellResults[pId][sId] = {
+                  visibilityScore: cell.avgScore || 0,
+                  sentimentScore: avgSentiment,
+                  topCompetitor: topComp,
+                  winRate: comparisonCount > 0 ? winCount / comparisonCount : 0,
+                  answerRate: decideCount > 0 ? recommendedCount / decideCount : 0
+                };
+              });
+
+              return (
+                <SplitViewEditor
+                  activeTab={viewMode as "summary" | "intents" | "queries"}
+                  personas={personas}
+                  stages={STAGES}
+                  queryBank={localQueryBank}
+                  cellResults={cellResults}
+                  onSelectCell={(persona, stage) => {
+                    setSelectedCell({ persona, stage });
+                    if (viewMode === "summary") {
+                      setInsightModalOpen(true);
+                    } else {
+                      setIntentEditorOpen(true);
+                    }
+                  }}
+                  onShowAll={() => setViewMode("summary")}
+                  onGenerateAll={async (mode) => {
+                    if (mode === "intents") {
+                      // Generate default Research Objectives for any empty cells
+                      const emptyCells: { persona: Persona, stage: Stage }[] = [];
+                      Object.entries(localQueryBank).forEach(([pId, stages]) => {
+                        Object.entries(stages).forEach(([sId, data]) => {
+                          if (data.intents.length === 0) {
+                            emptyCells.push({ persona: pId as Persona, stage: sId as Stage });
+                          }
+                        });
+                      });
+
+                      if (emptyCells.length === 0) {
+                        alert("All cells already have research objectives.");
+                        return;
+                      }
+
+                      if (!confirm(`Generate baseline research objectives for ${emptyCells.length} empty cells?`)) return;
+
+                      const newBank = { ...localQueryBank };
+                      emptyCells.forEach(cell => {
+                        const baselineText = {
+                          explore: `Analyze macro-level research and initial curiosity for ${personas.find(p => p.id === cell.persona)?.label} during the broad discovery phase.`,
+                          consider: `Evaluate specific lifestyle fit, community amenities, and long-term suitability for ${personas.find(p => p.id === cell.persona)?.label}.`,
+                          compare: `Directly compare financial trade-offs, CDD fees, and specific village logistics for ${personas.find(p => p.id === cell.persona)?.label}.`,
+                          decide: `Address final transactional hurdles, closing costs, and immediate life integration logistics for ${personas.find(p => p.id === cell.persona)?.label}.`
+                        }[cell.stage];
+
+                        newBank[cell.persona][cell.stage].intents.push({
+                          id: `intent-${cell.persona}-${cell.stage}-${Date.now()}`,
+                          text: baselineText || `Research intent for ${cell.persona} at ${cell.stage} stage.`,
+                          role: "cpo",
+                          queryStyle: 0.75,
+                          generatedQueries: [],
+                        });
+                      });
+
+                      setLocalQueryBank(newBank);
+                      persistQueryBank(newBank);
+                      alert("Research objectives seeded!");
+                    } else {
+                      // Generate Queries mode
+                      const cellsToProcess: { persona: Persona, stage: Stage, intent: IntentNode }[] = [];
+
+                      Object.entries(localQueryBank).forEach(([pId, stages]) => {
+                        Object.entries(stages).forEach(([sId, data]) => {
+                          data.intents.forEach(intent => {
+                            if (!intent.generatedQueries || intent.generatedQueries.length === 0) {
+                              cellsToProcess.push({
+                                persona: pId as Persona,
+                                stage: sId as Stage,
+                                intent
+                              });
+                            }
+                          });
+                        });
+                      });
+
+                      if (cellsToProcess.length === 0) {
+                        alert("All intents already have queries.");
+                        return;
+                      }
+
+                      if (!confirm(`Generate queries for ${cellsToProcess.length} intents?`)) return;
+
+                      for (const item of cellsToProcess) {
+                        try {
+                          const resp = await fetch("/api/intents/generate", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              persona: item.persona,
+                              stage: item.stage,
+                              intent: item.intent.text,
+                              role: item.intent.role,
+                              queryStyle: item.intent.queryStyle,
+                            }),
+                          });
+
+                          if (resp.ok) {
+                            const data = await resp.json();
+                            const newBank = { ...localQueryBank };
+                            const targetIntent = newBank[item.persona][item.stage].intents.find(i => i.id === item.intent.id);
+                            if (targetIntent) {
+                              targetIntent.generatedQueries = data.queries;
+                              setLocalQueryBank({ ...newBank });
+                            }
+                          }
+                        } catch (err) {
+                          console.error("Failed to generate for cell:", err);
+                        }
+                      }
+                      persistQueryBank(localQueryBank);
+                      alert("Generation complete!");
+                    }
+                  }}
+                />
               );
-            })}
+            })()}
           </div>
-
-          {/* Legend */}
-          <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-[#e3dacb]/50 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-lg bg-[#d4e5d4]" />
-              <span className="text-[#1e1b16]/60">Strong (60%+)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-lg bg-[#efe6d9]" />
-              <span className="text-[#1e1b16]/60">Moderate</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-lg bg-[#f5e6d3]" />
-              <span className="text-[#1e1b16]/60">Weak</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-lg bg-[#f0d9d9]" />
-              <span className="text-[#1e1b16]/60">Blind Spot</span>
-            </div>
-          </div>
-        </div>
-
-        {/* DETAIL PANEL - Stats, Insights, Competitors */}
-        <div className="grid grid-cols-12 gap-4">
-          {/* Stats Card */}
-          <div className="col-span-4">
-            <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none h-full">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base font-medium text-[#1e1b16]">
-                    {selectionLabel}
-                  </CardTitle>
-                  <span className="text-xs text-[#1e1b16]/50">{queryCount} queries</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {overallStats ? (
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-[#efe6d9] rounded-xl p-3 text-center">
-                      <div className="text-2xl font-semibold text-[#1f3b2c]">
-                        {(overallStats.avgScore * 100).toFixed(0)}%
-                      </div>
-                      <div className="text-xs text-[#1e1b16]/50">Score</div>
-                    </div>
-                    <div className="bg-[#efe6d9] rounded-xl p-3 text-center">
-                      <div className="text-2xl font-semibold text-[#1f3b2c]">
-                        {(overallStats.avgMentionRate * 100).toFixed(0)}%
-                      </div>
-                      <div className="text-xs text-[#1e1b16]/50">Mentioned</div>
-                    </div>
-                    <div className="bg-[#f0d9d9] rounded-xl p-3 text-center">
-                      <div className="text-2xl font-semibold text-[#8b4a4a]">
-                        {overallStats.blindSpots}
-                      </div>
-                      <div className="text-xs text-[#1e1b16]/50">Blind Spots</div>
-                    </div>
-                    <div className="bg-[#d4e5d4] rounded-xl p-3 text-center">
-                      <div className="text-2xl font-semibold text-[#3b5a3b]">
-                        {overallStats.totalCells}
-                      </div>
-                      <div className="text-xs text-[#1e1b16]/50">Complete</div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-sm text-[#1e1b16]/40 text-center py-4">
-                    Run benchmark to see stats
-                  </div>
-                )}
-
-                {selectedCellsData.length > 0 && (
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
-                    onClick={() => setDeepDiveOpen(true)}
-                  >
-                    Deep Dive
-                    <ChevronRight className="h-4 w-4 ml-2" />
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Stage Insights - Adaptive & Clickable */}
-          <div className="col-span-4">
-            <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
-                  <span>
-                    {stageInsights.targetStage === "explore" && "Position Distribution"}
-                    {stageInsights.targetStage === "consider" && "Sentiment Analysis"}
-                    {stageInsights.targetStage === "compare" && "Win Rate"}
-                    {stageInsights.targetStage === "decide" && "Recommendation Strength"}
-                    {!stageInsights.targetStage && "Stage Insights"}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {displayInsights.totalResponses === 0 ? (
-                  <div className="text-sm text-[#1e1b16]/40 text-center py-4">
-                    {stageInsights.targetStage
-                      ? "Run benchmark to see insights"
-                      : "Select a stage column for insights"}
-                  </div>
-                ) : stageInsights.targetStage === "explore" ? (
-                  /* EXPLORE: Position Distribution - Clickable */
-                  <button
-                    onClick={() => setEvidenceModal(buildPositionEvidence())}
-                    className="w-full text-left rounded-lg p-2 -m-2 transition-colors hover:bg-[#efe6d9]/50 cursor-pointer group"
-                  >
-                    <div className="space-y-2">
-                      {(["1st", "2nd", "3rd", "later", "absent"] as const).map(pos => {
-                        const count = displayInsights.positionCounts[pos];
-                        const pct = displayInsights.totalResponses > 0 ? count / displayInsights.totalResponses : 0;
-                        return (
-                          <div key={pos} className="flex items-center gap-2">
-                            <span className="text-xs text-[#1e1b16]/60 w-12">{pos}</span>
-                            <div className="flex-1 h-2 bg-[#efe6d9] rounded-full overflow-hidden">
-                              <div
-                                className={`h-full rounded-full transition-all duration-300 ${pos === "1st" ? "bg-[#1f3b2c]" : pos === "absent" ? "bg-[#8b4a4a]" : "bg-[#6e7c5b]"}`}
-                                style={{ width: `${pct * 100}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-[#1e1b16]/50 w-6 text-right">{count}</span>
-                          </div>
-                        );
-                      })}
-                      <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 mt-3 pt-2 border-t border-[#e3dacb]">
-                        <span>First mention in {(displayInsights.firstRate * 100).toFixed(0)}% of responses</span>
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </div>
-                  </button>
-                ) : stageInsights.targetStage === "consider" ? (
-                  /* CONSIDER: Sentiment Gauge - Clickable with Slider */
-                  <button
-                    onClick={() => setEvidenceModal(buildSentimentEvidence())}
-                    className="w-full text-left hover:bg-[#efe6d9]/50 rounded-lg p-2 -m-2 transition-colors cursor-pointer group"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-[#8b4a4a]">Negative</span>
-                        <span className="text-xs text-[#1e1b16]/40">Neutral</span>
-                        <span className="text-xs text-[#3b5a3b]">Positive</span>
-                      </div>
-                      <div className="relative">
-                        <div className="absolute inset-0 h-1.5 mt-[7px] bg-gradient-to-r from-[#f0d9d9] via-[#efe6d9] to-[#d4e5d4] rounded-full" />
-                        <Slider
-                          value={[Math.round((displayInsights.sentimentScore + 1) * 50)]}
-                          min={0}
-                          max={100}
-                          disabled
-                          className="relative [&_[data-slot=slider-track]]:bg-transparent [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-thumb]]:bg-[#1f3b2c] [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:shadow-md [&_[data-slot=slider-thumb]]:w-4 [&_[data-slot=slider-thumb]]:h-4"
-                        />
-                      </div>
-                      <div className="flex justify-between text-xs text-[#1e1b16]/50">
-                        <span>Pos: {stageInsights.sentimentCounts.positive}</span>
-                        <span>Neut: {stageInsights.sentimentCounts.neutral}</span>
-                        <span>Neg: {stageInsights.sentimentCounts.negative}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 pt-2 border-t border-[#e3dacb]">
-                        <span>
-                          {displayInsights.sentimentScore > 0.3 ? "Generally favorable" :
-                            displayInsights.sentimentScore < -0.3 ? "Generally unfavorable" : "Mixed sentiment"}
-                        </span>
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </div>
-                  </button>
-                ) : stageInsights.targetStage === "compare" ? (
-                  /* COMPARE: Win Rate - Clickable */
-                  <button
-                    onClick={() => setEvidenceModal(buildWinRateEvidence())}
-                    className="w-full text-left hover:bg-[#efe6d9]/50 rounded-lg p-2 -m-2 transition-colors cursor-pointer group"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-4 bg-[#efe6d9] rounded-full overflow-hidden flex">
-                          <div
-                            className="h-full bg-[#3b5a3b] transition-all duration-300"
-                            style={{ width: `${displayInsights.winRate * 100}%` }}
-                          />
-                          <div
-                            className="h-full bg-[#8b4a4a] transition-all duration-300"
-                            style={{ width: `${(1 - displayInsights.winRate) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-semibold text-[#1e1b16]">
-                          {(displayInsights.winRate * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-xs text-[#1e1b16]/50">
-                        <span className="text-[#3b5a3b]">Favorable: {stageInsights.comparisonCounts.favorable}</span>
-                        <span className="text-[#8b4a4a]">Unfavorable: {stageInsights.comparisonCounts.unfavorable}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 pt-2 border-t border-[#e3dacb]">
-                        <span>
-                          {displayInsights.winRate >= 0.6 ? "Favored in comparisons" :
-                            displayInsights.winRate <= 0.4 ? "Losing head-to-head" : "Mixed outcomes"}
-                        </span>
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </div>
-                  </button>
-                ) : stageInsights.targetStage === "decide" ? (
-                  /* DECIDE: Recommendation Strength - Clickable */
-                  <button
-                    onClick={() => setEvidenceModal(buildRecommendationEvidence())}
-                    className="w-full text-left hover:bg-[#efe6d9]/50 rounded-lg p-2 -m-2 transition-colors cursor-pointer group"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex justify-center gap-1">
-                        {[1, 2, 3, 4, 5].map(i => {
-                          const strongPct = stageInsights.totalRecs > 0 ? stageInsights.recCounts.strong / stageInsights.totalRecs : 0;
-                          const modPct = stageInsights.totalRecs > 0 ? stageInsights.recCounts.moderate / stageInsights.totalRecs : 0;
-                          const filled = (strongPct + modPct * 0.6) * 5 >= i;
-                          return (
-                            <div
-                              key={i}
-                              className={`w-6 h-6 rounded-full ${filled ? "bg-[#1f3b2c]" : "bg-[#efe6d9]"}`}
-                            />
-                          );
-                        })}
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs text-[#1e1b16]/50">
-                        <div>Strong: {stageInsights.recCounts.strong}</div>
-                        <div>Moderate: {stageInsights.recCounts.moderate}</div>
-                        <div>Weak: {stageInsights.recCounts.weak}</div>
-                        <div>None: {stageInsights.recCounts.none}</div>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-[#1e1b16]/50 pt-2 border-t border-[#e3dacb]">
-                        <span>
-                          {stageInsights.recCounts.strong > stageInsights.recCounts.weak ? "Actively recommended" :
-                            stageInsights.recCounts.none > stageInsights.totalRecs / 2 ? "Rarely recommended" : "Moderately endorsed"}
-                        </span>
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </div>
-                  </button>
-                ) : (
-                  /* Default: Summary */
-                  <div className="text-sm text-[#1e1b16]/40 text-center py-4">
-                    Select a stage column for stage-specific insights
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Competitors - Clickable */}
-          <div className="col-span-4">
-            <Card className="bg-[#fffaf2] border-[#e3dacb] shadow-none h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-[#1e1b16] flex items-center gap-2">
-                  <span>Top Competitors</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {displayCompetitors.length > 0 ? (
-                  <div className="space-y-2">
-                    {displayCompetitors.map(([name, count], idx) => (
-                      <button
-                        key={name}
-                        onClick={() => setEvidenceModal(buildCompetitorEvidence(name))}
-                        className="w-full flex items-center gap-3 rounded-lg p-1.5 -mx-1.5 transition-colors hover:bg-[#efe6d9]/50 cursor-pointer group"
-                      >
-                        <div className="flex-1">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-[#1e1b16]">
-                              {name}
-                            </span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-[#1e1b16]/50">{count}</span>
-                              <ChevronRight className="h-3 w-3 text-[#1e1b16]/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                          </div>
-                          <div className="h-1.5 bg-[#efe6d9] rounded-full mt-1 overflow-hidden">
-                            <div
-                              className="h-full bg-[#7c6b7c] rounded-full transition-all duration-300"
-                              style={{ width: `${(count / displayCompetitors[0][1]) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-sm text-[#1e1b16]/40 text-center py-4">
-                    Run benchmark to see competitors
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-        </div>
-
-        {/* Query Bank Info */}
-        <div className="flex items-center justify-center gap-2 text-xs text-[#1e1b16]/50">
-          <Lightbulb className="h-3.5 w-3.5 text-[#b86f3a]" />
-          <span>Queries sourced from Reddit, Quora, City-Data (2024-2025)</span>
         </div>
       </div>
 
@@ -1984,7 +1629,6 @@ export default function VisibilityMatrixPage() {
                 variant="outline"
                 className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
                 onClick={() => {
-                  // Get all results from currently selected cells
                   const selectedResults = selectedCellsData.flatMap(cell => cell.results);
                   setEvidenceModal(null);
                   openChat({ scope: "evidence", evidenceType: evidenceModal?.type }, selectedResults);
@@ -2037,76 +1681,127 @@ export default function VisibilityMatrixPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Query Panel V2 */}
-      <QueryPanelV2
-        key={`${queryPanelScope}-${queryPanelPersona ?? "all"}-${queryPanelStage ?? "all"}-${queryPanelOpen ? "open" : "closed"}`}
-        open={queryPanelOpen}
-        onOpenChange={setQueryPanelOpen}
-        initialScope={queryPanelScope}
-        initialPersona={queryPanelPersona}
-        initialStage={queryPanelStage}
-        queryBank={localQueryBank}
-        personas={personas.map(p => ({ id: p.id, label: p.label }))}
-        stages={STAGES.map(s => ({ id: s.id, label: s.label }))}
-        onRegenerateQueries={async (persona, stage, intent, role, queryStyle) => {
-          const resp = await fetch("/api/intents/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              persona,
-              stage,
-              intent,
-              role,
-              queryStyle,
-            }),
-          });
 
-          if (!resp.ok) throw new Error("Failed to regenerate queries");
-          const data = await resp.json();
-          return data.queries;
-        }}
-        onRunQueries={async (_queries, persona, stage, queryBankOverride) => {
-          try {
-            if (queryBankOverride) {
-              await persistQueryBank(queryBankOverride);
-            }
+      {/* Focus Mode Editor */}
 
-            let cellKeys: string[] = [];
-            if (persona && stage) {
-              cellKeys = [`${persona}-${stage}`];
-            } else if (persona) {
-              cellKeys = STAGES.map((s) => `${persona}-${s.id}`);
-            } else if (stage) {
-              cellKeys = personas.map((p) => `${p.id}-${stage}`);
-            } else {
-              cellKeys = Object.keys(Object.keys(matrixData).length > 0 ? matrixData : initializeMatrix());
-            }
-
-            await runCellsBenchmark(cellKeys, false);
-          } catch (err) {
-            console.error("Query run failed:", err);
-          }
-        }}
-        onSaveQueries={async (newQueryBank) => {
-          try {
-            await persistQueryBank(newQueryBank);
-            setMatrixData((prev) => {
-              const updated = { ...prev };
-              for (const key of Object.keys(updated)) {
-                const [persona, stage] = key.split("-") as [Persona, Stage];
-                const entry = newQueryBank[persona][stage];
-                updated[key] = {
-                  ...updated[key],
-                  intents: entry.intents,
-                };
+      {
+        selectedCell && (
+          <IntentEditorModal
+            open={intentEditorOpen}
+            onClose={() => setIntentEditorOpen(false)}
+            defaultTab={viewMode === "queries" ? "queries" : "intents"}
+            persona={selectedCell.persona}
+            stage={selectedCell.stage}
+            personas={personas}
+            stages={STAGES}
+            cellStatus={cellStatus}
+            onSelectCell={(p, s) => setSelectedCell({ persona: p, stage: s })}
+            intents={localQueryBank[selectedCell.persona][selectedCell.stage].intents}
+            queries={Object.fromEntries(
+              localQueryBank[selectedCell.persona][selectedCell.stage].intents.map(i => [i.id, i.generatedQueries || []])
+            )}
+            onIntentChange={(updatedIntent) => {
+              const newBank = { ...localQueryBank };
+              newBank[selectedCell.persona][selectedCell.stage].intents = newBank[selectedCell.persona][selectedCell.stage].intents.map(i =>
+                i.id === updatedIntent.id ? updatedIntent : i
+              );
+              setLocalQueryBank(newBank);
+              persistQueryBank(newBank);
+            }}
+            onIntentDelete={(intentId) => {
+              const newBank = { ...localQueryBank };
+              newBank[selectedCell.persona][selectedCell.stage].intents = newBank[selectedCell.persona][selectedCell.stage].intents.filter(
+                i => i.id !== intentId
+              );
+              setLocalQueryBank(newBank);
+              persistQueryBank(newBank);
+            }}
+            onIntentAdd={(text, role, style) => {
+              const newBank = { ...localQueryBank };
+              const newIntent: IntentNode = {
+                id: `new_${Date.now()}`,
+                text,
+                role,
+                queryStyle: style,
+                generatedQueries: [],
+              };
+              newBank[selectedCell.persona][selectedCell.stage].intents.push(newIntent);
+              setLocalQueryBank(newBank);
+              persistQueryBank(newBank);
+            }}
+            onQueryChange={(intentId, queryIndex, text) => {
+              const newBank = { ...localQueryBank };
+              const intent = newBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              if (intent) {
+                const newQueries = [...(intent.generatedQueries || [])];
+                newQueries[queryIndex] = text;
+                intent.generatedQueries = newQueries;
+                setLocalQueryBank(newBank);
+                persistQueryBank(newBank);
               }
-              return updated;
-            });
-          } catch (err) {
-            console.error("Failed to save queries:", err);
-          }
-        }}
-      />
+            }}
+            onQueryDelete={(intentId, queryIndex) => {
+              const newBank = { ...localQueryBank };
+              const intent = newBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              if (intent) {
+                intent.generatedQueries = (intent.generatedQueries || []).filter((_, i) => i !== queryIndex);
+                setLocalQueryBank(newBank);
+                persistQueryBank(newBank);
+              }
+            }}
+            onQueryAdd={(intentId) => {
+              const newBank = { ...localQueryBank };
+              const intent = newBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              if (intent) {
+                intent.generatedQueries = [...(intent.generatedQueries || []), ""];
+                setLocalQueryBank(newBank);
+                persistQueryBank(newBank);
+              }
+            }}
+            onQueryRegenerate={async (intentId) => {
+              const intent = localQueryBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              if (!intent) return [];
+
+              const resp = await fetch("/api/intents/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  persona: selectedCell.persona,
+                  stage: selectedCell.stage,
+                  intent: intent.text,
+                  role: intent.role,
+                  queryStyle: intent.queryStyle,
+                }),
+              });
+
+              if (!resp.ok) throw new Error("Failed to generate queries");
+              const data = await resp.json();
+
+              const newBank = { ...localQueryBank };
+              newBank[selectedCell.persona][selectedCell.stage].intents = newBank[selectedCell.persona][selectedCell.stage].intents.map(
+                (i) => (i.id === intentId ? { ...i, generatedQueries: data.queries } : i)
+              );
+              setLocalQueryBank(newBank);
+              persistQueryBank(newBank);
+
+              return data.queries;
+            }}
+          />
+        )
+      }
+
+      {selectedCell && (
+        <InsightModal
+          open={insightModalOpen}
+          onClose={() => setInsightModalOpen(false)}
+          persona={selectedCell.persona}
+          stage={selectedCell.stage}
+          personaLabel={personas.find(p => p.id === selectedCell.persona)?.label || ""}
+          stageLabel={STAGES.find(s => s.id === selectedCell.stage)?.label || ""}
+          results={matrixData[`${selectedCell.persona}-${selectedCell.stage}`]?.results || []}
+          brand={BRAND}
+        />
+      )}
 
       {/* Chat Panel */}
       <ChatPanel
@@ -2115,36 +1810,8 @@ export default function VisibilityMatrixPage() {
         context={chatContext}
       />
 
-      {/* Intent Library Modal */}
-      {intentLibrary && (
-        <IntentLibraryModal
-          open={intentLibraryModalOpen}
-          onOpenChange={setIntentLibraryModalOpen}
-          intentLibrary={intentLibrary}
-          queryBank={localQueryBank}
-          onSave={saveIntentLibrary}
-          onRegenerateQueries={async (persona, stage, intentId) => {
-            const intent = intentLibrary.intents.find((i) => i.id === intentId);
-            if (!intent) return [];
-
-            const resp = await fetch("/api/intents/generate", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                persona,
-                stage,
-                intent: intent.text,
-                role: intent.role,
-                queryStyle: intent.queryStyle,
-              }),
-            });
-
-            if (!resp.ok) throw new Error("Failed to regenerate queries");
-            const data = await resp.json();
-            return data.queries;
-          }}
-        />
-      )}
+      {/* Global Progress Bar */}
+      <GlobalProgressBar externalState={progressState} autoHideDelay={4000} />
     </div>
   );
 }

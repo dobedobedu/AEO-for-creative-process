@@ -4,10 +4,10 @@ Design language and UX patterns for the AI Visibility Baseline app.
 
 ## Core Principles
 
-1. **Full-screen modals**: Modals use `w-[95vw] h-[90vh]` to maximize usable space
-2. **Flat, spreadsheet-like UI**: Tables and data grids over nested accordions
-3. **Inline editing**: Direct click-to-type, auto-save on blur (no edit/save button patterns)
-4. **Minimal chrome**: Reduce visual noise, let data breathe
+1. **Full-screen modals**: Modals use `w-[95vw] h-[90vh]` to maximize usable space.
+2. **Side-by-side Integrated Chat**: Critical insights should always be paired with a chat interface for immediate auditing.
+3. **Architectural Aesthetic**: Prefer hard edges, standard spacing, and underlined navigation over rounded pills and buttons.
+4. **Minimal chrome**: Reduce visual noise; if a metric doesn't drive a decision (like internal counts), hide it.
 
 ## Color Palette
 
@@ -97,14 +97,17 @@ Design language and UX patterns for the AI Visibility Baseline app.
 <Badge variant="outline" className="text-xs">v49</Badge>
 ```
 
-### Tabs
+### Tabs / Navigation
+
+Don't use button groups or pills for primary navigation filters. Use the "Matrix Tab" style:
+- Underlined when active (2px border-b)
+- Light gray text when inactive
+- Uppercase, high-tracking typography (`tracking-widest`)
 
 ```tsx
-<button className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-  active
-    ? "bg-white border border-b-0 border-[#e3dacb] text-[#1e1b16]"
-    : "text-[#1e1b16]/60 hover:text-[#1e1b16] hover:bg-[#f6f1e8]"
-}`}>
+<button className={`pb-4 text-[10px] font-bold uppercase tracking-widest ${active ? "text-black border-b-2 border-black" : "text-black/30"}`}>
+  METRIC NAME
+</button>
 ```
 
 ## UX Patterns

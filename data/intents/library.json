@@ -1,6 +1,6 @@
 {
-  "version": 49,
-  "updatedAt": "2026-01-06T15:10:13.979Z",
+  "version": 78,
+  "updatedAt": "2026-01-19T16:46:27.234Z",
   "intents": [
     {
       "id": "int_move_up_explore_mk189ge5",
@@ -16,6 +16,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "best neighborhoods for families in Southwest Florida",
+        "new construction homes Sarasota Bradenton area",
+        "CDD fees and HOA rules in Florida communities",
+        "family-friendly Florida communities with good schools",
+        "hurricane insurance and flood zones in Southwest Florida"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -31,6 +38,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Best master-planned communities in Sarasota-Bradenton area for families with good schools",
+        "Lakewood Ranch schools rating and family-friendly neighborhoods",
+        "Top-rated schools near Waterside and Cresswind communities in Southwest Florida",
+        "Family-oriented communities in Lakewood Ranch with low CDD fees and good schools",
+        "Comparing Del Webb and Country Club East schools and amenities for families"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -46,6 +60,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Lakewood Ranch vs The Villages schools and family amenities",
+        "Best Southwest Florida communities for families with good schools",
+        "Lakewood Ranch family lifestyle compared to Wellen Park",
+        "Top rated schools in Lakewood Ranch vs The Villages Waterside",
+        "Family-friendly neighborhoods in Sarasota-Bradenton area"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -60,6 +81,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Lakewood Ranch family-friendly neighborhoods with good schools",
+        "Pros and cons of CDD fees in Lakewood Ranch communities",
+        "Best Lakewood Ranch villages for growing families with kids",
+        "Hurricane insurance costs in Sarasota-Bradenton area",
+        "Lakewood Ranch HOA rules and amenities for families"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -75,6 +103,13 @@
       ],
       "role": "family_unit",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "best 55+ communities in Southwest Florida with healthcare access",
+        "affordable active adult communities Sarasota Bradenton area",
+        "what to know about CDD fees and HOAs in Florida retirement villages",
+        "top-rated Florida retirement communities with vibrant social activities",
+        "how to evaluate hurricane and flood risks in Southwest Florida neighborhoods"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -90,6 +125,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "best 55+ communities in Sarasota Bradenton area with healthcare access",
+        "Lakewood Ranch active adult communities pros and cons",
+        "Cresswind vs Del Webb Southwest Florida comparison",
+        "CDD fees and HOA rules in Waterside Lakewood Ranch",
+        "hurricane insurance and flood zones in Country Club East"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -105,6 +147,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Lakewood Ranch vs The Villages 55+ communities pros and cons",
+        "CDD fees and HOA costs comparison Lakewood Ranch Wellen Park",
+        "Best Southwest Florida retirement communities with on-site healthcare",
+        "Hurricane insurance rates in Lakewood Ranch vs Wellen Park",
+        "Active adult communities near Sarasota with pickleball and pools"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -119,6 +168,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Lakewood Ranch 55+ communities pros and cons 2024",
+        "Comparing CDD fees in Waterside vs Cresswind Lakewood Ranch",
+        "Best real estate agents for Lakewood Ranch active adult communities",
+        "Hurricane insurance costs and flood zones in Lakewood Ranch FL",
+        "HOA rules and amenities in Del Webb Lakewood Ranch vs Country Club East"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -134,6 +190,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Best luxury gated communities in Southwest Florida",
+        "Top-rated golf course communities near Sarasota",
+        "High-end Florida neighborhoods with resort-style amenities",
+        "Exclusive Florida communities with private beach access",
+        "Luxury homes in Southwest Florida with low HOA fees"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -149,6 +212,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Best luxury golf communities in Sarasota Bradenton area",
+        "Lakewood Ranch Waterside vs Country Club East amenities comparison",
+        "CDD fees and HOA rules in Southwest Florida luxury communities",
+        "How flood zones and hurricane insurance impact luxury home values in Sarasota",
+        "Top cultural amenities near Lakewood Ranch for high-net-worth buyers"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -164,6 +234,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Lakewood Ranch vs The Villages luxury amenities comparison",
+        "Country club membership costs in Southwest Florida",
+        "High-end homes in Lakewood Ranch vs Wellen Park",
+        "CDD fees and HOA rules in Lakewood Ranch communities",
+        "Best golf course communities in Sarasota-Bradenton area"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -178,6 +255,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Best luxury homes in Lakewood Ranch with premium amenities",
+        "Lakewood Ranch Waterside vs Cresswind: which has better resale value?",
+        "CDD fees and HOA rules for Lakewood Ranch Country Club East",
+        "Hurricane and flood insurance costs for luxury homes in Sarasota area",
+        "Top real estate agents specializing in Lakewood Ranch luxury properties"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -193,6 +277,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "affordable homes for first-time buyers in Sarasota FL",
+        "best neighborhoods for budget-conscious buyers in Bradenton FL",
+        "how to find affordable houses in Southwest Florida",
+        "first-time homebuyer programs Florida Sarasota area",
+        "tips for buying a house in Florida with low budget"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -208,6 +299,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "What are CDD fees in Lakewood Ranch and how do they impact my budget?",
+        "Average hurricane insurance costs in Sarasota FL for a first-time homebuyer",
+        "Are there hidden HOA fees in Waterside at Lakewood Ranch?",
+        "Flood zone map Bradenton FL and its effect on home insurance",
+        "Total monthly costs for owning a home in Cresswind vs Del Webb Lakewood Ranch"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -223,6 +321,13 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Pros and cons of new construction vs existing homes in Lakewood Ranch",
+        "Are CDD fees higher for new homes in Lakewood Ranch vs existing homes?",
+        "Hurricane insurance costs comparison: new vs existing homes in Southwest Florida",
+        "HOA rules differences: Lakewood Ranch new construction vs existing homes",
+        "Flood zone risks in Lakewood Ranch: new developments vs older neighborhoods"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
       "active": true
     },
@@ -237,7 +342,41 @@
       ],
       "role": "cpo",
       "queryStyle": 0.75,
+      "generatedQueries": [
+        "Lakewood Ranch first-time homebuyer programs 2024",
+        "How much are CDD fees in Waterside at Lakewood Ranch?",
+        "Best real estate agents for first-time buyers in Sarasota",
+        "Lakewood Ranch HOA rules and restrictions for buyers",
+        "Closing cost estimates for homes under $400k in Bradenton"
+      ],
       "createdAt": "2026-01-05T14:00:01.085Z",
+      "active": true
+    },
+    {
+      "id": "int_move_up_consider_mkl22483",
+      "persona": "move_up",
+      "stage": "consider",
+      "text": "New intent - click to edit",
+      "role": "cpo",
+      "queryStyle": 0.75,
+      "createdAt": "2026-01-19T11:01:44.547Z",
+      "active": false
+    },
+    {
+      "id": "int_move_up_decide_mkl92gnm",
+      "persona": "move_up",
+      "stage": "decide",
+      "text": "family trying to figure out the payment plan",
+      "role": "family_unit",
+      "queryStyle": 0.85,
+      "generatedQueries": [
+        "Lakewood Ranch new construction payment plans for families",
+        "how much down payment needed for Lakewood Ranch home",
+        "Lakewood Ranch mortgage options with good schools",
+        "CDD fees and property taxes in Lakewood Ranch villages",
+        "best lenders for first-time move-up buyers in Sarasota"
+      ],
+      "createdAt": "2026-01-19T14:17:57.970Z",
       "active": true
     }
   ],
@@ -1312,6 +1451,556 @@
           "newValue": [
             "new construction under 400k florida",
             "is it better to rent first before buying in florida 2025"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 50,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "created",
+          "intentId": "int_move_up_consider_mkl22483"
+        }
+      ]
+    },
+    {
+      "version": 51,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 52,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ],
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 53,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ],
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 54,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ],
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 55,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "deactivated",
+          "intentId": "int_move_up_consider_mkl22483"
+        }
+      ]
+    },
+    {
+      "version": 56,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ],
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 57,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "created",
+          "intentId": "int_move_up_decide_mkl92gnm"
+        }
+      ]
+    },
+    {
+      "version": 58,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ],
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 59,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_decide_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Lakewood Ranch family-friendly neighborhoods with good schools",
+            "Pros and cons of CDD fees in Lakewood Ranch communities",
+            "Best Lakewood Ranch villages for growing families with kids",
+            "Hurricane insurance costs in Sarasota-Bradenton area",
+            "Lakewood Ranch HOA rules and amenities for families"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 60,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_decide_mkl92gnm",
+          "field": "generatedQueries",
+          "oldValue": [],
+          "newValue": []
+        }
+      ]
+    },
+    {
+      "version": 61,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ],
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 62,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_explore_mk189ge5",
+          "field": "generatedQueries",
+          "newValue": [
+            "best neighborhoods for families in Southwest Florida",
+            "new construction homes Sarasota Bradenton area",
+            "CDD fees and HOA rules in Florida communities",
+            "family-friendly Florida communities with good schools",
+            "hurricane insurance and flood zones in Southwest Florida"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 63,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_consider_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Best master-planned communities in Sarasota-Bradenton area for families with good schools",
+            "Lakewood Ranch schools rating and family-friendly neighborhoods",
+            "Top-rated schools near Waterside and Cresswind communities in Southwest Florida",
+            "Family-oriented communities in Lakewood Ranch with low CDD fees and good schools",
+            "Comparing Del Webb and Country Club East schools and amenities for families"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 64,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_compare_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Lakewood Ranch vs The Villages schools and family amenities",
+            "Best Southwest Florida communities for families with good schools",
+            "Lakewood Ranch family lifestyle compared to Wellen Park",
+            "Top rated schools in Lakewood Ranch vs The Villages Waterside",
+            "Family-friendly neighborhoods in Sarasota-Bradenton area"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 65,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch family-friendly neighborhoods with good schools",
+            "Pros and cons of CDD fees in Lakewood Ranch communities",
+            "Best Lakewood Ranch villages for growing families with kids",
+            "Hurricane insurance costs in Sarasota-Bradenton area",
+            "Lakewood Ranch HOA rules and amenities for families"
+          ],
+          "newValue": [
+            "Lakewood Ranch family-friendly neighborhoods with good schools",
+            "Pros and cons of CDD fees in Lakewood Ranch communities",
+            "Best Lakewood Ranch villages for growing families with kids",
+            "Hurricane insurance costs in Sarasota-Bradenton area",
+            "Lakewood Ranch HOA rules and amenities for families"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 66,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_move_up_decide_mkl92gnm",
+          "field": "generatedQueries",
+          "oldValue": [],
+          "newValue": [
+            "Lakewood Ranch new construction payment plans for families",
+            "how much down payment needed for Lakewood Ranch home",
+            "Lakewood Ranch mortgage options with good schools",
+            "CDD fees and property taxes in Lakewood Ranch villages",
+            "best lenders for first-time move-up buyers in Sarasota"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 67,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_explore_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "best 55+ communities in Southwest Florida with healthcare access",
+            "affordable active adult communities Sarasota Bradenton area",
+            "what to know about CDD fees and HOAs in Florida retirement villages",
+            "top-rated Florida retirement communities with vibrant social activities",
+            "how to evaluate hurricane and flood risks in Southwest Florida neighborhoods"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 68,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_consider_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "best 55+ communities in Sarasota Bradenton area with healthcare access",
+            "Lakewood Ranch active adult communities pros and cons",
+            "Cresswind vs Del Webb Southwest Florida comparison",
+            "CDD fees and HOA rules in Waterside Lakewood Ranch",
+            "hurricane insurance and flood zones in Country Club East"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 69,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_compare_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Lakewood Ranch vs The Villages 55+ communities pros and cons",
+            "CDD fees and HOA costs comparison Lakewood Ranch Wellen Park",
+            "Best Southwest Florida retirement communities with on-site healthcare",
+            "Hurricane insurance rates in Lakewood Ranch vs Wellen Park",
+            "Active adult communities near Sarasota with pickleball and pools"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 70,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_retiree_decide_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Lakewood Ranch 55+ communities pros and cons 2024",
+            "Comparing CDD fees in Waterside vs Cresswind Lakewood Ranch",
+            "Best real estate agents for Lakewood Ranch active adult communities",
+            "Hurricane insurance costs and flood zones in Lakewood Ranch FL",
+            "HOA rules and amenities in Del Webb Lakewood Ranch vs Country Club East"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 71,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_explore_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Best luxury gated communities in Southwest Florida",
+            "Top-rated golf course communities near Sarasota",
+            "High-end Florida neighborhoods with resort-style amenities",
+            "Exclusive Florida communities with private beach access",
+            "Luxury homes in Southwest Florida with low HOA fees"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 72,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_consider_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Best luxury golf communities in Sarasota Bradenton area",
+            "Lakewood Ranch Waterside vs Country Club East amenities comparison",
+            "CDD fees and HOA rules in Southwest Florida luxury communities",
+            "How flood zones and hurricane insurance impact luxury home values in Sarasota",
+            "Top cultural amenities near Lakewood Ranch for high-net-worth buyers"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 73,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_compare_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Lakewood Ranch vs The Villages luxury amenities comparison",
+            "Country club membership costs in Southwest Florida",
+            "High-end homes in Lakewood Ranch vs Wellen Park",
+            "CDD fees and HOA rules in Lakewood Ranch communities",
+            "Best golf course communities in Sarasota-Bradenton area"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 74,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_luxury_decide_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Best luxury homes in Lakewood Ranch with premium amenities",
+            "Lakewood Ranch Waterside vs Cresswind: which has better resale value?",
+            "CDD fees and HOA rules for Lakewood Ranch Country Club East",
+            "Hurricane and flood insurance costs for luxury homes in Sarasota area",
+            "Top real estate agents specializing in Lakewood Ranch luxury properties"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 75,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_explore_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "affordable homes for first-time buyers in Sarasota FL",
+            "best neighborhoods for budget-conscious buyers in Bradenton FL",
+            "how to find affordable houses in Southwest Florida",
+            "first-time homebuyer programs Florida Sarasota area",
+            "tips for buying a house in Florida with low budget"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 76,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_consider_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "What are CDD fees in Lakewood Ranch and how do they impact my budget?",
+            "Average hurricane insurance costs in Sarasota FL for a first-time homebuyer",
+            "Are there hidden HOA fees in Waterside at Lakewood Ranch?",
+            "Flood zone map Bradenton FL and its effect on home insurance",
+            "Total monthly costs for owning a home in Cresswind vs Del Webb Lakewood Ranch"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 77,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_compare_mk189ge6",
+          "field": "generatedQueries",
+          "newValue": [
+            "Pros and cons of new construction vs existing homes in Lakewood Ranch",
+            "Are CDD fees higher for new homes in Lakewood Ranch vs existing homes?",
+            "Hurricane insurance costs comparison: new vs existing homes in Southwest Florida",
+            "HOA rules differences: Lakewood Ranch new construction vs existing homes",
+            "Flood zone risks in Lakewood Ranch: new developments vs older neighborhoods"
+          ]
+        }
+      ]
+    },
+    {
+      "version": 78,
+      "date": "2026-01-19",
+      "changes": [
+        {
+          "action": "modified",
+          "intentId": "int_first_time_decide_mk189ge6",
+          "field": "generatedQueries",
+          "oldValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
+          ],
+          "newValue": [
+            "Lakewood Ranch first-time homebuyer programs 2024",
+            "How much are CDD fees in Waterside at Lakewood Ranch?",
+            "Best real estate agents for first-time buyers in Sarasota",
+            "Lakewood Ranch HOA rules and restrictions for buyers",
+            "Closing cost estimates for homes under $400k in Bradenton"
           ]
         }
       ]

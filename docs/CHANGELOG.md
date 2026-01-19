@@ -2,6 +2,14 @@
 
 ## January 2026
 
+### 2026-01-20 (Integrated Audit + Architectural UI Refresh)
+- **Integrated Interactive Audit**: Moved "Ask AI" from a separate dialog into a side-by-side layout within the `InsightModal`. Metrices on the left, context-aware RAG chat on the right.
+- **AI Performance History**: Redesigned the KPI chart panel with a square, architectural aesthetic (no rounded corners).
+- **Control Simplification**: Replaced pill-style toggles for metrics and time ranges with a more minimalist underlined navigation style.
+- **Header Cleanup**: Removed "Quick Test" and "Query Bank" buttons from the top toolbar to focus on primary "Run" and "Ask AI" actions.
+- **Visual De-cluttering**: Removed "Obj" (Objective) and "Qry" (Query) counts from matrix tiles and sidebars to prioritize content over metadata.
+- **Spacing Refinements**: Tightened vertical spacing between tabs and content for a more cohesive application feel.
+
 ### 2026-01-13 (Feature Kanban UI)
 - Added Feature Kanban board with 4 visibility tiers and category tabs
 - Simplified cards to title + mention rate with detail modal placeholder

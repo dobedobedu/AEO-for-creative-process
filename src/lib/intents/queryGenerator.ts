@@ -111,7 +111,7 @@ Generate exactly ${count} realistic Google search queries this buyer would type.
     // Use safeAsync to isolate SDK errors with read-only properties
     const result = await safeAsync(
         () => callOpenRouter({
-            model: process.env.DEEPSEEK_MODEL || "deepseek/deepseek-chat",
+            model: process.env.DEEPSEEK_MODEL || "deepseek/deepseek-v3.2",
             messages: [
                 { role: "system", content: systemPrompt },
                 { role: "user", content: userPrompt },

@@ -97,7 +97,7 @@ export function createIntent(
 export function updateIntent(
   library: IntentLibrary,
   intentId: string,
-  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle">>
+  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries">>
 ): IntentLibrary {
   const existingIndex = library.intents.findIndex((i) => i.id === intentId);
   if (existingIndex === -1) {
@@ -134,6 +134,16 @@ export function updateIntent(
       field: "queryStyle",
       oldValue: existing.queryStyle,
       newValue: updates.queryStyle,
+    });
+  }
+
+  if (updates.generatedQueries !== undefined) {
+    changes.push({
+      action: "modified",
+      intentId,
+      field: "generatedQueries",
+      oldValue: existing.generatedQueries,
+      newValue: updates.generatedQueries,
     });
   }
 

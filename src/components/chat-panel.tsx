@@ -78,13 +78,14 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
     if (nextOpen) {
       setMessages([]);
       setInput("");
+      setRagError(null);
+      setRagStatus(null);
     }
   };
 
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    setRagError(null);
     fetch("/api/benchmark/rag/status")
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("RAG status unavailable"))))
       .then((data: { hasDocuments: boolean }) => {

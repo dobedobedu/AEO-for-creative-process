@@ -50,7 +50,7 @@ export const DecideExtractionSchema = BaseScoreSchema.extend({
   recommended: z.boolean().describe("Was our brand recommended as a choice?"),
   recommendationStrength: z.enum([
     "not_mentioned",
-    "mentioned", 
+    "mentioned",
     "suggested",
     "recommended",
     "strongly_recommended"
@@ -113,12 +113,13 @@ Focus on:
 - What was the AI's overall conclusion?`,
 
   decide: `Analyze this AI response about Florida communities/real estate.
-The user was in the DECIDE stage - ready to make a choice.
+The user was in the DECIDE stage - ready to make a choice and looking for final validation.
 
 Focus on:
-- Was the brand recommended as a choice?
-- How strongly was it recommended?
+- Was the brand recommended as a clear choice?
+- Does the response successfully address top buyer concerns, transactional hurdles, or specific life integration logistics?
+- How strongly was the recommendation made?
 - Were there any qualifiers or conditions on the recommendation?
-- What alternatives were suggested?
-- What rationale was given for the recommendation?`,
+- what alternatives were suggested?
+- What was the rationale for the recommendation (or lack thereof)?`,
 };

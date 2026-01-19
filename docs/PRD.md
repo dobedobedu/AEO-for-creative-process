@@ -1,10 +1,10 @@
 # AI Visibility Baseline - Product Requirements Document
 
-> **Version**: 3.0 | **Updated**: January 2026
+> **Version**: 3.1 | **Updated**: January 20th, 2026
 
 ## Goal
 
-Build a recurring audit system for Lakewood Ranch AI visibility across the buyer journey. Run scheduled benchmarks, score AI responses, power insight dashboards, and enable RAG-based chat for stakeholder queries.
+Build a recurring audit system for Lakewood Ranch AI visibility across the buyer journey. Run scheduled benchmarks, score AI responses, power insight dashboards, and enable integrated, context-aware RAG chat for real-time stakeholder auditing.
 
 ## Primary User
 
@@ -16,9 +16,8 @@ Marketing/brand stakeholders who want to understand how AI platforms represent t
 
 | Page | Purpose |
 |------|---------|
-| **Matrix** (main) | Persona × Stage grid with visibility metrics per cell |
+| **Matrix** (main) | Persona × Stage grid with visibility metrics and integrated Interactive Audit |
 | **Kanban Board** | Feature visibility tiers by category |
-| **Implementation & Effect** | Track content changes and measure impact over time |
 
 ---
 
@@ -55,10 +54,10 @@ Each persona has customizable defaults:
 
 | Stage | Metric | What It Measures | Scoring |
 |-------|--------|------------------|---------|
-| Explore | **Discovery Rate** | Is brand surfaced in awareness queries? | Mentioned = 1, Absent = 0 |
-| Consider | **Trust Signal Rate** | Are verifiable trust signals included? (awards, rankings, reviews) | Count of specific, quotable signals |
-| Compare | **Win Rate** | Does brand win head-to-head comparisons? | Position 1 = 1.0, Position 2 = 0.5, etc. |
-| Decide | **Evidence Rate** | Is there sufficient quotable content for tough objections? | Specific data = 1.0, Vague = 0.5, Deflects = 0 |
+| Explore | **Discovery Rate** | Is brand surfaced in awareness queries? | Mentioned = 1, Absent = 0; Top 3 position tracked |
+| Consider | **Sentiment Score** | How positively is the brand portrayed? | -1 (negative) to +1 (positive) |
+| Compare | **Win Rate** | Does brand win head-to-head comparisons? | Win = 1.0, Tie/Mixed = 0.5, Lose = 0 |
+| Decide | **Recommendation Rate** | How strongly is the brand recommended? | Strongly recommended → Mentioned scale |
 
 **Decide stage query examples:**
 - "Is Lakewood Ranch politically extreme?"
@@ -70,10 +69,8 @@ Each persona has customizable defaults:
 
 ---
 
-## Intent & Query Management
-
 Single view to manage all intents and generated queries across the matrix:
-- View all intents by persona/stage
+- View all intents by persona/stage via "Focus Mode"
 - View all generated "Buyer Might Ask" queries
 - Edit intent text, role (CPO/Family Unit), query style (common↔niche)
 
@@ -99,9 +96,9 @@ interface Intent {
 |----------|-------|---------|
 | OpenAI | `gpt-5.2` | Web search responses |
 | Anthropic | `claude-haiku-4-5` | Web search responses |
-| Google | `gemini-3-flash-preview` | Web search + scoring + chat |
-| xAI | `grok-4-1-fast-reasoning` | Web search responses |
-| DeepSeek | `v3.2` (via OpenRouter) | Query generation |
+| Google | `gemini-3-flash-preview` | Web search + scoring + integrated audit |
+| xAI | `grok-4-latest` | Web search responses |
+| DeepSeek | `deepseek/deepseek-v3.2` (via OpenRouter) | Query generation |
 
 ---
 
@@ -121,7 +118,7 @@ interface Intent {
 | `DATABASE_URL` | Neon PostgreSQL connection (pooled) |
 | `OPENAI_API_KEY` | OpenAI GPT-5.2 |
 | `ANTHROPIC_API_KEY` | Claude Haiku 4.5 |
-| `GOOGLE_AI_API_KEY` | Gemini 3 Flash |
+| `GEMINI_API_KEY` | Gemini 3 Flash (GOOGLE_API_KEY also works) |
 | `XAI_API_KEY` | xAI Grok-4 |
 | `OPENROUTER_API_KEY` | DeepSeek via OpenRouter |
 | `CRON_SECRET` | Auth token for scheduled benchmarks |
@@ -140,9 +137,8 @@ interface Intent {
 
 ## What's Next
 
-- [ ] Supabase integration for persistence
-- [ ] Editable personas and stages
-- [ ] Implementation & Effect tracking page
+- [ ] Editable personas and stages (UI for add/remove/edit)
+- [ ] Implementation & Effect tracking page (measure content changes over time)
 - [ ] Intent library admin UI (single view for all intents/queries)
 - [ ] Historical comparison across runs
 - [ ] Batch processing for AI providers (Anthropic batch API)

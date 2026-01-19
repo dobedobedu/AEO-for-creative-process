@@ -7,7 +7,8 @@ const IntentNodeSchema = z.object({
   id: z.string(),
   text: z.string(),
   role: z.enum(["cpo", "family_unit"]).default("cpo"),
-  queryStyle: z.number().min(0.5).max(1.0).default(0.75)
+  queryStyle: z.number().min(0.5).max(1.0).default(0.75),
+  generatedQueries: z.array(z.string()).optional()
 });
 
 // The incoming QueryBank is indexed by Persona -> Stage -> List of Intents
@@ -31,9 +32,9 @@ export async function POST(req: Request) {
 
     for (const [persona, stages] of Object.entries(data.queryBank) as Array<[
       Persona,
-      Record<Stage, { intents: Array<{ id: string; text: string; role?: "cpo" | "family_unit"; queryStyle?: number }> }>
+      Record<Stage, { intents: Array<{ id: string; text: string; role?: "cpo" | "family_unit"; queryStyle?: number; generatedQueries?: string[] }> }>
     ]>) {
-      for (const [stage, entry] of Object.entries(stages) as Array<[Stage, { intents: Array<{ id: string; text: string; role?: "cpo" | "family_unit"; queryStyle?: number }> }]>) {
+      for (const [stage, entry] of Object.entries(stages) as Array<[Stage, { intents: Array<{ id: string; text: string; role?: "cpo" | "family_unit"; queryStyle?: number; generatedQueries?: string[] }> }]>) {
 
         // 1. Get existing intents for this cell
         const existingIntents = library.intents
@@ -50,7 +51,8 @@ export async function POST(req: Request) {
             library = updateIntent(library, incoming.id, {
               text: incoming.text,
               role: incoming.role,
-              queryStyle: incoming.queryStyle
+              queryStyle: incoming.queryStyle,
+              generatedQueries: incoming.generatedQueries
             });
           } else {
             // Create new intent
@@ -59,7 +61,8 @@ export async function POST(req: Request) {
               stage,
               text: incoming.text,
               role: incoming.role || "cpo",
-              queryStyle: incoming.queryStyle || 0.75
+              queryStyle: incoming.queryStyle || 0.75,
+              generatedQueries: incoming.generatedQueries
             });
           }
         }
