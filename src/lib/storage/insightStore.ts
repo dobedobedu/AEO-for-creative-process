@@ -1,4 +1,4 @@
-import { sql } from "@/lib/db";
+import { sql, query } from "@/lib/db";
 
 export async function upsertInsight(runId: string, narrative: string, charts: unknown) {
   const chartsJson = JSON.parse(JSON.stringify(charts ?? null));
@@ -79,7 +79,7 @@ type AnalysisRow = {
  * Retrieve all analysis variants for a run
  */
 export async function getAnalyses(runId: string): Promise<AnalysisVariant[]> {
-  const rows = await sql<AnalysisRow[]>`
+  const rows = await query<AnalysisRow>`
     SELECT id, run_id, variant_key, model, thinking_level, analysis_kind, analysis_json, thought_summaries, created_at
     FROM analyses
     WHERE run_id = ${runId}
