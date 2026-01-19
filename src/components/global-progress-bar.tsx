@@ -41,9 +41,13 @@ export function GlobalProgressBar({
   // Merge external state if provided
   const displayState = externalState ?? state;
 
-  // Poll progress API when we have a runId and status is running
+  // Poll progress API when we have a server-generated runId and status is running
+  // Skip polling for client-generated runIds (they don't exist on the server)
   useEffect(() => {
     if (!displayState.runId || displayState.status !== "running") return;
+
+    // Don't poll for client-generated runIds - they're only tracked locally
+    if (displayState.runId.startsWith("client-")) return;
 
     const pollProgress = async () => {
       try {
