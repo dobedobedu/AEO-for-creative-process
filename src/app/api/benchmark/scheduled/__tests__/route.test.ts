@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock external dependencies
 vi.mock("@/lib/intents/library", () => ({
-    loadIntentLibrary: vi.fn(() => ({
+    loadIntentLibrary: vi.fn(() => Promise.resolve({
         version: 1,
         intents: [
             {
@@ -20,6 +20,11 @@ vi.mock("@/lib/intents/library", () => ({
                 createdAt: "2024-01-01",
             },
         ],
+        history: [],
+    })),
+    updateIntent: vi.fn(() => Promise.resolve({
+        version: 2,
+        intents: [],
         history: [],
     })),
 }));

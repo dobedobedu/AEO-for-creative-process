@@ -1,8 +1,9 @@
-import { streamText, convertToModelMessages, type UIMessage } from "ai";
+import { streamText, convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, type UIMessage } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { buildSystemPrompt, buildFileSearchSystemPrompt } from "@/lib/chat/systemPrompt";
 import type { ChatContext } from "@/lib/chat/types";
-import { queryWithFileSearch, hasDocuments } from "@/lib/filesearch";
+import { streamQueryWithFileSearch, hasDocuments } from "@/lib/filesearch";
+import { randomUUID } from "crypto";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -46,8 +47,8 @@ export async function POST(req: Request) {
       const hasDocs = await hasDocuments();
       
       if (hasDocs) {
-        console.log("[Chat API] Using File Search mode");
-        
+        console.log("[Chat API] Using File Search mode (streaming)");
+
         // Get the last user message
         const lastMessage = messages[messages.length - 1];
         const userText = lastMessage?.parts
@@ -56,17 +57,25 @@ export async function POST(req: Request) {
           .join(" ") ?? "";
 
         const systemPrompt = buildFileSearchSystemPrompt(context);
-        const response = await queryWithFileSearch(userText, context, systemPrompt);
+        const partId = randomUUID();
 
-        // Return as a simple JSON response (non-streaming for File Search)
-        return new Response(
-          JSON.stringify({
-            text: response.text,
-            citations: response.citations,
-            mode: "file_search",
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
+        // Stream the File Search response using AI SDK UIMessage format
+        const stream = createUIMessageStream({
+          execute: async ({ writer }) => {
+            // Start the text part
+            writer.write({ type: "text-start", id: partId });
+
+            // Stream text deltas
+            for await (const chunk of streamQueryWithFileSearch(userText, context, systemPrompt)) {
+              writer.write({ type: "text-delta", id: partId, delta: chunk });
+            }
+
+            // Mark text as done
+            writer.write({ type: "text-end", id: partId });
+          },
+        });
+
+        return createUIMessageStreamResponse({ stream });
       } else {
         console.log("[Chat API] File Search requested but no documents found, falling back to context injection");
       }

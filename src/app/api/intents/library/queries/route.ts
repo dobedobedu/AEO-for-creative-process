@@ -1,6 +1,9 @@
 import { z } from "zod";
-import { loadIntentLibrary, saveIntentLibrary, updateIntent, createIntent, deactivateIntent } from "@/lib/intents/library";
+import { cookies } from "next/headers";
+import { loadIntentLibrary, updateIntent, createIntent, deactivateIntent } from "@/lib/intents/library";
 import { PersonaSchema, StageSchema, type Persona, type Stage } from "@/lib/intents/types";
+import { getCurrentUser } from "@/lib/auth/supabase";
+import { touchUserActivity } from "@/lib/auth/activity";
 
 // Schema for an Intent Node (mirrors frontend)
 const IntentNodeSchema = z.object({
@@ -25,10 +28,18 @@ const RequestSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    // Get current user from session
+    const cookieStore = await cookies();
+    const user = await getCurrentUser(cookieStore);
+    const actorUserId = user?.id;
+
+    // Track user activity
+    if (actorUserId) await touchUserActivity(actorUserId);
+
     const payload = await req.json();
     const data = RequestSchema.parse(payload);
 
-    let library = loadIntentLibrary();
+    let library = await loadIntentLibrary();
 
     for (const [persona, stages] of Object.entries(data.queryBank) as Array<[
       Persona,
@@ -47,36 +58,36 @@ export async function POST(req: Request) {
         // 3. Process Updates & Creations
         for (const incoming of entry.intents) {
           if (existingIds.has(incoming.id)) {
-            // Update existing
-            library = updateIntent(library, incoming.id, {
+            // Update existing - pass actorUserId for attribution
+            library = await updateIntent(incoming.id, {
               text: incoming.text,
               role: incoming.role,
               queryStyle: incoming.queryStyle,
               generatedQueries: incoming.generatedQueries
-            });
+            }, actorUserId);
           } else {
-            // Create new intent
-            library = createIntent(library, {
+            // Create new intent - pass actorUserId for attribution
+            library = await createIntent({
               persona,
               stage,
               text: incoming.text,
               role: incoming.role || "cpo",
               queryStyle: incoming.queryStyle || 0.75,
               generatedQueries: incoming.generatedQueries
-            });
+            }, actorUserId);
           }
         }
 
-        // 4. Process Deletions
+        // 4. Process Deletions - pass actorUserId for attribution
         for (const existing of existingIntents) {
           if (!incomingIds.has(existing.id)) {
-            library = deactivateIntent(library, existing.id);
+            library = await deactivateIntent(existing.id, actorUserId);
           }
         }
       }
     }
 
-    saveIntentLibrary(library);
+    // Library is already persisted in DB, no need to save
     return Response.json({ success: true, library });
   } catch (err) {
     if (err instanceof z.ZodError) {

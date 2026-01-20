@@ -14,17 +14,13 @@ import {
 } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import {
-  Play,
-  ArrowLeft,
   Eye,
   EyeOff,
-  Square,
   ChevronRight,
   Pencil,
   Check,
   MessageSquare,
 } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import { ChatPanel } from "@/components/chat-panel";
 import { ViewModeToggle } from "@/components/visibility-matrix/ViewModeToggle";
@@ -32,6 +28,8 @@ import { MatrixCell } from "@/components/visibility-matrix/MatrixCell";
 import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor";
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
+import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
+import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
 import { GlobalProgressBar, useGlobalProgress } from "@/components/global-progress-bar";
 import type { ChatContext } from "@/lib/chat/types";
 import {
@@ -50,6 +48,7 @@ import {
 import type { IntentLibrary, IntentNode } from "@/lib/intents/types";
 import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
+import type { Citation } from "@/lib/parsers/types";
 
 // Types
 type Persona = "move_up" | "retiree" | "luxury" | "first_time";
@@ -67,6 +66,7 @@ interface QueryResult {
     provider: Provider;
     model: string;
     text: string;
+    citations?: Citation[];
     visibility: {
       score: number;
       mentioned: boolean;
@@ -194,6 +194,7 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
 
 const BRAND = "Lakewood Ranch";
 const BRAND_ALIASES = ["LWR", "Lakewood"];
+const BRAND_DOMAIN = "lakewoodranch.com";
 
 // Deterministic mock historical data for time slider demo (13 weeks)
 // Using fixed values to avoid hydration errors from Math.random()
@@ -390,11 +391,12 @@ export default function VisibilityMatrixPage() {
   const [chatContext, setChatContext] = useState<ChatContext>({ scope: "global" });
   const [localQueryBank, setLocalQueryBank] = useState<QueryBank>(() => createEmptyQueryBank());
   const [intentLibrary, setIntentLibrary] = useState<IntentLibrary | null>(null);
-  const [viewMode, setViewMode] = useState<"summary" | "intents" | "queries">("summary");
+  const [viewMode, setViewMode] = useState<"summary" | "intents" | "queries" | "answers">("summary");
   // Cell Selection and Focus Mode
   const [selectedCell, setSelectedCell] = useState<{ persona: Persona; stage: Stage } | null>(null);
   const [intentEditorOpen, setIntentEditorOpen] = useState(false);
   const [insightModalOpen, setInsightModalOpen] = useState(false);
+  const [answersPanelOpen, setAnswersPanelOpen] = useState(false);
 
   // Global progress bar state
   const { state: progressState, startProgress, completeProgress: completeProgressBar, failProgress: failProgressBar } = useGlobalProgress();
@@ -435,14 +437,16 @@ export default function VisibilityMatrixPage() {
       .then((data: { runs: StoredRun[] }) => {
         if (cancelled) return;
         const runs = data.runs.map(toUiBenchmarkRun);
-        const history = runs.length > 0 ? runs.slice().reverse() : MOCK_HISTORY;
+        // Only use real data - no mock fallback
+        const history = runs.slice().reverse();
         setBenchmarkHistory(history);
-        setSelectedTimeIndex(history.length - 1);
+        setSelectedTimeIndex(Math.max(0, history.length - 1));
       })
       .catch(() => {
         if (cancelled) return;
-        setBenchmarkHistory(MOCK_HISTORY);
-        setSelectedTimeIndex(MOCK_HISTORY.length - 1);
+        // Keep empty - no mock data fallback
+        setBenchmarkHistory([]);
+        setSelectedTimeIndex(0);
       });
 
     return () => {
@@ -590,12 +594,23 @@ export default function VisibilityMatrixPage() {
       const { run, resultsByCell }: { run: StoredRun; resultsByCell: Record<string, { queries: QueryResult[] }> } =
         await response.json();
 
+      // DEBUG: Log raw API response
+      console.log("[DEBUG] API resultsByCell keys:", Object.keys(resultsByCell));
+      console.log("[DEBUG] Target cell keys:", targetCells.map(t => t.key));
+      console.log("[DEBUG] Sample resultsByCell data:", Object.entries(resultsByCell).map(([k, v]) => ({
+        key: k,
+        queriesCount: v?.queries?.length,
+        firstQueryResponses: v?.queries?.[0]?.responses?.length
+      })));
+
       setMatrixData((prev) => {
         const next = { ...prev };
 
         for (const t of targetCells) {
           const result = resultsByCell[t.key];
+          console.log(`[DEBUG] Cell ${t.key}: result exists=${!!result}, queries=${result?.queries?.length}`);
           if (!result) {
+            console.log(`[DEBUG] Cell ${t.key}: NO RESULT - staying idle`);
             next[t.key] = { ...next[t.key], status: "idle" };
             continue;
           }
@@ -624,6 +639,7 @@ export default function VisibilityMatrixPage() {
           const runCell = run.cells[runCellKey];
           const stageMetrics = runCell?.metrics ?? {};
 
+          console.log(`[DEBUG] Cell ${t.key}: Setting results with ${result.queries.length} queries, avgScore=${avgScore}, mentionRate=${mentionRate}`);
           next[t.key] = {
             ...next[t.key],
             results: result.queries,
@@ -887,6 +903,29 @@ export default function VisibilityMatrixPage() {
 
   const modelTrendData = useMemo(() => {
     const baseMockDate = new Date(Date.UTC(2026, 0, 1));
+
+    // Helper to get metric value based on selected kpiMetric
+    const getValue = (provider: Provider, run: BenchmarkRun): number => {
+      switch (kpiMetric) {
+        case "mention":
+          return Math.round((run.providerScores[provider]?.mentionRate ?? 0) * 100);
+        case "sentiment":
+          // Convert [-1, 1] to [0, 100]
+          return Math.round(((run.stageData?.sentimentScore ?? 0) + 1) * 50);
+        case "winrate":
+          return Math.round((run.stageData?.winRate ?? 0) * 100);
+        case "top3": {
+          const pos = run.stageData?.positionCounts;
+          if (!pos) return 0;
+          const inTop3 = pos["1st"] + pos["2nd"] + pos["3rd"];
+          const total = inTop3 + pos.later + pos.absent;
+          return total > 0 ? Math.round((inTop3 / total) * 100) : 0;
+        }
+        default:
+          return 0;
+      }
+    };
+
     const full = benchmarkHistory.map(run => {
       const rawTs = run.timestamp;
       let dateISO = run.label;
@@ -901,15 +940,15 @@ export default function VisibilityMatrixPage() {
       return {
         label: run.label,
         date: dateISO,
-        openai: Math.round((run.providerScores.openai?.mentionRate ?? 0) * 100),
-        anthropic: Math.round((run.providerScores.anthropic?.mentionRate ?? 0) * 100),
-        gemini: Math.round((run.providerScores.gemini?.mentionRate ?? 0) * 100),
-        xai: Math.round((run.providerScores.xai?.mentionRate ?? 0) * 100),
+        openai: getValue("openai", run),
+        anthropic: getValue("anthropic", run),
+        gemini: getValue("gemini", run),
+        xai: getValue("xai", run),
       };
     });
     const windowSize = kpiRange === "day" ? 30 : kpiRange === "week" ? 13 : 12;
     return full.slice(-windowSize);
-  }, [benchmarkHistory, kpiRange]);
+  }, [benchmarkHistory, kpiRange, kpiMetric]);
 
   const kpiTickInterval = useMemo(() => {
     if (kpiRange === "day") return 2; // show every 3rd day
@@ -1180,60 +1219,19 @@ export default function VisibilityMatrixPage() {
   }, [selection, personas, localQueryBank]);
 
   return (
-    <div className="min-h-screen bg-[#f6f1e8]">
+    <div className="min-h-screen bg-[#f6f1e8] pb-16">
       {/* Header */}
       <div className="bg-white border-b border-[#e3dacb]">
         <div className="max-w-6xl mx-auto">
-          {/* Top row: Title + Back button */}
+          {/* Top row: Title */}
           <div className="flex items-center justify-between px-6 py-3 border-b border-[#e3dacb]/50">
-            <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-[#1e1b16]/70 hover:text-[#1e1b16] hover:bg-[#f6f1e8]">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-lg font-semibold text-[#1e1b16]">AI Visibility Matrix</h1>
-                <p className="text-xs text-[#1e1b16]/60">{BRAND} • Persona × Stage</p>
-              </div>
+            <div>
+              <h1 className="text-lg font-semibold text-[#1e1b16]">AI Visibility Matrix</h1>
+              <p className="text-xs text-[#1e1b16]/60">{BRAND} • Persona × Stage</p>
             </div>
           </div>
 
 
-          {/* Action toolbar */}
-          <div className="flex items-center justify-between px-6 py-3">
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => {
-                  // Collect all results from all cells
-                  const allResults = Object.values(matrixData)
-                    .filter(cell => cell.status === "complete")
-                    .flatMap(cell => cell.results);
-                  openChat({ scope: "global" }, allResults);
-                }}
-                variant="outline"
-                size="sm"
-                className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#f6f1e8] hover:text-[#1f3b2c]"
-              >
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Ask AI
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              {isRunning ? (
-                <Button onClick={stopBenchmark} className="bg-[#b86f3a] hover:bg-[#a65f2a] text-white">
-                  <Square className="h-4 w-4 mr-2" />
-                  Stop
-                </Button>
-              ) : (
-                <Button onClick={() => runBenchmark(false)} size="sm" className="bg-[#6e7c5b] hover:bg-[#5e6c4b] text-white">
-                  <Play className="h-4 w-4 mr-2" />
-                  Run {selection.type === "all" ? "All" : selectionLabel}
-                </Button>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1274,34 +1272,44 @@ export default function VisibilityMatrixPage() {
           </div>
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 h-[220px]">
-              <ChartContainer config={chartConfig} className="h-full w-full">
-                <RechartsAreaChart data={modelTrendData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
-                  <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="#efe6d9" />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={6}
-                    fontSize={10}
-                    interval={kpiTickInterval}
-                    tickFormatter={formatKpiTick}
-                    padding={{ left: 12, right: 12 }}
-                  />
-                  <ChartTooltip cursor={{ stroke: "#d4c9b8", strokeDasharray: "4 4" }} content={<ChartTooltipContent />} />
-                  {enabledProviders.has("openai") && (
-                    <Area type="monotone" stackId="mentions" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.2} strokeWidth={2} />
-                  )}
-                  {enabledProviders.has("anthropic") && (
-                    <Area type="monotone" stackId="mentions" dataKey="anthropic" stroke="#b86f3a" fill="#b86f3a" fillOpacity={0.2} strokeWidth={2} />
-                  )}
-                  {enabledProviders.has("gemini") && (
-                    <Area type="monotone" stackId="mentions" dataKey="gemini" stroke="#6e7c5b" fill="#6e7c5b" fillOpacity={0.2} strokeWidth={2} />
-                  )}
-                  {enabledProviders.has("xai") && (
-                    <Area type="monotone" stackId="mentions" dataKey="xai" stroke="#7c6b7c" fill="#7c6b7c" fillOpacity={0.2} strokeWidth={2} />
-                  )}
-                </RechartsAreaChart>
-              </ChartContainer>
+              {benchmarkHistory.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-black/30 border border-dashed border-[#e3dacb] rounded-lg">
+                  <svg className="w-10 h-10 mb-3 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                  </svg>
+                  <p className="text-sm font-medium">No benchmark history</p>
+                  <p className="text-xs mt-1">Run a benchmark to see performance trends</p>
+                </div>
+              ) : (
+                <ChartContainer config={chartConfig} className="h-full w-full">
+                  <RechartsAreaChart data={modelTrendData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="#efe6d9" />
+                    <XAxis
+                      dataKey="date"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={6}
+                      fontSize={10}
+                      interval={kpiTickInterval}
+                      tickFormatter={formatKpiTick}
+                      padding={{ left: 12, right: 12 }}
+                    />
+                    <ChartTooltip cursor={{ stroke: "#d4c9b8", strokeDasharray: "4 4" }} content={<ChartTooltipContent />} />
+                    {enabledProviders.has("openai") && (
+                      <Area type="monotone" stackId="mentions" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.2} strokeWidth={2} />
+                    )}
+                    {enabledProviders.has("anthropic") && (
+                      <Area type="monotone" stackId="mentions" dataKey="anthropic" stroke="#b86f3a" fill="#b86f3a" fillOpacity={0.2} strokeWidth={2} />
+                    )}
+                    {enabledProviders.has("gemini") && (
+                      <Area type="monotone" stackId="mentions" dataKey="gemini" stroke="#6e7c5b" fill="#6e7c5b" fillOpacity={0.2} strokeWidth={2} />
+                    )}
+                    {enabledProviders.has("xai") && (
+                      <Area type="monotone" stackId="mentions" dataKey="xai" stroke="#7c6b7c" fill="#7c6b7c" fillOpacity={0.2} strokeWidth={2} />
+                    )}
+                  </RechartsAreaChart>
+                </ChartContainer>
+              )}
             </div>
             <div className="w-full lg:w-44 flex flex-col gap-2 justify-center">
               <button
@@ -1372,7 +1380,7 @@ export default function VisibilityMatrixPage() {
           <div className="flex-1 mt-0">
             {(() => {
               // Transform matrixData into a format SplitViewEditor can use for the 'summary' mode
-              const cellResults: Record<string, Record<string, { visibilityScore: number; sentimentScore: number; topCompetitor?: string; winRate?: number; answerRate?: number }>> = {};
+              const cellResults: Record<string, Record<string, { discoveryRate: number; sentimentScore: number; topCompetitor?: string; winRate?: number; recommendationRate?: number; responses?: { provider: string; model: string; text: string; query: string; visibility: { score: number; mentioned: boolean; sentiment: string } }[]; citations?: Citation[] }>> = {};
 
               Object.keys(matrixData).forEach(key => {
                 const [pId, sId] = key.split("-") as [Persona, Stage];
@@ -1428,26 +1436,59 @@ export default function VisibilityMatrixPage() {
                 });
                 const topComp = Object.entries(compCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
 
+                // Build responses array for Answers tab
+                const responses: { provider: string; model: string; text: string; query: string; visibility: { score: number; mentioned: boolean; sentiment: string } }[] = [];
+                // Aggregate all citations from this cell's responses
+                const allCitations: Citation[] = [];
+                results.forEach(r => {
+                  r.responses?.forEach(resp => {
+                    responses.push({
+                      provider: resp.provider,
+                      model: resp.model,
+                      text: resp.text,
+                      query: r.query,
+                      visibility: {
+                        score: resp.visibility?.score || 0,
+                        mentioned: resp.visibility?.mentioned || false,
+                        sentiment: resp.visibility?.sentiment || "neutral"
+                      }
+                    });
+                    // Collect citations
+                    if (resp.citations) {
+                      allCitations.push(...resp.citations);
+                    }
+                  });
+                });
+
+                // Use stored stageMetrics if available, fallback to computed values
+                const stageMetrics = cell.stageMetrics || {};
+
                 cellResults[pId][sId] = {
-                  visibilityScore: cell.avgScore || 0,
-                  sentimentScore: avgSentiment,
+                  discoveryRate: stageMetrics.discoveryRate ?? cell.avgScore ?? 0,
+                  sentimentScore: stageMetrics.sentimentScore ?? avgSentiment,
                   topCompetitor: topComp,
-                  winRate: comparisonCount > 0 ? winCount / comparisonCount : 0,
-                  answerRate: decideCount > 0 ? recommendedCount / decideCount : 0
+                  winRate: stageMetrics.winRate ?? (comparisonCount > 0 ? winCount / comparisonCount : 0),
+                  recommendationRate: stageMetrics.recommendationRate ?? (decideCount > 0 ? recommendedCount / decideCount : 0),
+                  responses,
+                  citations: allCitations
                 };
               });
 
               return (
                 <SplitViewEditor
-                  activeTab={viewMode as "summary" | "intents" | "queries"}
+                  activeTab={viewMode}
                   personas={personas}
                   stages={STAGES}
                   queryBank={localQueryBank}
                   cellResults={cellResults}
+                  brandDomain={BRAND_DOMAIN}
                   onSelectCell={(persona, stage) => {
                     setSelectedCell({ persona, stage });
+                    setSelection({ type: "cell", persona, stage });
                     if (viewMode === "summary") {
                       setInsightModalOpen(true);
+                    } else if (viewMode === "answers") {
+                      setAnswersPanelOpen(true);
                     } else {
                       setIntentEditorOpen(true);
                     }
@@ -1786,11 +1827,25 @@ export default function VisibilityMatrixPage() {
 
               return data.queries;
             }}
+            onRun={() => {
+              setIntentEditorOpen(false);
+              runCellsBenchmark([`${selectedCell.persona}-${selectedCell.stage}`], true);
+            }}
+            isRunning={isRunning}
           />
         )
       }
 
-      {selectedCell && (
+      {selectedCell && (() => {
+        const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
+        const cellData = matrixData[cellKey];
+        console.log(`[DEBUG] InsightModal opening for ${cellKey}:`, {
+          cellExists: !!cellData,
+          status: cellData?.status,
+          resultsLength: cellData?.results?.length,
+          firstResultResponses: cellData?.results?.[0]?.responses?.length
+        });
+        return (
         <InsightModal
           open={insightModalOpen}
           onClose={() => setInsightModalOpen(false)}
@@ -1798,16 +1853,61 @@ export default function VisibilityMatrixPage() {
           stage={selectedCell.stage}
           personaLabel={personas.find(p => p.id === selectedCell.persona)?.label || ""}
           stageLabel={STAGES.find(s => s.id === selectedCell.stage)?.label || ""}
-          results={matrixData[`${selectedCell.persona}-${selectedCell.stage}`]?.results || []}
+          results={cellData?.results || []}
           brand={BRAND}
+          onRunCell={() => {
+            setInsightModalOpen(false);
+            runCellsBenchmark([`${selectedCell.persona}-${selectedCell.stage}`], true);
+          }}
+          isRunning={isRunning}
         />
-      )}
+        );
+      })()}
+
+      {/* Answers Panel - LLM Response Viewer */}
+      {selectedCell && (() => {
+        const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
+        const cellData = matrixData[cellKey];
+        return (
+          <AnswersPanel
+            open={answersPanelOpen}
+            onClose={() => setAnswersPanelOpen(false)}
+            persona={selectedCell.persona}
+            stage={selectedCell.stage}
+            personaLabel={personas.find(p => p.id === selectedCell.persona)?.label || ""}
+            stageLabel={STAGES.find(s => s.id === selectedCell.stage)?.label || ""}
+            results={cellData?.results || []}
+            brand={BRAND}
+            brandAliases={BRAND_ALIASES}
+            onRunCell={() => {
+              setAnswersPanelOpen(false);
+              runCellsBenchmark([`${selectedCell.persona}-${selectedCell.stage}`], true);
+            }}
+            isRunning={isRunning}
+          />
+        );
+      })()}
 
       {/* Chat Panel */}
       <ChatPanel
         open={chatOpen}
         onOpenChange={setChatOpen}
         context={chatContext}
+      />
+
+      {/* Sticky Action Bar */}
+      <StickyActionBar
+        isRunning={isRunning}
+        selectionLabel={selectionLabel}
+        selectionType={selection.type}
+        onRun={() => runBenchmark(false)}
+        onStop={stopBenchmark}
+        onAskAI={() => {
+          const allResults = Object.values(matrixData)
+            .filter(cell => cell.status === "complete")
+            .flatMap(cell => cell.results);
+          openChat({ scope: "global" }, allResults);
+        }}
       />
 
       {/* Global Progress Bar */}

@@ -68,13 +68,11 @@ export function MatrixCell({
             status === "running"
               ? "bg-[#efe6d9] border-[#b86f3a] animate-pulse"
               : status === "complete"
-                ? score >= 0.6
-                  ? "bg-[#d4e5d4] border-[#6e7c5b]"
+                ? score >= 0.7
+                  ? "bg-[#dcf3dc] border-[#1f3b2c]/40"  // Green - strong (standardized 0.7 threshold)
                   : score >= 0.4
-                    ? "bg-[#efe6d9] border-[#1f3b2c]/40"
-                    : score >= 0.2
-                      ? "bg-[#f5e6d3] border-[#b86f3a]/40"
-                      : "bg-[#f0d9d9] border-[#b86f3a]"
+                    ? "bg-[#faf5ef] border-[#1f3b2c]/40"  // Tan - moderate (standardized 0.4 threshold)
+                    : "bg-[#fce9e9] border-[#b86f3a]/40"  // Red - weak
                 : "bg-white border-[#e3dacb] hover:border-[#1f3b2c]/50 hover:shadow-sm"
           }
         `}

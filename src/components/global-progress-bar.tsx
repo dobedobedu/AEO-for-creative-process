@@ -61,8 +61,8 @@ export function GlobalProgressBar({
           completedSteps: data.completedSteps,
           totalSteps: data.totalSteps,
           unit: data.unit || "cells",
-          message:
-            data.events?.[data.events.length - 1]?.message || prev.message,
+          // Events are sorted DESC (newest first), so [0] is the most recent
+          message: data.events?.[0]?.message || prev.message,
         }));
       } catch {
         // Silently ignore polling errors
@@ -117,7 +117,7 @@ export function GlobalProgressBar({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed bottom-0 left-0 right-0 z-50"
+          className="fixed bottom-[52px] left-0 right-0 z-50"
         >
           {/* Progress bar track */}
           <div className="h-1 bg-[#e3dacb]">

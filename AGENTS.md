@@ -81,7 +81,19 @@ npm test         # 19 benchmark tests must pass
 - Use shadcn CLI to add new UI components: `npx shadcn@latest add [component]`
 - Keep mock data deterministic for reliable SSR
 
-## Current State (v0.3.0)
+## Current State (v0.5.0 - Supabase Auth + DB Progress)
+
+**Just Completed (Pending Code Review):**
+- **Supabase Auth**: Google OAuth for user authentication
+- **DB-backed Progress**: Progress tracking persisted in Postgres (works across serverless instances)
+- **User Attribution**: Intent edits tracked by user_id
+- **Atomic Transactions**: Intent updates are transactional (race-condition safe)
+- Intent library migrated from JSON file to Postgres (multi-user sync)
+- All library functions now async (loadIntentLibrary, createIntent, updateIntent, etc.)
+- Cron schedule updated to midnight EST (`0 5 * * *`)
+- Scheduled benchmark generates 3 queries per intent (matching manual runs)
+- Generated queries saved to intent library after scheduled runs
+- Back button removed from main matrix page header
 
 **Complete:**
 - Visibility Matrix with Persona × Stage grid
@@ -156,7 +168,124 @@ Typical full benchmark (~1600 responses): ~$0.12 embedding cost
 
 **Response Cache**: In-memory with file persistence. Key = SHA256(`provider:model:query`).
 
-**Vercel Cron**: Requires Pro plan. Endpoint at `/api/benchmark/scheduled`. Set `CRON_SECRET` env var for auth.
+**Vercel Cron**: Runs at midnight EST (`0 5 * * *`). Requires Pro plan. Endpoint at `/api/benchmark/scheduled`. Set `CRON_SECRET` env var for auth.
+
+---
+
+## Pre-Deployment Changes (Code Review Checklist)
+
+### Authentication (Supabase)
+
+**New Files:**
+| File | Purpose |
+|------|---------|
+| `src/lib/auth/supabase.ts` | Supabase client helpers (server & browser) |
+| `src/app/login/page.tsx` | Google OAuth login page |
+| `src/app/auth/callback/route.ts` | OAuth callback handler |
+| `src/middleware.ts` | Auth enforcement middleware |
+
+**Auth Flow:**
+1. Unauthenticated users → redirected to `/login`
+2. Click "Sign in with Google" → Supabase OAuth
+3. Callback exchanges code → session cookie set
+4. Redirect to `/visibility-matrix`
+
+**Protected Routes:**
+- All pages except `/login` and `/auth/callback`
+- API mutations: `/api/intents/*`, `/api/benchmark/run`, `/api/chat`
+- Cron uses `CRON_SECRET` header (no user auth)
+
+### Database Migration (Intent Library)
+
+**Files Changed:**
+| File | Change |
+|------|--------|
+| `src/lib/intents/library.ts` | Async DB calls + actorUserId param |
+| `src/lib/intents/db.ts` | Atomic transactions, user attribution |
+| `src/lib/intents/schema.sql` | Added user attribution columns |
+| `sql/2026-01-20-supabase-auth.sql` | Migration for auth columns + progress |
+| `src/app/api/intents/library/queries/route.ts` | User attribution from session |
+| `src/app/api/benchmark/run/route.ts` | Async progress calls |
+
+**New Database Columns:**
+```sql
+-- On intents table
+created_by UUID NULL
+updated_by UUID NULL
+updated_at TIMESTAMPTZ
+
+-- On intent_history table
+actor_user_id UUID NULL
+
+-- New run_progress table
+run_progress (run_id, status, total_steps, completed_steps, unit, events, started_by, ...)
+```
+
+### DB-backed Progress
+
+**Files Changed:**
+| File | Change |
+|------|--------|
+| `src/lib/benchmark/progress.ts` | Replaced Map with Postgres |
+| `src/app/api/benchmark/progress/[runId]/route.ts` | Async getProgress |
+
+**Benefits:**
+- Progress persists across serverless instances
+- Works reliably during Vercel cold starts
+- 1% cleanup on reads (entries older than 24h)
+
+### Cron & Benchmark Changes
+
+| Change | Before | After |
+|--------|--------|-------|
+| Cron schedule | `0 14 * * *` | `0 5 * * *` (midnight EST) |
+| Queries per intent | 5 | 3 (matches manual runs) |
+| Generated queries | Not saved | Saved to intent library |
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `DATABASE_URL` | Supabase Postgres connection string |
+| `CRON_SECRET` | Auth token for scheduled benchmarks |
+
+### Deployment Steps
+
+1. Create Supabase project, enable Google OAuth provider
+2. Run SQL migrations:
+   - `sql/2026-01-20-supabase-auth.sql` (auth + progress tables)
+   - `sql/2026-01-20-user-activity.sql` (activity tracking)
+3. Set environment variables in Vercel
+4. Deploy to Vercel
+5. Test login flow
+6. Test cron: `curl -H "Authorization: Bearer $CRON_SECRET" https://app.vercel.app/api/benchmark/scheduled`
+
+### Security Hardening (v0.5.1)
+
+**All AI-calling endpoints now require auth:**
+- `/api/query` - AI query endpoint
+- `/api/run/execute` - AI execution endpoint
+- `/api/run/analyze` - AI analysis endpoint
+
+**Schema bootstrap synced:**
+- `ensureIntentSchema()` now includes `created_by`, `updated_by`, `updated_at`, `actor_user_id` columns
+- Fresh DB setup works without requiring migration
+
+### Usage Tracking (v0.5.1)
+
+**Lightweight activity tracking:**
+- `app_users.last_active_at` - Updated on benchmark runs and intent edits
+- `run_progress.started_by` - Records who initiated each benchmark
+- Non-invasive: Only tracks last activity timestamp, no logging
+
+### Test Results
+
+- `npm run build` ✓ passes
+- `npm test` ✓ all 185 tests pass
+
+---
 
 ## Terminology
 

@@ -1,5 +1,10 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import { join } from "path";
+/**
+ * Intent Library - Database-backed implementation
+ *
+ * Provides CRUD operations for the intent library stored in Postgres.
+ * All changes are persisted immediately for multi-user sync.
+ */
+
 import {
   IntentLibrary,
   IntentLibrarySchema,
@@ -10,58 +15,63 @@ import {
   Stage,
   generateIntentId,
 } from "./types";
+import {
+  fetchLibraryMeta,
+  fetchAllIntents,
+  fetchIntentsForCell,
+  fetchIntentById,
+  fetchHistory,
+  atomicCreateIntent,
+  atomicUpdateIntent,
+} from "./db";
 
-const DATA_DIR = join(process.cwd(), "data", "intents");
-const LIBRARY_PATH = join(DATA_DIR, "library.json");
+/**
+ * Loads the entire intent library from the database.
+ */
+export async function loadIntentLibrary(): Promise<IntentLibrary> {
+  const [meta, intents, history] = await Promise.all([
+    fetchLibraryMeta(),
+    fetchAllIntents(),
+    fetchHistory(),
+  ]);
 
-function ensureDataDir(): void {
-  if (!existsSync(DATA_DIR)) {
-    mkdirSync(DATA_DIR, { recursive: true });
-  }
+  const library: IntentLibrary = {
+    version: meta.version,
+    updatedAt: meta.updatedAt,
+    intents,
+    history,
+  };
+
+  return IntentLibrarySchema.parse(library);
 }
 
-export function loadIntentLibrary(): IntentLibrary {
-  ensureDataDir();
-
-  if (!existsSync(LIBRARY_PATH)) {
-    const empty: IntentLibrary = {
-      version: 0,
-      updatedAt: new Date().toISOString(),
-      intents: [],
-      history: [],
-    };
-    return empty;
-  }
-
-  const raw = readFileSync(LIBRARY_PATH, "utf-8");
-  const parsed = JSON.parse(raw);
-  return IntentLibrarySchema.parse(parsed);
-}
-
-export function saveIntentLibrary(library: IntentLibrary): void {
-  ensureDataDir();
-  const validated = IntentLibrarySchema.parse(library);
-  writeFileSync(LIBRARY_PATH, JSON.stringify(validated, null, 2), "utf-8");
-}
-
-export function getIntentsForCell(
-  library: IntentLibrary,
+/**
+ * Gets active intents for a specific persona/stage cell.
+ */
+export async function getIntentsForCell(
   persona: Persona,
   stage: Stage
-): Intent[] {
-  return library.intents.filter(
-    (i) => i.persona === persona && i.stage === stage && i.active
-  );
+): Promise<Intent[]> {
+  return fetchIntentsForCell(persona, stage);
 }
 
-export function getIntentById(library: IntentLibrary, intentId: string): Intent | undefined {
-  return library.intents.find((i) => i.id === intentId);
+/**
+ * Gets an intent by ID.
+ */
+export async function getIntentById(intentId: string): Promise<Intent | null> {
+  return fetchIntentById(intentId);
 }
 
-export function createIntent(
-  library: IntentLibrary,
-  input: Omit<Intent, "id" | "createdAt" | "active">
-): IntentLibrary {
+/**
+ * Creates a new intent and persists it to the database atomically.
+ * Returns the updated library state.
+ * @param input The intent data (without id, createdAt, active)
+ * @param actorUserId Optional user ID who created the intent
+ */
+export async function createIntent(
+  input: Omit<Intent, "id" | "createdAt" | "active">,
+  actorUserId?: string
+): Promise<IntentLibrary> {
   const validated = IntentSchema.omit({ id: true, createdAt: true, active: true }).parse(input);
 
   const newIntent: Intent = {
@@ -76,35 +86,30 @@ export function createIntent(
     intentId: newIntent.id,
   };
 
-  const newVersion = library.version + 1;
-  const now = new Date();
+  // Atomically insert intent, increment version, and record history
+  await atomicCreateIntent(newIntent, change, actorUserId);
 
-  return {
-    version: newVersion,
-    updatedAt: now.toISOString(),
-    intents: [...library.intents, newIntent],
-    history: [
-      ...library.history,
-      {
-        version: newVersion,
-        date: now.toISOString().split("T")[0],
-        changes: [change],
-      },
-    ],
-  };
+  // Return updated library
+  return loadIntentLibrary();
 }
 
-export function updateIntent(
-  library: IntentLibrary,
+/**
+ * Updates an existing intent and persists changes to the database atomically.
+ * Returns the updated library state.
+ * @param intentId The ID of the intent to update
+ * @param updates The fields to update
+ * @param actorUserId Optional user ID who made the update
+ */
+export async function updateIntent(
   intentId: string,
-  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries">>
-): IntentLibrary {
-  const existingIndex = library.intents.findIndex((i) => i.id === intentId);
-  if (existingIndex === -1) {
+  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries">>,
+  actorUserId?: string
+): Promise<IntentLibrary> {
+  const existing = await fetchIntentById(intentId);
+  if (!existing) {
     throw new Error(`Intent not found: ${intentId}`);
   }
 
-  const existing = library.intents[existingIndex];
   const changes: IntentChange[] = [];
 
   if (updates.text !== undefined && updates.text !== existing.text) {
@@ -147,41 +152,31 @@ export function updateIntent(
     });
   }
 
+  // No changes to persist
   if (changes.length === 0) {
-    return library;
+    return loadIntentLibrary();
   }
 
-  const updated: Intent = { ...existing, ...updates };
-  const newIntents = [...library.intents];
-  newIntents[existingIndex] = updated;
+  // Atomically update the intent, increment version, and record history
+  await atomicUpdateIntent(intentId, updates, changes, actorUserId);
 
-  const newVersion = library.version + 1;
-  const now = new Date();
-
-  return {
-    version: newVersion,
-    updatedAt: now.toISOString(),
-    intents: newIntents,
-    history: [
-      ...library.history,
-      {
-        version: newVersion,
-        date: now.toISOString().split("T")[0],
-        changes,
-      },
-    ],
-  };
+  return loadIntentLibrary();
 }
 
-export function deactivateIntent(library: IntentLibrary, intentId: string): IntentLibrary {
-  const existingIndex = library.intents.findIndex((i) => i.id === intentId);
-  if (existingIndex === -1) {
+/**
+ * Deactivates an intent (soft delete) atomically.
+ * Returns the updated library state.
+ * @param intentId The ID of the intent to deactivate
+ * @param actorUserId Optional user ID who made the change
+ */
+export async function deactivateIntent(intentId: string, actorUserId?: string): Promise<IntentLibrary> {
+  const existing = await fetchIntentById(intentId);
+  if (!existing) {
     throw new Error(`Intent not found: ${intentId}`);
   }
 
-  const existing = library.intents[existingIndex];
   if (!existing.active) {
-    return library;
+    return loadIntentLibrary();
   }
 
   const change: IntentChange = {
@@ -189,37 +184,26 @@ export function deactivateIntent(library: IntentLibrary, intentId: string): Inte
     intentId,
   };
 
-  const updated: Intent = { ...existing, active: false };
-  const newIntents = [...library.intents];
-  newIntents[existingIndex] = updated;
+  // Atomically update intent, increment version, and record history
+  await atomicUpdateIntent(intentId, { active: false }, [change], actorUserId);
 
-  const newVersion = library.version + 1;
-  const now = new Date();
-
-  return {
-    version: newVersion,
-    updatedAt: now.toISOString(),
-    intents: newIntents,
-    history: [
-      ...library.history,
-      {
-        version: newVersion,
-        date: now.toISOString().split("T")[0],
-        changes: [change],
-      },
-    ],
-  };
+  return loadIntentLibrary();
 }
 
-export function reactivateIntent(library: IntentLibrary, intentId: string): IntentLibrary {
-  const existingIndex = library.intents.findIndex((i) => i.id === intentId);
-  if (existingIndex === -1) {
+/**
+ * Reactivates a previously deactivated intent atomically.
+ * Returns the updated library state.
+ * @param intentId The ID of the intent to reactivate
+ * @param actorUserId Optional user ID who made the change
+ */
+export async function reactivateIntent(intentId: string, actorUserId?: string): Promise<IntentLibrary> {
+  const existing = await fetchIntentById(intentId);
+  if (!existing) {
     throw new Error(`Intent not found: ${intentId}`);
   }
 
-  const existing = library.intents[existingIndex];
   if (existing.active) {
-    return library;
+    return loadIntentLibrary();
   }
 
   const change: IntentChange = {
@@ -227,36 +211,28 @@ export function reactivateIntent(library: IntentLibrary, intentId: string): Inte
     intentId,
   };
 
-  const updated: Intent = { ...existing, active: true };
-  const newIntents = [...library.intents];
-  newIntents[existingIndex] = updated;
+  // Atomically update intent, increment version, and record history
+  await atomicUpdateIntent(intentId, { active: true }, [change], actorUserId);
 
-  const newVersion = library.version + 1;
-  const now = new Date();
-
-  return {
-    version: newVersion,
-    updatedAt: now.toISOString(),
-    intents: newIntents,
-    history: [
-      ...library.history,
-      {
-        version: newVersion,
-        date: now.toISOString().split("T")[0],
-        changes: [change],
-      },
-    ],
-  };
+  return loadIntentLibrary();
 }
 
-export function getIntentChangesForVersion(
-  library: IntentLibrary,
-  version: number
-): IntentChange[] {
-  const entry = library.history.find((h) => h.version === version);
+/**
+ * Gets the changes for a specific library version.
+ */
+export async function getIntentChangesForVersion(version: number): Promise<IntentChange[]> {
+  const history = await fetchHistory();
+  const entry = history.find((h) => h.version === version);
   return entry?.changes ?? [];
 }
 
-export function getVersionsWithChanges(library: IntentLibrary): number[] {
-  return library.history.map((h) => h.version);
+/**
+ * Gets all versions that have recorded changes.
+ */
+export async function getVersionsWithChanges(): Promise<number[]> {
+  const history = await fetchHistory();
+  return history.map((h) => h.version);
 }
+
+// Re-export for backwards compatibility with any code that might import from here
+export { fetchIntentsForCell as getIntentsForCellSync } from "./db";

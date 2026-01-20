@@ -13,7 +13,23 @@
       "Bash(git push:*)",
       "mcp__vercel__get_deployment_build_logs",
       "Bash(git fetch:*)",
-      "WebFetch(domain:www.humanlayer.dev)"
+      "WebFetch(domain:www.humanlayer.dev)",
+      "Bash(do echo \"Removing $var...\")",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(openssl rand:*)",
+      "Bash(cd:*)",
+      "Bash(/opt/homebrew/bin/supabase:*)",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "mcp__plugin_supabase_supabase__get_project",
+      "mcp__plugin_supabase_supabase__get_project_url",
+      "mcp__plugin_supabase_supabase__get_publishable_keys",
+      "mcp__plugin_supabase_supabase__apply_migration",
+      "mcp__plugin_supabase_supabase__list_tables"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }

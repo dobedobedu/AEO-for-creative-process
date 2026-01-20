@@ -7,6 +7,9 @@ import type { Stage } from "@/lib/intents/types";
 import { extractStageMetrics, recommendationStrengthToScore } from "@/lib/scoring/extractor";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import { getCachedResponse, setCachedResponse } from "@/lib/cache";
+import { parseOpenAIResponse } from "@/lib/parsers/openaiCitations";
+import { parseGeminiResponse } from "@/lib/parsers/geminiCitations";
+import type { Citation } from "@/lib/parsers/types";
 
 export type Provider = "openai" | "anthropic" | "gemini" | "xai";
 
@@ -32,7 +35,7 @@ export interface ProviderResponse {
   provider: Provider;
   model: string;
   text: string;
-  citations: string[];
+  citations: Citation[];
   visibility: VisibilityScore;
   stageExtraction?: StageExtraction;
   latencyMs: number;
@@ -72,11 +75,19 @@ export async function runSingleQuery(params: {
   if (!skipCache) {
     const cached = getCachedResponse(query, provider, model);
     if (cached) {
+      // Reconstruct citations from cached data (they may be stored as strings or full Citation objects)
+      const cachedCitations: Citation[] = Array.isArray(cached.citations)
+        ? cached.citations.map((c: unknown) =>
+            typeof c === "string"
+              ? { url: c, domain: extractDomainFromUrl(c), sourceType: "url_citation" as const }
+              : (c as Citation)
+          )
+        : [];
       return {
         provider,
         model,
         text: cached.text,
-        citations: cached.citations,
+        citations: cachedCitations,
         visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
         latencyMs: 0, // Instant from cache
         raw: cached.raw,
@@ -87,33 +98,49 @@ export async function runSingleQuery(params: {
   try {
     let raw: unknown;
     let text = "";
-    let citations: string[] = [];
+    let citations: Citation[] = [];
 
     switch (provider) {
       case "openai": {
         const response = await callOpenAIWebSearch({ model, query });
         raw = response;
-        text = extractOpenAIText(response);
+        const parsed = parseOpenAIResponse(response);
+        text = parsed.text;
+        citations = parsed.citations;
         break;
       }
       case "anthropic": {
         const response = await callAnthropicWebSearch({ model, query });
         raw = response;
         text = extractAnthropicText(response);
-        citations = response.citations ?? [];
+        // Anthropic returns citations as string URLs, convert to Citation objects
+        const urlCitations = response.citations ?? [];
+        citations = urlCitations.map((url: string) => ({
+          url,
+          domain: extractDomainFromUrl(url),
+          sourceType: "url_citation" as const,
+        }));
         break;
       }
       case "gemini": {
         const response = await callGeminiWebSearch({ model, query });
         raw = response;
-        text = extractGeminiText(response);
+        const parsed = parseGeminiResponse(response);
+        text = parsed.text;
+        citations = parsed.citations;
         break;
       }
       case "xai": {
         const response = await callXaiSearch({ model, query });
         raw = response;
         text = extractXaiText(response);
-        citations = response.citations ?? [];
+        // xAI returns citations as string URLs, convert to Citation objects
+        const urlCitations = response.citations ?? [];
+        citations = urlCitations.map((url: string) => ({
+          url,
+          domain: extractDomainFromUrl(url),
+          sourceType: "url_citation" as const,
+        }));
         break;
       }
     }
@@ -155,6 +182,16 @@ export async function runSingleQuery(params: {
       error: errorMessage,
       raw: null,
     };
+  }
+}
+
+// Helper to extract domain from URL
+function extractDomainFromUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.replace(/^www\./, "");
+  } catch {
+    return url;
   }
 }
 

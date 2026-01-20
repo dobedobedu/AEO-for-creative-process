@@ -82,6 +82,9 @@ export function emptyExtraction(stage: Stage): StageExtraction {
                 qualifiers: [],
                 alternativesOffered: [],
                 decisionRationale: "Not mentioned",
+                concernsAddressed: [],
+                concernsUnaddressed: [],
+                actionableGuidance: false,
             };
     }
 }

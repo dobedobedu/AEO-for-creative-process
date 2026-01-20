@@ -137,7 +137,7 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
                   hasCurrentData ? "bg-[#1f3b2c]/10 text-[#1f3b2c]" : "bg-[#6e7c5b]/15 text-[#6e7c5b]"
                 }`}
               >
-                {hasCurrentData ? "Mode: Session" : "Mode: File Search"}
+                {hasCurrentData ? "Current Run" : "Historical Data"}
               </Badge>
               <Badge
                 variant="outline"

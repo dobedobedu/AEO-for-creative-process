@@ -5,7 +5,20 @@ import { Persona, Stage, Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Target } from "lucide-react";
+import { MessageSquare, Target, Bot, Link2 } from "lucide-react";
+import type { Citation } from "@/lib/parsers/types";
+
+interface ResponsePreview {
+    provider: string;
+    model: string;
+    text: string;
+    query: string;
+    visibility: {
+        score: number;
+        mentioned: boolean;
+        sentiment: string;
+    };
+}
 
 interface GalleryTileProps {
     persona: Persona;
@@ -13,14 +26,17 @@ interface GalleryTileProps {
     stage: Stage;
     stageLabel: string;
     intents: IntentNode[];
-    activeTab: "summary" | "intents" | "queries";
+    activeTab: "summary" | "intents" | "queries" | "answers";
     results?: {
-        visibilityScore: number;
+        discoveryRate: number;      // was: visibilityScore
         sentimentScore: number;
         topCompetitor?: string;
         winRate?: number;
-        answerRate?: number;
+        recommendationRate?: number; // was: answerRate
     };
+    responses?: ResponsePreview[];
+    citations?: Citation[];
+    brandDomain?: string;
     onClick: () => void;
     accentColor?: string;
 }
@@ -33,6 +49,9 @@ export function GalleryTile({
     intents,
     activeTab,
     results,
+    responses = [],
+    citations = [],
+    brandDomain,
     onClick,
     accentColor = "#1f3b2c",
 }: GalleryTileProps) {
@@ -43,15 +62,15 @@ export function GalleryTile({
         if (!results) return null;
         switch (stage) {
             case "explore":
-                return { label: "Reach", value: `${Math.round(results.visibilityScore * 100)}%` };
+                return { label: "Discovery", value: `${Math.round((results.discoveryRate || 0) * 100)}%` };
             case "consider":
                 const s = results.sentimentScore;
                 const sentimentLabel = s > 0.3 ? "Positive" : s < -0.3 ? "Negative" : "Neutral";
-                return { label: "Sentiment", value: sentimentLabel };
+                return { label: "Sentiment", value: `${s.toFixed(1)} (${sentimentLabel})` };
             case "compare":
                 return { label: "Win Rate", value: `${Math.round((results.winRate || 0) * 100)}%` };
             case "decide":
-                return { label: "Answers", value: `${Math.round((results.answerRate || 0) * 100)}%` };
+                return { label: "Rec Rate", value: `${Math.round((results.recommendationRate || 0) * 100)}%` };
             default:
                 return null;
         }
@@ -59,14 +78,14 @@ export function GalleryTile({
 
     const metric = getStageMetric();
 
-    // Heatmap color logic
+    // Heatmap color logic - standardized thresholds (0.7/0.4)
     const getHeatmapBg = (score: number) => {
-        if (score > 0.8) return "bg-[#dcf3dc] hover:bg-[#d2ebd2]"; // Vivid soft green
-        if (score > 0.4) return "bg-[#faf5ef] hover:bg-[#f3eadf]"; // Vivid soft tan/cream
-        return "bg-[#fce9e9] hover:bg-[#f9dada]"; // Vivid soft red/pink
+        if (score >= 0.7) return "bg-[#dcf3dc] hover:bg-[#d2ebd2]"; // Green - strong
+        if (score >= 0.4) return "bg-[#faf5ef] hover:bg-[#f3eadf]"; // Tan - moderate
+        return "bg-[#fce9e9] hover:bg-[#f9dada]"; // Red - weak
     };
 
-    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(results.visibilityScore) : "bg-transparent hover:bg-white/40";
+    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(results.discoveryRate || 0) : "bg-transparent hover:bg-white/40";
 
     return (
         <motion.div
@@ -102,7 +121,72 @@ export function GalleryTile({
 
                 {/* Content: Preview */}
                 <div className="flex-1 space-y-4 overflow-hidden">
-                    {hasContent ? (
+                    {activeTab === "answers" ? (
+                        (() => {
+                            // Aggregate citations by domain
+                            const domainCounts = new Map<string, number>();
+                            for (const citation of citations) {
+                                const domain = citation.domain || new URL(citation.url).hostname.replace(/^www\./, "");
+                                domainCounts.set(domain, (domainCounts.get(domain) || 0) + 1);
+                            }
+                            const sortedDomains = Array.from(domainCounts.entries())
+                                .sort((a, b) => b[1] - a[1]);
+                            const top5 = sortedDomains.slice(0, 5);
+                            const totalCitations = citations.length;
+                            const remainingCount = sortedDomains.length - 5;
+
+                            if (totalCitations === 0) {
+                                return (
+                                    <div className="h-full flex flex-col justify-center items-center py-4">
+                                        <Link2 className="w-8 h-8 text-black/10 mb-2" />
+                                        <p className="text-sm italic text-black/20">No citations yet</p>
+                                    </div>
+                                );
+                            }
+
+                            return (
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.15em] text-black/40">
+                                            Most Cited Sources
+                                        </span>
+                                        <span className="text-[9px] font-medium text-black/30">
+                                            {totalCitations} total
+                                        </span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {top5.map(([domain, count], idx) => {
+                                            const isBrand = brandDomain && domain.toLowerCase().includes(brandDomain.toLowerCase());
+                                            return (
+                                                <div
+                                                    key={idx}
+                                                    className={`flex items-center justify-between py-1 px-2 rounded-sm ${
+                                                        isBrand ? "bg-[#dcf3dc]" : "bg-black/[0.02]"
+                                                    }`}
+                                                >
+                                                    <span className={`text-[10px] truncate max-w-[140px] ${
+                                                        isBrand ? "font-bold text-[#1f3b2c]" : "text-black/60"
+                                                    }`}>
+                                                        {domain}
+                                                    </span>
+                                                    <span className={`text-[10px] font-bold ${
+                                                        isBrand ? "text-[#1f3b2c]" : "text-black/40"
+                                                    }`}>
+                                                        {count}×
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    {remainingCount > 0 && (
+                                        <p className="text-[10px] text-black/30 text-center">
+                                            +{remainingCount} more sources
+                                        </p>
+                                    )}
+                                </div>
+                            );
+                        })()
+                    ) : hasContent ? (
                         <>
                             {activeTab === "summary" ? (
                                 <div className="h-full flex flex-col justify-center items-center py-4">

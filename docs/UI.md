@@ -169,3 +169,50 @@ Common icons:
 - Refresh: `RefreshCw`
 - Loading: `Loader2` (with `animate-spin`)
 - Expand: `ChevronDown` / `ChevronRight`
+- Run: `Play`
+
+## AnswersPanel (LLM Response Viewer)
+
+Full-screen modal for viewing AI responses with stage-specific metrics.
+
+### Brand Highlighting
+
+Brand mentions are highlighted in responses using `<mark>`:
+
+```tsx
+<mark className="bg-[#dcf3dc] text-[#1f3b2c] px-1 py-0.5 rounded-sm font-semibold not-italic">
+  Lakewood Ranch
+</mark>
+```
+
+Highlights: "Lakewood Ranch", "LWR", "Lakewood" (case-insensitive, longest match first)
+
+### Stage-Specific Badges
+
+| Stage | Collapsed Header Badges |
+|-------|------------------------|
+| Explore | Mentioned, Position (best), Query count |
+| Consider | Mentioned, Sentiment, Query count |
+| Compare | Mentioned, Query count |
+| Decide | Mentioned, Query count |
+
+Position badge only shows when brand is mentioned. Sentiment badge only shows for Consider stage.
+
+### Heatmap Colors (Standardized)
+
+```tsx
+const getHeatmapBg = (score: number) => {
+  if (score >= 0.7) return "bg-[#dcf3dc]"; // Green - strong
+  if (score >= 0.4) return "bg-[#faf5ef]"; // Tan - moderate
+  return "bg-[#fce9e9]";                   // Red - weak
+};
+```
+
+## GalleryTile Stage Metrics
+
+| Stage | Label | Source Field |
+|-------|-------|-------------|
+| Explore | "Discovery" | `discoveryRate` |
+| Consider | "Sentiment" | `sentimentScore` (numeric + label) |
+| Compare | "Win Rate" | `winRate` |
+| Decide | "Rec Rate" | `recommendationRate` |

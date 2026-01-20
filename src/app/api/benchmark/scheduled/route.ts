@@ -1,13 +1,14 @@
 /**
  * Scheduled Benchmark Endpoint
- * 
- * Triggered by Vercel Cron daily at 10PM SGT (2PM UTC).
+ *
+ * Triggered by Vercel Cron daily at midnight EST (5 AM UTC).
  * Runs a full matrix benchmark across all personas × stages.
+ * Generates 3 queries per intent (matching manual runs).
  */
 
 import { runBenchmark } from "@/lib/benchmark";
 import type { BenchmarkResult } from "@/lib/benchmark/runner";
-import { loadIntentLibrary } from "@/lib/intents/library";
+import { loadIntentLibrary, updateIntent } from "@/lib/intents/library";
 import { loadMetricsConfig } from "@/lib/metrics/config";
 import { saveRun, generateRunId } from "@/lib/runs/storage";
 import type { BenchmarkRun, CellResult } from "@/lib/runs/types";
@@ -44,7 +45,7 @@ export async function GET(req: Request) {
     const startTime = Date.now();
 
     try {
-        const intentLibrary = loadIntentLibrary();
+        const intentLibrary = await loadIntentLibrary();
         const metricsConfig = loadMetricsConfig();
         const runCells: Record<string, CellResult> = {};
         const errors: Array<{ persona: string; stage: string; error: string }> = [];
@@ -62,7 +63,7 @@ export async function GET(req: Request) {
                         continue; // No intents for this cell
                     }
 
-                    // Generate queries via DeepSeek for each intent
+                    // Generate queries via DeepSeek for each intent (3 queries, matching manual runs)
                     const intentsToRun = await Promise.all(
                         activeIntents.map(async (intent) => {
                             const generated = await generateQueriesFromIntent({
@@ -71,8 +72,14 @@ export async function GET(req: Request) {
                                 intent: intent.text,
                                 role: intent.role,
                                 queryStyle: intent.queryStyle,
-                                count: 5,
+                                count: 3,
                             });
+
+                            // Save generated queries to intent library for reference
+                            await updateIntent(intent.id, {
+                                generatedQueries: generated.queries,
+                            });
+
                             return {
                                 id: intent.id,
                                 queries: generated.queries,

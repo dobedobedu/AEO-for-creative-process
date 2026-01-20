@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/benchmark/scheduled",
-      "schedule": "0 14 * * *"
+      "schedule": "0 5 * * *"
     }
   ]
 }

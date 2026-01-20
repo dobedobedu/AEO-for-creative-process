@@ -7,17 +7,39 @@ import { IntentNode } from "@/lib/intents/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Zap, SlidersHorizontal } from "lucide-react";
+import type { Citation } from "@/lib/parsers/types";
+
+interface ResponseData {
+    provider: string;
+    model: string;
+    text: string;
+    query: string;
+    visibility: {
+        score: number;
+        mentioned: boolean;
+        sentiment: string;
+    };
+}
 
 interface SplitViewEditorProps {
-    activeTab: "summary" | "intents" | "queries";
+    activeTab: "summary" | "intents" | "queries" | "answers";
     personas: { id: Persona; label: string }[];
     stages: { id: Stage; label: string }[];
     queryBank: Record<Persona, Record<Stage, { intents: IntentNode[] }>>;
-    cellResults?: Record<Persona, Record<Stage, { visibilityScore: number; sentimentScore: number; topCompetitor?: string }>>;
+    cellResults?: Record<Persona, Record<Stage, {
+        discoveryRate: number;      // was: visibilityScore
+        sentimentScore: number;
+        topCompetitor?: string;
+        winRate?: number;
+        recommendationRate?: number; // was: answerRate
+        responses?: ResponseData[];
+        citations?: Citation[];
+    }>>;
+    brandDomain?: string;
     onSelectCell: (persona: Persona, stage: Stage) => void;
     // Bulk Actions
     onShowAll?: () => void;
-    onGenerateAll?: (mode: "summary" | "intents" | "queries") => void;
+    onGenerateAll?: (mode: "summary" | "intents" | "queries" | "answers") => void;
 }
 
 const STAGE_COLORS: Record<string, string> = {
@@ -33,6 +55,7 @@ export function SplitViewEditor({
     stages,
     queryBank,
     cellResults,
+    brandDomain,
     onSelectCell,
     onGenerateAll,
 }: SplitViewEditorProps) {
@@ -80,20 +103,22 @@ export function SplitViewEditor({
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-8">
                             <h2 className="text-sm font-bold uppercase tracking-widest text-black/40">
-                                {activeTab === "summary" ? "Research Summary" : activeTab === "intents" ? "Research Intents" : "Query Bank"}
+                                {activeTab === "summary" ? "Research Summary" : activeTab === "intents" ? "Research Intents" : activeTab === "queries" ? "Query Bank" : "LLM Answers"}
                             </h2>
                             <div className="h-4 w-[1px] bg-[#e3dacb]" />
-                            <div className="flex gap-4">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => onGenerateAll?.(activeTab)}
-                                    className="h-8 gap-2 text-[11px] font-bold uppercase tracking-wider text-black/60 hover:text-black"
-                                >
-                                    <Zap className="w-3.5 h-3.5" />
-                                    {activeTab === "intents" ? "Generate Intents" : "Generate Queries"}
-                                </Button>
-                            </div>
+                            {activeTab !== "answers" && activeTab !== "summary" && (
+                                <div className="flex gap-4">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => onGenerateAll?.(activeTab)}
+                                        className="h-8 gap-2 text-[11px] font-bold uppercase tracking-wider text-black/60 hover:text-black"
+                                    >
+                                        <Zap className="w-3.5 h-3.5" />
+                                        {activeTab === "intents" ? "Generate Intents" : "Generate Queries"}
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -180,20 +205,26 @@ export function SplitViewEditor({
                             layout
                             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#e3dacb] border border-[#e3dacb]"
                         >
-                            {filteredCells.map((cell) => (
-                                <GalleryTile
-                                    key={`${cell.persona}-${cell.stage}`}
-                                    persona={cell.persona}
-                                    personaLabel={cell.personaLabel}
-                                    stage={cell.stage}
-                                    stageLabel={cell.stageLabel}
-                                    intents={cell.intents}
-                                    activeTab={activeTab}
-                                    results={cellResults?.[cell.persona]?.[cell.stage]}
-                                    onClick={() => onSelectCell(cell.persona, cell.stage)}
-                                    accentColor={STAGE_COLORS[cell.stage] || "#1f3b2c"}
-                                />
-                            ))}
+                            {filteredCells.map((cell) => {
+                                const cellResult = cellResults?.[cell.persona]?.[cell.stage];
+                                return (
+                                    <GalleryTile
+                                        key={`${cell.persona}-${cell.stage}`}
+                                        persona={cell.persona}
+                                        personaLabel={cell.personaLabel}
+                                        stage={cell.stage}
+                                        stageLabel={cell.stageLabel}
+                                        intents={cell.intents}
+                                        activeTab={activeTab}
+                                        results={cellResult}
+                                        responses={cellResult?.responses}
+                                        citations={cellResult?.citations}
+                                        brandDomain={brandDomain}
+                                        onClick={() => onSelectCell(cell.persona, cell.stage)}
+                                        accentColor={STAGE_COLORS[cell.stage] || "#1f3b2c"}
+                                    />
+                                );
+                            })}
                         </motion.div>
                     </AnimatePresence>
 

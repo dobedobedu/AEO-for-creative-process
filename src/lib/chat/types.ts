@@ -14,11 +14,19 @@ export interface VisibilityData {
   comparisonOutcome: "favorable" | "unfavorable" | "neutral" | "none";
 }
 
+export interface CitationData {
+  url: string;
+  domain: string;
+  title?: string;
+  sourceType: "url_citation" | "grounding_chunk";
+}
+
 export interface ResponseData {
   provider: Provider;
   model: string;
   text: string;
   visibility: VisibilityData;
+  citations?: CitationData[];
   error?: string;
 }
 

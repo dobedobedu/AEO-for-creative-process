@@ -1,6 +1,6 @@
 /**
  * Response Deduplication Cache
- * 
+ *
  * Caches benchmark responses to avoid re-running identical queries within 24 hours.
  * Uses a simple in-memory cache backed by file persistence.
  */
@@ -8,13 +8,14 @@
 import { createHash } from "crypto";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
+import type { Citation } from "@/lib/parsers/types";
 
 export interface CachedResponse {
     query: string;
     provider: string;
     model: string;
     text: string;
-    citations: string[];
+    citations: Citation[] | string[];
     timestamp: number;
     raw: unknown;
 }

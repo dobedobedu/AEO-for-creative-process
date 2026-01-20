@@ -5,9 +5,9 @@ import { DefaultChatTransport } from "ai";
 import { useState, useEffect, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import { Persona, Stage } from "./types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, AlertCircle, Send, Loader2, Bot, User } from "lucide-react";
+import { MessageSquare, AlertCircle, Send, Loader2, Bot, User, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import type { ChatContext, QueryResultData, ResponseData, VisibilityData } from "@/lib/chat/types";
@@ -34,6 +34,8 @@ interface InsightModalProps {
     stageLabel: string;
     results: any[]; // QueryResult[]
     brand: string;
+    onRunCell?: () => void;
+    isRunning?: boolean;
 }
 
 // Helper to extract text from message parts (AI SDK 6 format)
@@ -53,7 +55,9 @@ export function InsightModal({
     personaLabel,
     stageLabel,
     results,
-    brand
+    brand,
+    onRunCell,
+    isRunning = false,
 }: InsightModalProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [input, setInput] = useState("");
@@ -278,8 +282,26 @@ export function InsightModal({
                             <DialogTitle className="text-2xl font-light tracking-tight text-black">
                                 {personaLabel}
                             </DialogTitle>
+                            <DialogDescription className="sr-only">
+                                View {stageLabel} stage insights and chat for {personaLabel} persona
+                            </DialogDescription>
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-black/40">
+                        <div className="flex items-center gap-3 text-[10px] uppercase font-bold text-black/40">
+                            {onRunCell && (
+                                <Button
+                                    size="sm"
+                                    onClick={onRunCell}
+                                    disabled={isRunning}
+                                    className="bg-[#6e7c5b] hover:bg-[#5e6c4b] text-white text-[10px] uppercase tracking-wider h-7 px-3 rounded-none"
+                                >
+                                    {isRunning ? (
+                                        <Loader2 className="h-3 w-3 animate-spin mr-1.5" />
+                                    ) : (
+                                        <Play className="h-3 w-3 mr-1.5" />
+                                    )}
+                                    {isRunning ? "Running..." : "Run"}
+                                </Button>
+                            )}
                             <Badge
                                 variant="outline"
                                 className={`border-transparent rounded-none ${hasCurrentData ? "bg-[#1f3b2c]/10 text-[#1f3b2c]" : "bg-[#6e7c5b]/15 text-[#6e7c5b]"

@@ -16,7 +16,10 @@ import {
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
 import { DEFAULT_PROVIDERS, getCellKey, emptyExtraction } from "@/lib/runs/utils";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
+import { cookies } from "next/headers";
 import { initProgress, logProgress, incrementProgress, completeProgress, failProgress } from "@/lib/benchmark/progress";
+import { getCurrentUser } from "@/lib/auth/supabase";
+import { touchUserActivity } from "@/lib/auth/activity";
 
 const RequestSchema = z.object({
   brand: z.string().min(1),
@@ -51,14 +54,22 @@ export async function POST(req: Request) {
 
     const providers = data.providers ?? DEFAULT_PROVIDERS;
 
-    const intentLibrary = loadIntentLibrary();
+    // Get current user for attribution
+    const cookieStore = await cookies();
+    const user = await getCurrentUser(cookieStore);
+    const actorUserId = user?.id;
+
+    // Track user activity
+    if (actorUserId) await touchUserActivity(actorUserId);
+
+    const intentLibrary = await loadIntentLibrary();
     const metricsConfig = loadMetricsConfig();
 
     const quickTest = data.quickTest ?? false;
 
     // Estimate total steps: cells * providers (rough estimate before we know query counts)
     const estimatedSteps = data.cells.length * providers.length;
-    initProgress(id, estimatedSteps, "cells");
+    await initProgress(id, estimatedSteps, "cells", actorUserId);
 
     const resultsByCell: Record<string, BenchmarkResult> = {};
     const runCells: Record<string, CellResult> = {};
@@ -80,7 +91,7 @@ export async function POST(req: Request) {
             intent: intent.text,
             role: intent.role,
             queryStyle: intent.queryStyle,
-            count: quickTest ? 1 : 5,
+            count: quickTest ? 1 : 3,
           });
           return {
             id: intent.id,
@@ -159,8 +170,8 @@ export async function POST(req: Request) {
       };
 
       // Track progress
-      incrementProgress(id, 1);
-      logProgress(id, {
+      await incrementProgress(id, 1);
+      await logProgress(id, {
         message: `Completed ${cell.persona}/${cell.stage}`,
         persona: cell.persona,
         stage: cell.stage,
@@ -208,7 +219,7 @@ export async function POST(req: Request) {
     uploadRunAsync(run);
 
     // Mark progress complete
-    completeProgress(id);
+    await completeProgress(id);
 
     return Response.json({ run, resultsByCell });
   } catch (err) {
@@ -222,7 +233,7 @@ export async function POST(req: Request) {
     console.error("[benchmark/run] Error:", logMsg);
 
     // Mark progress as failed
-    failProgress(id, logMsg);
+    await failProgress(id, logMsg);
 
     if (err instanceof z.ZodError) {
       return Response.json({ error: "Invalid request", details: err.errors }, { status: 400 });

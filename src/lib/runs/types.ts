@@ -113,10 +113,8 @@ export const RunMetadataSchema = z.object({
 export type RunMetadata = z.infer<typeof RunMetadataSchema>;
 
 export function generateRunId(): string {
-  const now = new Date();
-  const date = now.toISOString().split("T")[0];
-  const time = now.getTime().toString(36);
-  return `run_${date}_${time}`;
+  // Use crypto.randomUUID() for proper UUID format expected by database
+  return crypto.randomUUID();
 }
 
 export function getRunFilename(run: BenchmarkRun | RunMetadata): string {

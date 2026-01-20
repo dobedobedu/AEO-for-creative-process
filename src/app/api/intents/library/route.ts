@@ -1,9 +1,11 @@
-import { loadIntentLibrary, saveIntentLibrary } from "@/lib/intents/library";
+import { loadIntentLibrary } from "@/lib/intents/library";
+import { bulkInsertIntents, bulkInsertHistory, setVersion, ensureIntentSchema } from "@/lib/intents/db";
 import { IntentLibrarySchema } from "@/lib/intents/types";
+import { sql } from "@/lib/db";
 import { z } from "zod";
 
 export async function GET() {
-  const library = loadIntentLibrary();
+  const library = await loadIntentLibrary();
   return Response.json(library);
 }
 
@@ -12,9 +14,22 @@ export async function PUT(req: Request) {
     const payload = await req.json();
     const validated = IntentLibrarySchema.parse(payload);
 
-    saveIntentLibrary(validated);
+    await ensureIntentSchema();
 
-    return Response.json({ success: true, library: validated });
+    // Clear existing data and replace with new library
+    // This is a full replacement operation
+    await sql`DELETE FROM intents;`;
+    await sql`DELETE FROM intent_history;`;
+
+    // Insert all intents and history
+    await bulkInsertIntents(validated.intents);
+    await bulkInsertHistory(validated.history);
+    await setVersion(validated.version);
+
+    // Return the library from database to confirm persistence
+    const savedLibrary = await loadIntentLibrary();
+
+    return Response.json({ success: true, library: savedLibrary });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return Response.json(

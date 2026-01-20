@@ -8,13 +8,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { motion, AnimatePresence } from "framer-motion";
 import { MiniMatrixNavigation } from "./MiniMatrixNavigation";
-import { Plus, Pencil, Trash2, X, Check, RefreshCw, Loader2, ArrowRight } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, RefreshCw, Loader2, ArrowRight, Play } from "lucide-react";
 
 interface IntentEditorModalProps {
   open: boolean;
@@ -38,6 +39,9 @@ interface IntentEditorModalProps {
   onQueryDelete: (intentId: string, queryIndex: number) => void;
   onQueryAdd: (intentId: string) => void;
   onQueryRegenerate: (intentId: string) => Promise<string[]>;
+  // Run benchmark
+  onRun?: () => void;
+  isRunning?: boolean;
 }
 
 const PERSONA_LABELS: Record<Persona, string> = {
@@ -78,6 +82,8 @@ export function IntentEditorModal({
   onQueryDelete,
   onQueryAdd,
   onQueryRegenerate,
+  onRun,
+  isRunning = false,
 }: IntentEditorModalProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
@@ -154,6 +160,9 @@ export function IntentEditorModal({
       <DialogContent className="max-w-5xl h-[90vh] overflow-hidden flex flex-col p-0 border-none bg-white">
         <DialogHeader className="sr-only">
           <DialogTitle>Focus Mode Editor</DialogTitle>
+          <DialogDescription className="sr-only">
+            Edit research objectives and queries for the visibility matrix
+          </DialogDescription>
         </DialogHeader>
 
         {/* Left Focus Sidebar: Context Navigation */}
@@ -225,6 +234,21 @@ export function IntentEditorModal({
                 </div>
 
                 <div className="flex gap-2 mb-4">
+                  {onRun && (
+                    <Button
+                      size="sm"
+                      onClick={onRun}
+                      disabled={isRunning}
+                      className="bg-[#6e7c5b] hover:bg-[#5e6c4b] text-white text-[10px] font-bold uppercase tracking-wider h-8 rounded-none px-4"
+                    >
+                      {isRunning ? (
+                        <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                      ) : (
+                        <Play className="h-3 w-3 mr-2" />
+                      )}
+                      {isRunning ? "Running..." : "Run"}
+                    </Button>
+                  )}
                   {activeTab === "intents" && (
                     <Button
                       size="sm"

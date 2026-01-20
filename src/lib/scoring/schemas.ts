@@ -58,6 +58,10 @@ export const DecideExtractionSchema = BaseScoreSchema.extend({
   qualifiers: z.array(z.string()).describe("Conditions attached to the recommendation (e.g., 'if budget allows', 'for golf lovers')"),
   alternativesOffered: z.array(z.string()).describe("Other options the AI suggested as alternatives"),
   decisionRationale: z.string().describe("Why the AI did or did not recommend our brand"),
+  // New fields for concern resolution tracking (AEO 2026)
+  concernsAddressed: z.array(z.string()).describe("User concerns/objections the AI explicitly addressed (e.g., 'budget concerns', 'distance from airport')"),
+  concernsUnaddressed: z.array(z.string()).describe("Common buyer concerns the AI did NOT address"),
+  actionableGuidance: z.boolean().describe("Did the AI provide clear next steps or actionable guidance?"),
 });
 
 export type DecideExtraction = z.infer<typeof DecideExtractionSchema>;
@@ -117,9 +121,13 @@ The user was in the DECIDE stage - ready to make a choice and looking for final 
 
 Focus on:
 - Was the brand recommended as a clear choice?
-- Does the response successfully address top buyer concerns, transactional hurdles, or specific life integration logistics?
 - How strongly was the recommendation made?
 - Were there any qualifiers or conditions on the recommendation?
-- what alternatives were suggested?
-- What was the rationale for the recommendation (or lack thereof)?`,
+- What alternatives were suggested?
+- What was the rationale for the recommendation (or lack thereof)?
+
+IMPORTANT - Concern Resolution Analysis:
+- List specific concerns/objections the AI explicitly addressed (e.g., 'addressed budget concerns by explaining financing options', 'addressed distance from airport by noting shuttle services')
+- List common buyer concerns the AI did NOT address (e.g., 'did not address property tax implications', 'did not address healthcare access')
+- Did the AI provide clear, actionable next steps (e.g., 'schedule a tour', 'contact a sales rep', 'visit the website')?`,
 };

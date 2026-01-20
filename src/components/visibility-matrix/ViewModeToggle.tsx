@@ -1,6 +1,6 @@
 "use client";
 
-type ViewMode = "summary" | "intents" | "queries";
+type ViewMode = "summary" | "intents" | "queries" | "answers";
 
 interface ViewModeToggleProps {
   mode: ViewMode;
@@ -10,7 +10,7 @@ interface ViewModeToggleProps {
 export function ViewModeToggle({ mode, onModeChange }: ViewModeToggleProps) {
   return (
     <div className="flex items-center gap-1 w-full max-w-[1600px] mx-auto px-8">
-      {(["summary", "intents", "queries"] as const).map((m) => (
+      {(["summary", "intents", "queries", "answers"] as const).map((m) => (
         <button
           key={m}
           onClick={() => onModeChange(m)}
