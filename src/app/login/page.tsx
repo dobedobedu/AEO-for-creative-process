@@ -3,9 +3,15 @@
 import { createSupabaseBrowserClient } from "@/lib/auth/supabase";
 import { useState } from "react";
 
+type AuthMode = "signin" | "signup";
+
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [mode, setMode] = useState<AuthMode>("signin");
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -26,8 +32,46 @@ export default function LoginPage() {
     }
   };
 
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const supabase = createSupabaseBrowserClient();
+
+    if (mode === "signup") {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess("Check your email for the confirmation link!");
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        window.location.href = "/visibility-matrix";
+      }
+    }
+
+    setIsLoading(false);
+  };
+
   return (
-    <div className="min-h-screen bg-[#f6f1e8] flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-[#f6f1e8] flex flex-col items-center justify-center p-4">
       {/* Logo / Brand */}
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-[#1f3b2c] tracking-tight">
@@ -41,7 +85,7 @@ export default function LoginPage() {
       {/* Login Card */}
       <div className="bg-white rounded-lg shadow-md border border-[#e3dacb] p-8 w-full max-w-sm">
         <h2 className="text-lg font-semibold text-[#1e1b16] mb-6 text-center">
-          Sign in to continue
+          {mode === "signin" ? "Sign in to continue" : "Create an account"}
         </h2>
 
         {error && (
@@ -50,6 +94,13 @@ export default function LoginPage() {
           </div>
         )}
 
+        {success && (
+          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+            {success}
+          </div>
+        )}
+
+        {/* Google OAuth */}
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading}
@@ -75,12 +126,95 @@ export default function LoginPage() {
             />
           </svg>
           <span className="text-sm font-medium text-[#1e1b16]">
-            {isLoading ? "Signing in..." : "Sign in with Google"}
+            {isLoading ? "Please wait..." : "Continue with Google"}
           </span>
         </button>
 
-        <p className="mt-6 text-xs text-center text-[#1e1b16]/50">
-          Only authorized team members can access this dashboard.
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#e3dacb]" />
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-white px-2 text-[#1e1b16]/50">or</span>
+          </div>
+        </div>
+
+        {/* Email/Password Form */}
+        <form onSubmit={handleEmailAuth} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-[#1e1b16] mb-1">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-[#e3dacb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1f3b2c]/20 focus:border-[#1f3b2c]"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-[#1e1b16] mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-3 py-2 border border-[#e3dacb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1f3b2c]/20 focus:border-[#1f3b2c]"
+              placeholder="At least 6 characters"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3 bg-[#1f3b2c] text-white rounded-lg font-medium hover:bg-[#1f3b2c]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading
+              ? "Please wait..."
+              : mode === "signin"
+              ? "Sign in with Email"
+              : "Create Account"}
+          </button>
+        </form>
+
+        {/* Toggle Sign In / Sign Up */}
+        <p className="mt-6 text-sm text-center text-[#1e1b16]/70">
+          {mode === "signin" ? (
+            <>
+              Don&apos;t have an account?{" "}
+              <button
+                onClick={() => {
+                  setMode("signup");
+                  setError(null);
+                  setSuccess(null);
+                }}
+                className="text-[#1f3b2c] font-medium hover:underline"
+              >
+                Sign up
+              </button>
+            </>
+          ) : (
+            <>
+              Already have an account?{" "}
+              <button
+                onClick={() => {
+                  setMode("signin");
+                  setError(null);
+                  setSuccess(null);
+                }}
+                className="text-[#1f3b2c] font-medium hover:underline"
+              >
+                Sign in
+              </button>
+            </>
+          )}
         </p>
       </div>
 
