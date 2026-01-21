@@ -48,6 +48,7 @@ interface AnswersPanelProps {
   brand: string;
   brandAliases?: string[];
   isHistorical?: boolean; // true if viewing a historical run
+  runTimestamp?: string; // ISO timestamp of the run being viewed (for historical runs)
   onRunCell?: () => void;
   isRunning?: boolean;
 }
@@ -79,6 +80,7 @@ export function AnswersPanel({
   brand,
   brandAliases = [],
   isHistorical = false,
+  runTimestamp,
   onRunCell,
   isRunning = false,
 }: AnswersPanelProps) {
@@ -88,10 +90,20 @@ export function AnswersPanel({
   const [input, setInput] = useState("");
   const [expandedProvider, setExpandedProvider] = useState<Provider | null>(null);
 
-  // For now, use current date - will support week navigation with historical data later
+  // Use run timestamp for historical runs, otherwise current date
   const [selectedDate, setSelectedDate] = useState<string>(() => {
+    if (runTimestamp) {
+      return runTimestamp.split("T")[0];
+    }
     return new Date().toISOString().split("T")[0];
   });
+
+  // Update selectedDate when runTimestamp changes (historical run selection)
+  useEffect(() => {
+    if (runTimestamp) {
+      setSelectedDate(runTimestamp.split("T")[0]);
+    }
+  }, [runTimestamp]);
 
   // Group responses by provider
   const responsesByProvider = useMemo(() => {

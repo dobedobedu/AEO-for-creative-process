@@ -588,25 +588,29 @@ export default function VisibilityMatrixPage() {
   }, [selectedHistoricalRun, localQueryBank]);
 
   // Chart click handler to select a historical run
-  const handleChartClick = useCallback(async (data: { activeTooltipIndex?: number }) => {
-    if (data.activeTooltipIndex !== undefined && historicalRuns[data.activeTooltipIndex]) {
-      const run = historicalRuns[data.activeTooltipIndex];
-      setSelectedHistoricalRunId(run.id);
+  // Uses runId from payload instead of array index to handle grouped/filtered data correctly
+  const handleChartClick = useCallback(async (data: { activePayload?: Array<{ payload?: { runId?: string } }> }) => {
+    const runId = data?.activePayload?.[0]?.payload?.runId;
+    if (!runId) return;
 
-      // Fetch full run data from API
-      try {
-        const response = await fetch(`/api/benchmark/runs/${run.id}`);
-        if (response.ok) {
-          const fullRun = await response.json();
-          setSelectedHistoricalRun(fullRun);
-        } else {
-          console.error(`Failed to fetch run ${run.id}`);
-          setSelectedHistoricalRun(null);
-        }
-      } catch (err) {
-        console.error(`Error fetching run ${run.id}:`, err);
+    const run = historicalRuns.find(r => r.id === runId);
+    if (!run) return;
+
+    setSelectedHistoricalRunId(run.id);
+
+    // Fetch full run data from API
+    try {
+      const response = await fetch(`/api/benchmark/runs/${run.id}`);
+      if (response.ok) {
+        const fullRun = await response.json();
+        setSelectedHistoricalRun(fullRun);
+      } else {
+        console.error(`Failed to fetch run ${run.id}`);
         setSelectedHistoricalRun(null);
       }
+    } catch (err) {
+      console.error(`Error fetching run ${run.id}:`, err);
+      setSelectedHistoricalRun(null);
     }
   }, [historicalRuns]);
 
@@ -655,7 +659,8 @@ export default function VisibilityMatrixPage() {
     fetchLibrary(); // Initial fetch
     const interval = setInterval(fetchLibrary, 10000); // Poll every 10s for multi-user sync
 
-    fetch("/api/benchmark/runs/history?limit=13")
+    // Fetch enough runs to cover the largest window (30 days) with buffer
+    fetch("/api/benchmark/runs/history?limit=45")
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load history"))))
       .then((data: { runs: StoredRun[] }) => {
         if (cancelled) return;
@@ -1153,7 +1158,9 @@ export default function VisibilityMatrixPage() {
       }
     };
 
-    const full = benchmarkHistory.map(run => {
+    // Group runs by date and select the latest run per day
+    const latestRunsByDate = new Map<string, BenchmarkRun>();
+    for (const run of benchmarkHistory) {
       const rawTs = run.timestamp;
       let dateISO = run.label;
       if (rawTs > 1_000_000_000_000) {
@@ -1164,15 +1171,26 @@ export default function VisibilityMatrixPage() {
         d.setUTCDate(baseMockDate.getUTCDate() + offsetDays);
         dateISO = d.toISOString().slice(0, 10);
       }
-      return {
+
+      const existing = latestRunsByDate.get(dateISO);
+      if (!existing || run.timestamp > existing.timestamp) {
+        latestRunsByDate.set(dateISO, run);
+      }
+    }
+
+    // Convert to chart data points with runId for click handling
+    const full = Array.from(latestRunsByDate.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([dateISO, run]) => ({
         label: run.label,
         date: dateISO,
+        runId: run.id, // For click handler
         openai: getValue("openai", run),
         anthropic: getValue("anthropic", run),
         gemini: getValue("gemini", run),
         xai: getValue("xai", run),
-      };
-    });
+      }));
+
     const windowSize = kpiRange === "day" ? 30 : kpiRange === "week" ? 13 : 12;
     return full.slice(-windowSize);
   }, [benchmarkHistory, kpiRange, kpiMetric]);
@@ -1655,6 +1673,9 @@ export default function VisibilityMatrixPage() {
                 const [pId, sId] = key.split("-") as [Persona, Stage];
                 const cell = effectiveMatrixData[key];
                 if (!cellResults[pId]) cellResults[pId] = {};
+
+                // Skip partial cells - leave them undefined so SplitViewEditor shows grey "No data"
+                if (cell.status === "partial") return;
 
                 const results = cell.results || [];
                 let totalSentimentScore = 0;
@@ -2149,6 +2170,7 @@ export default function VisibilityMatrixPage() {
             brand={BRAND}
             brandAliases={BRAND_ALIASES}
             isHistorical={!!selectedHistoricalRun}
+            runTimestamp={selectedHistoricalRun?.timestamp}
             onRunCell={() => {
               setAnswersPanelOpen(false);
               runCellsBenchmark([`${selectedCell.persona}-${selectedCell.stage}`], true);
