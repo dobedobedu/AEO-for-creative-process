@@ -33,8 +33,8 @@ import {
 } from "@/lib/runs/utils";
 
 // Vercel cron functions need extended timeout for full matrix run
-// 16 cells × 3 queries × 4 providers = ~10-20 minutes
-export const maxDuration = 900; // 15 minutes (Pro plan required)
+// 16 cells × 3 queries × 4 providers = ~10-13 minutes
+export const maxDuration = 800; // Max for Pro plan (800 seconds)
 
 export async function GET(req: Request) {
     // Verify this is a legitimate cron request (Vercel adds this header)
