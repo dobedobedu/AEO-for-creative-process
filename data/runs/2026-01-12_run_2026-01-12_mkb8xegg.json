@@ -1,0 +1,138 @@
+{
+  "id": "run_2026-01-12_mkb8xegg",
+  "timestamp": "2026-01-12T14:16:20.080Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "retiree_compare": {
+      "intentId": "int_retiree_compare_mk189ge6",
+      "intentText": "Retiree comparing specific retirement communities",
+      "queriesUsed": [
+        "Lakewood Ranch vs The Villages Florida 55+ communities cost of living HOA fees healthcare access"
+      ],
+      "metrics": {
+        "winRate": 0
+      },
+      "results": [
+        {
+          "query": "Lakewood Ranch vs The Villages Florida 55+ communities cost of living HOA fees healthcare access",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here’s a practical, decision-focused comparison of **Lakewood Ranch (LWR)** vs **The Villages** for a 55+ lifestyle, specifically on **cost of living, HOA/fees, and healthcare access**. (Both are popular, but they’re very different setups.)\n\n## 1) What each place “is” (this drives costs/fees)\n### The Villages (Central FL)\nA massive, master-planned **55+–oriented** retirement community with a standardized recreation/amenity system (golf-cart culture, town squares, organized activities). A big part of your monthly outlay is the community-wide **amenity system** rather than a traditional HOA-only model. ([thevillages.com](https://www.thevillages.com/faq/?utm_source=openai))\n\n### Lakewood Ranch (Sarasota/Bradenton area)\nA large master-planned community with **many separate villages**—some are **age-restricted (55+)** (for example Del Webb), many are not. Costs/HOA dues vary a lot by which village/neighborhood you choose, and LWR also has a separate district-type fee (see below). ([lakewoodranch.com](https://lakewoodranch.com/our-homes/villages/?utm_source=openai))\n\n---\n\n## 2) HOA / community fees (what you’ll actually pay monthly)\n### The Villages: “Amenity fee” model (very predictable)\n- The Villages advertises a **monthly amenity fee of $189** (covers a large bundle of recreation/lifestyle access). ([thevillages.com](https://www.thevillages.com/faq/?utm_source=openai))  \n- Note: individual homes can also have other costs (utilities, etc.), and some neighborhoods can have additional associations, but the headline number they publish is that $189 amenity fee. ([thevillages.com](https://www.thevillages.com/faq/?utm_source=openai))\n\n**What this means:** budgeting is simpler; you’re buying into a standardized lifestyle system.\n\n### Lakewood Ranch: HOA varies widely + district fee exists\n- LWR states **HOA fees range roughly $100–$800/month**, with **most** falling around **$200–$300/month**, depending on village amenities/maintenance/home type. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n- LWR also has a **Stewardship District Fee** (a district that funds/maintains community-wide infrastructure/amenities). ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n- Example (one well-known 55+ option): a non-official local real estate blog cites Del Webb LWR HOA in the **mid-$300s/month (as of 2023)**, but you should treat that as approximate and verify with the specific community/builder/HOA docs. ([lifeatlakewood.com](https://www.lifeatlakewood.com/del-webb-hoa-fees-in-lakewood-ranch?utm_source=openai))\n\n**What this means:** LWR can be cheaper or more expensive than The Villages on monthly fees—*it depends heavily on the exact village* and whether you’re paying for resort amenities, gated security, lawn maintenance, etc., plus the separate district fee structure.\n\n---\n\n## 3) Cost of living (big drivers that differ)\n### Home prices / housing costs\n- **The Villages** has a wide range; a recent overview cited homes from roughly **$250k to $1M+** and notes the importance of insurance as a major cost factor in Florida. ([kiplinger.com](https://www.kiplinger.com/real-estate/places-to-live/retiring-in-florida-what-its-really-like-to-live-in-the-villages?utm_source=openai))  \n- **Lakewood Ranch** spans many price points as well; LWR’s official “villages” search shows broad ranges and many different product types (condos, villas, single-family, etc.). ([lakewoodranch.com](https://lakewoodranch.com/our-homes/villages/?utm_source=openai))  \n\n### Insurance & taxes (often bigger than HOA differences)\nAcross Florida, homeowners insurance can dominate the monthly math (and can vary by age of home, construction, roof, flood zone, proximity to coast, etc.). The Villages-focused article specifically flags **high insurance costs in Florida** as a planning item. ([kiplinger.com](https://www.kiplinger.com/real-estate/places-to-live/retiring-in-florida-what-its-really-like-to-live-in-the-villages?utm_source=openai))  \n**Practical takeaway:** If LWR is closer to coastal risk factors for a specific property, insurance may swing your “true cost” more than HOA does.\n\n---\n\n## 4) Healthcare access (how “close” and how convenient)\n### The Villages: healthcare embedded in the community\nThe Villages markets multiple **healthcare centers** and emphasizes access to care within/near the community. ([thevillages.com](https://www.thevillages.com/health-wellness/healthcare-centers/?utm_source=openai))  \n**Lifestyle implication:** very senior-oriented care ecosystem and convenience (often described as “golf cart close”).\n\n### Lakewood Ranch: access via the Sarasota/Bradenton metro medical ecosystem\nLWR’s own FAQ points residents to learning more about healthcare in/around LWR and reflects that healthcare is a core selling point, but it’s more of a “metro-area access” model than a single retirement-community health system. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n**Lifestyle implication:** you’ll typically be driving (or being driven) to a range of regional providers/hospitals depending on specialty.\n\n---\n\n## 5) Which one usually fits better (quick decision rules)\nChoose **The Villages** if you want:\n- A **highly structured 55+ social lifestyle** with a well-known amenity system\n- More **predictable published monthly amenity fee** budgeting ([thevillages.com](https://www.thevillages.com/faq/?utm_source=openai))\n- Healthcare marketed as **integrated and very close** ([thevillages.com](https://www.thevillages.com/health-wellness/healthcare-centers/?utm_source=openai))\n\nChoose **Lakewood Ranch** if you want:\n- A **newer/varied master-planned community** where you can pick from many villages (including some 55+)\n- More control over tradeoffs: **pay for only the amenity level you want** (but with more variability/complexity) ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n- Proximity to Sarasota/Bradenton amenities and broader regional healthcare options (varies by exact location) ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n\n---\n\n## 6) Two questions that would let me give you a much tighter comparison\n1) Are you specifically comparing **The Villages vs Del Webb Lakewood Ranch** (or another named 55+ village in LWR)?  \n2) What matters more: **lowest monthly fixed fees** or **best healthcare convenience/specialists**, and do you prefer being **near the coast** (LWR area) or more **inland** (The Villages area)?\n\nIf you tell me your target home type (villa vs single-family), budget range, and whether you need specific specialties (cardiology, oncology, orthopedic), I can lay out a more exact “monthly ownership cost” checklist for each.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Community variety",
+                  "Choice of amenity levels",
+                  "Proximity to Sarasota and Bradenton amenities",
+                  "Control over cost tradeoffs"
+                ],
+                "losesOn": [
+                  "Fee predictability",
+                  "Fee complexity",
+                  "Integrated healthcare access",
+                  "Insurance costs"
+                ],
+                "aiConclusion": "The choice depends on whether the user prefers a highly structured retirement environment with integrated healthcare (The Villages) or a more modern, varied community with flexible amenity options and proximity to coastal metro areas (Lakewood Ranch)."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on my research, here's a comprehensive comparison of these two popular 55+ communities:\n\n## **COST OF LIVING OVERVIEW**\n\n### Home Prices\n\nThe Villages has a median home price around $400,000\n, while \nLakewood Ranch's median home price is in the $600,000 range, with averages slightly higher in the $700,000s-$800,000s due to new construction and luxury inventory\n. \nLakewood Ranch's entry-level townhomes start in the mid-$300,000s, while luxury estates exceed $5 million\n.\n\n### Overall Monthly Costs\n\nThe Villages shows a total of between $807 and $1,262 per month for amenities, sewer, water, power, trash, phone, cable, insurance, taxes, and CDD assessment\n, though \nreal costs typically run 20-40% higher than official estimates\n.\n\n## **HOA/CDD FEES**\n\n### The Villages\n\nThere are no HOA fees for the vast majority of The Villages\n. Instead, \nCDD assessments (including the bond, maintenance fee, and fire protection) range from $129 to $220 per month\n. Additionally, \nall residents pay a monthly amenity fee of $164\n.\n\n### Lakewood Ranch\n\nHOA fees in Lakewood Ranch can be anywhere from $100 to $650 every month depending on the village, but most of the time the fees are between $200 and $300 every month\n. \nCDD fees average $1,500–$3,000+ per year depending on the size",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "lose",
+                "winsOn": [
+                  "luxury inventory",
+                  "new construction",
+                  "property value potential"
+                ],
+                "losesOn": [
+                  "median home price",
+                  "HOA fees",
+                  "CDD fees",
+                  "overall monthly costs",
+                  "affordability"
+                ],
+                "aiConclusion": "The response presents Lakewood Ranch as a significantly more expensive option with higher entry prices, higher median costs, and additional HOA fees compared to The Villages."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "For 2025 and 2026, **Lakewood Ranch** and **The Villages** remain the top two best-selling communities in Florida, but they offer vastly different lifestyles and financial structures. While Lakewood Ranch is a **multi-generational** community with specific 55+ enclaves, The Villages is a massive, **age-restricted** \"city\" designed almost exclusively for retirees.\n\n### **1. Cost of Living & Housing**\n| Feature | The Villages (2025/2026) | Lakewood Ranch 55+ (2025/2026) |\n| :--- | :--- | :--- |\n| **Median Home Price** | $350,000 – $450,000 | $550,000 – $750,000 |\n| **Housing Diversity** | Manufactured homes to \"Premier\" estates. | Higher-end single-family homes and luxury villas. |\n| **Property Taxes** | ~1.1% to 1.5% of assessed value. | ~1.1% to 1.3% of assessed value. |\n| **Location** | Central Florida (Inland); 1 hour from Orlando. | West Coast (Gulf); 20–30 mins from beaches. |\n\n*   **The Villages:** Generally more affordable. You can still find patio villas in the $200ks–$300ks, though designer homes often exceed $500k. The inland location also offers lower insurance premiums compared to the coast.\n*   **Lakewood Ranch:** More expensive across the board. The 55+ villages like **Cresswind** and **Del Webb** typically start in the mid-$400ks and quickly reach $800k+. You are paying a premium for proximity to Sarasota’s beaches and cultural scene.\n\n### **2. HOA Fees & CDD Assessments**\nThe fee structures in these two communities are the most common source of confusion for buyers.\n\n#### **The Villages**\n*   **Amenity Fee:** Currently **$199 – $204 per month** (2025 \"prevailing rate\"). This is a flat fee per household that covers access to all 100+ recreation centers, 50+ executive golf courses, and 3,000+ social clubs.\n*   **CDD (Bond & Maintenance):** Most homes have a \"Bond\" (for infrastructure) paid annually on property taxes, ranging from **$150 to $400/month** if broken down. Bonds can be paid off, but the \"Maintenance Assessment\" portion is permanent.\n*   **HOA Fees:** Historically, The Villages **does not have traditional HOA fees**, only deed restrictions. However, some courtyard villas may have small monthly maintenance fees for shared walls.\n\n#### **Lakewood Ranch (55+ Villages)**\n*   **HOA Fees:** In 55+ enclaves like **Cresswind** or **Del Webb Catalina**, HOA fees range from **$350 to $500 per month**. These fees typically include lawn maintenance, high-speed internet/cable, gated security, and exclusive access to the village's private clubhouse.\n*   **CDD Fees:** Almost all new villages have a CDD (Stewardship) fee of **$1,500 – $3,000+ per year** ($125–$250/month) added to property taxes.\n*   **Total Monthly \"Carrying Cost\":** Usually higher than The Villages because you pay for neighborhood-specific amenities rather than a shared massive system.\n\n### **3. Healthcare Access**\n#### **The Villages**\n*   **The Villages Health (TVH):** A specialized primary care system for residents. As of late 2025, it has transitioned to ownership by **CenterWell (Humana)** following a bankruptcy restructuring. It remains \"payor-agnostic\" for 2026, accepting plans from **UnitedHealthcare, Florida Blue, Humana, and Aetna**.\n*   **Hospitals:** Anchored by **UF Health The Villages Hospital** and the newer **UF Health Spanish Plaines Hospital**. The system is expanding rapidly, including a new Mobile Stroke Treatment Unit launched in 2025.\n\n#### **Lakewood Ranch**\n*   **Local Facilities:** Anchored by **Lakewood Ranch Medical Center**, which consistently receives \"A\" safety grades and was recently named a \"2026 Top Hospital\" by Forbes.\n*   **Specialty Access:** Residents have easier access to the world-class **Sarasota Memorial Hospital (SMH)** and the high concentration of specialists in the Sarasota-Bradenton corridor, which is often ranked as one of the best healthcare regions in Florida for seniors.\n\n### **Summary: Which is right for you?**\n*   **Choose The Villages if:** You want a \"Disney for Adults\" feel where you can go everywhere (grocery, doctor, golf) in a **golf cart**. It is more affordable and offers a peer-only environment with unmatched social activity.\n*   **Choose Lakewood Ranch if:** You prefer a **modern, upscale suburban** feel and want to be near the beach. It is better for those who want a 55+ home but still want to live in a diverse, multi-generational community with superior access to high-end shopping and Gulf Coast culture.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Proximity to beaches",
+                  "Modern and upscale feel",
+                  "Sarasota cultural scene access",
+                  "Access to Sarasota Memorial Hospital",
+                  "Concentration of specialists",
+                  "Multi-generational environment"
+                ],
+                "losesOn": [
+                  "Affordability",
+                  "Median home price",
+                  "Monthly carrying costs",
+                  "HOA fees",
+                  "CDD fees",
+                  "Insurance premiums"
+                ],
+                "aiConclusion": "Choose The Villages if you prioritize affordability and a golf-cart-centric social environment; choose Lakewood Ranch if you prefer a modern, upscale suburban feel near beaches and high-end cultural amenities."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Below is a detailed comparison of Lakewood Ranch and The Villages, two popular 55+ communities in Florida. I'll focus on cost of living, HOA (Homeowners Association) fees, and healthcare access, based on up-to-date information from sources like community websites, real estate blogs, and recent reports (as of early 2026). Note that both are master-planned communities geared toward active adults, but Lakewood Ranch is in Sarasota County on Florida's Gulf Coast, while The Villages is in central Florida (spanning Sumter, Lake, and Marion counties). Costs can vary by specific neighborhood, home size, and lifestyle, so I recommend checking current listings or consulting a local realtor for personalized details.\n\n### Overview of the Communities\n- **Lakewood Ranch**: A large, mixed-age master-planned community with dedicated 55+ neighborhoods (e.g., Del Webb Lakewood Ranch). It's known for its upscale vibe, proximity to beaches, and amenities like golf, trails, and shopping. It ranked in the top 10 master-planned communities nationally in 2025 for new-home sales, per Sarasota Magazine.\n- **The Villages**: The largest 55+ community in the U.S., with a focus on golf, recreation, and social activities. It's more self-contained, with over 100,000 residents, and emphasizes an active, resort-style lifestyle. A 2025 cost-of-living breakdown from heretotheremovingllc.com highlights its affordability relative to national averages.\n\nBoth offer similar perks for retirees, like pools, fitness centers, and events, but The Villages is more exclusively 55+ while Lakewood Ranch integrates multigenerational living.\n\n### Cost of Living\nOverall, both communities have a cost of living that's moderate compared to Florida's state average and lower than the national average, thanks to no state income tax and relatively affordable housing. However, The Villages tends to edge out as slightly more affordable for budget-conscious retirees, while Lakewood Ranch appeals to those seeking a premium coastal location.\n\n- **Housing Costs**:\n  - **Lakewood Ranch**: Median home prices in 55+ sections are around $400,000–$700,000 for single-family homes or villas (as of 2025 data from real estate reports). New construction can push higher, and the area has seen growth, with over 3,000 combined new-home sales in nearby master-planned areas like Wellen Park.\n  - **The Villages**: More affordable entry points, with median prices around $300,000–",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "upscale vibe",
+                  "proximity to beaches",
+                  "multigenerational living",
+                  "premium coastal location",
+                  "new-home sales ranking"
+                ],
+                "losesOn": [
+                  "affordability",
+                  "housing costs",
+                  "entry point pricing"
+                ],
+                "aiConclusion": "Both communities offer similar perks for retirees; The Villages is better for budget-conscious retirees seeking an exclusively 55+ environment, while Lakewood Ranch appeals to those seeking a premium coastal location and a multigenerational vibe."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

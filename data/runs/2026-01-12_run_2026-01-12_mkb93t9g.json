@@ -1,0 +1,128 @@
+{
+  "id": "run_2026-01-12_mkb93t9g",
+  "timestamp": "2026-01-12T14:21:19.204Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "first_time_compare": {
+      "intentId": "int_first_time_compare_mk189ge6",
+      "intentText": "First-time buyer comparing new construction vs existing homes",
+      "queriesUsed": [
+        "new construction homes vs existing homes pros cons Lakewood Ranch"
+      ],
+      "metrics": {
+        "winRate": 0
+      },
+      "results": [
+        {
+          "query": "new construction homes vs existing homes pros cons Lakewood Ranch",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are the main **pros/cons of new construction vs. existing (resale) homes in Lakewood Ranch**, with the Lakewood Ranch–specific “gotchas” that usually matter most.\n\n## New construction (building or buying a quick move‑in/spec)\n**Pros**\n- **Lower near-term maintenance + warranties:** You’re typically covered by layered builder warranties (often 1-year workmanship, 2-year systems, 10-year structural), and big-ticket items (roof/HVAC/water heater) are new. ([ackermansrq.com](https://ackermansrq.com/blog/lakewood-ranch-new-construction-or-resale?utm_source=openai))\n- **More energy-efficient + “insurance-friendly” features:** Newer roofs, updated code standards, and features like impact protection can help with utilities and sometimes insurance pricing compared with older homes. ([teamdunnsarasota.com](https://teamdunnsarasota.com/blog/new-construction-vs-resale-in-lakewood-ranch?utm_source=openai))\n- **Customization:** Floorplan options, finishes, accessibility/aging-in-place options are easiest (and cheapest) to do before it’s built. ([teamdunnsarasota.com](https://teamdunnsarasota.com/blog/new-construction-vs-resale-in-lakewood-ranch?utm_source=openai))\n- **Builder incentives:** Rate buydowns, closing cost credits, design credits can be meaningful—but often tied to preferred lenders/title. ([zachosre.com](https://zachosre.com/lakewood-ranch-avoid-these-3-costly-mistakes-when-relocating/?utm_source=openai))\n\n**Cons**\n- **HOA/CDD fee structure can be higher and/or layered:** Many LWR neighborhoods have **CDD fees** (added on top of property taxes), and some new villages also stack **master association + neighborhood HOA**. Always confirm the full monthly/annual total. ([zachosre.com](https://zachosre.com/lakewood-ranch-the-complete-guide-to-americas-1-master-planned-community/?utm_source=openai))\n- **Premium pricing + upgrade cost creep:** Base price ≠ final price. Lot premiums, structural options, design center upgrades, and post-closing add-ons (lanai/pool, blinds, fans, lighting) add up fast.\n- **Timeline/uncertainty:** If you’re building from plan, closing dates can move; specs can close faster (often similar to resale timelines). ([ackermansrq.com](https://ackermansrq.com/blog/lakewood-ranch-new-construction-or-resale?utm_source=openai))\n- **Less negotiation flexibility (sometimes):** Builders may be more rigid on price but flexible via incentives; resale sellers may negotiate more directly. ([zachosre.com](https://zachosre.com/lakewood-ranch-avoid-these-3-costly-mistakes-when-relocating/?utm_source=openai))\n- **“New phase” realities:** Landscaping may be young, nearby construction noise/traffic, and amenities/roads may still be in progress depending on the village.\n\n## Existing / resale homes (including “not that old” LWR resales)\n**Pros**\n- **Better value per dollar on upgrades:** In Lakewood Ranch, many resale homes already have expensive items included (pool/lanai, lighting, built-ins, landscaping), and you may pay far less than it would cost to replicate in a new build. ([zachosre.com](https://zachosre.com/lakewood-ranch-avoid-these-3-costly-mistakes-when-relocating/?utm_source=openai))\n- **Mature neighborhood feel:** Finished streetscapes, established landscaping, and you can see exactly what the community looks like day-to-day.\n- **Potentially more negotiating room:** Price, repairs, credits, and timelines can be negotiated based on inspection findings and seller motivation. ([sellingsunsetsofflorida.com](https://sellingsunsetsofflorida.com/blog/new-construction-vs-resale-in-lakewood-ranch?utm_source=openai))\n- **You can “pick the lot” that already exists:** Water view, preserve, cul-de-sac, distance to amenities—what you see is what you get.\n\n**Cons**\n- **More maintenance risk:** Roof/HVAC/plumbing/electrical may be closer to replacement cycles depending on age and upkeep. ([teamdunnsarasota.com](https://teamdunnsarasota.com/blog/new-construction-vs-resale-in-lakewood-ranch?utm_source=openai))\n- **Insurance can be higher on older homes:** Even in LWR where homes aren’t extremely old, age/roof type/mitigation features can affect premiums. ([zachosre.com](https://zachosre.com/lakewood-ranch-the-complete-guide-to-americas-1-master-planned-community/?utm_source=openai))\n- **Layout/standards may feel dated:** Ceiling heights, openness, windows/doors, tech wiring, etc. Renovations cost money and time.\n- **Inspection/permit diligence matters:** Roof, pool, pest/termite, permit history—plan for deeper due diligence than with new builds. ([teamdunnsarasota.com](https://teamdunnsarasota.com/blog/new-construction-vs-resale-in-lakewood-ranch?utm_source=openai))\n\n---\n\n## Lakewood Ranch–specific decision points (these often decide it)\n1. **Total monthly carrying cost:** Compare **PITI + HOA(s) + CDD** (and if applicable, memberships). CDD is commonly $1,500–$3,500/yr in many LWR neighborhoods. ([zachosre.com](https://zachosre.com/lakewood-ranch-the-complete-guide-to-americas-1-master-planned-community/?utm_source=openai))  \n2. **Time horizon:** If you might sell in just a few years, paying a big new-build premium + upgrades can be harder to recoup; if you’ll stay longer, the “new” benefits compound. ([teamdunnsarasota.com](https://teamdunnsarasota.com/blog/new-construction-vs-resale-in-lakewood-ranch?utm_source=openai))  \n3. **Construction quality control:** With new builds, consider independent inspections (pre-drywall and final) rather than relying only on the builder’s process. ([ackermansrq.com](https://ackermansrq.com/blog/lakewood-ranch-new-construction-or-resale?utm_source=openai))  \n\n---\n\n## Quick recommendation framework\n- Choose **new construction** if you want **specific floorplan/finishes**, minimal near-term maintenance, and you’re comfortable with HOA/CDD structures and potential delays.\n- Choose **resale** if you want **the best “all-in” value**, mature landscaping/finished neighborhood, and the ability to negotiate (while budgeting for replacements/upgrades).\n\nIf you tell me:\n1) your budget range, 2) must-have (pool? 1-story? gated? golf?), 3) how soon you need to move, and 4) whether you’ll be full-time or seasonal,  \nI’ll tailor this to the LWR villages that fit and give you a tighter “new vs resale” call.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "The AI provides a framework for choosing between housing types within Lakewood Ranch: recommend new construction for those seeking customization, modern energy standards, and lower near-term maintenance, while recommending resale for those seeking better 'all-in' value, mature landscaping, and established streetscapes."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on current market information, here's a comprehensive comparison of new construction homes vs. existing homes in Lakewood Ranch:\n\n## NEW CONSTRUCTION HOMES - PROS\n\n**Lower Maintenance & Warranty Coverage**\n\nEverything from roofs, HVAC systems, insulation, windows are brand new with less worry about repairs.\n \nBuilder warranties and incentives provide warranty coverage and help make the sticker price more manageable.\n\n\n**Modern Features & Customization**\n\nNew builds allow you to pick open floor plans, home offices, multi-purpose rooms, or energy-efficient features, with customization of finishes and more.\n \nNew homes are built to current codes, often including impact windows, tankless water heaters, smart home tech, and energy-saving HVAC systems.\n\n\n**Energy Efficiency**\n\nNew homes are built with the latest energy-efficient materials and technologies, meaning lower utility bills and a smaller environmental footprint, with better insulation, energy-efficient windows, and advanced HVAC systems.\n\n\n**Strong Resale Potential**\n\nHomes that follow current design trends and building standards tend to hold value better, and in a planned community with rising demand and infrastructure, growth is more likely.\n\n\n## NEW CONSTRUCTION HOMES - CONS\n\n**Higher Upfront Costs**\n\nNew construction often comes with higher base prices and lot/home premiums for things like location or view.\n\n\n**Construction Delays**\n\nIf the home is not yet built, expect delays, with permitting, weather, and material supply potentially extending timelines.\n\n\n**Construction Zone Disruptions**\n\nYou",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "The AI provided a detailed comparison of the pros and cons between new construction and existing homes specifically within the Lakewood Ranch community, highlighting benefits like energy efficiency and modern features for new builds against drawbacks like higher costs and construction delays."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Choosing between new construction and an existing (resale) home in Lakewood Ranch is a common dilemma, as the community is currently in a state of simultaneous maturity and expansion. \n\nAs of early 2026, the market in Lakewood Ranch has shifted toward a \"balanced\" state, meaning buyers have more leverage than in previous years, regardless of which path they choose.\n\n### **New Construction Homes**\nMost new development is currently pushing **East** (Star Farms, Sweetwater) and **South** into Sarasota County (Waterside).\n\n| **Pros** | **Cons** |\n| :--- | :--- |\n| **Builder Incentives:** In 2025–2026, builders are heavily competing. You can often get mortgage rate buy-downs (e.g., a 4.99% rate when market rates are 6.5%) or $20k–$40k in closing cost credits. | **Timeline Risk:** Building from dirt typically takes **8–12 months**. Even \"Quick Move-In\" (spec) homes can face delays in permitting or finishing. |\n| **Modern Building Codes:** Newer homes (post-2023) are built to the strictest hurricane codes. This significantly lowers your **homeowners insurance premiums** compared to homes built just 10 years ago. | **\"Hidden\" Costs:** The base price does not include **lot premiums** (which can be $10k–$100k+ for water views) or \"Design Center\" upgrades (typically 10–15% of the home price). |\n| **Energy Efficiency:** New builds feature spray-foam insulation, impact-rated windows, and high-efficiency HVACs, leading to utility bills that are often 30–50% lower than older Lakewood Ranch homes. | **The \"Construction Zone\":** You may live with dust, noise, and construction traffic for 1–3 years as the rest of the village is completed. |\n| **Smart Home Tech:** Most builders (Lennar, Pulte, Taylor Morrison) now include integrated mesh Wi-Fi, smart thermostats, and ring doorbells as standard equipment. | **Immature Landscaping:** Your yard will have \"pencil trees\" that offer no shade or privacy for several years. |\n\n---\n\n### **Existing (Resale) Homes**\nOlder villages like **Summerfield, Greenbrook, and Edgewater** offer a more traditional \"hometown\" feel, while recently completed villages like **Central Park or Country Club East** offer a middle ground.\n\n| **Pros** | **Cons** |\n| :--- | :--- |\n| **Established Landscaping:** You get mature oak trees, privacy hedges, and a \"finished\" look. This is a major aesthetic advantage in Florida. | **Higher Insurance Costs:** Florida insurance companies penalize older roofs and non-impact windows. You may pay **$1,000–$2,000 more per year** in insurance for a home built in 2005 vs. 2025. |\n| **Predictability:** You see exactly what the view from your backyard is and who your neighbors are. There is no risk of a new amenity center or road being built right behind your fence. | **Maintenance Debt:** In Lakewood Ranch, \"resale\" usually means a home 10–25 years old. This is the \"danger zone\" for big-ticket items: **roofs ($20k+), HVACs ($8k+), and pool equipment.** |\n| **Move-in Ready:** You can typically close and move in within 30–45 days. | **Outdated Layouts:** Older homes may have more compartmentalized rooms, smaller kitchen islands, and less \"flex space\" than modern open-concept builds. |\n| **Location Advantage:** Many older villages are closer to **Main Street** and I-75, reducing your daily commute compared to the newer villages further east. | **Lower Energy Efficiency:** Older windows and less-advanced insulation can lead to significantly higher cooling costs in the summer months. |\n\n---\n\n### **Cost Comparison: The \"Monthly Carry\"**\nThe purchase price is only half the story in Lakewood Ranch. You must look at the **Total Monthly Cost**:\n\n*   **CDD Fees:** Almost all new villages have CDD fees (included in property taxes). In newer, amenity-heavy villages (like Esplanade or Lakewood National), these can range from **$2,500 to $5,000+ per year**. Some older villages have lower or nearly expired CDD debts.\n*   **HOA Dues:** \n    *   **New Villages:** Typically $200–$400/month for resort-style pools, fitness centers, and lifestyle directors.\n    *   **Old Villages:** (e.g., Summerfield) can be as low as $100–$150/year because they have fewer private amenities.\n*   **Maintenance-Included:** If you buy a villa or \"maintenance-free\" home (common in new construction), expect your HOA to be $100–$200 higher per month to cover lawn care and irrigation.\n\n### **The Verdict**\n*   **Choose New Construction if:** You are sensitive to monthly insurance/utility costs, want a 10-year structural warranty, and have the patience for a build cycle.\n*   **Choose Existing if:** You value privacy and mature trees, want to be closer to established shopping/dining, and need to move in immediately.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Lennar",
+                  "Pulte",
+                  "Taylor Morrison",
+                  "Star Farms",
+                  "Sweetwater",
+                  "Waterside",
+                  "Summerfield",
+                  "Greenbrook",
+                  "Edgewater",
+                  "Central Park",
+                  "Country Club East",
+                  "Esplanade",
+                  "Lakewood National"
+                ],
+                "outcome": "not_compared",
+                "winsOn": [
+                  "Builder Incentives",
+                  "Modern Building Codes",
+                  "Lower insurance premiums",
+                  "Energy Efficiency",
+                  "Smart Home Tech",
+                  "Established Landscaping",
+                  "Predictability",
+                  "Move-in Ready",
+                  "Location Advantage"
+                ],
+                "losesOn": [
+                  "Timeline Risk",
+                  "Hidden Costs",
+                  "Construction Zone",
+                  "Higher Insurance Costs",
+                  "Maintenance Debt",
+                  "Outdated Layouts"
+                ],
+                "aiConclusion": "The AI provides a balanced guide for choosing between new and resale properties within Lakewood Ranch, recommending new construction for buyers prioritizing energy efficiency and financial incentives, and existing homes for those who value mature landscaping and established locations."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Below, I'll break down the pros and cons of buying new construction homes versus existing (resale) homes in Lakewood Ranch, Florida, based on current market trends as of early 2026. Lakewood Ranch is a popular master-planned community in the Sarasota-Bradenton area, known for its family-friendly vibe, amenities like parks, golf courses, and schools, and a hot real estate market. There are currently hundreds of new construction options available (e.g., via sites like Homes.com and Zillow), with many priced under $400K-$500K for townhomes and starter homes. I'll draw from local real estate insights, including blogs from BuyLakewoodRanch.com and general Florida housing guides, to keep this relevant. Keep in mind that individual experiences can vary based on budget, location within the community (e.g., neighborhoods like Lorraine Lakes or Azario), and market fluctuations—consulting a local realtor is always a good idea.\n\n### New Construction Homes in Lakewood Ranch\nThese are homes built from the ground up by developers like Lennar, Pulte, or Taylor Morrison, often in newer subdivisions. Lakewood Ranch has seen strong demand for these, with over 496 listings noted on Homes.com recently.\n\n**Pros:**\n- **Modern Features and Efficiency:** New homes typically include energy-efficient appliances, smart home tech, open floor plans, and hurricane-resistant builds (important in Florida). They often meet the latest building codes, which can lower utility bills and insurance costs.\n- **Customization and Warranties:** You can often personalize finishes, layouts, or upgrades during the building process. Most come with builder warranties (e.g., 1-10 years) covering structural issues, reducing immediate repair worries.\n- **Community Amenities and Growth:** In a master-planned area like Lakewood Ranch, new builds are integrated with perks like pools, trails, and schools. The community is Florida's top-selling master-planned spot, with affordable options for families or retirees (e.g., low-maintenance townhomes under $500K, per BuyLakewoodRanch.com).\n- **Potential for Appreciation:** With ongoing development, these homes can appreciate quickly in a growing area—Lakewood Ranch's market is \"hot\" in 2025-2026, with trends favoring new builds for their low HOA fees and modern appeal.\n- **No Immediate Maintenance:** Everything is brand new, so you're less likely to deal with outdated systems like old roofs or plumbing right away.\n\n**Cons:**\n- **Higher Upfront Costs and Delays",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [
+                  "popularity",
+                  "family-friendly vibe",
+                  "amenities (parks, golf courses, schools)",
+                  "market demand",
+                  "modern features",
+                  "energy efficiency",
+                  "hurricane-resistant builds",
+                  "top-selling master-planned community status",
+                  "affordability for families and retirees",
+                  "potential for appreciation"
+                ],
+                "losesOn": [],
+                "aiConclusion": "Lakewood Ranch is a top-selling, popular master-planned community with a hot real estate market, offering high-quality new construction homes with modern features and strong growth potential."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

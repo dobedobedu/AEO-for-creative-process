@@ -1,0 +1,487 @@
+{
+  "id": "run_2026-01-12_mkb9btlr",
+  "timestamp": "2026-01-12T14:27:32.896Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0.26666666666666666
+    }
+  },
+  "cells": {
+    "retiree_compare": {
+      "intentId": "int_retiree_compare_mk189ge6",
+      "intentText": "Retiree comparing specific retirement communities",
+      "queriesUsed": [
+        "Lakewood Ranch vs The Villages 55+ communities pros and cons",
+        "CDD fees and HOA costs in Lakewood Ranch compared to Wellen Park",
+        "Healthcare access near Lakewood Ranch vs Waterside at The Villages",
+        "Hurricane insurance rates in Southwest Florida retirement communities",
+        "Resale value trends in Lakewood Ranch vs Cresswind at Wellen Park"
+      ],
+      "metrics": {
+        "winRate": 0.26666666666666666
+      },
+      "results": [
+        {
+          "query": "Lakewood Ranch vs The Villages 55+ communities pros and cons",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "Not compared"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current information comparing these two popular 55+ communities.\nBased on current information, here's a comprehensive comparison of these two popular 55+ communities:\n\n## **Location & Setting**\n\n\nLakewood Ranch is located about halfway between Bradenton and Sarasota on Florida's west coast\n, while \nThe Villages has over 100,000 residents in a self-contained community and is situated in rural central Florida, with the closest major airport in Orlando about an hours drive away\n.\n\n## **Lakewood Ranch Pros:**\n\n- **Housing Variety & Features**: \nMany residents find Lakewood Ranch has more homes with desired features like quarter acre lots, 2700+ sq ft, 3-car garages, and private pools, plus more shopping and restaurant options\n\n\n- **Community Feel**: \nOne of the biggest draws is the sense of community, with residents able to join clubs, hobby groups, fitness classes, and attend community events\n\n\n- **Pricing**: \nAverage home prices in 55+ communities are approximately $686,432, with examples like Del Webb Lakewood Ranch averaging around $686,613\n\n\n- **Healthcare Costs**: \nHealthcare costs are 8% lower while Florida has no state income and estate tax\n\n\n## **Lakewood Ranch Cons:**\n\n- **Multiple HOAs**: \nEach village has its own HOA fees, amenities, and rules, which can be confusing for newcomers\n\n\n- **Traffic & Congestion**: \nThe community's rapid growth brings increased traffic congestion, especially during peak travel times and tourist season (December to April)\n\n\n- **Design Concerns**: \nSome locals",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Housing Variety",
+                  "Lot sizes",
+                  "Home square footage",
+                  "3-car garages",
+                  "Private pools",
+                  "Shopping and restaurant options",
+                  "Sense of community",
+                  "Healthcare costs"
+                ],
+                "losesOn": [
+                  "Multiple HOAs",
+                  "Traffic and congestion"
+                ],
+                "aiConclusion": "Lakewood Ranch is presented as a high-demand 55+ community on the west coast of Florida that offers more housing variety and lower healthcare costs than competitors, though it suffers from rapid growth traffic and complex HOA rules."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "While **The Villages** and **Lakewood Ranch** are both top-selling master-planned communities in Florida, they offer vastly different lifestyles. The Villages is a \"retirement mecca\" designed entirely around the 55+ demographic, while Lakewood Ranch is a multi-generational community with premium 55+ enclaves.\n\nThe following comparison details the pros and cons for 55+ residents as of early 2026.\n\n### **The Villages (Central Florida)**\n*The \"Disney for Adults\" experience.*\n\n| **Pros** | **Cons** |\n| :--- | :--- |\n| **Golf Cart Culture:** Over 100 miles of dedicated trails; you can reach grocery stores, doctors, and town squares without a car. | **Inland Location:** It is about 1.5–2 hours from the nearest beach and can feel isolated from the rest of Florida. |\n| **\"Free\" Golf:** Residents get free greens fees on over 40 executive (9-hole) courses (included in monthly amenity fees). | **Density & Traffic:** With 150,000+ residents, the town squares and roads can become extremely crowded, especially in \"Season\" (Jan–April). |\n| **Endless Socializing:** 3,000+ resident-run clubs and free nightly live music in three major town squares. | **\"Bubble\" Lifestyle:** The community is so large and self-contained that some residents feel they lose touch with the outside world. |\n| **Affordability:** Median home prices (~$400k) and fees are generally lower than in Lakewood Ranch. | **Healthcare Restrictions:** The Villages Health primary care system primarily accepts Medicare Advantage plans, which may not suit those preferring Original Medicare. |\n\n---\n\n### **Lakewood Ranch (Sarasota/Bradenton Area)**\n*The \"Coastal Upscale\" experience.*\n\n| **Pros** | **Cons** |\n| :--- | :--- |\n| **Coastal Proximity:** Located just 15–30 minutes from world-class Gulf Coast beaches like Siesta Key and Lido Beach. | **Higher Cost:** Median home prices are significantly higher (~$630k+), and combined HOA/CDD fees can exceed $600/month in 55+ areas. |\n| **Multi-Generational Energy:** You aren't \"segregated\" from families. You can live in a 55+ village (like Del Webb or Cresswind) but shop and dine with all ages. | **Car Dependency:** Unlike The Villages, you generally cannot use a golf cart to travel between different \"villages\" or to major shopping centers. |\n| **Premium Healthcare:** The Lakewood Ranch Medical Center is a top-rated, \"Grade A\" facility with extensive specialist offices nearby. | **Neighborhood Silos:** Amenities (pools, clubhouses) are usually restricted to your specific neighborhood. You cannot use the Del Webb pool if you live in Cresswind. |\n| **Sophisticated Culture:** Close to downtown Sarasota’s arts district, opera, and theaters, offering a more \"metropolitan\" feel. | **Rapid Growth:** Intense construction and development have led to significant traffic congestion on main arteries like I-75 and University Pkwy. |\n\n---\n\n### **Direct Comparison Table**\n\n| Feature | The Villages | Lakewood Ranch (55+ Areas) |\n| :--- | :--- | :--- |\n| **Primary Demographic** | 55+ Restricted (95%+) | Multi-generational (Enclaves are 55+) |\n| **Transportation** | Golf Cart is the primary mode | Car is required |\n| **Golf Access** | \"Free\" executive golf included | Membership/Pay-per-play |\n| **Entertainment** | Nightly live music in squares | Weekly events, farmers markets |\n| **Housing Style** | Tighter lots, standardized builds | Larger lots, more custom/luxury options |\n| **Fees** | CDD only (approx. $150-$250/mo) | HOA + CDD (approx. $300-$600+/mo) |\n\n### **Which should you choose?**\n* **Choose The Villages if:** You want a social \"summer camp\" vibe where you never have to leave the community, you love to play golf daily, and you want to be surrounded primarily by people in your own age group.\n* **Choose Lakewood Ranch if:** You want to be near the beach, you prefer a more \"upmarket\" or modern aesthetic, and you enjoy the energy of a multi-generational town while still having a private, age-restricted clubhouse at home.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Coastal Proximity",
+                  "Multi-Generational Energy",
+                  "Premium Healthcare",
+                  "Sophisticated Culture",
+                  "Housing Style",
+                  "Modern aesthetic"
+                ],
+                "losesOn": [
+                  "Cost",
+                  "Transportation",
+                  "Amenity Access",
+                  "Traffic",
+                  "Golf Access"
+                ],
+                "aiConclusion": "Choose The Villages for a social 'summer camp' vibe and golf; choose Lakewood Ranch for beach proximity, an upmarket aesthetic, and a multi-generational atmosphere."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Below, I'll provide a balanced comparison of Lakewood Ranch and The Villages as 55+ communities in Florida, focusing on their pros and cons. Both are popular master-planned developments catering to active adults over 55, but they differ in location, scale, amenities, and vibe. This is based on recent reviews, community discussions, and comparisons from sources like Florida for Boomers, SarasotaSandy, and Villages-News.com (as of mid-2025 data). Keep in mind that individual experiences vary, and factors like personal preferences, budget, and lifestyle should guide your decision. If you're considering a move, visiting both is highly recommended.\n\n### Overview\n- **The Villages**: Located in central Florida (near Ocala), this is one of the largest 55+ communities in the U.S., spanning about 33 square miles with over 130,000 residents. It's known for its golf-centric, resort-like atmosphere and was the top-selling community in 2024 with over 3,200 new home sales.\n- **Lakewood Ranch**: Situated in the Sarasota-Bradenton area on Florida's Gulf Coast, it's a smaller but growing master-planned community (about 50 square miles) with around 30,000 residents. It includes dedicated 55+ neighborhoods like Del Webb and Cresswind, and it's often ranked as a top-selling community, competing closely with The Villages.\n\nBoth offer low-maintenance homes, amenities, and a focus on active retirement, but The Villages emphasizes a self-contained \"bubble\" lifestyle, while Lakewood Ranch integrates more with surrounding urban areas and beaches.\n\n### Pros and Cons of The Villages\n**Pros**:\n- **Extensive Amenities and Activities**: Over 3,000 clubs, 100+ miles of golf cart paths, dozens of golf courses (many free or low-cost), pools, recreation centers, and nightly entertainment in town squares. It's like a perpetual vacation with events, classes, and social opportunities tailored for 55+ residents.\n- **Affordability**: Homes start around $250,000–$400,000, with lower property taxes and HOA fees compared to coastal areas. It's budget-friendly for retirees, and the community handles most maintenance.\n- **Strong Sense of Community**: Highly social environment with a \"friendliest hometown\" vibe. Easy to make friends through organized activities, and it's golf cart-friendly for getting around without a car.\n- **Self-Contained Lifestyle**: Everything you need (shopping, dining, medical facilities) is within the community, reducing the need to venture",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "location",
+                  "proximity to Sarasota-Bradenton beaches",
+                  "integration with surrounding urban areas",
+                  "growth potential"
+                ],
+                "losesOn": [
+                  "affordability",
+                  "property taxes",
+                  "HOA fees",
+                  "scale of senior-specific amenities",
+                  "quantity of social clubs"
+                ],
+                "aiConclusion": "Both communities offer low-maintenance living and active retirement, but the choice depends on whether a resident prefers the self-contained bubble of The Villages or the beach-proximate, urban-integrated lifestyle of Lakewood Ranch."
+              }
+            }
+          }
+        },
+        {
+          "query": "CDD fees and HOA costs in Lakewood Ranch compared to Wellen Park",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here’s the practical comparison **in typical 2025–2026 ranges** (but note: *both* Lakewood Ranch and Wellen Park vary a lot by specific neighborhood, home type, and whether there’s still bond/debt being paid through the district).\n\n## 1) CDD (or “Stewardship District”) fees: Lakewood Ranch vs Wellen Park\n\n### Lakewood Ranch (Manatee/Sarasota)\n- Lakewood Ranch confirms it has a **Stewardship District fee** (functionally similar to a CDD charge in how it shows up as a line item on the tax bill). ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n- In practice, **CDD/Stewardship-type assessments in LWR can range from “a couple thousand” to materially higher depending on the specific district and debt/amenity load** (some districts can be notably higher than others). ([longboatkeysales.com](https://longboatkeysales.com/blog/cdd-hoa-trends-affecting-prices-in-lakewood-ranch?utm_source=openai))  \n\n**Rule of thumb:** LWR has *more spread*—some neighborhoods are relatively reasonable, others can be significantly higher if there’s more debt/amenity infrastructure being paid off.\n\n### Wellen Park (Venice/North Port area)\n- Neighborhood-level estimates commonly show **CDD fees around ~$1,200–$2,500/year**, with some examples higher depending on community/home type. ([lifeinwellenpark.com](https://www.lifeinwellenpark.com/post/hoa-fees-and-cdd-fees-in-wellen-park?utm_source=openai))  \n\n**Rule of thumb:** Wellen Park often shows **mid–low thousands annually** in many neighborhoods, but it still varies by community.\n\n**Big takeaway on CDD:**  \n- **Wellen Park:** often quoted around **~$1.2k–$2.5k/yr** in many neighborhoods. ([lifeinwellenpark.com](https://www.lifeinwellenpark.com/post/hoa-fees-and-cdd-fees-in-wellen-park?utm_source=openai))  \n- **Lakewood Ranch:** can overlap that range but also has neighborhoods/districts that run higher, depending on the district’s debt and amenities. ([longboatkeysales.com](https://longboatkeysales.com/blog/cdd-hoa-trends-affecting-prices-in-lakewood-ranch?utm_source=openai))  \n\n## 2) HOA costs: Lakewood Ranch vs Wellen Park\n\n### Lakewood Ranch HOA\n- LWR’s official site states **HOA fees range roughly $100–$800/month**, with **most falling ~$200–$300/month**. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n- Individual villages can be much lower (example: one LWR neighborhood listed at **$55/month SFH** and **$112/month townhomes**). ([lakewoodranch.com](https://lakewoodranch.com/workforce-housing/?utm_source=openai))  \n\n### Wellen Park HOA\n- Wellen Park neighborhood estimates commonly show **HOAs around ~$250–$500/month**, and higher in certain bundled/maintenance-heavy or golf communities (some examples notably above that). ([lifeinwellenpark.com](https://www.lifeinwellenpark.com/post/hoa-fees-and-cdd-fees-in-wellen-park?utm_source=openai))  \n\n**Big takeaway on HOA:**  \n- **Lakewood Ranch:** “most” often quoted around **$200–$300/mo**, but wide range. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n- **Wellen Park:** often quoted around **$250–$500/mo**, with some communities higher. ([lifeinwellenpark.com](https://www.lifeinwellenpark.com/post/hoa-fees-and-cdd-fees-in-wellen-park?utm_source=openai))  \n\n## 3) What this usually means for buyers comparing the two\n- **If you want the lowest possible HOA:** both can do it, but **LWR has some very low-HOA pockets** (especially more “basic amenities” neighborhoods). ([lakewoodranch.com](https://lakewoodranch.com/workforce-housing/?utm_source=openai))  \n- **If you want resort amenities / maintenance-included:** both can get pricey; **Wellen Park commonly lands in the $300–$500/mo HOA band** in many neighborhoods. ([lifeinwellenpark.com](https://www.lifeinwellenpark.com/post/hoa-fees-and-cdd-fees-in-wellen-park?utm_source=openai))  \n- **CDD surprise risk:** tends to be **more variable in Lakewood Ranch** because of the number of districts/villages and differences in debt/amenity buildout. ([longboatkeysales.com](https://longboatkeysales.com/blog/cdd-hoa-trends-affecting-prices-in-lakewood-ranch?utm_source=openai))  \n\n## Quick way to make this exact for *your* shortlist\nIf you tell me:\n1) the **2–5 specific neighborhoods** you’re looking at in **Lakewood Ranch** and **Wellen Park**, and  \n2) whether you’re considering **SFH vs villa vs condo**,  \n\n…I can give a tighter apples-to-apples comparison and a checklist of what to verify on the **tax bill (CDD/Stewardship line items)** and the **HOA budget/fee schedule** for each community.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Lower typical HOA fees",
+                  "Availability of low-HOA neighborhood options"
+                ],
+                "losesOn": [
+                  "CDD fee predictability",
+                  "Potential for higher CDD assessments"
+                ],
+                "aiConclusion": "Costs in both communities vary significantly by neighborhood; Lakewood Ranch offers lower typical HOA ranges and some very low-cost pockets, but it has more variability and potential for higher CDD/Stewardship fees compared to Wellen Park."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about CDD fees and HOA costs in both Lakewood Ranch and Wellen Park.\nBased on my research, here's a comprehensive comparison of CDD fees and HOA costs between Lakewood Ranch and Wellen Park:\n\n## HOA Fees Comparison\n\n**Lakewood Ranch:**\n\nHOA fees can be anywhere from $100 to $650 every month depending on the village, but most of the time the fees are between $200 and $300 every month\n.\n\n**Wellen Park:**\n\nMonthly HOA fees range from $200 to $500 depending on amenities\n.\n\nBoth communities offer a fairly similar range of HOA costs, though Lakewood Ranch has a wider spectrum with lower minimums in some older villages.\n\n## CDD Fees Comparison\n\n**Lakewood Ranch:**\n\nHOA dues usually range $125–$350 monthly, while the CDD bond and operations fee often total $1,600–$3,000 annually\n. This breaks down to approximately $133–$250 per month when annualized.\n\n**Wellen Park:**\n\nAnnual CDD assessments add $1,000 to $2,500 for infrastructure funding in newer communities\n. Additionally, \nCDD fees are typically $1,600-$3,500/year, with some higher in newer villages like Waterside\n.\n\n## Key Differences\n\n\nWellen Park's CDD fees can be lower in some neighborhoods (e.g., Brightmore), but others (e.g., Palmera) are higher\n. Similarly, \nTwo homes just a few streets apart can have different CDD assessments depending on the village, lot type, and which bonds apply\n.\n\n## Important Note\n\n\nA CDD may fund major infrastructure and long-term replacement, while an HOA handles day-to-day standards, operations, and programming",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "tie",
+                "winsOn": [
+                  "lower minimum HOA fees",
+                  "lower maximum CDD fees",
+                  "wider spectrum of cost options"
+                ],
+                "losesOn": [
+                  "higher maximum HOA fees",
+                  "higher minimum CDD fees"
+                ],
+                "aiConclusion": "Both communities offer a fairly similar range of HOA costs, though Lakewood Ranch has a wider spectrum with lower minimums in some older villages."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Comparing Lakewood Ranch (LWR) and Wellen Park (WP) involves looking at three distinct layers: **HOA fees**, **CDD (Stewardship) fees**, and **property taxes**. While both are world-class master-planned communities, Lakewood Ranch is significantly more established and diverse, whereas Wellen Park is newer, more \"resort-focused,\" and generally more budget-friendly.\n\n### **1. CDD (Community Development District) Fees**\nBoth communities use CDDs to fund infrastructure (roads, utilities, and master landscaping).\n*   **Lakewood Ranch:** Often called \"Stewardship District\" fees in newer sections. They typically range from **$1,400 to $3,500+ per year**. \n    *   *Lower:* Older neighborhoods like Summerfield or Greenbrook often have no CDD fee at all.\n    *   *Higher:* Luxury or high-amenity villages like The Isles ($2,500–$4,000) or Waterside can be on the higher end.\n*   **Wellen Park:** Most neighborhoods carry a CDD fee ranging from **$1,200 to $2,500 per year**. \n    *   *Lower:* Brightmore (55+) ranges from $1,700–$2,400. \n    *   *Exception:* Boca Royale is one of the few Wellen Park neighborhoods with **no CDD fee**.\n\n### **2. HOA (Homeowners Association) Costs**\nHOA fees vary based on whether the neighborhood is \"maintenance-included\" (lawn/irrigation) and the level of amenities (pools, fitness, social clubs).\n*   **Lakewood Ranch:** Extremely wide range due to the number of villages (over 50).\n    *   **Standard ($100–$350/mo):** Many neighborhoods like Savanna or Indigo fall in this range, providing a pool and clubhouse.\n    *   **Luxury/Resort ($500–$900/mo):** The Lake Club and Country Club East include high-end security and maintenance.\n    *   **Bundled Golf ($1,000+/mo):** Communities like Lakewood National include golf memberships in the monthly dues.\n*   **Wellen Park:** Generally more consistent because most neighborhoods are new and resort-style.\n    *   **Standard ($250–$500/mo):** Includes communities like Avelina, Solstice, and Sunstone.\n    *   **Bundled Golf ($600–$800/mo):** Wellen Park Golf & Country Club includes membership and maintenance in this fee.\n    *   **55+ ($300–$400/mo):** Brightmore typically falls in this mid-range but includes internet and lawn care.\n\n### **3. Neighborhood Comparison (Estimated 2025/2026 Data)**\n\n| Community | Neighborhood | Monthly HOA | Yearly CDD | Key Features |\n| :--- | :--- | :--- | :--- | :--- |\n| **Lakewood Ranch** | Summerfield | ~$100 / year | $0 | Established, no CDD, minimal amenities |\n| **Lakewood Ranch** | Waterside | ~$250–$450 | ~$1,800–$2,200 | New town center, waterfront living |\n| **Lakewood Ranch** | The Isles | ~$300–$500 | ~$2,500–$4,000 | Luxury gated, maintenance-included |\n| **Wellen Park** | Grand Palm | ~$250–$350 | ~$1,500–$2,200 | Huge trail system, social lifestyle |\n| **Wellen Park** | Brightmore (55+) | ~$275–$310 | ~$1,700–$2,400 | New 55+ amenities, includes internet |\n| **Wellen Park** | WP Golf & CC | ~$570–$760 | ~$1,800–$2,500 | Bundled golf, resort-style |\n\n### **Key Differences for Buyers**\n1.  **County Nuance:** Lakewood Ranch spans **Manatee and Sarasota Counties**. Manatee County generally has slightly higher property taxes (~1.3% millage) compared to the Sarasota County side (~1.1%). All of Wellen Park is in Sarasota County, which can offer a slight tax advantage.\n2.  **Home Values:** Wellen Park is roughly **15–20% less expensive** in terms of base home prices. You may find a comparable new-build home in Wellen Park for $500k that would cost $650k+ in Lakewood Ranch.\n3.  **Included Services:** Wellen Park HOAs very frequently include **lawn maintenance and cable/internet** as a standard. In Lakewood Ranch, this is more common in \"maintenance-free\" villages but not necessarily the entire community.\n4.  **Proximity:** If beach access is a priority, Wellen Park is **15–20 minutes** from Venice and Manasota Key. Lakewood Ranch is **30–45 minutes** from Siesta Key or Anna Maria Island.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Established status",
+                  "Diversity of neighborhood options",
+                  "Availability of neighborhoods with no CDD fees",
+                  "Range of luxury and high-amenity options"
+                ],
+                "losesOn": [
+                  "Budget-friendliness",
+                  "Base home prices",
+                  "Property taxes (Manatee County side)",
+                  "Standardization of included services like lawn care and internet",
+                  "Proximity to beaches"
+                ],
+                "aiConclusion": "Lakewood Ranch is significantly more established and diverse, while Wellen Park is newer, more resort-focused, and generally more budget-friendly."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information from real estate websites and community guides (such as Life at Lakewood, Life in Wellen Park, SRQ Coastal Living, and Beyond Realty FL), I'll provide a comparison of CDD (Community Development District) fees and HOA (Homeowners Association) costs between Lakewood Ranch and Wellen Park in Florida. Keep in mind that these fees can vary significantly by specific neighborhood, village, home type, and even year-to-year changes due to community developments, inflation, or assessments. They're also often tied to amenities like pools, landscaping, security, and infrastructure maintenance. For the most accurate and current figures as of 2026, I recommend consulting a local realtor, the community's HOA office, or official documents—fees can fluctuate, and exact amounts depend on the property.\n\n### Quick Overview of CDD and HOA Fees\n- **HOA Fees**: These are typically monthly or annual payments to the homeowners association for maintaining common areas, amenities, and community standards (e.g., landscaping, pools, clubhouses).\n- **CDD Fees**: These are additional assessments (often annual, added to property taxes) for funding public infrastructure like roads, drainage, and utilities in master-planned communities. They're common in Florida developments and can be bonded (spread over 20-30 years) or pay-as-you-go.\n\nBoth communities are master-planned giants in Southwest Florida (Lakewood Ranch in Manatee/Sarasota Counties, Wellen Park in Sarasota County), and they've been top-ranked nationally for new-home sales as recently as 2025, per sources like Sarasota Magazine. Fees contribute to their appeal with high-end amenities, but they add to the overall cost of living.\n\n### Comparison of Fees\nFees aren't uniform across either community—they differ by sub-neighborhood (e.g., villages in Lakewood Ranch or districts in Wellen Park). Here's a general comparison based on 2025 data from the sources mentioned (noting that 2026 updates might show slight increases):\n\n#### Lakewood Ranch\n- **HOA Fees**: Range from about $100–$500+ per month, depending on the village or neighborhood. For example:\n  - Entry-level or smaller communities might be $150–$300/month.\n  - Luxury or gated villages (like The Lake Club) can exceed $400–$600/month, covering premium amenities.\n- **CDD Fees**: Typically $1,000–$4,000+ annually (added to property taxes). Some areas have lower or no CDD fees (e.g., certain",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "tie",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "Fees vary significantly by specific neighborhood and home type; both are top-ranked master-planned communities in Southwest Florida with high-end amenities, and consulting a local realtor or official documents is recommended for the most current figures."
+              }
+            }
+          }
+        },
+        {
+          "query": "Healthcare access near Lakewood Ranch vs Waterside at The Villages",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here’s how **healthcare access** typically compares for **Lakewood Ranch (including Waterside in Lakewood Ranch)** versus **Waterside at The Villages** (I want to confirm first: *Waterside* is also a **village/neighborhood name inside Lakewood Ranch**, so people sometimes mix these up).\n\n## Lakewood Ranch (incl. Waterside in Lakewood Ranch – Sarasota/Manatee area)\n**Strengths: lots of options nearby, and strong specialty depth in the Sarasota/Bradenton corridor.**\n\n- **Emergency care close by (in/near Lakewood Ranch):**\n  - **Sarasota Memorial ER at Lakewood Ranch** (freestanding ER, 24/7) at **7250 University Parkway, Sarasota, FL 34240**. ([smh.com](https://www.smh.com/Home/Locations/ER-at-Lakewood-Ranch?utm_source=openai))  \n  - Sarasota Memorial announced/confirmed this Lakewood Ranch ER expansion/opening **January 7, 2025**. ([smh.com](https://www.smh.com/Home/News-Events/Release/smh-expands-emergency-care-in-rapidly-growing-lakewood-ranch?utm_source=openai))\n- **Hospital systems in the metro area:** Lakewood Ranch sits between Sarasota and Bradenton, so you generally have access to multiple hospital networks (and a broader set of specialists) within a reasonable drive.\n\n**What this usually means in practice:** if you anticipate needing **specialists, advanced imaging, more hospital choices, or second opinions**, Lakewood Ranch tends to feel more “metro-connected.”\n\n## Waterside at The Villages (The Villages / Wildwood / Sumter–Lake–Marion area)\n**Strengths: healthcare is “built around” The Villages population, with convenient ER/hospital access geared to residents.**\n\n- **Full hospital in The Villages proper:**\n  - **UF Health The Villages® Hospital**, **1451 El Camino Real, The Villages, FL 32159**. ([destination.ufhealth.org](https://destination.ufhealth.org/patient-care/hospitals/?utm_source=openai))\n- **Freestanding ER near Brownwood (very convenient for the south end / newer areas):**\n  - UF Health freestanding ER across from Brownwood at **3800 Meggison Rd** (open 24/7 per reporting and listings). ([villages-news.com](https://www.villages-news.com/2020/02/05/uf-health-opens-new-er-facility-across-from-brownwood-in-the-villages/?utm_source=openai))\n\n**What this usually means in practice:** for many retirees, The Villages can be very convenient for **routine care + quick local ER access**, and the system is heavily oriented to the community’s needs.\n\n---\n\n## Quick “which is better?” guide\n- Choose **Lakewood Ranch** if you want **more nearby healthcare competition/choice** and access to a larger metro medical ecosystem.\n- Choose **The Villages Waterside area** if you value **high convenience within a retirement-focused community** (hospital + freestanding ER coverage that’s designed around local residents).\n\n---\n\n## Two clarifying questions (so I can be precise)\n1) When you say **“Waterside at The Villages”**, do you mean **Waterside near Brownwood in The Villages/Wildwood area**, or did you mean **Waterside in Lakewood Ranch**?\n2) What matters most for you: **ER response time**, **primary care availability**, **specialists (cardio/ortho/oncology)**, or **hospital quality/choice**?",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Waterside at The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "specialty depth",
+                  "hospital network choices",
+                  "access to specialists",
+                  "advanced imaging",
+                  "second opinions",
+                  "healthcare competition",
+                  "access to a larger metro medical ecosystem"
+                ],
+                "losesOn": [
+                  "routine care convenience",
+                  "retirement-focused community convenience"
+                ],
+                "aiConclusion": "Choose Lakewood Ranch if you want more nearby healthcare competition/choice and access to a larger metro medical ecosystem. Choose The Villages Waterside area if you value high convenience within a retirement-focused community."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about healthcare access in both of these Florida communities.\nLet me search more specifically for Waterside at The Villages healthcare information.\nBased on my research, here's a comparison of healthcare access between Lakewood Ranch and Waterside at The Villages:\n\n## **Lakewood Ranch Healthcare Access**\n\n\nLakewood Ranch Medical Center is an acute care hospital with inpatient and outpatient services bridging Manatee and Sarasota counties.\n \nLocated in the heart of the Lakewood Ranch community since 2004, it is an award-winning, high-quality, acute-care hospital accredited by The Joint Commission.\n\n\n**Hospital Resources:**\n- \nThe medical staff includes more than 750 physicians and allied health professionals who practice in a wide range of specialties.\n\n- \nServices include emergency services and freestanding emergency department, general and robotic surgery, maternity care, breast health, cardiology, orthopedic surgery, stroke, sleep medicine, urology and wound care.\n\n- \nThe Lakewood Ranch Medical Center expansion is set to transform healthcare in Florida, providing state-of-the-art medical advancements with cutting-edge technology, enhanced patient care, and specialized services.\n\n\n## **Waterside at The Villages Healthcare Access**\n\n\nThe Villages offers numerous healthcare options from fitness centers and exercise classes to medical facilities including The Villages Regional Hospital, a VA outpatient clinic, Florida Cancer Specialists & Research Institute and a long term critical care facility.\n\n\n**Hospital Resources:**\n- \nThe Villages Medical Center features a full-service ambulatory hospital with UF Health The Villages Hospital and a wide range of specialty healthcare including rehabilitation services and oncology to behavioral health, eyecare, imaging, neurology, orthopedics and more.\n\n- \nMedical facilities are conveniently located throughout the community and accessible by golf car.\n\n- \nThere are",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Waterside at The Villages"
+                ],
+                "outcome": "tie",
+                "winsOn": [
+                  "hospital staff size",
+                  "physician network",
+                  "expansion projects",
+                  "state-of-the-art technology",
+                  "award-winning care"
+                ],
+                "losesOn": [
+                  "golf car accessibility",
+                  "VA outpatient clinic availability"
+                ],
+                "aiConclusion": "The AI provided a balanced comparison of healthcare facilities, noting Lakewood Ranch's large physician network and upcoming expansions while highlighting The Villages' unique golf-car accessible medical facilities and VA services."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "In comparing healthcare access, it appears you are looking at the flagship **Waterside** village in **Lakewood Ranch** and the newest \"waterside\" development in **The Villages** (the **Eastport** town center area). \n\nBoth communities prioritize health but offer different models of care: Lakewood Ranch provides proximity to top-tier, nationally ranked hospital systems in Sarasota/Bradenton, while The Villages offers a unique, golf-cart-accessible primary care network integrated with UF Health.\n\n### **1. Lakewood Ranch (Focus on Waterside)**\nWaterside is the southernmost village of Lakewood Ranch, located in Sarasota County. Its healthcare access is defined by its proximity to the \"Medical Gold Coast\" along University Parkway.\n\n*   **Primary Hospital:** **Lakewood Ranch Medical Center (LWRMC)**. Located directly in the community (approx. 5–10 mins from Waterside), it is a 120-bed acute care facility specializing in cardiology, orthopedics, and maternity. It recently won the \"Best Hospital in Manatee County\" award.\n*   **Top-Tier Access:** Residents are roughly 15–20 minutes from **Sarasota Memorial Hospital (SMH)**. SMH is consistently ranked among the best hospitals in Florida and the U.S. for complex surgeries and specialized care (oncology, neurology).\n*   **Specialty Hubs:** The University Parkway corridor, bordering Waterside, is densely packed with specialized clinics, including the **Sarasota Memorial Healthplace** and the **Intercoastal Medical Group**, which offer comprehensive outpatient services.\n*   **Urgent Care:** Numerous options like **AFC Urgent Care** and **The Center for Urgent Care** are located within minutes of Waterside Place.\n\n### **2. The Villages (Focus on Eastport / South End)**\nEastport is the newest town center in The Villages (located south of SR 44 and the Turnpike). It is often referred to for its \"waterside\" lifestyle around Central Lake.\n\n*   **Primary Care Model:** The Villages operates under **The Villages Health**, a membership-style primary care model designed to keep doctor-to-patient ratios low. \n*   **New Local Facility:** The **Eastport Care Center** opened in January 2025. It is a 25,000-square-foot facility providing primary care and \"Q visits\" (same-day urgent care) specifically for the southernmost residents.\n*   **Hospitals:**\n    *   **UF Health The Villages Hospital:** Located in the north (Spanish Springs/Lake Sumter area). From Eastport, this is a 25–35 minute drive (or longer by golf cart).\n    *   **UF Health Spanish Plaines:** A secondary medical hub near the north end.\n    *   **Brownwood ER:** A 24/7 freestanding emergency room located in Brownwood Paddock Square, about 10–15 minutes from Eastport.\n*   **Future Development:** A 400-acre **UF Health South Campus** is planned near the Eastport area (CR 470). While a full hospital was initially proposed, the current focus is on expanding specialty clinics and hybrid emergency/urgent care centers to serve the growing southern population.\n\n### **Key Comparison Summary**\n\n| Feature | Lakewood Ranch (Waterside) | The Villages (Eastport Area) |\n| :--- | :--- | :--- |\n| **Nearest Hospital** | LWR Medical Center (5-10 min) | UF Health The Villages (25-35 min) |\n| **Elite Care Access** | Sarasota Memorial (Top 1% in US) | UF Health Shands (Gainesville - 1.5 hrs) |\n| **Access Method** | Primarily Car | High Golf Cart Connectivity |\n| **Urgent Care** | Abundant private clinics nearby | Freestanding Brownwood ER / Q-Visits |\n| **Primary Care** | Traditional insurance/private practice | \"The Villages Health\" integrated model |\n\n### **Verdict**\n*   **Choose Lakewood Ranch** if you want immediate access to some of the highest-rated hospitals in the country (Sarasota Memorial) and a massive density of private specialists within a short drive.\n*   **Choose The Villages** if you prefer a lifestyle-integrated healthcare model where you can golf-cart to your primary care doctor and value an academic-affiliated system (UF Health), even if it means driving further for major acute hospital care.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Proximity to hospitals",
+                  "Elite care access",
+                  "Density of specialized clinics"
+                ],
+                "losesOn": [
+                  "Golf cart accessibility",
+                  "Integrated primary care model"
+                ],
+                "aiConclusion": "Choose Lakewood Ranch for immediate access to top-rated hospitals and specialists, while The Villages is preferred for a lifestyle-integrated model with golf cart access."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "### Healthcare Access Comparison: Lakewood Ranch, FL vs. Waterside at The Villages, FL\n\nBased on recent web information and news from 2026, I'll compare healthcare access in the Lakewood Ranch area (a master-planned community in Manatee County, near Bradenton and Sarasota) with Waterside at The Villages (part of the massive retirement community in central Florida, primarily in Sumter County, near Ocala and Leesburg). Note that \"Waterside\" appears to refer to specific neighborhoods or developments—Waterside is a village within Lakewood Ranch itself, but your query specifies \"Waterside at The Villages,\" so I'll treat this as a comparison between the broader Lakewood Ranch region and The Villages community (which has waterside areas like Lake Sumter Landing). Both are popular for retirees, with strong emphasis on convenient medical care, but they differ in scale, proximity to facilities, and specialization.\n\nI'll focus on key aspects like hospitals, clinics, specialized care, and overall accessibility, drawing from sources like local guides, hospital ratings, and retirement-focused articles. Keep in mind that healthcare access can vary based on specific needs (e.g., emergency vs. routine care), insurance, and transportation. Always verify with providers for the latest details, as of January 2026.\n\n#### 1. **Healthcare in Lakewood Ranch, FL (Including Waterside Village)**\nLakewood Ranch is a large, family- and retiree-oriented community with over 25 villages, including Waterside, known for its lakeside homes and amenities. It's located about halfway between Bradenton and Sarasota, providing easy access to urban medical hubs. Pros include proximity to high-rated hospitals and a growing focus on senior living, but it may require short drives for advanced care.\n\n- **Major Hospitals and Ratings**:\n  - **Lakewood Ranch Medical Center**: The primary local hospital, a 120-bed acute care facility offering emergency services, surgery, cardiology, and orthopedics. It's highly rated for quality care and is just minutes from Waterside and other villages.\n  - Other nearby options (within 10-20 miles) include Sarasota Memorial Hospital (a top-ranked facility with Level II trauma center), Manatee Memorial Hospital, and Doctors Hospital of Sarasota. According to a 2026 Forbes list of Top Hospitals, four hospitals in the Manatee-Sarasota region (including those near Lakewood Ranch) received recognition for excellence in patient outcomes and safety.\n  - Recent news highlights convenient access for new developments like Emerson Lakes, an Erickson Senior",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Waterside at The Villages",
+                  "The Villages"
+                ],
+                "outcome": "tie",
+                "winsOn": [
+                  "Proximity to high-rated hospitals",
+                  "Access to urban medical hubs",
+                  "Patient outcomes and safety",
+                  "Convenience for senior living"
+                ],
+                "losesOn": [
+                  "Proximity to advanced care (requires short drives)"
+                ],
+                "aiConclusion": "Both Lakewood Ranch and The Villages are popular for retirees with a strong emphasis on convenient medical care, though Lakewood Ranch specifically benefits from proximity to top-ranked facilities like Sarasota Memorial Hospital."
+              }
+            }
+          }
+        },
+        {
+          "query": "Hurricane insurance rates in Southwest Florida retirement communities",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Hurricane (wind) insurance costs in **Southwest Florida retirement communities** (Naples/Marco, Fort Myers/Cape Coral, Punta Gorda/Port Charlotte, Sarasota/Bradenton, etc.) are usually felt in **two places**, and the “rate” you experience depends on which one applies:\n\n## 1) Your personal policy (single‑family / mobile home / condo unit “HO‑6”)\n- In Florida, the state-backed insurer **Citizens** is a major benchmark when private-market prices spike.\n- **Citizens 2025 personal lines rates** (new and renewal) were approved to take effect **June 1, 2025**, and the change **depends heavily on territory and whether it’s a primary residence**:\n  - **Primary residences:** rate changes range from **10% decrease to 14% increase** (varies by territory/underwriting). ([citizensfla.com](https://www.citizensfla.com/es/-/20250401-2025-rate-changes-1?utm_source=openai))  \n  - **Non‑primary residences (second homes, etc.):** can range up to **50% increases** (again varies by territory/underwriting). ([citizensfla.com](https://www.citizensfla.com/es/-/20250401-2025-rate-changes-1?utm_source=openai))\n- Citizens also notes the statutory “glide path” cap and that it is scheduled to rise to **15% in 2026** (cap mechanism; your actual premium can still change from coverage/mitigation/fees, etc.). ([citizensfla.com](https://www.citizensfla.com/es/-/20250401-2025-rate-changes-1?utm_source=openai))\n\n**Why this matters for retirement communities:** many residents are **seasonal** (non‑primary) and can be exposed to the higher allowable increases in some cases, while full-time residents may be closer to the primary-residence caps.\n\n## 2) Your community/association master policy (condo/HOA) — the big driver lately\nIn condos and some HOAs, the largest hurricane insurance expense is often the **association’s master property/wind policy**, which is paid via **monthly/quarterly dues and special assessments**, not your personal HO‑6 alone. Citizens’ filings also cover commercial lines, with changes effective **June 1, 2025**, varying by risk/territory/product. ([citizensfla.com](https://www.citizensfla.com/es/-/20250401-2025-rate-changes?utm_source=openai))\n\n## What makes Southwest Florida retirement communities expensive for hurricane insurance\nEven within “Southwest Florida,” premiums can vary drastically community-to-community based on:\n- **Distance to coast / storm surge exposure** (barrier islands and near-coastal zones are typically far higher)\n- **Building type & height** (mid/high-rise concrete vs. wood frame; roof type; attachment; opening protection)\n- **Year built / building code** (post‑2002 and especially post‑2012 code improvements can help)\n- **Wind mitigation features** (impact windows/shutters, roof-to-wall connections, secondary water resistance)\n- **Claims history of the community** (including Irma/Ian and roof/water losses)\n- **Deductible structure** (named-storm deductibles can be large; higher deductibles can reduce premium but increase risk)\n- **Reinsurance costs** (often the biggest macro driver, and can change year-to-year)\n\n## If you tell me 5 details, I can narrow this to your situation\n1) Community location (city + whether it’s coastal/inland)  \n2) Home type: **single-family / condo / attached villa / mobile home**  \n3) If condo/HOA: do you mean **your HO‑6** or the **association master policy** cost in dues?  \n4) Primary residence or seasonal/second home?  \n5) Any recent big changes (new roof, shutters, major claim, big dues increase)?\n\nIf you share those, I can outline the most likely rate pressures, what to ask the HOA/condo board for (documents/quotes/deductibles), and practical ways residents sometimes reduce premiums (mitigation credits, deductible strategy, shopping private vs Citizens, etc.).",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "The AI provides a detailed explanation of Florida hurricane insurance rate drivers and Citizens Insurance policy changes for Southwest Florida but does not specifically mention or evaluate Lakewood Ranch."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current information about hurricane insurance rates in Southwest Florida retirement communities.\nBased on current research, here's what you need to know about hurricane insurance rates in Southwest Florida retirement communities:\n\n## Average Costs and Rate Trends\n\n\nFlorida homeowners pay an average of $10,384 annually for home insurance, which is $576 more per month than the national average, making it 199% higher than typical costs nationwide.\n However, \nseveral major insurance companies are proposing rate reductions for 2026, with State Farm seeking a 10% rate reduction statewide and Citizens Insurance planning to cut rates by an average 2.6%, with 60% of customers potentially seeing an average premium cut of 11.5%.\n\n\n## Southwest Florida Specific Rates\n\nFor Southwest Florida retirement areas like Port Charlotte and Punta Gorda, \nFort Myers homeowners insurance costs $1,382 yearly, although rates will vary based on location, home value, and you'll likely pay more if you're closer to the coast.\n\n\n## Geographic Variation\n\n\nHome insurance rates vary drastically in Florida, especially between inland and coastal ZIP codes, with rates likely being more expensive than average if you're in the direct line of landfall hurricanes, while some cities benefit from below-average rates because they see less serious storm damage.\n\n\n## Hurricane Deductibles\n\n\nFlorida insurers often apply separate hurricane deductibles, around 2% to 10% of your dwelling coverage, rather than your standard deductible. For a home insured at $250,000 with a 5% hurricane deductible, you'd pay $12,500 out-of-pocket before coverage kicks in during a named storm.\n\n\n## Money-Saving Strategies for Retirees\n\n\nRetirees might qualify for certain discounts as seniors, as many insurers offer retiree discounts, claims-free discounts, an",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "Homeowners insurance in Florida is significantly higher than the national average, though some rate reductions are projected for 2026; rates are heavily influenced by proximity to the coast and specific ZIP codes."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Hurricane insurance rates in Southwest Florida (SWFL) retirement communities have undergone a dramatic shift following Hurricanes Ian (2022), Milton (2024), and Helene (2024). While the market is showing signs of stabilization in 2025, premiums remain among the highest in the country, particularly for those on fixed incomes.\n\n### **Average Rates by Property Type (2025 Forecasts)**\nInsurance costs in SWFL are heavily influenced by a property's distance from the coast, age, and construction type.\n\n| Property Type | Estimated Annual Premium | Notes |\n| :--- | :--- | :--- |\n| **Single-Family Home** | **$4,000 – $7,500+** | Rates in Lee County (Ft. Myers/Cape Coral) average around $3,600, while coastal Naples often exceeds $7,000. |\n| **Condominium (Individual)** | **$1,700 – $2,500** | This \"HO-6\" policy covers the interior; the \"hurricane\" portion is mostly paid via HOA fees (see below). |\n| **Manufactured Home** | **$1,500 – $2,800** | Includes wind coverage. Rates for homes built before 1994 (pre-HUD wind zone rules) are significantly higher or harder to find. |\n| **55+ Community (Blended)** | **~$6,000** | A common benchmark for retirees in gated or active adult communities when including wind and flood. |\n\n### **The \"HOA Factor\" in Retirement Communities**\nMany retirees in SWFL live in condos or deed-restricted communities where insurance is a \"hidden\" cost within monthly dues.\n*   **Master Policy Spikes:** HOA and Condo associations have seen their master policy premiums (which cover the building's shell and common areas against hurricanes) increase by **10–20%** for 2025.\n*   **Special Assessments:** Due to new state laws (SB 4-D and HB 913), associations must now conduct \"Milestone Inspections\" and fully fund reserves for structural repairs. This has led to one-time special assessments ranging from **$2,000 to over $50,000** in older SWFL buildings.\n*   **Loss Assessment Coverage:** It is now critical for residents to carry \"Loss Assessment\" coverage (usually $2,000–$10,000) on their personal policies to help pay for these community-wide hurricane deductibles.\n\n### **Regional Nuances in SWFL**\n*   **Lee County (Fort Myers/Cape Coral):** Since Hurricane Ian, rates here have stabilized more than in other areas, with many insurers offering 1.5%–3% increases or even flat renewals for 2025.\n*   **Collier County (Naples/Marco Island):** High property values and coastal exposure make this one of the most expensive markets. Non-primary or seasonal residences may face surcharges of up to **50%** if insured through Citizens.\n*   **Sarasota/Charlotte Counties:** These areas have seen the largest inventory of \"for sale\" homes recently as retirees exit due to rising insurance and the 2024 storm impacts.\n\n### **Key Market Drivers for 2025–2026**\n1.  **Citizens Property Insurance:** The state-backed \"insurer of last resort\" is raising rates on a \"glidepath,\" capped at **14% in 2025** and **15% in 2026**.\n2.  **Wind Mitigation Credits:** Homes with \"hip\" roofs, hurricane straps, and impact-resistant windows/shutters can receive discounts of **20–40%**.\n3.  **The \"Flood\" Distinction:** Standard homeowners insurance does **not** cover rising water. Flood insurance through the NFIP or private market adds an additional **$700 – $2,500** annually, depending on your flood zone.\n\n### **Tips for Retirees on a Budget**\n*   **Wind Mitigation Inspection:** If your roof is newer than 2002, a $100–$150 inspection is the most effective way to lower your premium.\n*   **Shop Private Carriers:** Over 30 new or returning private insurers have entered the Florida market in the last year, often offering better rates than Citizens for well-maintained homes.\n*   **Adjust Deductibles:** Choosing a **5% or 10% hurricane deductible** (instead of 2%) can lower premiums significantly, though you must have enough savings to cover that amount if a storm hits.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "Hurricane insurance rates in Southwest Florida are stabilizing in 2025 but remain high, with costs heavily influenced by property type, location, and mitigation measures like newer roofs and impact windows."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent data and reports as of early 2026, hurricane insurance rates in Southwest Florida retirement communities (areas like Naples, Fort Myers, Sarasota, and surrounding regions) have been a hot topic due to the area's vulnerability to storms and the broader impacts of climate change. I'll break this down with key insights, averages, and trends. Keep in mind that insurance rates are highly variable based on factors like property value, location, building age, flood zones, and coverage details—always get personalized quotes from insurers for accuracy.\n\n### Current Average Rates and Trends\n- **Homeowners Insurance Averages**: In Florida overall, the average annual cost for homeowners insurance (which typically includes hurricane/windstorm coverage) is around $10,384 for a standard policy, according to tools like MoneyGeek's Florida home insurance calculator (updated recently in 2026). In Southwest Florida specifically, rates tend to be higher due to hurricane risks—often 20-50% above the state average, pushing premiums into the $12,000-$15,000 range for a typical $300,000 home in retirement communities. This is up significantly from pre-2025 levels, driven by recent storms and insurer adjustments.\n  \n- **Hurricane-Specific Coverage**: Hurricane insurance often falls under windstorm or separate deductibles in homeowners policies. For retirement communities (e.g., condos or 55+ developments), rates can be influenced by community associations (HOAs) that may cover exteriors, leaving owners to insure interiors. Deductibles for hurricane damage are commonly 2-5% of the home's value, which could mean $6,000-$15,000 out-of-pocket for a $300,000 property.\n\n- **Flood Insurance**: Separate from standard homeowners policies, flood coverage is crucial in low-lying Southwest Florida areas. National Flood Insurance Program (NFIP) rates average $800-$1,200 annually for moderate-risk zones, but in high-risk retirement communities near the coast (like those in Lee or Collier Counties), they can exceed $2,000-$3,000. Private flood options might be cheaper but are harder to find. Recent updates from sources like Royal Shell Real Estate highlight that rates have stabilized somewhat in 2025-2026, but they're still rising due to FEMA's Risk Rating 2.0 system.\n\n- **Rate Changes in 2025-2026**: Florida's state-backed insurer, Citizens Property Insurance, approved rate hikes averaging 14% for 2025, with some Southwest Florida policyholders seeing increases up",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "comparedTo": [],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "The AI provided a detailed breakdown of insurance costs, trends, and flood coverage for Southwest Florida cities like Naples, Fort Myers, and Sarasota, but it did not specifically mention or compare Lakewood Ranch."
+              }
+            }
+          }
+        },
+        {
+          "query": "Resale value trends in Lakewood Ranch vs Cresswind at Wellen Park",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Resale-value trends are meaningfully different here because **Lakewood Ranch (LWR)** is a large, mature, multi‑segment master‑planned area with lots of resale comps, while **Cresswind at Wellen Park** is a newer, age‑targeted (55+) neighborhood inside a newer master plan where **new construction can directly “compete” with your resale** via builder incentives.\n\n## Big-picture market context (applies to both)\n- The broader **Sarasota/Manatee** market softened in **2024**: median prices were down year-over-year in both counties and days-to-contract rose (more balanced / buyer-friendlier than the 2021–2022 frenzy). ([myrasm.com](https://www.myrasm.com/blog/2025/01/24/market-statistics/year-end-2024-real-estate-market-report-trends-in-sarasota-and-manatee-counties/?utm_source=openai))  \n- More recently, **November 2025** data from the local REALTOR® association shows mixed direction by county/segment (some YoY price declines in Sarasota; Manatee single-family median up YoY), plus higher inventory and generally longer sell times. ([myrasm.com](https://www.myrasm.com/november2025?utm_source=openai))  \n\nThat means: **today’s resale value “trend” is very neighborhood- and product-type-specific** (single family vs villa/condo; HOA level; age of home; insurance exposure).\n\n---\n\n## Lakewood Ranch: resale trend characteristics\n**What the data signals**\n- LWR reports **average home price up ~7.4% in 2024 to ~$734k** (their community-wide reporting, heavily influenced by mix of product sold). ([lakewoodranch.com](https://lakewoodranch.com/2025/01/?utm_source=openai))  \n- LWR also continued strong new-home velocity into **2025** (e.g., Q1 2025 sales up slightly YoY; mid‑2025 sales only modestly down YoY). ([lakewoodranch.com](https://lakewoodranch.com/lakewood-ranch-starts-2025-strong-with-steady-sales-and-strategic-momentum/?utm_source=openai))  \n\n**What that usually means for resale**\n- **Deeper resale market + broader buyer pool** (families, multi‑gen, retirees) tends to support liquidity (more “natural” resale demand). ([sarasotamagazine.com](https://www.sarasotamagazine.com/home-and-real-estate/2025/01/lakewood-ranch-master-planned-community-2024-ranking-rlco?utm_source=openai))  \n- However, when LWR builders offer incentives (common in shifting markets), **resale sellers can feel pricing pressure** if their home is similar to a new build down the street—especially for homes that aren’t meaningfully upgraded. ([lakewoodranch.com](https://lakewoodranch.com/2025/01/?utm_source=openai))  \n\n**Practical takeaway:** LWR is typically the **safer/steadier resale story** because it’s established, has many comps, and attracts multiple life-stage buyers—though you still must price against new construction incentives.\n\n---\n\n## Cresswind at Wellen Park: resale trend characteristics\n**What we can confidently say from published sources**\n- Wellen Park’s master plan has been selling very well: **960 new-home sales in 2024 (up ~10% from 2023)** and remained a top seller mid‑2025. ([wellenpark.com](https://wellenpark.com/news/wellen-park-ranked-nationally-as-no-6-best-selling-community-in-2024/?utm_source=openai))  \n- Wellen Park has been expanding product diversity including **its first 55+ offerings** (which is where Cresswind fits in). ([wellenpark.com](https://wellenpark.com/news/wellen-park-ranked-nationally-as-no-6-best-selling-community-in-2024/?utm_source=openai))  \n\n**What that usually means for resale in a specific 55+ neighborhood**\n- Early in a community’s lifecycle, **resale pricing is heavily anchored to the builder’s current base pricing + incentives** (rate buy-downs, closing-cost credits, design-center promos). That can cap appreciation for near-term resales even if overall demand is strong.\n- Buyer pool is **more specific** (55+), which can reduce demand depth compared with all-ages communities—though strong amenities/lifestyle can offset this.\n\n**Practical takeaway:** Cresswind/Wellen Park can perform well, but in the near-to-medium term **your resale trend may track “what the builder is doing right now” more than the broader market**.\n\n---\n\n## Head-to-head summary (trend direction & risk)\n- **LWR:** generally **more stable resale demand** (bigger, more mature, more diversified), with pricing influenced by new-build incentives but less “single-builder dependent.” ([sarasotamagazine.com](https://www.sarasotamagazine.com/home-and-real-estate/2025/01/lakewood-ranch-master-planned-community-2024-ranking-rlco?utm_source=openai))  \n- **Cresswind at Wellen Park:** resale trend can be **more volatile / incentive-sensitive** while the neighborhood is still selling lots of new homes; demand benefits from strong master-plan sales momentum. ([wellenpark.com](https://wellenpark.com/news/wellen-park-ranked-nationally-as-no-6-best-selling-community-in-2024/?utm_source=openai))  \n\n---\n\n## If you want a true “resale value trend” comparison (numbers)\nTo compute apples-to-apples (and not just narrative), I need:\n1) **Time window** (e.g., last 12 months vs 24 vs since 2022)  \n2) **Property type** (villa vs single-family; square footage range; 2/2 vs 3/2 etc.)  \n3) Are you comparing **all of Lakewood Ranch** or a specific village (e.g., Waterside, Country Club East, etc.)?\n\nIf you tell me:\n- target home type (villa/SFH), beds/baths, and your preferred time window,  \nI can outline exactly what metrics to pull (median closed price trend, $/sf, DOM, list-to-sale %, and “new-build competition” check) for LWR vs Cresswind and how to interpret them.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Cresswind at Wellen Park",
+                  "Wellen Park"
+                ],
+                "outcome": "win",
+                "winsOn": [
+                  "resale demand stability",
+                  "market maturity",
+                  "buyer pool diversity",
+                  "liquidity",
+                  "established market presence",
+                  "volume of resale comparables"
+                ],
+                "losesOn": [],
+                "aiConclusion": "Lakewood Ranch is considered the safer and steadier resale option because it is an established, mature community with a broad buyer pool across multiple life stages, whereas Cresswind at Wellen Park's resale value is more volatile and tied to new builder incentives."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about resale value trends in these two developments.\nLet me search for more specific information about Cresswind at Wellen Park since the results were showing Cresswind in Westlake, not Wellen Park.\nBased on my search, I found that Cresswind is actually located in Lakewood Ranch, not Wellen Park. Let me provide you with a comprehensive comparison of resale value trends for these two communities:\n\n## Resale Value Trends Comparison\n\n### **Lakewood Ranch - Including Cresswind**\n\n\nIn October 2025, Lakewood Ranch's median home price was $625,000, up from September's $587,000, showing flat to mildly down performance year-over-year at -3.7% for September before rebounding in October\n. \nThe average Lakewood Ranch home value is $619,244, down 7.6% over the past year\n.\n\n**Price Trends:**\n- \nPrices corrected -8% year-over-year mid-year, now stabilizing with October's uptick driven by seasonal buyer return and builder incentives\n\n- \nOver the past decade, home values have grown nearly 68% since 2015, driven by master-planned development and strong regional migration\n\n- \nPremium enclaves like Del Webb and Sky Ranch saw price increases and brisk absorption when turnkey/new, while affordable areas such as Summerfield and Riverwalk saw heavy buyer competition for new builds and renovated resales\n\n\n**Market Conditions:**\n- \nLakewood Ranch is officially trending toward a buyer's market, with the steep rise in days on market and a softening list-to-sale ratio showing buyers regaining control\n\n- \nAverage days on market are 101 days in October, up from August's 94 and September's 99\n\n\n### **Wellen Park**\n\n\nAs of December 2025, the median home price in Wellen Park is $542",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park",
+                  "Cresswind at Wellen Park"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Median home price",
+                  "Long-term value growth",
+                  "Seasonal buyer return",
+                  "Builder incentives",
+                  "Historical growth since 2015"
+                ],
+                "losesOn": [
+                  "Year-over-year price performance",
+                  "Average home value percentage change",
+                  "Days on market",
+                  "List-to-sale ratio",
+                  "Market trend (shifting to buyer's market)"
+                ],
+                "aiConclusion": "Lakewood Ranch is currently trending toward a buyer's market with significant price corrections and rising days on market, though it maintains a higher median home price compared to Wellen Park and shows strong long-term appreciation."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Resale value trends in **Lakewood Ranch** and **Cresswind at Wellen Park** reflect a classic real estate trade-off between **proven stability** (Lakewood Ranch) and **growth potential** (Wellen Park). While both are top-selling master-planned communities in the U.S., their resale dynamics are currently diverging due to their stages of development.\n\n### **1. Market Maturity & Stability**\n*   **Lakewood Ranch (LWR):** As a 30-year-old community, LWR has a massive amount of historical resale data that proves its value retention. It is considered a **\"lower-risk\"** investment with steady, predictable appreciation. \n    *   **Resale Trend:** In 2024–2025, resale listings in LWR have generally \"held firm\" even as inventory increased. Because the community is essentially a fully-functioning city with established schools and infrastructure, it attracts a constant stream of \"move-in ready\" buyers.\n*   **Cresswind at Wellen Park:** This is a much newer community in an \"emerging\" market. Wellen Park is still in its heavy growth phase (likely 10–15 more years of development).\n    *   **Resale Trend:** Because it is newer, most sales are still new construction. Resale values here can be more volatile in the short term because they must compete with builders who often offer aggressive incentives (rate buydowns, closing cost credits) on brand-new homes.\n\n### **2. Price Performance (2024–2025)**\n| Metric | Lakewood Ranch (General) | Wellen Park (General) |\n| :--- | :--- | :--- |\n| **Median Sales Price** | ~$700,000 – $750,000 | ~$540,000 – $560,000 |\n| **Price Trend** | Steady / Holding Firm | Softening (-9% to -11% in Venice/34293) |\n| **Inventory** | Moderate Increase | \"Skyrocketing\" (up to 120% in some zip codes) |\n| **Value Proposition** | Established Equity | Attainable Entry + High Upside |\n\n### **3. Neighborhood Comparison: Cresswind vs. Lakewood Ranch 55+**\nThe most direct comparison for **Cresswind at Wellen Park** is **Cresswind at Lakewood Ranch** (both built by Kolter Homes).\n\n*   **Cresswind at Lakewood Ranch:** \n    *   **Value:** Homes are generally priced higher (averaging $675k+ for resales). \n    *   **Resale Advantage:** Being in LWR means closer proximity to the \"University Town Center\" (UTC) corridor and Sarasota’s cultural hub, which keeps demand high for the 55+ demographic.\n*   **Cresswind at Wellen Park:** \n    *   **Value:** Comparable homes often sell for **15–20% less** ($90k–$100k difference) than those in Lakewood Ranch. \n    *   **Resale Advantage:** It is only **15–20 minutes from the beach**, compared to LWR’s 40–50 minute drive. This \"coastal proximity\" is the primary driver for its future resale value.\n\n### **4. Key Factors Influencing Your Decision**\n*   **The \"Builder Competition\" Factor:** In Wellen Park, your resale home will compete with new phases of Cresswind being built for years to come. This can suppress resale prices until the community is closer to \"build-out.\" In Lakewood Ranch, many neighborhoods are already \"closed out,\" meaning a buyer *must* buy a resale to get into that specific location, which protects your price.\n*   **Inventory Levels:** The Venice/Wellen Park area (Zip 34293) has seen a massive surge in inventory recently. This has shifted the power to buyers, leading to more price cuts and longer \"Days on Market\" (averaging 75–85 days) compared to the more balanced Lakewood Ranch market.\n*   **Investment Horizon:** \n    *   **Short Term (<5 years):** Lakewood Ranch is safer for equity protection.\n    *   **Long Term (10+ years):** Wellen Park may offer higher total appreciation as the \"Downtown Wellen\" and medical facilities fully mature, closing the price gap with Sarasota/Bradenton.\n\n**Summary:** Buy in **Lakewood Ranch** if you want to protect your capital in an established, high-demand market. Buy in **Cresswind at Wellen Park** if you want a lower entry price and believe in the long-term appreciation of the Venice area's rapid growth and beach proximity.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Cresswind at Wellen Park",
+                  "Wellen Park",
+                  "Venice"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Market maturity",
+                  "Value retention stability",
+                  "Predictable appreciation",
+                  "Established infrastructure and schools",
+                  "Short-term equity protection",
+                  "Inventory control",
+                  "Proximity to UTC and Sarasota cultural hub"
+                ],
+                "losesOn": [
+                  "Entry price/Affordability",
+                  "Beach proximity",
+                  "Long-term growth upside potential"
+                ],
+                "aiConclusion": "Buy in Lakewood Ranch if you want to protect your capital in an established, high-demand market. Buy in Cresswind at Wellen Park if you want a lower entry price and believe in the long-term appreciation of the Venice area's rapid growth and beach proximity."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent real estate data from sources like Redfin, RCLCO Real Estate Consulting, and local market reports (as of early 2026), I'll break down the resale value trends for Lakewood Ranch and Cresswind at Wellen Park. Both are popular master-planned communities (MPCs) in Sarasota County, Florida, with strong growth driven by new-home sales and regional appeal. However, Lakewood Ranch has more granular public data available on resale trends, while Cresswind (a 55+ active adult neighborhood within Wellen Park) is part of a broader, rapidly developing area with less specific resale metrics. Keep in mind that real estate trends can fluctuate based on factors like interest rates, inventory, and economic conditions—consult a local realtor for personalized advice.\n\n### Lakewood Ranch Overview\nLakewood Ranch is one of the top-selling MPCs in the U.S., consistently ranking in the top 10 nationally according to RCLCO's 2025 report. It led South Florida in new-home sales for 2025, with the region seeing over 3,000 combined sales when including nearby communities like Wellen Park.\n\n- **Resale Price Trends**: \n  - As of late 2025, the average resale home price in Lakewood Ranch was around $618K–$620K, reflecting a year-over-year increase of about 9.7%–10.4% (per Redfin data). This rebound follows some stabilization earlier in the year, with prices rising due to renewed buyer demand and balanced market conditions.\n  - In September 2025, reports from Local Life Homes noted price stabilization with increasing buyer leverage, suggesting opportunities for negotiations but overall upward momentum.\n  - October 2025 saw a market rebound with rising prices and trends pointing toward continued growth into 2026, driven by low inventory and high demand in this somewhat competitive market (Redfin competitiveness score: 31–34 out of 100).\n\n- **Factors Influencing Resale Value**: Strong amenities (e.g., golf courses, trails, and retail), proximity to Sarasota and Bradenton, and its status as a \"small city\" rival in growth contribute to solid appreciation. However, new construction phasing could introduce risks like oversupply in certain pockets, potentially softening short-term resale values (as noted in 2026 analyses from The Sunshine State Co.).\n\nOverall, Lakewood Ranch shows positive resale value trends with steady appreciation, making it a strong choice for long-term investment.\n\n### Cresswind at Wellen Park Overview\nWell",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Cresswind at Wellen Park"
+                ],
+                "outcome": "win",
+                "winsOn": [
+                  "data availability",
+                  "resale price trends",
+                  "national ranking",
+                  "amenities",
+                  "long-term investment potential"
+                ],
+                "losesOn": [
+                  "short-term resale softening risk",
+                  "oversupply risk"
+                ],
+                "aiConclusion": "Lakewood Ranch shows positive resale value trends with steady appreciation, making it a strong choice for long-term investment."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

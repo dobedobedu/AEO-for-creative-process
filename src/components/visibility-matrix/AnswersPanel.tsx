@@ -47,6 +47,7 @@ interface AnswersPanelProps {
   results: QueryResult[];
   brand: string;
   brandAliases?: string[];
+  isHistorical?: boolean; // true if viewing a historical run
   onRunCell?: () => void;
   isRunning?: boolean;
 }
@@ -77,6 +78,7 @@ export function AnswersPanel({
   results,
   brand,
   brandAliases = [],
+  isHistorical = false,
   onRunCell,
   isRunning = false,
 }: AnswersPanelProps) {
@@ -266,15 +268,16 @@ export function AnswersPanel({
             <StageMetricsSummary stage={stage} results={results} />
 
             {/* Cell-level Citation Summary */}
-            {allCellCitations.length > 0 && (
+            {allCellCitations.length > 0 || isHistorical ? (
               <div className="px-6 pt-4">
                 <CellCitationSummary
                   citations={allCellCitations}
                   brandDomain="lakewoodranch.com"
                   maxSources={8}
+                  isHistorical={isHistorical}
                 />
               </div>
-            )}
+            ) : null}
 
             {/* Provider Rows */}
             <div className="p-6 space-y-4">

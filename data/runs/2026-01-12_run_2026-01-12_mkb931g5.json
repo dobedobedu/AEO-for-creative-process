@@ -1,0 +1,113 @@
+{
+  "id": "run_2026-01-12_mkb931g5",
+  "timestamp": "2026-01-12T14:20:43.157Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 1,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "first_time_decide": {
+      "intentId": "int_first_time_decide_mk189ge6",
+      "intentText": "First-time buyer ready to purchase within budget",
+      "queriesUsed": [
+        "best real estate agents for first-time buyers in Lakewood Ranch"
+      ],
+      "metrics": {
+        "recommendationRate": 1
+      },
+      "results": [
+        {
+          "query": "best real estate agents for first-time buyers in Lakewood Ranch",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some **highly rated Lakewood Ranch–area agents/teams** that look like strong fits for **first-time buyers** (based on recent, publicly available review/production pages). I’m focusing on people with **lots of buyer-side activity and strong client reviews**, since first-timers typically need extra education, responsiveness, and negotiation support.\n\n## Agents/teams to consider (Lakewood Ranch, FL)\n\n1) **Jamie & Mark Coppens (eXp Realty)**\n- Zillow shows **5.0 rating** with a **high volume of reviews** and **strong recent sales activity**, including transactions in Lakewood Ranch. ([zillow.com](https://www.zillow.com/professionals/real-estate-agent-reviews/lakewood-ranch-fl/?utm_source=openai))\n\n2) **Judi Taulbee (Fine Properties)**\n- Zillow lists **5.0 rating** with a **large review count** and Lakewood Ranch activity. ([zillow.com](https://www.zillow.com/professionals/real-estate-agent-reviews/lakewood-ranch-fl/?utm_source=openai))\n\n3) **Matthew Rode team (Keller Williams Realty On The Water Sarasota)**\n- Zillow shows **5.0 rating** with **very high production** and many Lakewood Ranch sales—often helpful for navigating bidding/competition and neighborhood-by-neighborhood pricing. ([zillow.com](https://www.zillow.com/professionals/real-estate-agent-reviews/lakewood-ranch-fl/?utm_source=openai))\n\n4) **Carissa Pelczynski (Preferred Shore Real Estate)**\n- Zillow shows **5.0 rating** and solid local transaction history in Lakewood Ranch. ([zillow.com](https://www.zillow.com/professionals/real-estate-agent-reviews/lakewood-ranch-fl/?utm_source=openai))\n\n5) **Joseph Murphy team (Coldwell Banker)**\n- Zillow lists **5.0 rating** with a **large review count** and Lakewood Ranch volume. ([zillow.com](https://www.zillow.com/professionals/real-estate-agent-reviews/lakewood-ranch-fl/?utm_source=openai))\n\n## If you’re leaning toward new construction / Waterside\n- **Matt Leicht / The Matt Leicht Group** is heavily positioned around **Waterside + new construction** with published production/reviews (note: some pages are promotional/press-style, so I’d still cross-check reviews directly on Zillow/Google). ([newswire.com](https://www.newswire.com/news/matt-leicht-the-best-agent-in-waterside-lakewood-ranch-2025-update?utm_source=openai))\n\n## A quick “first-time buyer” screening checklist (use on your first call)\nAsk each agent:\n- **Do you regularly represent first-time buyers?** What % of your business is buyers?\n- **How do you handle new construction in LWR (builder contracts, incentives, inspections, lot premiums)?**\n- **Will you attend inspections and walkthroughs in person?**\n- **How do you structure offer strategy** (escalation clauses, appraisal gap, repairs, credits)?\n- **Do you have lender + insurance + inspection partners** familiar with Lakewood Ranch?\n\n## Two questions so I can narrow this to the best 3 for you\n1) Are you looking in **Waterside**, **Lakewood Ranch Country Club**, **Greenbrook**, **Summerfield**, **Del Webb**, etc.—or “anywhere in LWR”?  \n2) Rough budget and property type: **condo/townhome/single-family**, and are you open to **new construction**?\n\nIf you answer those, I’ll shortlist the **best matches** and tell you exactly what to look for in their reviews/track record for your situation.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "first-time buyers",
+                  "new construction",
+                  "Waterside",
+                  "Lakewood Ranch Country Club",
+                  "Greenbrook",
+                  "Summerfield",
+                  "Del Webb"
+                ],
+                "alternativesOffered": [],
+                "decisionRationale": "The AI response fully supports the user's interest in Lakewood Ranch by providing a curated list of top-rated real estate agents specialized in the area, offering detailed sub-neighborhood options, and providing a specific framework for buying within the community, thereby validating it as a primary destination for the user."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about the best real estate agents for first-time buyers in Lakewood Ranch.\nBased on my search, here are some of the best real estate agents for first-time buyers in Lakewood Ranch:\n\n## Top Recommended Agents\n\n**Michael & Courtney Chenkus (Sold By Chenkus)**\n\nWith Michael and Courtney Chenkus on your team, you benefit from expert first-hand experience and knowledge of the Lakewood Ranch, Florida real estate market.\n \nCourtney and Michael (Sold by Chenkus) make an expert Real Estate team.\n They work with both buyers and sellers and are based locally in Lakewood Ranch. You can reach them at 941-348-2653.\n\n**Matt Leicht**\n\nMatt represents everyone—from first-time buyers to clients with multimillion-dollar estates.\n \nHis honors include the Five Star Agent award and a 2025 Top Agent award from FastExpert.\n\n\n**Laurie Dykeman (My Tampa Home Team)**\n\nLaurie Dykeman and the My Tampa Home Team will not disappoint. She is on top of all aspects of modern realty sales, has a mastery of the latest in technology and a flair for marketing that is hard to beat.\n\n\n## Why Choose a Top Agent for First-Time Buyers\n\n\nThe top 5% of buyer's agents on average save their clients 2.5% more on their home purchase.\n \nA professional real estate agent will have access to local MLS services to find homes that meet your criteria and needs, can connect you with other professionals—like a mortgage broker and real estate attorney—you'll need for the purchase, and can often negotiate a better price for your home to help save you money.\n\n\nI recommend reviewing multiple agents' credentials, reading client reviews on platforms like Zillow, Yelp, and Angi, and comparing their local market expertise before making your",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "recommended",
+                "qualifiers": [
+                  "reviewing multiple agents' credentials",
+                  "reading client reviews on platforms like Zillow, Yelp, and Angi",
+                  "comparing local market expertise"
+                ],
+                "alternativesOffered": [],
+                "decisionRationale": "The AI provided specific, localized recommendations for real estate agents based in or specializing in Lakewood Ranch, validating the user's choice of location by providing expert resources tailored to first-time buyers in that specific community."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "For first-time buyers in Lakewood Ranch, the \"best\" agent is typically one who balances local market expertise with a heavy emphasis on education and patience. Because Lakewood Ranch is a massive master-planned community with many \"villages,\" you need someone who can explain CDD fees (Community Development District), HOAs, and the differences between new construction and resales.\n\nBased on client reviews, certifications, and educational focus, here are the top real estate agents and resources for first-time buyers in Lakewood Ranch:\n\n### 1. Top-Rated Agents for First-Time Buyers\nThese agents are frequently cited in reviews for their \"stress-free\" approach and willingness to explain the complexities of the Florida market.\n\n*   **Mike Novak (Lakewood Ranch Lifestyle):** With over 28 years of experience, Novak is widely recommended for his \"relaxed approach.\" Reviews from first-time buyers often highlight his responsiveness and his ability to explain technical details like mineral rights and school zones without being \"salesy.\"\n*   **Matt Leicht (The Leicht Group):** Known for extensive neighborhood guides, Leicht is a strong choice for buyers who want data-driven advice. He has high ratings on Zillow and Google, specifically for helping families navigate the newer villages like Waterside.\n*   **The Argelia Vidal Team (Coldwell Banker):** This team is noted for being highly communicative. For a first-timer, their \"concierge\" style service—assisting with everything from staging to finding local inspectors—is a major benefit.\n*   **Julie & Patrick Warren (The Warren Group):** Frequently recommended for their partnership-style approach. They are known for taking the time to understand a buyer’s long-term needs rather than just making a quick sale.\n\n### 2. Agents with ABR® Designation\nWhen searching, look for the **Accredited Buyer’s Representative (ABR®)** designation. These agents have completed specialized training in representing buyers. High-performing ABR agents in the Lakewood Ranch area include:\n*   **Charles Totonis** (Greek & English speaking)\n*   **Mark Coon** (Also a Certified Negotiation Expert)\n*   **Maggie Nasser** (Broker-Associate)\n*   **Martin Dimovski** (Specialist in relocations)\n\n### 3. Essential First-Time Buyer Resources in the Area\nBefore picking an agent, many Lakewood Ranch first-timers utilize local educational programs that offer certifications required for down payment assistance.\n\n*   **Step Up Suncoast:** They offer a HUD-certified 8-hour **First Time Home Buyer Workshop** (often via Zoom). Completing this is usually required if you want to access Manatee or Sarasota County grant programs.\n*   **Suncoast Credit Union:** They host frequent webinars and workshops specifically for members entering the Florida market for the first time.\n*   **State College of Florida (Lakewood Ranch Campus):** They occasionally host real estate seminars and pre-license courses that can be informative for buyers wanting to understand the legal side of transactions.\n\n### 4. Programs Your Agent Should Know\nA great first-time buyer agent in Lakewood Ranch should be well-versed in these specific Florida financial incentives:\n*   **Hometown Heroes Housing Program:** Offers down payment and closing cost assistance to frontline workers (teachers, healthcare, police, etc.).\n*   **Florida Assist:** A deferred, 0% interest second mortgage of up to $10,000 for down payment assistance.\n*   **CDD Fee Education:** Lakewood Ranch has unique infrastructure fees. Ask your agent to provide a \"total monthly cost\" breakdown that includes taxes, insurance, HOA, and CDD fees.\n\n### Summary Checklist for Choosing an Agent\n1.  **Ask about New Construction:** Much of Lakewood Ranch is new. Ensure your agent has experience negotiating with builders (builders' contracts are very different from standard Florida Realtor contracts).\n2.  **Verify ABR Status:** Confirm they have specific training in buyer representation.\n3.  **Request a \"Buyer’s Consultation\":** A good first-time agent will insist on a 30–60 minute meeting to explain the process before ever showing you a house.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "recommended",
+                "qualifiers": [
+                  "understanding CDD fees (Community Development District)",
+                  "navigating HOAs",
+                  "differentiating between new construction and resales",
+                  "negotiating with builders",
+                  "consideration of total monthly cost (taxes, insurance, HOA, and CDD fees)"
+                ],
+                "alternativesOffered": [],
+                "decisionRationale": "The response treats Lakewood Ranch as a premier and complex master-planned community with diverse 'villages,' validating the user's choice by providing a detailed guide on specialized agents, local educational resources, and specific financial incentive programs (Hometown Heroes, Florida Assist) applicable to the area."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent web searches for the best real estate agents specializing in first-time home buyers in Lakewood Ranch, Florida (as of early 2026), I'll highlight some top recommendations. Lakewood Ranch is a popular master-planned community near Sarasota and Bradenton, known for its family-friendly vibe, amenities, and new developments—making it a great spot for first-timers. Agents who excel here often have experience guiding buyers through financing options, inspections, and the local market's nuances, like HOA rules and new construction.\n\n### Top Recommendations\nHere are some highly rated agents and firms based on sources like HomeLight, U.S. News Real Estate, Yelp, and local directories. These are drawn from reviews, transaction data, and client feedback, with a focus on those who frequently work with first-time buyers. I prioritized agents with strong ratings (e.g., 4.5+ stars) and expertise in the area:\n\n1. **Sold By Chenkus (Charles Rutenberg Realty)**  \n   - Agents like those at Sold By Chenkus are noted as top producers in Lakewood Ranch, specializing in buying and selling with a local focus. They're praised for their dedication to first-time buyers, offering confident guidance on properties in the area.  \n   - Website: soldbychenkus.com  \n   - Why for first-timers: They emphasize education and hand-holding through the process, ideal if you're new to home buying.\n\n2. **Beth Perry - Fine Properties**  \n   - Frequently tops Yelp lists for Lakewood Ranch agents. Beth is highlighted for her expertise in the local market, including Lakewood Ranch, Longboat Key, and nearby areas. She has strong reviews for helping first-time buyers navigate budgets and negotiations.  \n   - Contact: finepropertiesfl.com or search Yelp for reviews.  \n   - Why for first-timers: Clients rave about her patience and ability to explain complex steps like pre-approvals and closing costs.\n\n3. **Joseph Murphy - Coldwell Banker Realty**  \n   - Ranked highly on Yelp and other platforms for Lakewood Ranch. Joseph is known for his work with buyers in Sarasota and Bradenton, with a focus on personalized service.  \n   - Why for first-timers: He often deals with entry-level homes and has experience with programs like FHA loans, which are popular among new buyers.\n\n4. **Kevin Bryceland - Ranch Realty**  \n   - Specializes in Lakewood Ranch properties and is featured on local real estate sites. He's noted for browsing new listings and helping with home searches",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "family-friendly vibe",
+                  "amenities",
+                  "new developments",
+                  "near Sarasota and Bradenton"
+                ],
+                "alternativesOffered": [
+                  "Sarasota",
+                  "Bradenton",
+                  "Longboat Key"
+                ],
+                "decisionRationale": "The AI explicitly states that Lakewood Ranch is a 'great spot for first-timers' because of its popularity as a master-planned community, family-friendly environment, and the availability of new developments and amenities."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

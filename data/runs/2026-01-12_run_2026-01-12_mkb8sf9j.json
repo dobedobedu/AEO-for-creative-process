@@ -1,0 +1,83 @@
+{
+  "id": "run_2026-01-12_mkb8sf9j",
+  "timestamp": "2026-01-12T14:12:27.847Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_explore": {
+      "intentId": "int_move_up_explore_mk189ge5",
+      "intentText": "Growing family exploring Florida relocation options",
+      "queriesUsed": [
+        "best neighborhoods in Sarasota for families with good schools"
+      ],
+      "metrics": {
+        "discoveryRate": 0,
+        "topThreeRate": 0
+      },
+      "results": [
+        {
+          "query": "best neighborhoods in Sarasota for families with good schools",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Top Sarasota-area neighborhoods families most often target for **strong schools + kid-friendly amenities** (parks, sidewalks, community activities) tend to cluster in a few “school-zone + lifestyle” pockets:\n\n## 1) Southside / Hillview (West of the Trail)\n- **Why families like it:** very walkable, classic neighborhood feel, close to downtown + bayfront.\n- **School draw:** typically associated with **Southside Elementary**, which is widely sought-after locally. ([visitsarasota.com](https://www.visitsarasota.com/article/best-neighborhoods-school-districts-families?utm_source=openai))\n\n## 2) Arlington Park\n- **Why families like it:** one of the best “in-town” family setups—big central park, pool, playgrounds, easy biking/walking.\n- **School access:** often linked with **Southside Elementary** and other nearby Sarasota schools (varies by exact address). ([visitsarasota.com](https://www.visitsarasota.com/article/best-neighborhoods-school-districts-families?utm_source=openai))\n\n## 3) Palmer Ranch (South Sarasota) — especially Turtle Rock / similar subdivisions\n- **Why families like it:** master-planned, lots of subdivisions, generally suburban-feeling with trails/parks; convenient to shopping and I‑75.\n- **School access:** commonly zoned to well-regarded schools (examples frequently cited: **Ashton Elementary** and **Sarasota Middle**, but zoning is address-specific). ([sarasotarealhomes.com](https://sarasotarealhomes.com/best-neighborhoods-to-buy-a-home-in-sarasota-florida-if-you-have-kids/?utm_source=openai))\n\n## 4) Gulf Gate Estates (South Sarasota)\n- **Why families like it:** more affordable than many “West of the Trail” options, still very convenient; close to the Siesta Key bridge.\n- **Schools/amenities:** commonly mentioned as a family-friendly option with nearby schools and lots of everyday conveniences. ([visitsarasota.com](https://www.visitsarasota.com/article/best-neighborhoods-school-districts-families?utm_source=openai))\n\n## 5) Lakewood Ranch (Sarasota-area option; spans Sarasota/Manatee lines)\n- **Why families like it:** very family-oriented master-planned community—parks, trails, sports, events, newer housing stock.\n- **Schools:** many people move here for the school options, but **school districts/zones differ** depending on which village and which county side you choose. ([sarasotarealhomes.com](https://sarasotarealhomes.com/family-friendly-neighborhoods-in-sarasota-florida/?utm_source=openai))\n\n## A note on “best schools” (magnet option)\nIf your priority is academics and your child qualifies, Sarasota County also has highly ranked public magnet options like **Pine View School (Osprey)** (admissions-based; not a neighborhood-zone school). ([sarasotacountyschools.net](https://www.sarasotacountyschools.net/o/pineview/article/2364924?utm_source=openai))\n\n---\n\n### To narrow this to the *best fit*, tell me:\n1) Kids’ grades (elementary / middle / high)?  \n2) Do you want **zoned public schools only**, or are you open to **magnet/charter/private**?  \n3) Budget range and whether you prefer **in-town (walkable)** vs **master-planned suburb (newer homes)**?\n\nIf you share an approximate work location (downtown Sarasota, UTC area, Venice, etc.), I can also suggest neighborhoods that minimize commute while staying in strong school zones.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "Not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on recent research, here are the best neighborhoods in Sarasota for families with good schools:\n\n## Top Family-Friendly Neighborhoods\n\n**Palmer Ranch**\n\nPalmer Ranch stands out as one of the top Sarasota neighborhoods for families, offering a master-planned community feel with exceptional amenities and highly-rated schools.\n \nStudents attend schools within the Sarasota County School District, including Sarasota High School (A-rated) and Sarasota Middle School (B-rated). Elementary students typically attend Wilkinson Elementary or Southside Elementary, both receiving strong community support.\n \nSingle-family homes range from $400,000 to over $1 million, with newer construction and established neighborhoods offering variety for different budgets and preferences.\n\n\n**Lakewood Ranch**\n\nLakewood Ranch tops the list as one of the most desirable neighborhoods for families in Sarasota. This master-planned community offers a range of housing options, from single-family homes to townhouses and apartments. With top-rated schools like Lakewood Ranch High School and a multitude of parks, including Adventure Park and Heron's Nest Nature Park, children have ample opportunities for outdoor activities.\n\n\n**Fruitville**\n\nFruitville is a safe, affordable area within minutes of Downtown Sarasota. This large Sarasota suburb offers a little something for everyone—including coastal-style ranches and budget-friendly apartments, a variety of shopping and dining options, easy access to outdoor recreation, and great schools like Fruitville Elementary School and McIntosh Middle School!\n\n\n**Bee Ridge**\n\nBee Ridge represents one of the most established and affordable safe neighborhoods for families in Sarasota. This centrally-located community offers excellent value while maintaining proximity to schools, parks, and amenities.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "Not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Sarasota consistently ranks as one of the best places to live in Florida for families, largely due to its \"A-rated\" school district, which is often ranked in the top 3 statewide.\n\nFor the 2025–2026 period, the following neighborhoods are considered the best for families, balancing top-tier educational access with safety and community amenities.\n\n### 1. Palmer Ranch (South Sarasota)\nThis is widely considered the \"epicenter\" for families in Sarasota. It is a massive master-planned community with dozens of gated neighborhoods, miles of bike trails (The Legacy Trail), and parks.\n*   **Top Schools:** **Ashton Elementary** (consistently 10/10) and **Sarasota Middle**.\n*   **Key Advantage:** It is located very close to **Pine View School** in Osprey. While Pine View is a magnet school (not neighborhood-zoned), living in Palmer Ranch makes the daily commute to this world-class institution much easier.\n*   **Vibe:** Suburban, manicured, and very safe.\n\n### 2. Southside Village & West of the Trail\nLocated just south of Downtown, this is one of Sarasota’s most historic and walkable areas. It features charming bungalows and high-end modern builds.\n*   **Top Schools:** **Southside Elementary School**, which is frequently ranked as the #1 or #2 traditional public elementary school in the county. It is zoned for **Sarasota High School**.\n*   **Key Advantage:** \"Southside Village\" itself is a small hub of family-friendly shops and restaurants, allowing for a lifestyle where you can walk to school and then grab coffee or dinner nearby.\n*   **Vibe:** Sophisticated, walkable, and community-oriented.\n\n### 3. Lakewood Ranch (Waterside / Sarasota Side)\nWhile the majority of Lakewood Ranch is in Manatee County, the **Waterside** district is located in Sarasota County. \n*   **Top Schools:** Currently zoned for **Tatum Ridge Elementary** (highly rated) and **McIntosh Middle**. Note that Sarasota County is planning a brand-new elementary school within Waterside (projected construction 2026–2027) to meet the massive growth.\n*   **Key Advantage:** You get the lifestyle of America’s #1 master-planned community (Waterfront dining at Waterside Place, farmer's markets, and endless youth sports) while remaining in the Sarasota County School District.\n*   **Vibe:** New construction, amenity-heavy, and high-energy.\n\n### 4. Gulf Gate & Southgate\nThese are established neighborhoods with larger yards and mid-century modern homes. They are popular for families who want to be closer to Siesta Key beach.\n*   **Top Schools:** **Gulf Gate Elementary** and **Phillippi Shores Elementary** (an IB World School). Most of this area is zoned for **Riverview High School**, famous for its prestigious International Baccalaureate (IB) program.\n*   **Key Advantage:** More \"neighborhood\" feel with fewer HOAs compared to Palmer Ranch, and very close to the beaches.\n*   **Vibe:** Classic Florida, established, and central.\n\n---\n\n### Important: Specialized School Options\nIn Sarasota, your \"neighborhood\" school isn't your only option. Many families choose neighborhoods based on proximity to these specialized programs:\n\n*   **Pine View School (Osprey):** Consistently ranked among the top 10 public high schools in the U.S. It serves grades 2–12. \n    *   *Admissions:* It is a **Gifted Magnet**. Your child must have an IQ of 130+ and meet specific academic criteria to apply. The deadline for 2026–2027 enrollment applications is **April 10, 2026**.\n*   **Sarasota School of Arts & Sciences (SSAS):** A top-rated public charter middle school located near Downtown. It uses a lottery system for admission, so families often live nearby (in neighborhoods like **Gillespie Park** or **Laurel Park**) to simplify the commute.\n*   **Suncoast Polytechnical High School:** A high-tech magnet school focused on STEM and technical certifications, located in Central Sarasota.\n\n### Private School Hubs\nIf you are looking at private education, the following schools are the \"Big Three\" in the area:\n*   **The Out-of-Door Academy (ODA):** Lower school on Siesta Key; Upper school in Lakewood Ranch.\n*   **Cardinal Mooney:** Located in Central Sarasota (near Fruitville/Southgate).\n*   **Sarasota Christian School:** Located in the Bee Ridge area.\n\n### Summary of Safety & Costs (2025 Data)\n| Neighborhood | Safety Rating | Median Home Price (Est.) | Primary School |\n| :--- | :--- | :--- | :--- |\n| **Palmer Ranch** | Very High | $550k – $800k | Ashton Elementary |\n| **Southside Village** | High | $900k – $2M+ | Southside Elementary |\n| **Waterside (LWR)** | Very High | $600k – $1.2M | Tatum Ridge |\n| **Gulf Gate** | Moderate-High | $450k – $600k | Gulf Gate Elementary |\n| **Southgate** | Moderate-High | $500k – $750k | Southside / Phillippi |",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "Not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": false,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "Not mentioned"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

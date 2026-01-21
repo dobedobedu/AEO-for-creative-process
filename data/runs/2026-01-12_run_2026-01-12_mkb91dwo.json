@@ -1,0 +1,134 @@
+{
+  "id": "run_2026-01-12_mkb91dwo",
+  "timestamp": "2026-01-12T14:19:25.992Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "luxury_compare": {
+      "intentId": "int_luxury_compare_mk189ge6",
+      "intentText": "Luxury buyer comparing premium communities and country clubs",
+      "queriesUsed": [
+        "Compare Lakewood Ranch country clubs vs The Villages amenities and fees"
+      ],
+      "metrics": {
+        "winRate": 0
+      },
+      "results": [
+        {
+          "query": "Compare Lakewood Ranch country clubs vs The Villages amenities and fees",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Below is a practical, side‑by‑side comparison of **Lakewood Ranch country clubs (typical private-club model; specifically Lakewood Ranch Golf & Country Club)** vs **The Villages (master‑planned community with an amenity fee + pay‑to‑play golf)**. Fees change, so treat Lakewood Ranch numbers as “ballpark unless you get the club’s current rate sheet.”\n\n---\n\n## 1) What you’re really buying: private club vs “community amenities”\n### Lakewood Ranch (country club model)\n- You’re joining a **private club** with **initiation fee + monthly dues**, and then typically additional spend (food minimums, cart fees, guest fees, etc., depending on the plan).\n- Access is **membership‑tier based** (golf vs sports vs social).\n\n### The Villages (amenity-fee model)\n- You pay a **monthly amenity fee** tied to your home/residency, which unlocks a huge menu of recreation and social amenities.\n- Golf is structured as:\n  - **Executive courses: “free” green fees for residents** (but trail/cart fees can apply). ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))  \n  - **Championship courses: pay green fees**, with optional “enhancements” for priority/reduced rates. ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))  \n- Residents also get membership access to Villages country club facilities (dining/shop access), with add‑on enhancements available. ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))\n\n---\n\n## 2) Amenities comparison (high level)\n### Lakewood Ranch Golf & Country Club (private club amenities)\nTypical inclusions depend on plan, but generally:\n- Multiple **championship courses** (club-based access)\n- Tennis/pickleball, fitness, pools, dining/social events (varies by plan)\n\nA third‑party summary (not official pricing) lists membership types like Premier Golf / Premier Sports & Fitness / Social and describes course + lifestyle access. ([housematch.com](https://www.housematch.com/blog/2023/6/6/lakewood-ranch-country-club-homes-for-sale?utm_source=openai))\n\n### The Villages (community-wide amenities)\nIncluded in the amenity-fee lifestyle:\n- Pools, tennis, pickleball, bocce, parks/trails, community watch, and thousands of activities/clubs ([thevillages.com](https://www.thevillages.com/faq/?utm_source=openai))\n- **Free green fees on executive courses for residents** (walking is no charge; trail fee applies if using a golf car on those courses) ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))\n- Nightly entertainment is heavily marketed as part of the lifestyle ([thevillages.com](https://www.thevillages.com/home-resources/more-services/?utm_source=openai))\n\n---\n\n## 3) Fees: what you’ll pay (typical structure + currently published numbers)\n\n### A) Lakewood Ranch Golf & Country Club — initiation + dues (private club)\n**Public, official fees are often not posted online**, and what you’ll see depends on availability and current promos. One third‑party article lists **(pricing “as of 2023”)**:  \n- Premier Golf: **$45,000 initiation**; **$973/mo family** or **$826/mo single** ([housematch.com](https://www.housematch.com/blog/2023/6/6/lakewood-ranch-country-club-homes-for-sale?utm_source=openai))  \n- Premier Sports & Fitness: **$12,000 initiation**; **$315/mo family** ([housematch.com](https://www.housematch.com/blog/2023/6/6/lakewood-ranch-country-club-homes-for-sale?utm_source=openai))  \n- Social: **$5,000 initiation** (monthly dues not shown in the snippet) ([housematch.com](https://www.housematch.com/blog/2023/6/6/lakewood-ranch-country-club-homes-for-sale?utm_source=openai))  \n\n**Important:** those are not confirmed as 2026 rates. If you want, tell me which membership (Golf vs Sports vs Social) and I’ll help you build a “true cost” checklist (food minimums, cart fees, assessments, etc.) to ask the membership director.\n\n### B) The Villages — amenity fee + optional golf “enhancements”\n**Amenity fee (published by The Villages marketing materials):**\n- They advertise a **monthly amenity fee of $189** on their site (example shown on a Villages page). ([thevillages.com](https://www.thevillages.com/home-resources/more-services/?utm_source=openai))  \n\n**But in practice, the amenity fee can differ by contract/closing date (“prevailing rate”)**:\n- Local reporting says the **prevailing rate became $204/month as of January 1, 2026** for certain new/changed contracts/closings. ([villages-news.com](https://www.villages-news.com/2026/01/01/prevailing-rate-for-amenities-climbs-above-200-per-month-for-first-time-in-the-villages/?utm_source=openai))  \n\n**Golf fees structure (published by The Villages):**\n- Executive courses: resident green fees are free; trail fee applies if using a golf car ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))  \n- Championship courses: residents pay green fees; optional enhancements exist ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))  \n- Example enhancement pricing (from The Villages golf rates page):\n  - Championship Golf Enhancement: **$146/mo single** or **$182/mo double** (also offered 6/12‑month options) ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))  \n  - Country Club Pool Membership: **$46.50/mo single** or **$58.50/mo double** ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))  \n  - Championship Tennis Enhancement: **$58.50/mo single** or **$70/mo double** ([thevillages.com](https://www.thevillages.com/golf/rates/?utm_source=openai))  \n\n---\n\n## 4) Bottom-line differences (how this usually feels in real life)\n\n- **If golf is your core priority and you want a traditional private-club experience (tee time access tied to your club; member events; “club culture”)**: Lakewood Ranch’s country club model is usually the closer fit—at a higher fixed cost (initiation + dues).\n- **If you want maximum breadth of activities and social infrastructure for a predictable monthly fee—and you’re okay with golf being “system-based” (executive free, championship pay, optional enhancements)**: The Villages is built for that.\n\n---\n\n## 5) Two quick questions so I can tailor this to *your* situation\n1) When you say “Lakewood Ranch country clubs,” do you mean **Lakewood Ranch Golf & Country Club specifically**, or also **other bundled-golf communities like Calusa Country Club** (where golf is bundled via HOA/fees)? ([lakewoodranch.com](https://lakewoodranch.com/our-villages/calusa-country-club/?utm_source=openai))  \n2) For The Villages, are you comparing **resident costs** (you’d own there) or **seasonal/visitor experience**?\n\nIf you answer those, I can produce a cleaner “annual cost estimate” for each option based on how often you golf (e.g., 2x/week vs 5x/week), whether you’d want tennis/pickleball priority, and whether you’d likely add enhancements in The Villages.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "traditional private-club experience",
+                  "club culture",
+                  "member events",
+                  "tee time access"
+                ],
+                "losesOn": [
+                  "affordability",
+                  "initiation fees",
+                  "monthly dues",
+                  "breadth of community-wide social activities"
+                ],
+                "aiConclusion": "Lakewood Ranch is recommended for those seeking a traditional private-club experience and culture at a premium price, while The Villages is suited for those prioritizing a vast array of community activities and lower fees."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about the amenities and fees at both Lakewood Ranch and The Villages country clubs.\nLet me search for more specific information about The Villages Florida amenities to provide a better comparison.\nBased on my research, here's a comprehensive comparison of Lakewood Ranch and The Villages country clubs:\n\n## **Membership Structure & Fees**\n\n**Lakewood Ranch Golf & Country Club:**\n- \nPremier golf membership requires an initiation fee of $45,000 and annual membership fee of $11,676\n\n- \nSocial membership initiation fee is $5,000 with annual membership fee of $1,656\n\n- \nBronze/Social membership initiation fee is $3,195 with monthly dues of $105 or $1,260 annually\n\n- \nThere is no \"minimum spend\" requirement for Lakewood Ranch Golf & Country Club members, unlike other popular clubs in the area\n\n\n**The Villages:**\n- \nAll residents of The Villages automatically enjoy FREE membership to all country club facilities\n\n- \nMonthly amenity fee of just $189.00\n (which covers all facilities, not just golf)\n- \nResidents enjoy free golf on all Executive Courses as part of the monthly amenity fee\n\n\n## **Golf Amenities**\n\n**Lakewood Ranch:**\n- \nRecently acquired a fourth private golf course, The Legacy Golf Club, positioning it as the only premier golf & country club in the Sarasota area with four private courses\n\n- \nPremier Memberships offer 72 holes with three 18-hole championship golf courses, with Cypress Links and King's Dunes designed by Arnold Palmer\n\n- \nTwo world-class practice facilities with 400-yard driving ranges and a Golf Academy\n\n\n**The Villages:**\n-",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Course quality (Championship courses)",
+                  "Course design (Arnold Palmer)",
+                  "Practice facilities",
+                  "Exclusivity",
+                  "No minimum spend requirement"
+                ],
+                "losesOn": [
+                  "Membership fees",
+                  "Initiation fees",
+                  "Affordability"
+                ],
+                "aiConclusion": "Lakewood Ranch offers a premier, high-end private country club experience with championship golf and significant fees, whereas The Villages provides a more affordable, inclusive model where amenities and executive golf are covered by a low monthly fee."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Comparing Lakewood Ranch (LWR) and The Villages (TV) is a common task for those looking to relocate to Florida, but the two communities operate on fundamentally different social and financial models. \n\nWhile **Lakewood Ranch** offers an upscale, traditional private country club experience, **The Villages** provides a community-wide \"recreational\" model where amenities are more shared and decentralized.\n\n### **1. Financial Breakdown (2025-2026 Estimates)**\n\n| Category | Lakewood Ranch (Private Club Model) | The Villages (Amenity Fee Model) |\n| :--- | :--- | :--- |\n| **Initial Fees** | **High:** $75,000 – $85,000 initiation for private golf membership. | **Low:** No initiation fee for basic amenities. |\n| **Monthly/Annual Dues** | **Golf:** ~$1,200/mo. **Social:** ~$170/mo. | **Amenity Fee:** ~$199/mo (includes most recreation). |\n| **Golf Costs** | Members pay monthly dues; non-members pay high public rates (at semi-private courses). | **Executive:** \"Free\" (walking). **Championship:** Pay-per-round; optional Priority Membership ($865–$1,082/yr). |\n| **Pools & Gyms** | Neighborhood-specific (included in HOA) or private club (requires membership). | 100+ community pools included in amenity fee; Country Club pools require extra fee (~$230–$300/yr). |\n| **CDD/Bond Fees** | ~$1,600 – $3,000+ per year (added to tax bill). | $130 – $225 per month (covers bond, maintenance, fire). |\n\n---\n\n### **2. Lakewood Ranch Country Clubs**\nLakewood Ranch features several distinct country club styles, ranging from exclusive private clubs to \"bundled\" communities.\n\n*   **Private Membership (The Crown Jewel):** The *Lakewood Ranch Golf & Country Club* is the primary hub. Membership is optional and separate from homeownership.\n    *   **Access:** Members get 54 holes of championship golf (Arnold Palmer designed), 20+ tennis courts, 20+ pickleball courts, and a 20,000 sq. ft. fitness center.\n    *   **Waitlists:** Some membership tiers have multi-year waitlists. \n*   **Bundled Golf Communities:** In neighborhoods like *Esplanade* or *Lakewood National*, golf membership is \"bundled\" into your home deed.\n    *   **Pros:** No massive initiation fee; golf privileges are included in your monthly HOA.\n    *   **Cons:** Higher monthly HOA fees (often $500–$800+) regardless of how much you play.\n*   **Exclusivity:** Amenities are strictly neighborhood-specific. If you live in *Waterside*, you generally cannot use the pool in *Country Club East* unless you have a separate club membership.\n\n### **3. The Villages Amenities**\nThe Villages is essentially a massive municipality designed for active adults (55+). Its scale is unmatched, with over 50 golf courses and 100+ recreation centers.\n\n*   **The \"Free Golf\" Model:** Residents play \"free\" golf for life on over 40 Executive (9-hole) courses. You only pay a \"trail fee\" (~$144/yr) if you use your own golf cart.\n*   **Championship Golf:** There are 14+ Championship (18- or 27-hole) courses. These require green fees. Many residents purchase a **Priority Membership** to get better tee-time access and lower rates.\n*   **Decentralized Fun:** Unlike LWR where the Country Club is the social center, TV has three major town squares with free nightly live music and over 3,000 resident-led clubs. \n*   **Golf Cart Lifestyle:** Almost everything (groceries, doctors, dining) is accessible via 100+ miles of golf cart paths, which is not possible in Lakewood Ranch.\n\n---\n\n### **4. Key Lifestyle Differences**\n\n*   **Demographics:** Lakewood Ranch is **multi-generational** (families, professionals, retirees) and is frequently ranked the #1 multi-generational community in the U.S. The Villages is a **55+ active adult** community.\n*   **Location:** Lakewood Ranch is minutes from **Sarasota and world-class beaches** (Siesta Key). The Villages is **inland** (central Florida), offering more hurricane protection but requiring an hour-plus drive to the coast.\n*   **Dining:** In LWR, the Country Clubs offer high-end, private dining. In TV, \"Country Clubs\" are actually public-access restaurants; they are social hubs but do not offer the \"exclusive\" feeling of a private club.\n*   **Property Value:** LWR median home prices are significantly higher (~$645k) compared to The Villages (~$400k), reflecting the \"luxury suburb\" vs. \"retirement town\" distinction.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Upscale traditional private club experience",
+                  "Multi-generational demographic",
+                  "Proximity to beaches and Sarasota",
+                  "High-end private dining",
+                  "Property value"
+                ],
+                "losesOn": [
+                  "Initial fees and initiation costs",
+                  "Monthly and annual dues",
+                  "Waitlists for membership",
+                  "Community-wide amenity access",
+                  "Golf cart accessibility"
+                ],
+                "aiConclusion": "The choice between the two depends on lifestyle preference: Lakewood Ranch is a luxury, multi-generational suburb with exclusive club models near the coast, while The Villages is a massive 55+ active adult community focused on affordability, social scale, and a golf cart-centric lifestyle."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Below is a detailed comparison of the country clubs and amenities in Lakewood Ranch (focusing on the prominent Lakewood Ranch Golf & Country Club, or LWRG&CC) versus The Villages, a large master-planned community in central Florida. I'll base this on available information from recent web sources (such as the LWRG&CC website and related real estate blogs) for Lakewood Ranch, combined with up-to-date general knowledge of The Villages as of 2026. Note that both are upscale Florida destinations emphasizing golf, recreation, and community living, but Lakewood Ranch is more of a private club-oriented setup within a broader community, while The Villages is a massive 55+ retirement community with integrated amenities across dozens of villages. Fees and amenities can vary by specific membership type, location, and residency status, so I recommend contacting each directly for the latest quotes.\n\n### Overview\n- **Lakewood Ranch Country Clubs**: Located in Manatee County near Sarasota, this refers primarily to the private Lakewood Ranch Golf & Country Club (LWRG&CC), which is open to residents of nearby communities. It's part of the larger Lakewood Ranch master-planned area and emphasizes exclusive, customizable memberships. There are also related areas like Lakewood Ranch Country Club East, but LWRG&CC is the flagship with multiple golf courses and facilities.\n- **The Villages**: A sprawling 55+ active adult community in Sumter, Lake, and Marion Counties (near Ocala), spanning over 33 square miles with more than 140,000 residents. It's not a single \"country club\" but a network of golf courses, recreation centers, and amenities tied to community living. Amenities are often included in homeowner fees, with optional golf memberships.\n\n### Amenities Comparison\nBoth offer resort-style living with a focus on golf, outdoor activities, and social events, but The Villages scales much larger in volume and variety, while Lakewood Ranch provides a more intimate, high-end private club experience.\n\n- **Golf**:\n  - **Lakewood Ranch**: Boasts 72 holes across four private championship courses (including the recently added Legacy course), designed for varying skill levels. It's the area's only four-course private club. Golf is a core feature, with access included in golf memberships. Additional perks include pro shops, lessons, and events.\n  - **The Villages**: Features over 50 golf courses (13 championship and 40+ executive/par-3 courses), making it one of the largest golf destinations in the world. Courses are a mix of",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "The Villages"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "Exclusivity",
+                  "Private club experience",
+                  "Intimate setting",
+                  "Customizable memberships"
+                ],
+                "losesOn": [
+                  "Volume and variety of amenities",
+                  "Scale"
+                ],
+                "aiConclusion": "Both are upscale Florida destinations emphasizing golf, recreation, and community living, but Lakewood Ranch is more of a private club-oriented setup within a broader community, while The Villages is a massive 55+ retirement community with integrated amenities across dozens of villages."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

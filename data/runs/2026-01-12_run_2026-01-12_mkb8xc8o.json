@@ -1,0 +1,119 @@
+{
+  "id": "run_2026-01-12_mkb8xc8o",
+  "timestamp": "2026-01-12T14:16:17.208Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 1,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "retiree_decide": {
+      "intentId": "int_retiree_decide_mk189ge6",
+      "intentText": "Retiree ready to choose and gathering final validation",
+      "queriesUsed": [
+        "Lakewood Ranch 55+ communities pros and cons 2024"
+      ],
+      "metrics": {
+        "recommendationRate": 1
+      },
+      "results": [
+        {
+          "query": "Lakewood Ranch 55+ communities pros and cons 2024",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are the **pros and cons of Lakewood Ranch (Florida) 55+ communities** as people experienced them in/around **2024**, plus the key “watch-outs” that tend to matter most in this area.\n\n## The main 55+ options inside Lakewood Ranch\nLakewood Ranch commonly highlights **three 55+ villages**: **Del Webb Lakewood Ranch**, **Cresswind**, and **Del Webb Catalina** (newer). ([lifeatlakewood.com](https://www.lifeatlakewood.com/55-plus-communities-in-lakewood-ranch?utm_source=openai))\n\n---\n\n## Pros (why people choose LWR 55+)\n### 1) Strong “active adult” lifestyle + organized social calendar\nThese communities are built around **clubhouses, pools, fitness, pickleball/bocce/tennis, clubs, events**, and typically a **lifestyle director** coordinating activities—great if you want easy social connection. ([lifeatlakewood.com](https://www.lifeatlakewood.com/55-plus-communities-in-lakewood-ranch?utm_source=openai))\n\n### 2) Newer homes + newer building standards (often)\nMany homes in these villages are **newer construction**, which can mean more modern layouts, better energy efficiency, and (depending on build year) potentially stronger wind-code standards than older Florida housing stock. (Still verify the specific home’s build year, roof age, and wind-mitigation report.) ([manatee.hosted.civiclive.com](https://manatee.hosted.civiclive.com/departments/public_safety/emergency_management/evacuation_levels?utm_source=openai))\n\n### 3) “Master-planned” convenience and upkeep\nA big draw of Lakewood Ranch is the overall master-planned feel—trails, landscaping, parks, and coordinated infrastructure. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n\n### 4) Low-maintenance living is common (especially villas)\nHOAs in 55+ communities often include at least some **lawn/common-area maintenance**, which is a major quality-of-life plus for many retirees. ([55places.com](https://www.55places.com/florida/communities/del-webb-catalina?utm_source=openai))\n\n---\n\n## Cons (the tradeoffs that surprise buyers)\n### 1) Monthly fees can be significant—and layered\nIn Lakewood Ranch you can have:\n- **Village HOA fees** (vary widely by village/home type) ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n- Plus a Lakewood Ranch-wide **Stewardship District fee** (their CDD-style district) ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \n\nAnd for at least one 55+ village, published HOA ranges can be several hundred/month (example: Del Webb Catalina shows **$335–$409/month** on the LWR site—verify current numbers for your exact home). ([lakewoodranch.com](https://lakewoodranch.com/our-villages/del-webb-catalina/?utm_source=openai))\n\n**Practical impact:** your “all-in monthly” can land higher than expected even if the home price is attractive.\n\n### 2) Ongoing/new construction impacts (especially in newer villages)\nNewer areas (like Catalina) can mean **construction traffic/noise, dust, detours**, and amenities that may be **phased** (not all complete on day one). ([lakewoodranch.com](https://lakewoodranch.com/our-villages/del-webb-catalina/?utm_source=openai))\n\n### 3) Rules/controls: age restrictions, guests, rentals, appearance\n55+ communities often come with more HOA rules (parking, exterior changes, rentals, etc.). This is a pro for “orderliness,” but a con if you want maximum flexibility. (You’ll want the specific HOA docs for the village/home.)\n\n### 4) Hurricane realities still apply (even inland)\nLakewood Ranch is inland compared with barrier islands, but storms bring **wind + rainfall flooding risks**. Also, **evacuation levels exist and can change**; you should check your specific address every year with Manatee County. ([manatee.hosted.civiclive.com](https://manatee.hosted.civiclive.com/departments/public_safety/emergency_management/evacuation_levels?utm_source=openai))\n\n### 5) “Resort lifestyle” can feel busy (or less private)\nIf you prefer quiet/low-activity neighborhoods, the heavy events-and-amenities culture can feel like “a lot,” and some homes are closer together than older non-HOA neighborhoods.\n\n---\n\n## Quick “fit check” (who it’s best for)\n- **Best fit:** You want an easy social network, amenities you’ll actually use (pickleball/fitness/pool), and you’re comfortable paying for that via fees. ([lifeatlakewood.com](https://www.lifeatlakewood.com/55-plus-communities-in-lakewood-ranch?utm_source=openai))  \n- **Not ideal if:** You dislike HOA restrictions/meetings, want the lowest monthly carrying costs, or strongly prefer mature trees/older neighborhoods over new construction.\n\n---\n\n## If you tell me these 4 things, I’ll tailor it to you\n1) **Budget range** (home price + comfortable monthly fees)  \n2) Prefer **villa vs single-family**  \n3) Must-haves (pickleball, gated, on-site restaurant/bar, etc.)  \n4) Do you want **new build** or **resale**?\n\nIf you want, I can also list **specific questions to ask** the sales office/HOA (fees, what’s included, special assessments, rental rules, build-out timeline) for whichever village you’re considering.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "recommended",
+                "qualifiers": [
+                  "if you want an easy social network",
+                  "if you use amenities like pickleball and fitness centers",
+                  "if you are comfortable paying monthly fees",
+                  "not ideal if you dislike HOA restrictions",
+                  "not ideal if you want the lowest monthly carrying costs",
+                  "not ideal if you prefer mature trees/older neighborhoods"
+                ],
+                "alternativesOffered": [
+                  "Del Webb Lakewood Ranch",
+                  "Cresswind",
+                  "Del Webb Catalina"
+                ],
+                "decisionRationale": "The response provides a comprehensive analysis of the lifestyle, maintenance, and construction quality of Lakewood Ranch 55+ communities, balancing the 'resort-style' benefits against the high monthly HOA/CDD fees and regulatory restrictions inherent in master-planned developments."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on current information from 2024-2025, here's a comprehensive breakdown of Lakewood Ranch 55+ communities:\n\n## PROS\n\n**Amenities & Lifestyle**\n\nLakewood Ranch 55+ communities have impressive amenities available for residents including large town squares and smaller neighborhood plazas with restaurants, shops, and entertainment options, as well as resident clubs, live music, farmer's markets, and festivals throughout the year\n. \nResort-style amenities include multiple pools, state-of-the-art fitness centers, tennis and pickleball courts, and a packed calendar of activities and social clubs\n.\n\n**Housing Variety**\n\nThere is an impressive spread between the low and high ends of the market, with townhouses and condos from the $200k's to mega mansions north of $6 million and everything in between\n.\n\n**Location & Access**\n\nLakewood Ranch offers access to Waterside Place (a lakefront town center with restaurants and boutique shopping), University Town Center (a major shopping and dining hub), beaches within 30-40 minutes, and top-rated hospitals and healthcare providers\n.\n\n**Community Recognition**\n\nIn 2025, the Farmers Market at Lakewood Ranch was named the top farmers market in the country by American Farmland Trust based on national public voting\n.\n\n## CONS\n\n**Cost of Living**\n\nThe cost of living in Lakewood Ranch can be higher than in some other areas, particularly when it comes to housing prices and property taxes\n. \nHOA fees range from $200–$600+ per month depending on your village, which includes common area maintenance, amenities, landscaping, and community events, with the fancier villages having higher fees\n.\n\n**",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "suggested",
+                "qualifiers": [
+                  "Cost of living can be higher than other areas",
+                  "HOA fees range from $200 to $600+ per month",
+                  "Fancier villages have higher fees"
+                ],
+                "alternativesOffered": [],
+                "decisionRationale": "The AI provides a detailed overview of Lakewood Ranch's positive attributes, including housing variety, resort-style amenities, and strategic location, while framing the high cost of living and HOA fees as the primary considerations for a potential buyer."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "In 2024, Lakewood Ranch continues to be one of the top destinations for retirees, but the \"pros and cons\" have shifted slightly due to rapid development and the opening of new communities like **Del Webb Catalina**.\n\nThere are currently **three** primary 55+ age-restricted communities within Lakewood Ranch, along with several \"age-targeted\" alternatives.\n\n### **The Three Primary 55+ Communities**\n\n| Community | Status (2024/2025) | Vibe |\n| :--- | :--- | :--- |\n| **Del Webb Lakewood Ranch** | Established/Resale | Large (1,300+ homes), very social, includes an on-site restaurant. |\n| **Cresswind Lakewood Ranch** | Near Completion | Smaller \"boutique\" feel (650 homes), wellness-focused, no on-site restaurant. |\n| **Del Webb Catalina** | **Newest (Selling Now)** | Grand opening late 2024; features the latest floor plans and a massive 70-acre lake. |\n\n---\n\n### **The Pros: Why People Choose 55+ in Lakewood Ranch**\n\n*   **Vibrant Social Scene:** Every 55+ community here has a full-time **Lifestyle Director**. Your calendar will be full of \"Wine Wednesdays,\" pickleball tournaments, and sunset socials.\n*   **Maintenance-Free Living:** HOA fees typically cover lawn care, irrigation, and exterior maintenance. This is a massive \"pro\" for snowbirds who leave their homes for months at a time.\n*   **Safety & Security:** All 55+ neighborhoods are gated, and many (like Del Webb) have 24/7 guarded entrances, providing a high sense of security.\n*   **Proximity to \"The Essentials\":** You are minutes away from the **Lakewood Ranch Medical Center** and the **University Town Center (UTC)** shopping district.\n*   **Modern Infrastructure:** Unlike older Florida retirement towns, everything here is new. You get hurricane-rated construction, energy-efficient appliances, and wide, well-lit walking trails.\n\n### **The Cons: Trade-offs to Consider in 2024**\n\n*   **High Carrying Costs:** Between HOA fees (often **$400–$600/month**) and CDD fees (infrastructure taxes on your property bill), the monthly \"cost to own\" is significantly higher than in non-planned communities.\n*   **\"The Bubble\" Vibe:** Some residents feel the master-planned nature of Lakewood Ranch is too structured or \"sterile.\" There is very little organic \"nightlife\" outside of the planned Main Street or Waterside events.\n*   **Traffic & Construction:** With the opening of Del Webb Catalina and other nearby villages, construction noise and heavy truck traffic on roads like SR-70 and SR-64 are common complaints in 2024.\n*   **Distance from the Beach:** While marketed as \"near the coast,\" you are realistically **35–50 minutes** from Siesta Key or Anna Maria Island, especially during \"Season\" (January–April) when traffic peaks.\n*   **Restrictive Rules:** 55+ communities have strict rules regarding how long grandkids can stay (often limited to 30–60 days a year) and limitations on renting your home (often a 6-month minimum).\n\n---\n\n### **Community-Specific Insights for 2024**\n\n#### **1. Del Webb Catalina (The \"New\" Option)**\n*   **Pro:** You can build from scratch and choose your finishes. It features a \"Resistance Pool\" and a more modern clubhouse design.\n*   **Con:** The full amenity center won't be completed until **2026/2027**. Early residents will be living in a construction zone for the first 1–2 years.\n\n#### **2. Cresswind (The \"Wellness\" Option)**\n*   **Pro:** Known for having the most advanced fitness center (**SmartFIT**) and a tighter-knit community where it's easier to meet neighbors.\n*   **Con:** There is no on-site restaurant/bar, meaning you have to drive out for a meal, whereas Del Webb residents can just walk or golf-cart to their clubhouse grill.\n\n#### **3. Indigo & Esplanade (The \"Age-Targeted\" Alternatives)**\n*   **Note:** These are **not** 55+ restricted, but they are designed for the same lifestyle. \n*   **Pro:** No age restrictions means easier resale to families or younger professionals later.\n*   **Con:** You will have kids at the pool and teenagers in the gym, which some 55+ buyers specifically want to avoid.\n\n### **Expert Tip for 2024 Buyers**\nIf you are sensitive to noise, **check the proximity to State Road 70**. Several sections of the original Del Webb and the newer Cresswind sit near this road, which has seen a massive increase in commercial traffic over the last year. Always visit the specific lot at different times of day to gauge road noise.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "recommended",
+                "qualifiers": [
+                  "if you are sensitive to noise, check the proximity to State Road 70",
+                  "if seeking maintenance-free living",
+                  "if distance to the beach is not a primary concern",
+                  "if the buyer is looking for modern infrastructure",
+                  "if the buyer can afford high carrying costs including HOA and CDD fees"
+                ],
+                "alternativesOffered": [
+                  "Del Webb Lakewood Ranch",
+                  "Cresswind Lakewood Ranch",
+                  "Del Webb Catalina",
+                  "Indigo",
+                  "Esplanade"
+                ],
+                "decisionRationale": "Lakewood Ranch is described as a top destination for retirees in 2024, praised for its modern infrastructure, security, and vibrant social programming with full-time lifestyle directors. However, potential buyers are warned about high monthly costs, traffic from ongoing construction, and the realistic distance from Gulf Coast beaches."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "### Pros and Cons of Lakewood Ranch 55+ Communities in 2024\n\nLakewood Ranch, a massive master-planned community spanning about 55 square miles across Sarasota and Manatee counties in Florida, has become one of the top-selling areas in the U.S. for active adult living. In 2024, it was a strong contender among retirement destinations, often ranking alongside places like The Villages for new home sales (The Villages edged it out with around 3,208 sales that year). The primary 55+ neighborhood here is Del Webb Lakewood Ranch, a gated 640-acre community that completed construction in 2024. It features resort-style amenities like a 24,000-square-foot clubhouse, fitness center, walking trails, and an on-site restaurant, all designed for a low-maintenance, social lifestyle.\n\nBased on reports from sources like Florida for Boomers, Sarasota Magazine, and 55places.com, here's a balanced look at the pros and cons of these communities as of 2024. Keep in mind that experiences can vary by individual preferences, and while Lakewood Ranch saw robust growth (with over 3,000 new home sales across the broader area in 2025, building on 2024 trends), it's not without trade-offs. Housing prices started in the high $200,000s for entry-level options.\n\n#### Pros\n- **Abundant Amenities and Social Opportunities**: Del Webb Lakewood Ranch offers a resort-like vibe with lush landscaping, scenic trails, a large clubhouse including a fitness center, group exercise rooms, library, poker room, and full kitchen. It's ideal for active retirees seeking community events, clubs, and an on-site restaurant. The overall Lakewood Ranch area provides easy access to golf courses, parks, and shopping, fostering a vibrant social scene without needing to venture far.\n  \n- **Low-Maintenance Living**: These communities emphasize hassle-free lifestyles, with gated security, maintained grounds, and modern homes built for energy efficiency. In 2024, new constructions appealed to buyers wanting warranties and \"never-lived-in\" freshness, especially in smart-home or waterfront-adjacent neighborhoods like those in the Waterside area.\n\n- **Prime Location and Growth**: Situated east of I-75, it's conveniently located near Sarasota's beaches, cultural spots, and healthcare facilities. The community's scale (population over 77,000 by 2026) means it's like a small city with ongoing development, including new retail and dining options. It ranked highly in national master-planned community lists",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "recommended",
+                "qualifiers": [
+                  "experiences can vary by individual preferences",
+                  "not without trade-offs",
+                  "ideal for active retirees seeking community events, clubs, and an on-site restaurant"
+                ],
+                "alternativesOffered": [
+                  "The Villages"
+                ],
+                "decisionRationale": "Lakewood Ranch is described as a 'strong contender' and one of the 'top-selling areas in the U.S. for active adult living.' The AI highlights its resort-style amenities, social opportunities, low-maintenance living, and prime location near Sarasota beaches and healthcare as key reasons for its popularity."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

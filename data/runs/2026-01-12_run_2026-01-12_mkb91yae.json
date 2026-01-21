@@ -1,0 +1,129 @@
+{
+  "id": "run_2026-01-12_mkb91yae",
+  "timestamp": "2026-01-12T14:19:52.406Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0.3333333333333333
+    }
+  },
+  "cells": {
+    "move_up_compare": {
+      "intentId": "int_move_up_compare_mk189ge6",
+      "intentText": "Family comparing specific communities for schools and lifestyle",
+      "queriesUsed": [
+        "Lakewood Ranch vs Wellen Park for families with kids schools amenities CDD fees"
+      ],
+      "metrics": {
+        "winRate": 0.3333333333333333
+      },
+      "results": [
+        {
+          "query": "Lakewood Ranch vs Wellen Park for families with kids schools amenities CDD fees",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "## Big picture (families/kids): Lakewood Ranch (LWR) vs Wellen Park (WP)\n\n### Quick take\n- **Lakewood Ranch:** generally the stronger “kids + schools + sports/activities” ecosystem *today*, with lots of established parks, rec centers, and school options spread across many villages; larger/longer-established master plan (more choice, but also more variability by neighborhood).\n- **Wellen Park:** very family-friendly too, but **newer**—big advantage is the “new-town” feel (Downtown Wellen, new neighborhoods) and **major new public school capacity coming online**; can feel simpler to navigate because it’s more concentrated.\n\n## Schools (what matters for families)\n### Lakewood Ranch\n- In **Manatee County** (most of LWR) you’ll be looking at Manatee County public schools and also multiple charter/private options in the area.\n- Practical upside: lots of “kid infrastructure” around you (sports leagues, parks, trails, community events) because LWR is mature and huge.\n- Practical caution: school assignments can vary a lot by village and can change with growth—always verify the exact address with the district before you buy.\n\n### Wellen Park\n- In **Sarasota County Schools** (an A-rated district often cited by local developers/marketing, but still: verify the assigned school for the address).\n- **New Wellen Park High School is scheduled to open August 2026 (2026–2027 school year).** ([businessobserverfl.com](https://www.businessobserverfl.com/news/2025/mar/18/wellen-park-high-school-construction-milestone/?utm_source=openai))  \n  - This is important if you have (or will have) kids approaching high school and want a brand-new campus and (likely) boundary changes as it opens.\n- There is also a **tuition-free K–8 charter (College Preparatory Academy at Wellen Park) that opened August 2023** (phasing grades). ([wellenpark.com](https://wellenpark.com/news/prodigy-early-learning-brings-early-childhood-education-to-wellen-park/?utm_source=openai))\n\n**Family-focused interpretation:**  \nIf you need a very established “plug-and-play” school/activities environment right now, LWR often wins. If you like the idea of buying into an area adding major school capacity (and you’re okay with the boundary/transition period), WP is compelling.\n\n## Amenities & day-to-day “kid life”\n### Lakewood Ranch amenities style\n- Most amenities are **village/neighborhood based** (pool, clubhouse, courts, etc.) via HOA, plus a broader network of trails/parks across the ranch. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n- Expect lots of nearby shopping/medical/activities because of the scale and buildout.\n\n### Wellen Park amenities style\n- Strong “town center” vibe around **Downtown Wellen** plus neighborhood amenity campuses; many communities lean heavily into resort-style pools, playgrounds, dog parks, events.\n- If you want walkability to a central district/events, WP can feel more cohesive.\n\n## CDD fees (and HOA) — the part that changes the monthly payment\n### First: what a CDD is (and how you pay it)\n- **CDD / Stewardship District charges are typically on the annual property tax bill** and often include a debt component (bonds for infrastructure) + operations/maintenance. ([lifeatlakewood.com](https://www.lifeatlakewood.com/hoa-fees-in-lakewood-ranch?utm_source=openai))\n\n### Lakewood Ranch (CDD / “Stewardship District Fee”)\n- LWR confirms it has a **Stewardship District Fee** (their version of the “CDD conversation”). ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n- Real-world ranges vary a lot by village/phase; local sources cite many LWR CDDs landing roughly **~$1,500–$3,000+ per year**, with some villages higher/lower depending on debt/amenities. ([the941lifestylegroup.com](https://www.the941lifestylegroup.com/blog/What-Hidden-Costs-Are-Catching-Lakewood-Ranch-Buyers-Off-Guard-in-2025-?utm_source=openai))\n- HOA range (LWR’s own general guidance): **about $100–$800/month** depending on the village, with many in the **$200–$300/month** range. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n\n### Wellen Park (CDD)\n- WP also varies by neighborhood. Examples from specific WP communities show **CDD often in the ~$1,400–$2,500/yr-ish range**, but can be higher depending on the community/amenity package. ([sharktoothrealty.com](https://www.sharktoothrealty.com/wpgcc/?utm_source=openai))\n\n**Key point:** you can’t fairly compare LWR vs WP on CDD without comparing **specific neighborhoods** (and ideally the exact parcel’s tax bill). Two homes at the same price can differ by a few thousand dollars/year in CDD + HOA.\n\n## Which tends to fit which family?\n### Lakewood Ranch tends to fit families who…\n- Want the **most established** master-planned ecosystem (sports, parks, “everything is already there”).\n- Want more neighborhood choices (but accept more variability in fees/amenities by village).\n\n### Wellen Park tends to fit families who…\n- Want a **newer** community feel with a central downtown district and lots of newer builds.\n- Like the idea of **new schools coming online** nearby (especially the new high school opening **August 2026**). ([businessobserverfl.com](https://www.businessobserverfl.com/news/2025/mar/18/wellen-park-high-school-construction-milestone/?utm_source=openai))\n\n## To give you a precise recommendation (not generic), tell me:\n1) Kids’ grades **now** (K-2 / 3-5 / middle / high)  \n2) Need **public only** or open to **charter/private**?  \n3) Max all-in monthly (HOA + estimated CDD portion) you’re comfortable with  \n4) Preferred home type: townhome/villa vs single family, and any must-have amenities (pool, playground, pickleball, etc.)\n\nIf you share 2–3 neighborhoods you’re considering in each (e.g., Waterside/Sweetwater/Star Farms in LWR; Sunstone/Solstice/Wellen Park Golf & CC in WP), I can do a clean side-by-side with typical HOA + CDD ranges and the school situation for that exact area.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "established ecosystem",
+                  "sports and activities",
+                  "variety of neighborhood choices",
+                  "mature infrastructure",
+                  "parks and trails",
+                  "immediate availability of community events"
+                ],
+                "losesOn": [
+                  "variability in school assignments",
+                  "complexity of navigation",
+                  "newer community feel",
+                  "walkability to a central town district",
+                  "upcoming school capacity"
+                ],
+                "aiConclusion": "Lakewood Ranch is the better choice for families seeking an established, mature master-planned environment with a wide range of existing sports and activities, whereas Wellen Park is preferred for those desiring a newer community feel and a centralized, walkable town center."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current information comparing these two communities for families.\nI apologize, but I'm currently unable to retrieve web search results to provide you with the most current and accurate comparison between Lakewood Ranch and Wellen Park. However, I can share some general guidance on what you should research:\n\n**Key Comparison Areas:**\n\n1. **Schools**: Check the Sarasota and Manatee County school district websites for school ratings, proximity, and performance data for both communities.\n\n2. **Amenities**: Look for information about:\n   - Parks and recreational facilities\n   - Community centers\n   - Sports programs and fields\n   - Pools and water features\n   - Trail systems\n\n3. **CDD Fees**: This is critical to compare:\n   - Annual Community Development District fees (which vary by lot type/size)\n   - What's included in the CDD (maintenance, amenities, infrastructure)\n   - Whether fees are likely to increase\n\n4. **Family-Specific Features**: Research:\n   - Age groups the community targets\n   - Family-oriented activities and events\n   - Childcare facilities\n   - Youth programs\n\n**Recommended Next Steps:**\n- Visit the official Lakewood Ranch and Wellen Park websites\n- Contact their sales offices for current CDD fee schedules\n- Check recent reviews from current residents on forums like Zillow or local Sarasota/Manatee groups\n- Visit during peak family hours to observe the communities firsthand\n\nWould you like me to search again once the tool becomes available, or do you have specific questions about either community?",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "not_compared",
+                "winsOn": [],
+                "losesOn": [],
+                "aiConclusion": "The AI provided a framework of key comparison areas (schools, amenities, CDD fees, and family features) but did not provide a direct comparison or declare a winner due to stated technical limitations in retrieving real-time data."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Comparing Lakewood Ranch and Wellen Park for families involves a trade-off between **established convenience** (Lakewood Ranch) and **modern beach proximity** (Wellen Park). Lakewood Ranch is a mature, massive \"city within a city,\" while Wellen Park is a newer, rapidly growing community designed with a focus on walkability and coastal access.\n\n### **1. Schools & Education**\nBoth communities are served by top-rated school districts, though they belong to different counties.\n\n| Feature | Lakewood Ranch (LWR) | Wellen Park (WP) |\n| :--- | :--- | :--- |\n| **School District** | **Manatee County** (primarily) & Sarasota County. Manatee schools in LWR are consistently A-rated. | **Sarasota County.** Consistently one of the top-rated school districts in Florida. |\n| **Elementary** | **Willis, McNeal, and Gullett** are top-tier (9/10 ratings). | **Taylor Ranch** (9/10 rating) and the new **College Prep Academy** (K-8). |\n| **Middle** | **R. Dan Nolan Middle** is highly regarded. | **Venice Middle** or **Sky Academy** (Charter). |\n| **High School** | **Lakewood Ranch High** (A-rated, known for academics and sports). | **Venice High** (established) or **Wellen Park High** (opening Aug 2026). |\n\n### **2. Amenities for Families**\n**Lakewood Ranch** wins on sheer volume and variety, particularly for competitive youth sports. **Wellen Park** wins for its \"resort-at-home\" feel and walkable downtown center.\n\n*   **Lakewood Ranch (LWR):**\n    *   **Parks:** Includes **Adventure Park** (skate park, trails, dog park) and **Bob Gardner Park**.\n    *   **Sports:** The **Premier Sports Campus** (140 acres) is a hub for regional soccer and football.\n    *   **Town Centers:** Three major hubs (**Main Street, Waterside Place, UTC Mall**) offering movie theaters, mini-golf, and a weekly farmer's market.\n*   **Wellen Park (WP):**\n    *   **Downtown Wellen:** A 2023-completed lakefront center with a **massive playground, splash pad**, kayak launches, and permanent food trucks.\n    *   **CoolToday Park:** Spring training home of the **Atlanta Braves**, which hosts family movie nights and community events year-round.\n    *   **Trails:** Focuses on nature-heavy trails (like the 28 miles in **Grand Palm**) and connectivity to the **Legacy Trail**.\n\n### **3. CDD & HOA Fee Comparison**\nFees vary by \"village\" (neighborhood) and lot size. Generally, **Wellen Park homes are 15-20% cheaper** than comparable new builds in Lakewood Ranch, but WP often has slightly higher CDD fees because it is newer.\n\n| Neighborhood Example | Monthly HOA | Annual CDD Fee | Notable Perks |\n| :--- | :--- | :--- | :--- |\n| **Star Farms (LWR)** | ~$260 – $380 | ~$2,000 – $3,300 | Gated, pet spa, coffee shop. |\n| **Lorraine Lakes (LWR)** | ~$350 – $400 | ~$1,950 | Gated, arcade, splash park, cafe. |\n| **Grand Palm (WP)** | ~$170 – $300 | ~$600 – $2,300 | Nature-focused, 3 pools, slide. |\n| **Lakespur (WP)** | ~$320 | ~$2,400 – $2,900 | Walkable to future school, dog park. |\n| **Solstice (WP)** | ~$270 – $320 | ~$700 – $2,500 | Gated, Toll Brothers builds. |\n\n*Note: CDD fees are typically included in your annual property tax bill as a \"non-ad valorem\" assessment.*\n\n### **4. Key Differences for Kids & Families**\n*   **Beach Access:** **Wellen Park** is a major winner here, located only **20 minutes** from Venice and Manasota Key beaches. **Lakewood Ranch** is **40-50 minutes** from Siesta Key or Anna Maria Island, often making beach trips a full-day commitment.\n*   **Safety & Vibe:** Both communities are ranked among the safest in the country. LWR has a \"Country Club\" suburban vibe with mature landscaping. WP has a \"Modern Coastal\" vibe with many residents using golf carts to get to school or dinner.\n*   **Youth Sports:** If your child is in competitive traveling leagues (Soccer, Baseball, Lacrosse), **Lakewood Ranch** is the geographic heart of these activities in Southwest Florida.\n\n### **Summary Recommendation**\n*   **Choose Lakewood Ranch if:** You want a mature community where everything (hospitals, malls, sports complexes) is already built, and you don't mind a longer drive to the beach.\n*   **Choose Wellen Park if:** You want a newer home for a better price, value being 20 minutes from the ocean, and prefer a more compact, walkable, golf-cart-friendly layout.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "mixed",
+                "winsOn": [
+                  "established convenience",
+                  "volume and variety of amenities",
+                  "youth sports infrastructure",
+                  "established shopping and dining hubs",
+                  "mature landscaping"
+                ],
+                "losesOn": [
+                  "beach proximity",
+                  "home price affordability",
+                  "walkability",
+                  "golf-cart friendliness"
+                ],
+                "aiConclusion": "Choose Lakewood Ranch if you prioritize a mature, established community with robust youth sports and medical/retail infrastructure; choose Wellen Park if you want beach proximity, newer home values, and a more compact, walkable layout."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Below is a balanced comparison of Lakewood Ranch and Wellen Park, two popular master-planned communities in Southwest Florida (Manatee and Sarasota Counties, respectively). I'll focus on their suitability for families with kids, highlighting schools, amenities, and Community Development District (CDD) fees. This is based on up-to-date information from real estate sources like Zachos Realty, Beyond Realty FL, and community blogs (as of late 2025). Both are family-oriented with new construction homes, but Lakewood Ranch is more established and mature, while Wellen Park is newer and still growing. Your choice might depend on whether you prefer a polished, amenity-rich setup or a more affordable, up-and-coming vibe closer to beaches.\n\n### Schools\nBoth communities are in strong school districts, but they differ in county and specific ratings.\n\n- **Lakewood Ranch**: Located in Manatee County, it has access to highly rated public schools like those in the A-rated Manatee County School District. Top options include Lakewood Ranch High School (often praised for academics and extracurriculars), Braden River Middle School, and elementary schools like Gullett or Willis. Many neighborhoods have on-site or nearby charter and private schools, plus family-friendly programs like after-school activities. It's ideal for families seeking established education with strong test scores and sports programs. Proximity to the University of South Florida and other higher-ed options is a plus for long-term family planning.\n\n- **Wellen Park**: Primarily in Sarasota County (with some parts in North Port/Charlotte County), it falls under the A-rated Sarasota County Schools, known for high performance. Key schools include Venice High School, Laurel Nokomis School (K-8), and newer options like the upcoming Wellen Park K-8 school (slated for expansion). It's family-focused with emphasis on STEM and arts programs, but the district might feel slightly more innovative and less crowded than Manatee's. However, some families note that schools here are still developing as the community grows, so commuting to established campuses in Venice could be needed initially.\n\n**Family Verdict**: Lakewood Ranch edges out for proven, top-tier schools with more options right now, making it great for families with school-aged kids. Wellen Park is catching up quickly and might appeal if you value Sarasota County's overall higher rankings (often top in Florida).\n\n### Amenities for Families with Kids\nBoth emphasize outdoor lifestyles, community events, and family recreation, but Lakewood Ranch feels more \"complete\" while Wellen Park leans into wellness and nature.\n\n- **Lake",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "comparedTo": [
+                  "Wellen Park"
+                ],
+                "outcome": "win",
+                "winsOn": [
+                  "established education",
+                  "top-tier schools",
+                  "more school options",
+                  "sports programs",
+                  "mature infrastructure",
+                  "more complete community status"
+                ],
+                "losesOn": [
+                  "affordability",
+                  "proximity to beaches",
+                  "overall county school district ranking"
+                ],
+                "aiConclusion": "Lakewood Ranch edges out for proven, top-tier schools with more options right now, making it great for families with school-aged kids."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

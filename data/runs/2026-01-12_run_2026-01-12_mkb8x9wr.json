@@ -1,0 +1,125 @@
+{
+  "id": "run_2026-01-12_mkb8x9wr",
+  "timestamp": "2026-01-12T14:16:14.187Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0.7374999999999999,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "retiree_consider": {
+      "intentId": "int_retiree_consider_mk189ge6",
+      "intentText": "Retiree evaluating 55+ communities and active adult options",
+      "queriesUsed": [
+        "55+ communities in Lakewood Ranch with low CDD fees and good healthcare access"
+      ],
+      "metrics": {
+        "sentimentScore": 0.7374999999999999
+      },
+      "results": [
+        {
+          "query": "55+ communities in Lakewood Ranch with low CDD fees and good healthcare access",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "In **Lakewood Ranch (LWR)** specifically, the shortlist is pretty tight: there are **three age-restricted (55+) villages** currently marketed within LWR. ([lifeatlakewood.com](https://www.lifeatlakewood.com/55-plus-communities-in-lakewood-ranch?utm_source=openai))\n\n## The 55+ villages in Lakewood Ranch (and what “low CDD” likely looks like)\nBecause **CDD/Stewardship fees vary by exact neighborhood and even by home/site**, the only safe way to do “low CDD” is to treat these as **ranges** and verify the specific address before you buy. (LWR confirms it has a Stewardship District fee structure communitywide.) ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))\n\n### 1) Del Webb Lakewood Ranch (55+)\n- **Why it fits “lower CDD”** (relative): a commonly published range is about **$1,255–$1,640/year** (verify for the exact lot/home). ([lakewoodranchfl.blogspot.com](https://lakewoodranchfl.blogspot.com/2020/04/cdd-and-hoa-fees.html?utm_source=openai))  \n- **Scale/feel:** large 55+ village (~1,300 homes), gated, active lifestyle. ([55places.com](https://www.55places.com/blog/lakewood-ranch-a-new-del-webb-community-coming-to-florida?utm_source=openai))  \n- **Healthcare access:** good proximity to the LWR medical hub around University Pkwy/Lakewood Ranch Blvd (see providers below). ([lakewoodranchmedicalcenter.com](https://www.lakewoodranchmedicalcenter.com/patients-visitors/directions-and-map?utm_source=openai))  \n\n**Best for:** “value-oriented” 55+ inside LWR where CDD is often cited as moderate-to-lower for the area.\n\n---\n\n### 2) Cresswind at Lakewood Ranch (55+)\n- **CDD:** often cited around **$1,500/year** (again, verify by address). ([lakewoodranchfl.blogspot.com](https://lakewoodranchfl.blogspot.com/2020/04/cdd-and-hoa-fees.html?utm_source=openai))  \n- **Community:** gated 55+, strong “active adult programming,” HOA shown as **$416/month** on LWR’s official page. ([lakewoodranch.com](https://lakewoodranch.com/our-villages/cresswind/?utm_source=openai))  \n- **Healthcare access:** also strong, given overall LWR location and nearby hospital/ER options. ([lakewoodranchmedicalcenter.com](https://www.lakewoodranchmedicalcenter.com/patients-visitors/directions-and-map?utm_source=openai))  \n\n**Best for:** an active-adult lifestyle with a newer feel; CDD doesn’t look “no CDD,” but often lands in a fairly predictable band.\n\n---\n\n### 3) Del Webb Catalina (55+) (newer)\n- **Status/scale:** planned around **1,300 homes**; marketed as a major amenity campus, gated. ([lakewoodranch.com](https://lakewoodranch.com/our-villages/del-webb-catalina/?utm_source=openai))  \n- **CDD:** I didn’t find a reliable, primary-source CDD number in the quick pull above—this one you’ll want to confirm from the **specific tax/estoppel** for any home you’re considering.\n- **HOA (published):** **$335–$409/month** on LWR’s official page. ([lakewoodranch.com](https://lakewoodranch.com/our-villages/del-webb-catalina/?utm_source=openai))  \n\n**Best for:** brand-new inventory and big amenities—*but you’ll need to verify the true CDD/Stewardship burden per home*.\n\n---\n\n## “Good healthcare access” near Lakewood Ranch (what to look for)\nFor convenient access from most LWR villages, two commonly used nearby options are:\n\n- **Lakewood Ranch Medical Center** (hospital) at **8330 Lakewood Ranch Blvd, Bradenton, FL 34202** ([lakewoodranchmedicalcenter.com](https://www.lakewoodranchmedicalcenter.com/patients-visitors/directions-and-map?utm_source=openai))  \n- **Sarasota Memorial ER at Lakewood Ranch** (24/7 freestanding ER with imaging/labs) at **7250 University Pkwy, Sarasota, FL 34240** ([smh.com](https://www.smh.com/Home/Locations/ER-at-Lakewood-Ranch?utm_source=openai))  \n\n## Quick guidance on picking “low CDD”\nIf your priority is minimizing CDD/Stewardship:\n1) **Start with Del Webb LWR and Cresswind** (they have clearer commonly-published CDD figures). ([lakewoodranchfl.blogspot.com](https://lakewoodranchfl.blogspot.com/2020/04/cdd-and-hoa-fees.html?utm_source=openai))  \n2) For any specific home, ask for:\n   - the **current property tax bill** (shows CDD/Stewardship line items), and\n   - an **HOA estoppel** (for HOA/amenity fees).\n3) If you want *truly* minimal district fees, you may need to expand beyond LWR proper—many nearby communities are **not** in a CDD, but they won’t be “in Lakewood Ranch.”\n\n## Two questions so I can narrow this to the best matches\n1) Are you trying to keep CDD/Stewardship **under a specific $/year** (e.g., under $1,500/year)?  \n2) Do you want to be **within ~10 minutes** of Lakewood Ranch Medical Center/University Pkwy, or is **15–25 minutes** still “good access”?",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.7,
+                "strengthsMentioned": [
+                  "Multiple dedicated 55+ villages",
+                  "Strong active-adult programming",
+                  "Excellent proximity to healthcare hubs",
+                  "Gated neighborhoods with large amenity campuses"
+                ],
+                "concernsRaised": [
+                  "Community-wide Stewardship/CDD fee structure",
+                  "Fee variability depending on specific lot or home"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as an organized and amenity-rich master-planned community with strong healthcare access, though potential buyers are cautioned to verify its mandatory district fee structures."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about 55+ communities in Lakewood Ranch with low CDD fees and good healthcare access.\nLet me search for more specific information about 55+ communities with CDD fees and healthcare details.\nBased on my research, here's what I found about 55+ communities in Lakewood Ranch with low CDD fees and good healthcare access:\n\n## Main 55+ Communities\n\n\nLakewood Ranch is currently home to two fabulous 55+ communities: Lakewood Ranch Del Webb and Cresswind.\n\n\n### Del Webb Lakewood Ranch\n\nDel Webb Lakewood Ranch started construction in late 2015 and wrapped up in 2024. This gated, 640-acre community sits on the eastern edge of Lakewood Ranch, just off State Road 70. It's known for its lush landscaping, scenic walking trails, and a 24,000-square-foot clubhouse with an on-site restaurant.\n \nDel Webb Lakewood Ranch and Cresswind offer resort-style 55+ living with clubhouses, fitness centers, pools, and organized social activities. Maintenance-free single-family homes and villas range from $350,000-$700,000.\n\n\n### Cresswind Lakewood Ranch\n\nCresswind is the smallest of all the 55+ neighborhoods in Lakewood Ranch. This gated, boutique neighborhood sits along Uihlein Road and offers just 648 homesites, giving it a more intimate feel compared to some of the larger communities nearby. But don't let the size fool you—Cresswind is packed with amenities.\n \nCresswind Lakewood Ranch offers a variety of amenities including a fitness center, art studio, tennis and pickleball courts, resort-style swimming pool, resistance pool and more.\n\n\n## CDD Fees\n\nRegarding CDD fees, it's important to understand that these are common in Lakewood Ranch. \nCDD fees are common in Lakewood Ranch's newer villages and function similarly to property taxes, funding community",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.7,
+                "strengthsMentioned": [
+                  "Fabulous 55+ communities",
+                  "Resort-style living",
+                  "Lush landscaping",
+                  "Scenic walking trails",
+                  "Maintenance-free single-family homes and villas",
+                  "Extensive amenities including clubhouses, fitness centers, and sports courts",
+                  "Variety of neighborhood sizes from boutique to large-scale"
+                ],
+                "concernsRaised": [
+                  "CDD fees are common in newer villages"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premier destination for 55+ living, characterized by high-end amenities and well-maintained, resort-style neighborhoods."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Finding a 55+ community in Lakewood Ranch with low CDD (Community Development District) fees can be a challenge because the master-planned infrastructure is largely funded through these assessments. However, there are specific villages and \"Lakewood Ranch-adjacent\" communities that offer significantly lower fees or no CDD at all.\n\n### **1. Indigo (The Best \"Low CDD\" Option)**\nIndigo is a gated, active-adult community (age-targeted rather than strictly restricted) that is highly sought after for its fee structure.\n*   **CDD Fees:** This is one of the rare communities in Lakewood Ranch with a section of homes (built around 2016–2017) that has **no CDD fees**. Newer sections do have a CDD, but it is typically on the lower end ($1,500–$2,000/year) compared to luxury villages.\n*   **Healthcare Access:** Excellent. It is roughly 7 miles from **Lakewood Ranch Medical Center** and less than 10 miles from the **Sarasota Memorial Health Care System** (Healthplex on University Pkwy).\n*   **Vibe:** Maintenance-free living with a full-time lifestyle director, resort pool, and pickleball.\n\n### **2. Del Webb Catalina (Best Low CDD for New Construction)**\nAs the newest 55+ community in Lakewood Ranch, Del Webb Catalina offers a more competitive CDD rate than many other new developments.\n*   **CDD Fees:** Fees are approximately **$1,463 to $1,735 annually** depending on the lot size. This is lower than its sister community (Del Webb Lakewood Ranch) and many surrounding villages where CDDs often exceed $2,500.\n*   **Healthcare Access:** Located in the eastern sector, it is about a 15-minute drive to **Lakewood Ranch Medical Center** and proximal to the numerous medical specialists on SR-70.\n*   **Vibe:** Massive 15-acre amenity campus with a 70-acre lake, 12 pickleball courts (some covered), and a full-service bar/grill.\n\n### **3. Del Webb Lakewood Ranch (Established & Stable)**\nThis was the first 55+ community in the Ranch. Because it is older and more established, its fee structure is well-defined.\n*   **CDD Fees:** Generally ranges between **$1,500 and $2,000 annually**. While not \"low\" compared to non-master-planned areas, it is considered stable and provides high value for the established infrastructure.\n*   **Healthcare Access:** This is arguably the best-located 55+ community for healthcare. It is situated very close to the **University Town Center (UTC) medical corridor** and is roughly 10 minutes from **Lakewood Ranch Medical Center**.\n*   **Vibe:** Fully built-out with mature landscaping and a very active social scene with over 50 resident clubs.\n\n### **4. Eagle Trace (The \"Secret\" No-CDD Alternative)**\nWhile technically just across the border of Lakewood Ranch (near SR-64), Eagle Trace is often recommended to 55+ buyers who prioritize fee savings.\n*   **CDD Fees:** **No CDD fees.** It is surrounded by Lakewood Ranch amenities but sits outside the Stewardship District boundaries.\n*   **Healthcare Access:** It is minutes away from the medical offices at the northern end of Lakewood Ranch and about 15 minutes from the main hospital.\n*   **Vibe:** A quiet, gated Neal Homes community with a maintenance-free lifestyle and high active-adult population, though not age-restricted.\n\n### **Summary of Healthcare Facilities in Lakewood Ranch**\nLiving in any of these communities puts you within a 10–15 minute radius of the following:\n*   **Lakewood Ranch Medical Center:** The primary acute care hospital (Award-winning for clinical excellence).\n*   **SMH Urgent Care (University Pkwy):** High-level outpatient care and imaging.\n*   **The Center for Sight:** A world-class eye care facility located right on the Ranch.\n*   **Coastal Orthopedics:** Massive new facility recently opened within the community.\n\n### **Quick Comparison Table**\n| Community | 55+ Status | Est. CDD (Annual) | Hospital Proximity |\n| :--- | :--- | :--- | :--- |\n| **Indigo** | Active Adult | $0 - $1,800 | 12-15 Minutes |\n| **Del Webb Catalina** | Restricted | $1,463 - $1,735 | 15 Minutes |\n| **Del Webb LWR** | Restricted | $1,500 - $2,000 | 10 Minutes |\n| **Cresswind** | Restricted | $2,000 - $3,500 | 12 Minutes |\n| **Eagle Trace** | Active Adult | **$0** | 15 Minutes |\n\n**Pro Tip:** In Lakewood Ranch, CDD fees are often called \"Stewardship District\" fees. They are included in your property tax bill, so when looking at listings, always ask for the \"non-ad valorem\" tax breakdown to see the exact fee.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.7,
+                "strengthsMentioned": [
+                  "master-planned infrastructure",
+                  "award-winning healthcare at Lakewood Ranch Medical Center",
+                  "diverse active-adult community options",
+                  "high-quality lifestyle amenities",
+                  "proximity to medical specialists",
+                  "established social scenes and resident clubs"
+                ],
+                "concernsRaised": [
+                  "finding low CDD fees can be a challenge",
+                  "infrastructure is funded through resident assessments",
+                  "CDD fees are often significant compared to non-master-planned areas"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premier, amenity-rich master-planned community with exceptional healthcare access, though potential residents are cautioned about the typical presence of infrastructure-related CDD fees."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information from Lakewood Ranch's official resources and local real estate sites (as of early 2026), I'll break down options for 55+ communities in Lakewood Ranch, Florida, focusing on those with relatively low Community Development District (CDD) fees and good healthcare access. Lakewood Ranch is a master-planned community in southwest Florida known for its amenities, including proximity to top-rated healthcare facilities like Lakewood Ranch Medical Center and Sarasota Memorial Hospital (both within a short drive). The area scores high for healthcare convenience, with on-site medical offices, wellness centers, and easy access to specialists—making it ideal for active adults.\n\nKeep in mind that CDD fees help fund infrastructure like roads and utilities, and they vary by neighborhood (typically $1,000–$4,000 annually, but some communities minimize or avoid them). \"Low\" CDD here means under $2,000/year or no CDD at all, based on available data. Fees can change, so I recommend verifying with a local realtor or the community's HOA for the latest details. Home prices in these areas generally start around $400,000–$600,000 for new builds.\n\n### Top 55+ Communities Matching Your Criteria\nLakewood Ranch has a few dedicated 55+ villages, with two actively selling as of 2025–2026 (per Lakewood Ranch's FAQ). Here's a curated list emphasizing low CDD and healthcare perks:\n\n1. **Cresswind Lakewood Ranch** (by Kolter Homes)\n   - **Overview**: This is a premier 55+ active adult community with new homes designed for low-maintenance living. It features resort-style amenities like a clubhouse, pools, fitness centers, pickleball courts, and wellness programs tailored to older adults.\n   - **CDD Fees**: Relatively low compared to other parts of Lakewood Ranch—around $1,200–$1,800 annually (based on recent listings). Some sections may have minimal or bundled fees with HOA.\n   - **Healthcare Access**: Excellent—located centrally in Lakewood Ranch with quick access to Lakewood Ranch Medical Center (about 5–10 minutes away) and nearby urgent care. The community emphasizes wellness with on-site health-focused events.\n   - **Why It Fits**: It's one of the two main 55+ villages highlighted in Lakewood Ranch's resources. Homes range from villas to single-family options, with a focus on multigenerational appeal but exclusive to 55+.\n   - **More Info**: Check kolter",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.85,
+                "strengthsMentioned": [
+                  "Master-planned community with extensive amenities",
+                  "Proximity to top-rated healthcare facilities like Lakewood Ranch Medical Center",
+                  "High healthcare convenience with on-site medical offices",
+                  "Availability of dedicated 55+ villages",
+                  "Wellness-focused programs and infrastructure",
+                  "Central location in southwest Florida"
+                ],
+                "concernsRaised": [
+                  "Presence of Community Development District (CDD) fees up to $4,000 annually",
+                  "Home prices starting at $400,000–$600,000"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premium and highly organized master-planned community that excels in providing specialized healthcare access and lifestyle amenities for active adults."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

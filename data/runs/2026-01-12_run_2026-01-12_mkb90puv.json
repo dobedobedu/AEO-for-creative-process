@@ -1,0 +1,125 @@
+{
+  "id": "run_2026-01-12_mkb90puv",
+  "timestamp": "2026-01-12T14:18:54.823Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0.85,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "luxury_consider": {
+      "intentId": "int_luxury_consider_mk189ge6",
+      "intentText": "Luxury buyer evaluating golf, waterfront, and cultural amenities",
+      "queriesUsed": [
+        "Lakewood Ranch luxury homes with golf course and waterfront access near Sarasota cultural amenities"
+      ],
+      "metrics": {
+        "sentimentScore": 0.85
+      },
+      "results": [
+        {
+          "query": "Lakewood Ranch luxury homes with golf course and waterfront access near Sarasota cultural amenities",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "If you want **Lakewood Ranch luxury** with **golf + true waterfront/boating access** *and* you also care about being close to **Sarasota’s cultural scene** (opera, ballet, theaters, galleries, downtown dining), the reality is:\n\n- **“Golf + lakefront” is common inside Lakewood Ranch**\n- **“Golf + real boating (bay/gulf) waterfront” is *not* inside most Lakewood Ranch golf communities**\n- The best “both worlds” setup is usually **golf + luxury inside/near Lakewood Ranch**, paired with **quick access to Sarasota Bay/keys/downtown Sarasota**\n\nBelow are the most relevant neighborhoods to target, plus how they match your criteria.\n\n## Best matches (luxury + golf + water views, near Sarasota culture)\n\n### 1) **The Concession (near Lakewood Ranch)**\n**Why it fits:** One of the region’s most prestigious **private golf** addresses with a strong “estate” feel; many homes have **lake/wetland views** and it’s positioned for relatively easy drives to **downtown Sarasota cultural venues**. ([lakewoodranchlife.com](https://www.lakewoodranchlife.com/bradenton-fl-real-estate/the-concession/?utm_source=openai))  \n**Waterfront access:** Primarily **lake/preserve** (scenic water), not “walk to your boat slip” bayfront living.\n\nBest for: “I want a trophy golf club + privacy + luxury, and Sarasota arts are a drive away.”\n\n### 2) **Lakewood Ranch Golf & Country Club (The Country Club village)**\n**Why it fits:** A large, established, gated village with **multiple 18-hole courses** and many homes positioned on **lakes and fairways**. ([lifeatlakewood.com](https://www.lifeatlakewood.com/country-club?utm_source=openai))  \n**Waterfront access:** Mostly **freshwater lakes/ponds** (views), not boating on Sarasota Bay.\n\nBest for: “I want golf-front or lakefront views, mature landscaping, and classic Lakewood Ranch lifestyle.”\n\n## Best “waterfront lifestyle” (with water recreation), closest to Sarasota cultural amenities\n\n### 3) **Waterside at Lakewood Ranch (Sarasota side)**\n**Why it fits:** Waterside is Lakewood Ranch’s Sarasota County village built around **multiple large lakes** and a lakefront town center vibe. It’s generally **closer to downtown Sarasota** than many Manatee-side villages. ([lifeatlakewood.com](https://www.lifeatlakewood.com/waterside-lakehouse-cove?utm_source=openai))  \n**Waterfront access:** You’ll find neighborhoods with **lakefront homes**, and some include **kayak launches/storage** (water recreation). ([lifeatlakewood.com](https://www.lifeatlakewood.com/waterside-lakehouse-cove?utm_source=openai))  \n**Golf:** Not inherently a “golf community” the way a country club is, but you can still join nearby clubs depending on your goals.\n\nBest for: “I want to live on the Sarasota side, be closer to arts/dining, and still have water views + recreation.”\n\n## Ultra-luxury non-golf, but near golf and very water-view oriented\n\n### 4) **The Lake Club**\n**Why it fits:** One of the most exclusive luxury enclaves in Lakewood Ranch with significant **lake scenery** and high-end custom homes; it’s near multiple golf options (but it’s not itself a golf-course community). ([stockdevelopment.com](https://www.stockdevelopment.com/projects/the-lake-club?utm_source=openai))  \nBest for: “I want gated luxury + lake views + clubhouse lifestyle, and I’ll pick my golf club separately.”\n\n---\n\n# Quick short-list based on your exact “golf + waterfront access” wording\nTo clarify: do you mean **(A) lakefront** (water view + maybe kayak) or **(B) saltwater boating** (dock/slip, bay access)?\n\n- If you mean **A (lakefront water + golf):** prioritize **Lakewood Ranch Country Club** and **The Concession**. ([lakewoodranchlife.com](https://www.lakewoodranchlife.com/lakewood-ranch-country-club/?utm_source=openai))  \n- If you mean **B (saltwater boating + golf):** we should widen the search beyond Lakewood Ranch proper (e.g., Sarasota bayfront/key neighborhoods) and pair it with a nearby private club—because that specific combo is uncommon inside LWR’s golf villages.\n\n## 3 questions so I can narrow this to a “buy list” of specific enclaves/streets\n1) Waterfront: **lakefront OK**, or do you need **boat-on-saltwater** access?  \n2) Golf: do you want **mandatory membership** (club-centric) or **optional**?  \n3) Budget + home type: rough range (e.g., **$1.5–3M** vs **$4M+**) and **new build vs established**?\n\nAnswer those and I’ll give you a tight set of neighborhoods (and what to search for on listings: keywords, gate sections, best-lake streets, and typical tradeoffs for Sarasota cultural access).",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.8,
+                "strengthsMentioned": [
+                  "Luxury residential options",
+                  "Prestigious private golf addresses",
+                  "Scenic lake and wetland views",
+                  "Established gated villages",
+                  "Water recreation like kayaking",
+                  "Clubhouse lifestyle",
+                  "Proximity to Sarasota cultural venues"
+                ],
+                "concernsRaised": [
+                  "Lack of direct saltwater or gulf boating access within golf communities",
+                  "Travel time to Sarasota arts and dining from certain areas",
+                  "Need to look outside the community for saltwater boat slips"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premier destination for luxury golf and lakefront living, offering a sophisticated lifestyle with proximity to cultural amenities, despite limitations regarding direct saltwater boating."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about luxury homes in Lakewood Ranch with golf course and waterfront access near Sarasota cultural amenities.\nI apologize for the technical difficulty with the search tool. However, I can provide you with information based on my existing knowledge about Lakewood Ranch:\n\n**Lakewood Ranch Overview:**\nLakewood Ranch is a master-planned community located in Sarasota County, Florida, positioned between Sarasota and Bradenton. It's known for being an upscale residential development with several desirable features:\n\n**Key Amenities & Features:**\n\n1. **Golf Courses**: The community features championship golf courses, including the Lakewood National Golf Club, which offers an 18-hole course with resort-style amenities.\n\n2. **Waterfront Properties**: Many homes in Lakewood Ranch offer waterfront access with properties overlooking lakes, canals, and water features throughout the community.\n\n3. **Luxury Homes**: The community offers a range of high-end residential options, from townhomes to estates, with various price points in the luxury segment.\n\n4. **Proximity to Sarasota Cultural Amenities**: Lakewood Ranch is just minutes away from Sarasota's renowned cultural institutions, including:\n   - Ringling Museum of Art\n   - Van Wezel Hall (performing arts)\n   - Sarasota Opera\n   - Sarasota Ballet\n   - Multiple theaters and galleries\n\n5. **Additional Community Amenities**: The development also features restaurants, shopping, a town center, walking paths, and recreational facilities.\n\nFor current listings of luxury homes with specific golf course and waterfront access in Lakewood Ranch, I'd recommend contacting local real estate agents specializing in the area or visiting Lakewood Ranch's official website for up-to-date inventory and pricing information.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.8,
+                "strengthsMentioned": [
+                  "Upscale master-planned community",
+                  "Championship golf courses",
+                  "Resort-style amenities",
+                  "Waterfront properties",
+                  "Wide range of luxury residential options",
+                  "Excellent proximity to Sarasota cultural institutions",
+                  "Robust community amenities including town centers, shopping, and dining"
+                ],
+                "concernsRaised": [],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premier upscale residential destination that successfully combines luxury living, active amenities like golf and waterfront access, and convenient proximity to high-end cultural attractions."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Lakewood Ranch offers several premier luxury communities that provide both championship golf and scenic waterfront living, all while remaining approximately **15–30 minutes** (10–15 miles) from Sarasota's renowned cultural district.\n\n### **Top Luxury Communities with Golf & Waterfront Access**\n\n*   **The Lake Club:** Often considered the most exclusive village in Lakewood Ranch, this gated community features custom-built estates on large lakefront lots.\n    *   **Water/Golf:** Most homes offer sweeping lake views. While it does not have its own golf course, residents have priority access to the nearby **Lakewood Ranch Country Club** and other area championship courses.\n    *   **Lifestyle:** Includes a 20,000-square-foot Grand Clubhouse with resort-style pools, a spa, and a concierge.\n*   **Lakewood Ranch Country Club:** This is the primary destination for \"bundled\" or private club luxury. It is divided into several enclaves (e.g., Highfield, Riviera Cove) that offer direct golf course frontage or expansive lake views.\n    *   **Water/Golf:** Homes are situated around **54 holes** of private golf (Cypress Links, King’s Dunes, and Royal Lakes). Many lots are \"double-view,\" overlooking both a lake and a fairway.\n    *   **Lifestyle:** Features an athletic center with 18 tennis courts, pickleball, and a multi-level fitness center.\n*   **The Concession:** Located on the border of Lakewood Ranch and Bradenton, this ultra-luxury gated community is set on 1,200 acres of ancient oak hammocks and wetlands.\n    *   **Water/Golf:** It hosts a world-class **Jack Nicklaus Signature golf course**. Many of the 200+ estate homesites (ranging from 0.5 to 1+ acre) are positioned along large lakes.\n    *   **Lifestyle:** Extremely private and high-end; residents also have access to a 53-foot private motor yacht for excursions on the Gulf.\n*   **Wild Blue at Waterside (Near Sarasota):** If proximity to Sarasota is your top priority, this is the closest luxury village.\n    *   **Water/Golf:** Focused heavily on a \"coastal\" lakefront lifestyle with a 184-acre lake for kayaking and boating. It is **non-golf** on-site, but its location in the \"Waterside\" district puts you closer to the Sarasota city line than any other luxury ranch village.\n\n---\n\n### **Proximity to Sarasota Cultural Amenities**\nFrom these communities, you can reach the \"Cultural Coast\" of Sarasota via University Parkway or Fruitville Road:\n\n*   **The Ringling & Asolo Repertory Theatre:** (~12 miles / 20–25 mins). Located near the airport, this is home to the State Art Museum of Florida and one of the most prestigious regional theaters in the country.\n*   **Sarasota Opera House & Florida Studio Theatre:** (~14 miles / 25–30 mins). Located in the heart of Downtown Sarasota.\n*   **Van Wezel Performing Arts Hall:** (~14 miles / 25 mins). Situated on the bayfront, hosting Broadway tours and world-class musicians.\n*   **Marie Selby Botanical Gardens:** (~15 miles / 30 mins). A world-renowned \"living museum\" on the Sarasota bayfront.\n\n### **Local Cultural \"Bridge\"**\nLakewood Ranch hosts a monthly **\"Sights & Sounds at Waterside Place\"** series, where performers from the **Sarasota Opera**, **Sarasota Ballet**, and **Sarasota Orchestra** travel to the Ranch for outdoor performances, bringing the city's cultural heart directly to your neighborhood.\n\n**Note on Waterfront:** In Lakewood Ranch, \"waterfront\" typically refers to expansive freshwater lakes and nature preserves. For saltwater Gulf access, most residents travel 30–40 minutes to **Lido Key** or **Siesta Key**.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.9,
+                "strengthsMentioned": [
+                  "Premier luxury villages including The Lake Club, LWR Country Club, and The Concession",
+                  "Access to championship golf including 54 holes of private play and Jack Nicklaus Signature courses",
+                  "Scenic lakefront living with large estate lots and double-view properties",
+                  "Comprehensive lifestyle amenities including clubhouses, spas, tennis, and pickleball",
+                  "Proximity to Sarasota's major cultural institutions like The Ringling and Sarasota Opera House",
+                  "On-site cultural events featuring the Sarasota Orchestra and Ballet at Waterside Place"
+                ],
+                "concernsRaised": [
+                  "Waterfront access is restricted to freshwater lakes rather than saltwater Gulf access",
+                  "Proximity to beaches/Gulf requires a 30-40 minute drive"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as an elite, high-end residential destination that offers a sophisticated mix of championship golf, luxury lakefront living, and strong cultural connectivity to nearby Sarasota."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on your query for luxury homes in Lakewood Ranch with golf course and waterfront access, while being near Sarasota's cultural amenities, I'll provide an overview using up-to-date information from reliable real estate sources like LakewoodRanch.com, LuxuryHomesInSarasota.com, and BuyLakewoodRanch.com. Lakewood Ranch is an award-winning master-planned community in southwest Florida, just east of Sarasota, making it an ideal spot for upscale living with easy access to urban culture. It's known for its resort-style amenities, family-friendly vibe, and proximity to Sarasota's vibrant arts scene, including museums, theaters, and galleries like the Ringling Museum of Art and the Sarasota Opera. Let's break this down.\n\n### Why Lakewood Ranch Fits Your Criteria\n- **Location and Proximity to Sarasota**: Lakewood Ranch is about 10-15 miles from downtown Sarasota, offering a quick drive (under 20 minutes) to cultural hotspots. This includes world-class performing arts venues, art festivals, and waterfront dining, while providing a serene suburban escape.\n- **Luxury Homes Overview**: The community features a range of high-end properties, from estates starting at $1 million+ to custom builds exceeding $5 million. Homes often include modern designs, high-end finishes, private pools, and smart home tech. As of early 2026, there are hundreds of listings updated daily via Sarasota MLS, with options in various villages tailored to different lifestyles.\n\n### Homes with Golf Course and Waterfront Access\nLakewood Ranch has several gated golf communities and waterfront enclaves that combine these features. Here's a spotlight on top options based on current listings:\n\n- **Golf Course Homes**:\n  - **Lakewood National Golf Club**: A premier gated community with luxury homes overlooking championship golf courses designed by Arnold Palmer. Properties here often feature direct golf course views, with prices ranging from $800,000 to $3 million+. Amenities include resort pools, spas, and clubhouses. Recent listings show about 50+ homes available, many with 3-5 bedrooms and waterfront elements like lakeside lots.\n  - **Esplanade at Azario**: Another gated golf enclave with upscale villas and single-family homes starting at $1.2 million. It offers waterfront golf course access, with homes backing onto lakes or the 18-hole course. Expect features like outdoor kitchens and infinity pools.\n  - Overall, there are around 250+ golf community homes for sale in Lakewood Ranch (per BuySarasota.com), many in gated settings",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.9,
+                "strengthsMentioned": [
+                  "Award-winning master-planned community",
+                  "Close proximity to Sarasota cultural hotspots (10-15 miles)",
+                  "Upscale living with resort-style amenities",
+                  "Family-friendly vibe",
+                  "Wide range of luxury homes ($1M to $5M+)",
+                  "Gated golf communities with championship courses",
+                  "Waterfront and lakeside lot availability",
+                  "Modern designs and high-end finishes"
+                ],
+                "concernsRaised": [],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premier, award-winning destination for luxury real estate that perfectly balances elite golf and waterfront living with convenient access to Sarasota's cultural scene."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

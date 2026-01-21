@@ -1,0 +1,142 @@
+{
+  "id": "run_2026-01-12_mkb9325l",
+  "timestamp": "2026-01-12T14:20:44.073Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0.075,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "first_time_consider": {
+      "intentId": "int_first_time_consider_mk189ge6",
+      "intentText": "First-time buyer understanding costs, fees, and hidden expenses",
+      "queriesUsed": [
+        "What are the hidden costs of buying a home in Lakewood Ranch FL?"
+      ],
+      "metrics": {
+        "sentimentScore": 0.075
+      },
+      "results": [
+        {
+          "query": "What are the hidden costs of buying a home in Lakewood Ranch FL?",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Buying in **Lakewood Ranch (LWR)** can come with “built-in” community costs that don’t always show up in the listing price or even your lender’s basic estimate. Here are the biggest *hidden / easily-missed* costs to plan for.\n\n## 1) HOA + “amenity” fees (monthly/quarterly, and they vary a lot)\nLakewood Ranch isn’t one HOA—each village/neighborhood has its own structure and inclusions. The master developer notes HOA fees can range roughly **$100–$800/month**, with many communities around **$200–$300/month**. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \nHidden angle: in some neighborhoods you can have **multiple layers** (neighborhood HOA + condo/townhome association + optional club/amenity memberships).\n\n**Watch for:**\n- fees that rise after turnover from builder/developer to homeowners\n- separate charges for gates, private roads, landscaping, cable/internet bundles, etc.\n- special assessments (one-time charges) for roofs, paint, roads, reserves, storm damage, etc.\n\n## 2) CDD / Stewardship District fees (added to your property tax bill)\nMany LWR neighborhoods are in a district that funds/maintains infrastructure and community features; LWR itself explains it as a **Stewardship District Fee** supporting parks, trails, lakes/stormwater systems, arterial enhancements, conservation areas, etc. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \nHidden angle: people sometimes think “my taxes are X” but then discover an additional district line item that can be significant and lasts for years (sometimes with a bond portion).\n\n## 3) Property taxes can jump after you buy (Save Our Homes reset)\nFlorida’s Save Our Homes cap applies to *existing* homesteaded owners; when you purchase, the assessed value often resets closer to market value. So the prior owner’s tax bill can be misleading.\n\n**Also note:** if you don’t file homestead timely, your first-year/second-year tax picture can be very different.\n\n## 4) Homeowners insurance surprises (especially wind/hurricane + deductibles)\nEven inland, buyers can be surprised by:\n- high premiums for newer “replacement cost” values\n- **large hurricane/wind deductibles** (often a % of Coverage A)\n- separate flood insurance decisions (many homes aren’t required by lender, but owners choose it anyway)\n\n(Insurance cost volatility has been a major affordability pain point statewide, including around LWR. ([wsj.com](https://www.wsj.com/real-estate/luxury-homes/the-dream-of-a-florida-retirement-is-fading-for-the-middle-class-a29a5687?utm_source=openai)))\n\n## 5) New construction “closing costs” that aren’t really optional\nIf you’re buying from a builder, you may see add-ons like:\n- doc/administration fees\n- required “capital contributions” (working capital to HOA/club at closing)\n- setup/transfer fees for HOA, gates, amenities\n- punch-list, warranty, and escrow quirks\n\nAlso, builder “incentives” are often tied to using their lender/title—sometimes raising other line items.\n\n## 6) Lawn, landscaping, and irrigation (and water bills)\nSome communities include lawn care in HOA dues; others do not (or only cover common areas). LWR’s own FAQ says HOA fees *generally* cover common area maintenance and *some* lawn/irrigation, but it varies by village. ([lakewoodranch.com](https://lakewoodranch.com/connect/faq/?utm_source=openai))  \nHidden angle: if you’re in a single-family home with irrigation, your monthly costs can swing seasonally, and replacing pumps/controllers/sod isn’t cheap.\n\n## 7) Golf/club memberships (initiation + monthly minimums)\nIn golf/“country club” style neighborhoods, the real cost isn’t just dues—it can include:\n- initiation/buy-in\n- monthly dining minimums\n- cart/trail fees, locker fees\n- annual capital assessments\n\nEven if membership is “optional,” resale can be influenced by how the club is structured.\n\n## 8) Condo/townhome-specific items (if applicable)\nIf you’re buying a condo or paired villa:\n- master HOA + condo association dues\n- reserves (or lack of reserves) matter a lot\n- building insurance is often embedded in dues, and can spike after market changes\n\n## 9) Renovation/permit-related fees (when you later add a pool, fence, lanai, etc.)\nAdding a pool, enclosure, or major remodel later can trigger permitting and local fees. In Manatee County, the county publishes impact/fee schedules and has updated impact fee schedules in recent years. ([manatee.hosted.civiclive.com](https://manatee.hosted.civiclive.com/departments/building___development_services/impact_fees/fee_schedule?utm_source=openai))  \nHidden angle: homeowners often budget for the contractor quote but not the full permitting/fee landscape or utility connection/capacity charges.\n\n## 10) Everyday “location” costs that add up (not on the closing disclosure)\nDepending on exactly where in LWR you buy and your commute/lifestyle:\n- tolls/extra fuel time (I-75 access patterns)\n- higher service costs for pool maintenance, pest control, palm trimming\n- more frequent exterior maintenance (sun, storms)\n\n---\n\n### To tailor this to *your* target home, tell me:\n1) Are you looking in **Manatee County side** (Bradenton/LWR) or **Sarasota County side**?  \n2) **New build or resale**, and **single-family vs townhome/condo**?  \n3) Any specific villages (e.g., Waterside, Greenbrook, Summerfield, etc.)?\n\nIf you share a listing link or the community name, I can give you a precise checklist of fees to ask for (HOA, CDD/Stewardship, capital contributions, memberships, typical insurance/deductible questions).",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "neutral",
+                "sentimentScore": 0,
+                "strengthsMentioned": [
+                  "Extensive community amenities",
+                  "Parks and trails",
+                  "Conservation areas",
+                  "Lakes and stormwater systems",
+                  "Well-maintained infrastructure",
+                  "Master-planned community structure"
+                ],
+                "concernsRaised": [
+                  "High and variable HOA fees",
+                  "Additional CDD/Stewardship District fees on property taxes",
+                  "Property tax assessment resets (Save Our Homes)",
+                  "Rising homeowners insurance premiums and high wind deductibles",
+                  "Builder-specific closing costs and administration fees",
+                  "Variable landscaping and irrigation costs",
+                  "Club and golf membership initiation and monthly fees",
+                  "Potential for special assessments"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a highly organized master-planned community with a complex but well-documented fee structure that requires careful financial planning to navigate."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on recent research, here are the major hidden costs of buying a home in Lakewood Ranch, FL that often surprise buyers:\n\n## Community Development District (CDD) Fees\n\n\nCDD stands for Community Development District, and it's essentially a long-term loan used to pay for the infrastructure and amenities of a new neighborhood - roads, utilities, community pools, clubhouses, parks, and more.\n \nThe average range in 2025 is $1,500–$3,000+ per year, depending on the size of your lot, the builder, and the community amenities. Spread over 12 months, this can add $125–$250 or more per month to your housing cost.\n \nOnly a handful of Lakewood Ranch's 50+ neighborhoods don't have CDD fees.\n\n\n## Property Taxes\n\n\nProperty taxes in Lakewood Ranch typically run about 1.3-1.4% of your home's purchase price annually. When you purchase a home, the property gets reassessed based on the new purchase price, often resulting in a substantial increase from what the previous owner was paying.\n\n\n## Homeowners Association (HOA) Fees\n\n\nHOA fees range from $200–$600/month.\n However, this varies significantly: \nExpect anywhere from $100/month in basic HOA neighborhoods to $500+/month in luxury, amenity-rich villages.\n \nAmenity-rich villages like Waterside or Del Webb often include resort-style pools, clubhouses, pickleball, and fitness centers in the HOA fee.\n\n\n## Home Insurance\n\n\nHome insurance in Florida has been rising for several years due to storm risk, rebuilding costs, and insurance company changes, and Lakewood Ranch is no exception.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "neutral",
+                "sentimentScore": 0,
+                "strengthsMentioned": [
+                  "New infrastructure and amenities (roads, utilities, parks)",
+                  "Resort-style pools",
+                  "Clubhouses",
+                  "Pickleball and fitness centers",
+                  "Wide selection of over 50 neighborhoods"
+                ],
+                "concernsRaised": [
+                  "Annual Community Development District (CDD) fees of $1,500–$3,000+",
+                  "High property taxes (1.3-1.4% of purchase price)",
+                  "Substantial tax reassessment increases for new buyers",
+                  "Monthly HOA fees ranging from $200–$600+",
+                  "Rising home insurance costs due to storm risk"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a high-amenity community with significant and complex recurring ownership costs that prospective buyers should carefully budget for."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Buying a home in Lakewood Ranch (LWR) involves several specialized costs beyond the standard mortgage and insurance. Because it is a master-planned community spanning two counties (Manatee and Sarasota), the fee structure can be complex.\n\nBelow are the \"hidden\" or often-overlooked costs of buying in Lakewood Ranch.\n\n### 1. The \"Property Tax Jump\" (Reassessment)\nThe most significant \"hidden\" cost for new buyers in Florida is the property tax reassessment.\n*   **The Trap:** Many buyers look at the seller’s current tax bill and assume they will pay the same. However, Florida’s \"Save Our Homes\" act caps tax increases for existing homeowners. \n*   **The Reality:** When you buy the home, the tax value is reset to the current market value. Your tax bill in year two can be significantly higher—often **1.3% to 1.4% of the purchase price** in Manatee County.\n*   **Pro Tip:** Use the Manatee or Sarasota County Property Appraiser's \"Tax Estimator\" tool rather than the current listing's tax data.\n\n### 2. Stewardship District & CDD Fees\nLakewood Ranch is a Community Development District (CDD), specifically overseen by the **Lakewood Ranch Stewardship District**.\n*   **What it covers:** These fees fund the community infrastructure (roads, parks, trails, and landscaping). \n*   **Cost:** Fees typically range from **$1,500 to $3,500+ annually** and appear as a \"Non-Ad Valorem\" assessment on your property tax bill.\n*   **Two Parts:** The fee consists of a **Bond portion** (debt for original construction) and an **O&M portion** (operations and maintenance). The bond eventually drops off (usually after 30 years), but the O&M fee is permanent.\n\n### 3. Capital Contribution Fees (One-Time)\nMany villages in Lakewood Ranch charge a one-time \"Capital Contribution\" or \"Resale Capital Assessment\" due at closing.\n*   **Example:** In communities like **Esplanade**, this fee can be as high as **$5,500 to $7,400** (effective March 2025).\n*   **Purpose:** This fee goes into the association's reserve fund for future community improvements and is separate from your down payment and standard closing costs.\n\n### 4. HOA Tiers & \"Bundled\" Memberships\nHOA fees in Lakewood Ranch vary dramatically depending on the village and the level of service:\n*   **Basic Villages (e.g., Summerfield, Greenbrook):** Low fees, sometimes as little as **$100–$200 per year**, but you are responsible for all your own landscaping, irrigation, and pool maintenance.\n*   **Maintenance-Free Villages:** Fees range from **$250 to $600+ per month** but typically include lawn care, irrigation, and gated security.\n*   **Bundled Golf Communities (e.g., Lakewood National, Esplanade):** These require mandatory memberships. Monthly fees can exceed **$1,000**, and there may be a **mandatory annual food and beverage minimum** (often around $900/year) at the clubhouse.\n\n### 5. County Impact Fees (New Construction)\nIf you are building a new home, you may be responsible for \"Impact Fees\" if they aren't already rolled into the builder's base price.\n*   **The Cost:** In 2025, Manatee County significantly increased these fees to fund growth. For a standard single-family home, these can range from **$14,000 to over $30,000**.\n*   **Check the Contract:** Always ask your builder if the \"Impact Fees\" and \"Water/Sewer Hookup Fees\" are included in the advertised price.\n\n### 6. Florida-Specific Maintenance\n*   **Lawn & Irrigation:** If not included in your HOA, expect to pay **$150–$250/month** for professional landscaping. Florida lawns require year-round treatment for pests and fungus.\n*   **Pest Control:** Standard in Florida; professional \"tubes in the wall\" or exterior perimeter treatments usually cost **$400–$600/year**.\n*   **Hurricane Prep:** If the home doesn't have impact windows, you may eventually want to spend **$5,000–$20,000** on hurricane shutters or upgraded windows to lower your insurance premiums.\n\n### 7. Flood Insurance (Flood Zone X vs. AE)\nMost of Lakewood Ranch is in **Flood Zone X**, meaning lenders do not require flood insurance. However, some newer sections (particularly near Waterside or certain preserve areas) may fall into **Zone AE**.\n*   **Hidden Risk:** Even in Zone X, many residents choose to buy a \"Preferred Risk Policy\" (approx. **$600–$900/year**) because Florida’s heavy tropical rains can cause localized flooding that isn't reflected on FEMA maps.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "neutral",
+                "sentimentScore": 0,
+                "strengthsMentioned": [
+                  "Master-planned infrastructure",
+                  "Extensive community amenities including roads, parks, trails, and landscaping",
+                  "Availability of maintenance-free living options",
+                  "Gated security features",
+                  "Premium bundled golf and club memberships",
+                  "Favorable flood zone location (Zone X) for most areas"
+                ],
+                "concernsRaised": [
+                  "Property tax reassessment/jump after purchase",
+                  "Mandatory Stewardship District and CDD fees",
+                  "One-time capital contribution and resale assessment fees",
+                  "High monthly HOA fees in specific villages",
+                  "Mandatory food and beverage minimums in club communities",
+                  "Significant county impact fees for new construction",
+                  "Ongoing Florida-specific maintenance costs for lawn and pests"
+                ],
+                "overallPortrayal": "The response provides a highly detailed and objective financial roadmap for Lakewood Ranch, portraying it as a sophisticated master-planned community with a complex but transparent cost structure."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Buying a home in Lakewood Ranch, Florida, can be an exciting investment, especially in this master-planned community known for its amenities, schools, and lifestyle. However, beyond the listed purchase price, there are several \"hidden\" or less obvious costs that buyers often overlook. These can add up significantly, so it's smart to factor them in during your budgeting process. I'll break them down based on current market insights (as of early 2026) from sources like real estate platforms (e.g., Redfin, Zillow, and local blogs like BuyLakewoodRanch.com) and cost-of-living analyses. Keep in mind that exact figures vary by property, neighborhood, and market conditions—consult a local real estate agent or financial advisor for personalized estimates.\n\n### 1. **Closing Costs**\n   - These are one-time fees paid at the end of the transaction and typically range from 2-5% of the home's purchase price (e.g., $10,000–$25,000 on a $500,000 home).\n   - Common items include:\n     - Loan origination fees, appraisal fees (around $300–$500), and credit report fees.\n     - Title insurance and search (often $1,000–$2,000).\n     - Escrow fees, attorney fees (Florida requires a title agent or attorney), and recording fees.\n   - In Lakewood Ranch, where the median home price is around $618,000–$640,000 based on recent data from Redfin and Movoto, these can be on the higher end due to the area's competitive market.\n\n### 2. **Community Development District (CDD) Fees**\n   - Lakewood Ranch operates under a CDD system, which funds infrastructure like roads, parks, and utilities. These are essentially additional property taxes, often not immediately obvious in listings.\n   - Annual CDD fees can range from $1,500–$5,000 or more per year, depending on the village or neighborhood (e.g., higher in newer developments like Lorraine Lakes or Azario). They're assessed on your property tax bill and can last 20–30 years.\n   - This is a big one for Lakewood Ranch—buyers sometimes mistake them for HOA fees, but they're separate and non-negotiable.\n\n### 3. **Homeowners Association (HOA) Fees**\n   - Most neighborhoods in Lakewood Ranch have HOAs, which cover maintenance of common areas, amenities (pools, golf courses, trails), and community events.\n  ",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "neutral",
+                "sentimentScore": 0.3,
+                "strengthsMentioned": [
+                  "Amenities",
+                  "Schools",
+                  "Lifestyle",
+                  "Master-planned community",
+                  "Infrastructure (roads, parks, utilities)",
+                  "Competitive market"
+                ],
+                "concernsRaised": [
+                  "Closing costs (2-5% of purchase price)",
+                  "Community Development District (CDD) fees",
+                  "High median home prices",
+                  "Homeowners Association (HOA) fees",
+                  "Complexity of hidden costs"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a highly desirable but potentially expensive master-planned community where prospective buyers must account for specific regional costs like CDD fees."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

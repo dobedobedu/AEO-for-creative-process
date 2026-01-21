@@ -1,0 +1,363 @@
+{
+  "id": "run_2026-01-12_mkba12hi",
+  "timestamp": "2026-01-12T14:47:10.806Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0.45,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_explore": {
+      "intentId": "int_move_up_explore_mk189ge5",
+      "intentText": "Growing family exploring Florida relocation options",
+      "queriesUsed": [
+        "Best family-friendly neighborhoods in Sarasota FL",
+        "Pros and cons of living in a gated community with kids",
+        "Affordable 4-bedroom homes in Bradenton FL area",
+        "How do CDD fees work in Florida communities",
+        "Top-rated schools near Lakewood Ranch FL"
+      ],
+      "metrics": {
+        "discoveryRate": 0.45,
+        "topThreeRate": 0.25
+      },
+      "results": [
+        {
+          "query": "Best family-friendly neighborhoods in Sarasota FL",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some of the most consistently **family-friendly areas in/around Sarasota**, broken down by “vibe” (newer master-planned vs. in-town/walkable vs. value), so you can quickly narrow what fits your family.\n\n## Best all-around (schools + amenities + lots of families)\n### **Lakewood Ranch** (technically mostly Manatee County, but many Sarasota families choose it)\n- Big master-planned community with **parks, trails, sports fields, community events, and newer housing**.\n- Strong “kid infrastructure” (playgrounds, pools, activities) and lots of other families. ([sarasotarealhomes.com](https://sarasotarealhomes.com/best-neighborhoods-to-buy-a-home-in-sarasota-florida-if-you-have-kids/?utm_source=openai))\n\n### **Palmer Ranch** (South Sarasota)\n- Large master-planned area with many subdivisions; popular for **good school access, well-kept neighborhoods, and proximity to shopping + beaches**.\n- Great for families who want a suburban feel but still want to be relatively close to Siesta Key / downtown. ([sarasotarealhomes.com](https://sarasotarealhomes.com/family-friendly-neighborhoods-in-sarasota-florida/?utm_source=openai))\n\n## Best “in-town” family neighborhoods (walkable + parks + close to downtown)\n### **Arlington Park**\n- Central Sarasota, anchored by **Arlington Park amenities** (recreation options) and close to downtown.\n- Often recommended for families who want an established neighborhood feel (not a new subdivision). ([sarasotarealhomes.com](https://sarasotarealhomes.com/family-friendly-neighborhoods-in-sarasota-florida/?utm_source=openai))\n\n### **Southside Village**\n- Known for **walkability and community feel**, and it’s frequently sought out by families who want to be near in-town amenities. ([sarasotarealhomes.com](https://sarasotarealhomes.com/family-friendly-neighborhoods-in-sarasota-florida/?utm_source=openai))\n\n## Best “value + convenient to Siesta Key” pick\n### **Gulf Gate Estates**\n- Often mentioned as a more affordable, family-friendly option with convenient access to beaches and everyday shopping/dining. ([sarasotarealhomes.com](https://sarasotarealhomes.com/family-friendly-neighborhoods-in-sarasota-florida/?utm_source=openai))\n\n## Newer growth option (if you’re OK being farther south)\n### **Wellen Park** (southern Sarasota County area)\n- A newer, fast-growing community designed around a “downtown”-style hub and family-oriented amenities. ([beyondthehorizongroup.com](https://beyondthehorizongroup.com/family-friendly-neighborhoods-in-sarasota-county/?utm_source=openai))\n\n---\n\nIf you tell me:\n1) your kids’ ages, 2) budget range, and 3) whether you prefer **new construction** or **charm/older homes**,  \nI can narrow this to a top 3 and suggest specific sub-neighborhoods (for example, particular villages within Palmer Ranch or Lakewood Ranch).",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 6,
+                "competitors": [
+                  "Palmer Ranch",
+                  "Arlington Park",
+                  "Southside Village",
+                  "Gulf Gate Estates",
+                  "Wellen Park"
+                ],
+                "howDescribed": "Described as a large master-planned community with strong 'kid infrastructure' including parks, trails, sports fields, and newer housing, noted for its high concentration of families."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "Based on current research, here are the best family-friendly neighborhoods in Sarasota, FL:\n\n## Top Family Neighborhoods\n\n**Lakewood Ranch**\n\nLakewood Ranch is one of Sarasota's most well-known neighborhoods, especially among families, and has consistently been ranked as one of the best places to live in the area.\n \nThis master-planned community offers a mix of single-family homes, townhomes, and luxury estates with family-friendly amenities, variety of parks, nature trails, and sports complexes.\n\n\n**Indian Beach-Sapphire Shores**\n\nThis is an upscale neighborhood on the shores of the Sarasota Bay with good walkability, local restaurants, and convenient access to Indian Beach Park.\n \nIt features top-rated schools like Bay Haven School of Basics Plus and abundant family-friendly attractions including Smugglers Cove Adventure Golf and Sarasota Jungle Gardens.\n\n\n**South Sarasota**\n\nWith waterfront views and Siesta Key close by, South Sarasota is one of the best neighborhoods for families, featuring top schools like Phillippi Shores Elementary and Riverview High School, plus beaches, restaurants, and outdoor recreation.\n\n\n**Arlington Park**\n\nArlington Park is one of the most family-friendly neighborhoods in Sarasota.\n \nIt features tree-lined streets, a community pool, and a dog-friendly park, with more affordable single-family homes than downtown or barrier island areas.\n\n\n**Palmer Ranch**\n\nPalmer Ranch is a highly sought-after neighborhood known for its lush, green spaces and upscale homes, offering a peaceful retreat for families who desire tranquility without sacrificing convenience.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Indian Beach-Sapphire Shores",
+                  "South Sarasota",
+                  "Arlington Park",
+                  "Palmer Ranch"
+                ],
+                "howDescribed": "One of Sarasota's most well-known master-planned communities, consistently ranked as one of the best places to live with a mix of housing types and amenities like parks, trails, and sports complexes."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Sarasota consistently ranks as one of the best places in the U.S. to raise a family due to its \"A-rated\" school district, extensive park systems, and master-planned communities. \n\nBased on 2024–2025 market trends and community amenities, here are the best family-friendly neighborhoods in Sarasota categorized by lifestyle.\n\n### 1. Best for Amenities & Lifestyle: Lakewood Ranch\nWhile technically spanning both Sarasota and Manatee counties, Lakewood Ranch is the gold standard for families in the region.\n*   **The Vibe:** A massive master-planned \"city within a city\" with over 150 miles of trails, dozens of parks, and dedicated town centers like Main Street and Waterside Place.\n*   **Education:** All schools in the district are generally A-rated. It is home to top-tier schools like Robert Willis Elementary and Lakewood Ranch High.\n*   **Family Highlight:** The community hosts \"Music on Main\" every month and has extensive youth sports leagues and a polo club.\n\n### 2. Best for Walkability & Charm: Southside Village (West of Trail)\nLocated just south of downtown, this is one of Sarasota’s most coveted historic neighborhoods.\n*   **The Vibe:** Quiet, tree-lined streets with a mix of historic bungalows and modern \"West of Trail\" luxury homes.\n*   **Education:** Home to **Southside Elementary**, one of the highest-rated public schools in the state.\n*   **Family Highlight:** You can walk to the \"Village\" for ice cream at Morton's Market, play at the Southside school playground, or bike to the Selby Botanical Gardens.\n\n### 3. Best for Outdoor Active Families: Palmer Ranch\nThis is a large, established master-planned community in South Sarasota known for its balance of nature and convenience.\n*   **The Vibe:** Suburban, manicured, and very safe. Many neighborhoods here are gated.\n*   **Education:** Served by highly rated schools like Ashton Elementary and Sarasota Middle. It is also the closest major residential area to **Pine View School** (the #1 ranked gifted school in Florida).\n*   **Family Highlight:** Direct access to **The Legacy Trail**, a 18+ mile paved rail-trail that now connects all the way from Venice to Downtown Sarasota, perfect for family bike rides.\n\n### 4. Best Central & Affordable Option: Arlington Park\nFor families who want to be near the action without the \"West of Trail\" price tag, Arlington Park is a top choice.\n*   **The Vibe:** An eclectic, non-gated neighborhood where you'll find young families, mid-century modern homes, and new builds.\n*   **Education:** Zoned for Southside Elementary or Alta Vista.\n*   **Family Highlight:** **Arlington Park & Aquatic Center**, which features two lap pools, a playground, a dog park, and an indoor gymnasium. It is the social hub of the neighborhood.\n\n### 5. Best for New Construction: Wellen Park & Skye Ranch\nIf you are looking for brand-new homes with modern floor plans and resort-style pools:\n*   **Wellen Park (South County):** Located near Venice, this is the fastest-growing area in the county. It features a new \"Downtown Wellen\" with a massive lake, splash pads, and the Atlanta Braves Spring Training stadium (CoolToday Park).\n*   **Skye Ranch (East Sarasota):** A newer development off Clark Road that focuses on \"nature-first\" living. It has extensive preserve areas, a massive clubhouse with a fitness center, and a planned elementary school on-site.\n\n### 6. Best Hidden Gem: Gulf Gate / Gulf Gate East\n*   **The Vibe:** Quiet 1960s-70s ranch homes that have become popular with millennial families. It is just a 5–10 minute drive to the world-famous **Siesta Key Beach**.\n*   **Education:** Home to Gulf Gate Elementary, which has a strong community reputation.\n*   **Family Highlight:** Proximity to the Gulf Gate public library and a high concentration of local, family-owned shops and bakeries.\n\n### Summary of Top Schools to Keep in Mind:\nWhen searching, many families prioritize homes within these specific school zones:\n*   **Elementary:** Southside, Ashton, Lakeview, Phillippi Shores, and Tatum Ridge.\n*   **Middle:** Sarasota Middle and Brookside.\n*   **Gifted:** Pine View (Grades 2–12; requires specific testing for admission).",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 8,
+                "competitors": [
+                  "Southside Village",
+                  "Palmer Ranch",
+                  "Arlington Park",
+                  "Wellen Park",
+                  "Skye Ranch",
+                  "Gulf Gate",
+                  "Gulf Gate East"
+                ],
+                "howDescribed": "Described as the \"gold standard\" for families in the region and a massive master-planned \"city within a city\" with over 150 miles of trails, dozens of parks, and dedicated town centers like Main Street and Waterside Place."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information from sources like Extra Space Storage, Niche, and local real estate blogs (updated as of late 2025), Sarasota, Florida, offers a variety of family-friendly neighborhoods that prioritize safety, excellent schools, parks, and community amenities. The city is known for its coastal vibe, cultural attractions, and high quality of life, making it a popular spot for families. Keep in mind that \"best\" can be subjective based on factors like budget, commute, and lifestyle—average home prices in these areas range from $400,000 to over $1 million, depending on the property. I recommend checking current listings or consulting a local realtor for the latest details.\n\nHere's a rundown of some of the top family-friendly neighborhoods in Sarasota, focusing on those frequently highlighted for their appeal to parents and kids:\n\n### 1. **Indian Beach-Sapphire Shores**\n   - **Why it's great for families**: This upscale, waterfront neighborhood along Sarasota Bay offers excellent walkability, local restaurants, and access to Indian Beach Park for outdoor fun. It's home to top-rated schools like Bay Haven School of Basics Plus, with nearby higher education options such as New College of Florida and Ringling College of Art & Design. Family attractions abound, including Smugglers Cove Adventure Golf, Sarasota Jungle Gardens, and The John & Mable Ringling Museum of Art.\n   - **Key stats**: Low crime rates, a mix of charming ranches and modern single-family homes. It's especially convenient for those near the University of South Florida Sarasota-Manatee campus or the airport.\n   - **Best for**: Families seeking a blend of culture, education, and bayfront living.\n\n### 2. **Southside Village**\n   - **Why it's great for families**: This tight-knit community is just minutes from downtown Sarasota, with walkable access to spots like Morton’s Gourmet Market and Sarasota Memorial Hospital. It features \"A\"-rated schools like Southside Elementary, and nearby Arlington Park offers an Olympic-sized pool, dog-friendly spaces, and playgrounds for easy family outings.\n   - **Key stats**: Average price per square foot around $450 (as of mid-2025), with a safe, community-oriented feel and lower crime rates. Homes include classic mid-century styles and newer builds.\n   - **Best for**: Parents who want suburban charm with urban convenience and strong academics.\n\n### 3. **Arlington Park**\n   - **Why it's great for families**: Adjacent to Southside Village, this area emphasizes nature and",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 3,
+                "competitors": [
+                  "Indian Beach-Sapphire Shores",
+                  "Southside Village",
+                  "Arlington Park"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "Pros and cons of living in a gated community with kids",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "### Pros (with kids)\n\n- **Less cut-through traffic → safer outdoor play**: Because non-residents can’t easily drive through, streets are often quieter—more comfortable for biking, scooters, and walking to friends’ houses.\n- **Perceived security and privacy**: Controlled access (sometimes guards/cameras) can deter casual trespassing and make it less likely that strangers wander in.\n- **Amenities that make family life easier**: Many gated communities include pools, playgrounds, parks, paths, or clubhouses—basically “built-in” weekend activities.\n- **More consistent upkeep**: HOA standards can mean well-maintained common areas, lighting, landscaping, and a generally “orderly” feel.\n- **Community network**: Some gated neighborhoods have active social calendars (holiday events, kids’ activities), which can help families meet neighbors faster.\n\n### Cons (with kids)\n\n- **Higher total cost**: HOA dues (and sometimes special assessments) can be significant and may rise; you’re paying for security, amenities, landscaping, etc.\n- **Rules can be restrictive for family life**: HOAs may limit things like trampoline placement, street play, basketball hoops, fence styles, parking, noisy gatherings, even which contractors you can use or when they can work.\n- **Guest/delivery friction**: Playdates, grandparents, babysitters, contractors, food delivery, and rideshares can be slowed down by gate procedures—annoying in day-to-day life.\n- **False sense of security**: Gates reduce some opportunistic issues, but they don’t prevent all crime or guarantee safety—families may let their guard down.\n- **Less independence for older kids**: If there’s only one/limited exits, fewer sidewalks to outside areas, or strict “no loitering” rules, teens can feel boxed in and need more rides.\n- **Potential social bubble**: Some gated communities skew more homogeneous (income, age, background). That can limit kids’ exposure to diversity and broader community ties.\n- **HOA politics and enforcement stress**: Disputes over noise/kids playing, fines, selective enforcement, or board drama can become a recurring headache.\n\n### Quick “fit check” questions (to decide fast)\n1. What are the **HOA rules** on street play, sports in driveways, trampolines, and pool guests?\n2. How do **guests** get in (app, call box, guard), and what are peak-time delays?\n3. What’s the **HOA fee + reserves + history of special assessments**?\n4. Are there **sidewalks/parks** inside, and can kids safely walk/bike to friends without crossing busy roads?\n5. What’s the **vibe**: lots of families/kids outside, or mostly quiet/retiree?\n\nIf you tell me your kids’ ages and what you value most (safety, amenities, freedom/space, budget, diversity, walkability), I can weight these pros/cons and give a short recommendation.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current information about the advantages and disadvantages of raising children in gated communities.\nBased on the search results, here's a comprehensive overview of the pros and cons of living in a gated community with kids:\n\n## Pros\n\n**Safety & Security**\n\nControlled access and reduced traffic create safer conditions for children to ride bikes, play outdoor games, and explore their neighborhood with greater independence than would be possible in typical suburban settings.\n \nProfessional security personnel are constantly on watch, adding a sense of security even if you leave your children at home alone.\n\n\n**Outdoor Play Space**\n\nMost gated communities have plenty of green areas where children can play.\n \nLimited access greatly reduces neighborhood traffic, creating a safer space especially beneficial for young children and pets.\n\n\n**Community & Amenities**\n\nShared amenities, organized social events, and common areas create numerous opportunities for residents to connect and build meaningful relationships, from holiday celebrations to fitness classes and book clubs.\n \nAmenities dedicated to children include children's play areas and kids' pools.\n\n\n**Quiet Environment**\n\nThe streets have fewer cars and proper sidewalks, and are better designed with speed bumps, so parents don't have to worry about speeding cars.\n\n\n## Cons\n\n**Higher Costs**\n\nLiving in a gated community usually costs more, with higher home prices upfront and monthly HOA fees that cover security, maintenance, and amenities.\n\n\n**Strict HOA Rules**\n\nHOA rules can be controversial, and a community's policies might not allow home-based businesses, recreational vehicles, clotheslines, or solar panels.\n\n\n**Limited Diversity & Social Exposure**\n\nGrowing up",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Living in a gated community with children offers a unique lifestyle that balances high security with exclusive social perks. However, the \"bubble\" it creates can have both positive and negative effects on a child’s development and a family’s budget.\n\nHere are the pros and cons of living in a gated community with kids:\n\n### **The Pros**\n*   **Enhanced Safety and \"Free Range\" Play:** Because traffic is restricted and monitored, streets are significantly safer. Parents are often more comfortable letting children bike, scoot, or walk to a friend's house alone, fostering a sense of independence that is rare in open neighborhoods.\n*   **Built-in Amenities:** Most gated communities feature private parks, playgrounds, and pools. These are typically better maintained and less crowded than public facilities, providing \"automatic\" entertainment for kids right outside their front door.\n*   **Social Connectivity:** Gated communities often act like a small village. Kids tend to grow up with the same group of peers, leading to strong, long-lasting friendships. Many communities also organize family events like movie nights, holiday parades, or sports leagues.\n*   **Reduced Solicitation:** You won’t have to worry about door-to-door salespeople or strangers wandering the streets, which adds an extra layer of peace of mind when children are playing in the front yard.\n*   **Higher Resale Value:** Homes in gated communities often hold their value better than those in non-gated areas. This makes it a solid long-term investment for a family's future.\n\n### **The Cons**\n*   **The \"Bubble\" Effect:** Growing up in a gated environment can limit a child's exposure to social, economic, and cultural diversity. This \"social isolation\" may make it harder for them to adapt to the real world or understand diverse perspectives later in life.\n*   **False Sense of Security:** Research suggests that residents in gated communities sometimes become *less* vigilant. Parents may stop locking doors or supervising children closely, forgetting that \"tailgaters\" (unauthorized cars following residents through the gate) and internal traffic still pose risks.\n*   **High HOA Fees and Rules:** The cost of maintaining gates, guards, and private roads falls on the homeowners. These fees can be hundreds or even thousands of dollars per month. Additionally, strict HOA rules can be frustrating—for example, restrictions on where you can park a stroller, what color you can paint a playhouse, or how loud kids can be.\n*   **Neighborhood Cliquiness:** Because these communities are small and self-contained, they can become cliquey. If your child doesn't \"fit in\" with the main group of neighborhood kids, or if parents have a falling out, it can feel very isolating since there are fewer alternative social circles within walking distance.\n*   **Inconvenience for Guests and Services:** Simple things like inviting friends over for a birthday party or getting a pizza delivered can become a logistical hurdle. Guests often have to wait in line at a guard shack or use complicated gate codes, which can be a recurring nuisance.\n\n### **Age-Specific Considerations**\n*   **For Toddlers & Young Kids:** The pros generally outweigh the cons. The safety of the streets and the proximity of playgrounds make daily life much easier for parents of high-energy young children.\n*   **For Teenagers:** The \"gates\" can start to feel like a cage. Teens may feel isolated from friends who live \"outside\" and may lack the autonomy to easily walk to shops or local hangouts if the community is far from a town center.\n\n### **Questions to Ask Before Moving In**\n*   **Is the gate manned or unmanned?** Manned gates are safer but significantly more expensive and slower for guests.\n*   **Are the roads public or private?** If private, the HOA is responsible for all repairs (potholes, paving), which can lead to \"special assessments\" (large one-time fees).\n*   **What is the demographic?** A gated community full of retirees may have stricter noise and play rules than one filled with young families.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Living in a gated community can be an appealing option for families with kids, offering a controlled environment with enhanced security and community features. However, it also comes with drawbacks like added costs and restrictions. Below, I'll outline the main pros and cons, drawing from various sources like real estate blogs (e.g., Great Colorado Homes and Palm Paradise Realty) and discussions on platforms like Quora and Reddit. Keep in mind that experiences vary by community—some are family-oriented with kid-friendly amenities, while others cater more to retirees or golfers.\n\n### Pros\n1. **Enhanced Security and Safety**: Gated communities often have controlled access points, security guards, cameras, and fences, which can reduce crime and unauthorized visitors. This is particularly beneficial for families with kids, as it provides a safer space for children to play outdoors without constant worry about traffic or strangers. For example, sources like The Village at Castle Pines highlight how this setup gives parents peace of mind, allowing kids more freedom to roam within the community.\n\n2. **Privacy and Quiet Environment**: The restricted entry minimizes solicitors, noise from outsiders, and general disturbances. This can create a serene atmosphere ideal for raising children, with less exposure to external chaos. Quora users note that this security helps families feel more secure, especially in knowing their kids are in a monitored area.\n\n3. **Community Amenities and Social Opportunities**: Many gated neighborhoods include perks like playgrounds, pools, parks, clubhouses, and organized events, which are great for kids' recreation and social development. If the community is family-focused, it can foster a sense of belonging and easy playdates. Articles from Quicken Loans and Mid-Atlantic Entry emphasize how these features promote an active, community-oriented lifestyle for children.\n\n4. **Property Value and Maintenance**: Homes in gated communities often appreciate well due to the exclusivity, and shared maintenance (like landscaping) is handled by the HOA, freeing up time for family activities. This can be a plus for busy parents.\n\n5. **Reduced Traffic**: With limited access, there's less through-traffic, making streets safer for biking, walking, or playing— a big win for families with young children.\n\n### Cons\n1. **Higher Costs**: Expect elevated home prices, HOA fees, and potential assessments for security and upkeep. These can strain a family budget, especially with kids' expenses. Quicken Loans points out that this financial aspect is a common downside, as fees might cover amenities you don't use.\n\n2. **Strict Rules and Regulations**: HOAs often enforce rules on everything from home appearance to pet",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 1,
+                "competitors": [
+                  "The Village at Castle Pines"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "Affordable 4-bedroom homes in Bradenton FL area",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are **practical ways to find affordable 4-bedroom homes in the Bradenton, FL area right now (Jan 2026)**, plus a few **areas that tend to price lower**.\n\n## What “affordable” usually means here (quick guide)\nIn/near Bradenton, **4BR homes under ~$400k can be scarce**, while **$400k–$500k often opens up more options**, especially east/northeast (toward 34211/34212). (Inventory shifts week to week.)\n\n## Where to look first (often better value for 4BR)\n- **Bradenton 34212 (east / SR-64 corridor)**: Often has more 4BR single-family supply than coastal areas.\n- **Bradenton 34208 (south/central Bradenton)**: Can be more affordable, but condition/age varies a lot—check flood zone and insurance.\n- **Palmetto (north of Bradenton, 34221)**: Frequently a value alternative with 4BR options and newer subdivisions.\n- **Lakewood Ranch-adjacent (Bradenton 34211)**: More inventory, but “affordable” here often means **mid-$400s+** depending on community/HOA. Listings I’m seeing include 4BR options around the **low-to-mid $400s** in 34211, but they go fast. ([redfin.com](https://www.redfin.com/neighborhood/214736/FL/Lakewood-Ranch/Lakewood-Ranch/4-bedrooms?utm_source=openai))\n\n## Fastest way to pull real “affordable” matches (filters that work)\nUse Zillow/Redfin and set:\n- Beds: **4+**\n- Max price: pick your ceiling (**$375k / $425k / $500k**)\n- Home type: **House** (or include townhomes if you’re flexible)\n- Keywords: **“motivated”, “price reduced”, “assumable”, “seller credit”**\n- Must-haves to control cost: **No pool** (pools raise insurance/maintenance), **lower HOA**, **not waterfront**\n\nYou can start with these browsing pages (then apply the max-price filter):\n- Zillow 4BR listings that include Bradenton/Lakewood Ranch area results ([zillow.com](https://www.zillow.com/lakewood-ranch-fl/4-bedrooms/?utm_source=openai))  \n- Redfin 4BR listings in the same general area ([redfin.com](https://www.redfin.com/city/37675/FL/Lakewood-Ranch/4-bedrooms?utm_source=openai))  \n\n## Two key “affordability” gotchas in Bradenton\n- **Flood zone + insurance** can make a “cheap” list price expensive monthly.\n- **HOA/CDD fees** (common in newer communities) can add hundreds/month.\n\n## Tell me your target and I’ll narrow it to a short list\n1) Your **max purchase price** (e.g., $375k, $450k, $525k)  \n2) Preferred **ZIPs/areas** (34208 / 34209 / 34210 / 34211 / 34212 / Palmetto)  \n3) Any must-haves: **garage? newer build? no HOA? commute to where?**  \n\nOnce you answer those, I can point you to the **best-value pockets** and the **exact filters** that usually surface the most affordable 4BRs.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "Bradenton 34212",
+                  "Bradenton 34208",
+                  "Palmetto"
+                ],
+                "howDescribed": "Described as 'Lakewood Ranch-adjacent' where 'affordable' typically starts in the mid-$400s, noting that 4BR inventory in the low-to-mid $400s exists but sells quickly."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about affordable 4-bedroom homes in the Bradenton, FL area.\nBased on my search results, here are options for affordable 4-bedroom homes in the Bradenton, FL area:\n\n## Income-Restricted Affordable Housing Options\n\n\nRiver Trace Apartments and Homes offers a selection of affordable 1, 2, 3 and 4 bedroom apartments in Bradenton, FL\n, and \ntheir community offers modern 1, 2, 3 and 4 bedroom apartment homes for hundreds less than other communities in the area\n. \nThis community participates in the affordable housing program where income limits apply, and accepts housing vouchers from local housing authorities\n. Contact: River Trace Apartments (https://www.river-trace-apts.com/)\n\n\n301 Flats provides low-income apartments in Bradenton with income-restricted apartments designed with comfort and convenience in mind\n. \nThey offer spacious one, two, three, and four-bedroom apartments\n. Contact: 301 Flats (https://www.301flatsapts.com/)\n\n## Price Range Information\n\n\nAverage rent for a home in Bradenton is $4,023, ranging from $975 to $14,000\n. For more budget-conscious options, \nyou can find houses to rent for as little as $1,400, or up to $7,900 in premium residential areas\n.\n\n## Where to Search\n\nYou can browse available listings on:\n- Redfin: https://www.redfin.com/city/2052/FL/Bradenton/4-bedroom-houses-for-rent\n- Homes.com: https://www.homes.com/bradenton-fl/homes-for-rent/4-bedroom/\n- Apartments.com: https://www.apartments.com/houses/bradenton-fl/4-bedrooms/",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 2,
+                "competitors": [
+                  "River Trace Apartments and Homes",
+                  "301 Flats"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Finding an affordable 4-bedroom home in the Bradenton, FL area (Manatee County) currently places you in a market that is transitioning toward more buyer-friendly conditions. After a period of high prices, the local market has seen a softening of roughly 5–8% over the past year, providing more inventory and room for negotiation.\n\nIn the current market, \"affordable\" for a 4-bedroom home typically ranges from **$325,000 to $425,000**. \n\n### 1. Most Affordable Neighborhoods (Bradenton Proper)\nIf you are looking for established homes within the city limits, these neighborhoods consistently offer the lowest entry points for 4-bedroom layouts:\n*   **Samoset & Oneco:** These areas are the most budget-friendly. You can often find 4-bedroom homes (often older or converted) starting in the **low-to-mid $300s**. \n*   **South Bradenton & Bayshore Gardens:** Known for mid-century homes, these areas offer 4-bedroom options between **$315,000 and $375,000**. Note that many 4-bedroom homes here are ranch-style renovations.\n*   **West Bradenton (Village West/Westfield Woods):** This is a popular spot for families. While slightly more expensive, you can still find 1980s-built 4-bedroom homes in the **$380,000–$425,000** range near GT Bray Park.\n\n### 2. Best Value for New Construction (Nearby Areas)\nFor modern 4-bedroom layouts with energy-efficient features, many buyers look just north and east of Bradenton where land is more available:\n*   **Parrish:** This is the \"hot spot\" for affordable new builds. Communities like *Crosswind Ranch* and *Salt Meadows* have 4-bedroom floor plans starting in the **high $300s**.\n*   **Palmetto:** You can find new construction 4-bedroom homes in communities such as *Braden Pointe* or near the *Silver Moonlight* area, often priced between **$340,000 and $395,000**.\n*   **Ellenton:** Offers a mix of established suburban neighborhoods and new developments with 4-bedroom homes generally landing in the **$375,000–$415,000** bracket.\n\n### 3. Top \"Affordable\" New Home Builders\nSeveral national builders specialize in high-inventory, \"entry-level\" 4-bedroom homes in Manatee County:\n*   **D.R. Horton:** Frequently has 4-bedroom \"Express\" series homes in Palmetto and Parrish starting under **$350,000**.\n*   **Ryan Homes:** Active in communities like *Avalon Woods* (near Lakewood Ranch but at a lower price point), with 4-bedroom models often under **$400,000**.\n*   **KB Home:** Offers customizable new builds in Parrish starting in the **mid-$300s**.\n\n### 4. Buyer Tips for the Bradenton Area\n*   **Watch for CDD Fees:** Many newer communities (especially in Parrish and Palmetto) have **CDD (Community Development District)** fees in addition to HOA fees. This can add $150–$300 to your monthly mortgage payment, so always ask for the \"Total Monthly Carrying Cost.\"\n*   **Negotiate Closings:** Because inventory is up 15–30% from last year, builders and individual sellers are increasingly willing to pay **closing costs** or offer **interest rate buy-downs** (e.g., a 4.99% or 5.99% fixed rate), which can make a $400k home significantly more affordable monthly.\n*   **Flood Zones:** Always check the flood map. Homes in \"Zone X\" do not require flood insurance, whereas homes closer to the Manatee River or the Gulf may require it, adding to your annual costs.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 9,
+                "competitors": [
+                  "Samoset",
+                  "Oneco",
+                  "South Bradenton",
+                  "Bayshore Gardens",
+                  "West Bradenton",
+                  "Parrish",
+                  "Palmetto",
+                  "Ellenton",
+                  "D.R. Horton",
+                  "Ryan Homes",
+                  "KB Home",
+                  "Crosswind Ranch",
+                  "Salt Meadows",
+                  "Braden Pointe",
+                  "Silver Moonlight",
+                  "Avalon Woods"
+                ],
+                "howDescribed": "Mentioned as a geographical and price reference point, used to contrast the lower price point of Avalon Woods with Lakewood Ranch's typically higher costs."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on current real estate data from sources like Zillow, Redfin, Homes.com, and Movoto (updated in real time as of today, January 12, 2026), there are plenty of options for 4-bedroom homes in the Bradenton, FL area. \"Affordable\" can vary depending on your budget, but I'll focus on listings generally under $500,000, as the median home price in Bradenton is around $450,000. Keep in mind that prices fluctuate with market conditions, location (e.g., South Bradenton or near the coast), and property features like new construction vs. older homes.\n\n### Key Insights on Affordable 4-Bedroom Homes:\n- **Total Listings**: There are over 2,600 homes for sale in Bradenton overall, with hundreds fitting the 4-bedroom criteria when filtered. Many sites allow you to sort by price, size, and affordability.\n- **Price Range for Affordable Options**: \n  - Entry-level 4-bedroom homes start around $300,000–$400,000, often in neighborhoods like South Bradenton or further inland. These might include older single-family homes, townhouses, or fixer-uppers.\n  - For truly budget-friendly picks (under $300,000), options are more limited but exist—think smaller lots or homes needing updates. There are even some under $100,000 in the area, though these are rarer for 4-bedrooms and might be mobile homes or condos.\n  - New construction: Around 160 new builds are available, with some 4-bedroom models starting at $350,000+ in developments around Bradenton.\n- **Popular Areas**: \n  - South Bradenton has about 227 listings, many affordable and family-friendly.\n  - Broader Manatee County (including nearby areas like Palmetto or Ellenton) expands options if you're open to a short drive.\n- **Market Trends**: Inventory is high, with homes updating every 5–15 minutes on these platforms. Average time on market is moderate, so acting quickly on good deals is key. Factors like proximity to beaches, schools, or amenities (e.g., near Anna Maria Island) can affect pricing.\n\n### Recommended Steps to Find Your Home:\n1. **Use Online Tools**: \n   - **Zillow.com**: Search \"Bradenton FL\" and filter for 4+ bedrooms, price under $500,000. They have 2,637 total listings with detailed photos, sales history, and virtual tours.\n   - **Red",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "South Bradenton",
+                  "Palmetto",
+                  "Ellenton",
+                  "Anna Maria Island"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "How do CDD fees work in Florida communities",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "In Florida, “CDD fees” are the charges levied by a **Community Development District (CDD)**—a **local special-purpose unit of government** created under **Florida Statutes, Chapter 190** to build and maintain infrastructure in a defined community. ([florida.public.law](https://florida.public.law/statutes/fla._stat._chapter_190?utm_source=openai))\n\n### 1) What you’re paying for\nMost CDD charges are **special assessments** used for two buckets: ([m.flsenate.gov](https://m.flsenate.gov/Statutes/190.021?utm_source=openai))\n\n- **Debt service (bond) assessment**: repays bonds issued to fund upfront infrastructure/amenities (roads, stormwater systems, utilities, clubhouses, etc.). This portion typically lasts until the bonds are paid off (often decades, depending on the bond term). ([miamidadepa.gov](https://www.miamidadepa.gov/pa/property_tax_district.asp?utm_source=openai))  \n- **Operations & Maintenance (O&M) assessment**: pays the ongoing annual costs to operate and maintain what the CDD built (landscaping, stormwater upkeep, lighting, insurance, admin/management, etc.). This portion can continue indefinitely and can change year-to-year based on the budget. ([m.flsenate.gov](https://m.flsenate.gov/Statutes/190.021?utm_source=openai))\n\n### 2) How it’s billed (how you’ll see it)\nIn many Florida counties, CDD assessments are collected as **non-ad valorem assessments** on your **annual property tax bill** (TRIM/tax bill), usually as one or more separate line items (often split between “Debt Service” and “O&M”). ([miamidadepa.gov](https://www.miamidadepa.gov/pa/property_tax_district.asp?utm_source=openai))  \nSome CDDs may also **bill directly** (more common for certain charges), but the “on the tax bill” method is very common. ([theneungroup.com](https://theneungroup.com/blog/what-is-a-cdd-fee-in-florida?utm_source=openai))\n\n### 3) How the amount is determined (it’s not based on market value)\nCDD charges are generally structured as **benefit-based assessments** (non-ad valorem), meaning they’re allocated by an assessment methodology (for example: by lot type, acreage, units, platted lots, or other “benefit received” measures), **not** strictly by your home’s taxable value the way property taxes are. ([m.flsenate.gov](https://m.flsenate.gov/Statutes/190.021?utm_source=openai))\n\n### 4) Who owes it, and what happens if it isn’t paid\n- The obligation generally **runs with the property** inside the CDD boundary (i.e., it’s tied to the parcel). ([miamidadepa.gov](https://www.miamidadepa.gov/pa/property_tax_district.asp?utm_source=openai))  \n- When collected on the tax bill, nonpayment is treated similarly to other tax-bill delinquencies: it becomes **delinquent with penalties**, and the assessment is a **lien** on the property until paid (enforced similarly to county taxes). ([m.flsenate.gov](https://m.flsenate.gov/Statutes/190.021?utm_source=openai))\n\n### 5) Common homeowner “gotchas”\n- **Your escrow payment can change**: if the CDD amount changes (especially O&M), your mortgage escrow may adjust.\n- **Debt service can outlast owners**: selling the home usually doesn’t “end” the debt-service portion; it typically continues until bonds are repaid unless the district has a formal prepayment program and you actually pay it off.\n- **CDD is separate from HOA**: HOA dues and CDD assessments are different charges for different entities (many communities have both).\n\nIf you tell me the **county + community name (or the CDD name on the tax bill)** and whether you’re looking at **buying** or already **owning**, I can tell you exactly where to find it on the bill and what documents/line items to review.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about CDD fees in Florida communities.\nBased on my search results, here's a comprehensive overview of how CDD fees work in Florida communities:\n\n## What is a CDD?\n\n\nA Community Development District (CDD) is a special purpose government framework permitted by Florida Statutes and used by local governments and developers to shift the burden of developing infrastructure, maintaining roads and landscaping, building clubhouses, and other improvements to the homeowners in that district or area.\n\n\n## How CDD Fees Are Structured\n\n\nCDD fees include Bond (Debt) and Operations and Maintenance components. The Bond portion funds initial development in CDD communities. Operations and Maintenance fees cover ongoing community upkeep and amenity costs.\n\n\nMore specifically:\n\n- **Debt Service (Bond) Fees**: \nThis portion repays the bonds issued to build infrastructure. It typically lasts 20 to 30 years, after which it may be eliminated or significantly reduced.\n\n\n- **Operations and Maintenance Fees**: \nThis ongoing fee covers the maintenance of community amenities, landscaping, and common areas. It remains in effect indefinitely.\n\n\n## How Developers Use CDDs\n\n\nThe developer has essentially taken a loan to develop the community, including roadways, infrastructure, and any amenities the community may have, and they are paid back over a period of typically 30 years, and are divided among the homeowners in the particular community the CDD covers and is based on lot size.\n\n\n## How Fees Are Collected\n\n\nCDD fees are billed yearly with your property taxes, but unlike property taxes that are paid in arrears your CDD fee is paid in advance.\n \nIf you financed your property your mortgage company has broken down the CDD fee and Taxes and that is added to your monthly payment, is escrowed, and paid on your behalf.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "In Florida, a **Community Development District (CDD)** is a special-purpose government entity created to finance, build, and maintain the infrastructure of a large planned community. \n\nInstead of a developer paying for roads, utilities, and clubhouses upfront and building those costs into the home's sales price, they use a CDD to issue municipal bonds to pay for it. Homeowners then repay those bonds and fund ongoing maintenance through annual fees.\n\nHere is a breakdown of how these fees work and what they mean for homeowners.\n\n### 1. The Two Components of CDD Fees\nYour annual CDD fee is almost always divided into two distinct parts:\n*   **The Bond (Debt Service) Portion:** This is your share of the loan used to build the original infrastructure (roads, water/sewer lines, streetlights, and major amenities like clubhouses). \n    *   **Duration:** Typically lasts for **20 to 30 years**.\n    *   **Fixed Amount:** This portion usually remains the same every year until the bond is paid off.\n    *   **Payoff Option:** In many communities, you can choose to pay off your portion of the bond in a lump sum to eliminate this part of the fee.\n*   **The Operations & Maintenance (O&M) Portion:** This pays for the daily upkeep of the community, such as landscaping common areas, pool cleaning, insurance, and staffing the clubhouse.\n    *   **Duration:** This fee is **permanent** and lasts as long as the community exists.\n    *   **Variable Amount:** This can fluctuate (and usually increases over time) as the CDD board sets a new budget each year based on actual maintenance costs.\n\n### 2. How You Pay the Fees\nUnlike HOA fees, which you typically pay monthly or quarterly to a private management company, CDD fees are **included in your annual property tax bill**.\n*   **Non-Ad Valorem Assessment:** They appear as a separate line item on your tax bill. Because they are part of your taxes, they are usually collected through your **mortgage escrow account**.\n*   **Penalty for Non-Payment:** Since it is part of your tax bill, failing to pay your CDD fee carries the same weight as failing to pay your property taxes, which can eventually lead to a tax certificate sale on your home.\n\n### 3. CDD vs. HOA: What’s the Difference?\nMost Florida communities with a CDD **also have an HOA**, and you will likely pay both.\n*   **The CDD** is a public government entity. It handles the \"heavy lifting\" of infrastructure and large-scale amenities (roads, main entries, major parks).\n*   **The HOA** is a private entity. It typically focuses on \"soft\" rules, such as enforcing architectural guidelines (paint colors, fences), neighborhood aesthetics, and sometimes smaller neighborhood-specific tasks.\n\n### 4. Pros and Cons\n**The Pros:**\n*   **Better Amenities:** CDD communities often have \"resort-style\" amenities (massive pools, water parks, fitness centers) that standard neighborhoods can't afford.\n*   **Lower Purchase Price:** Because the developer didn't have to pay for the infrastructure upfront, the initial sales price of the home may be lower than a comparable home in a non-CDD area.\n*   **Higher Standards:** Because the CDD has a dedicated budget for maintenance, common areas are usually kept in pristine condition.\n\n**The Cons:**\n*   **Higher Annual Costs:** Your total \"tax\" bill will be significantly higher than in a non-CDD neighborhood.\n*   **Not Tax Deductible:** Unlike standard property taxes, the IRS generally considers CDD fees to be an \"assessment for benefits,\" meaning you typically cannot deduct them on your federal income taxes.\n*   **Long-Term Debt:** You are essentially taking on a 30-year loan for the neighborhood's infrastructure that stays with the property when you sell it.\n\n### Summary Table\n| Feature | Bond Portion | O&M Portion |\n| :--- | :--- | :--- |\n| **Purpose** | Pays back the loan for construction | Pays for daily upkeep/landscaping |\n| **How long it lasts** | 20–30 years (usually) | Indefinite |\n| **Can it change?** | Generally fixed | Can change annually based on budget |\n| **Can you pay it off?** | Yes, usually | No |",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "### How CDD Fees Work in Florida Communities\n\nCommunity Development Districts (CDDs) are a common feature in many Florida neighborhoods, especially in master-planned communities. They're essentially special-purpose local government entities created under Florida Statute Chapter 190 to help finance, build, operate, and maintain public infrastructure and amenities. If you're buying or living in a Florida community with a CDD, understanding these fees is key to budgeting for homeownership. Below, I'll break it down step by step based on reliable sources like Florida for Boomers, M/I Homes, and FS Residential.\n\n#### 1. **What is a CDD?**\n   - A CDD is a quasi-governmental body that oversees the development and upkeep of shared community features. It's not the same as a homeowners association (HOA), though they often work together. CDDs handle big-picture infrastructure that benefits all residents, such as:\n     - Roads, bridges, and sidewalks.\n     - Stormwater drainage, water, and sewer systems.\n     - Landscaping, parks, trails, and recreational facilities (e.g., clubhouses, pools).\n     - Sometimes security or lighting.\n   - CDDs are established by developers during the early stages of a community's build-out. They're governed by a Board of Supervisors—initially appointed by the developer, but transitioning to resident-elected members as the community grows. All meetings, budgets, and records are public under Florida's Sunshine Laws for transparency.\n\n#### 2. **How Are CDD Fees Structured?**\n   - CDD fees are non-ad valorem assessments (meaning they're not based on your property's market value like regular property taxes). Instead, they're tied to the benefits your property receives from the district's improvements.\n   - Most fees have two main components, which are typically billed as a single annual charge:\n     - **Debt-Service Assessment**: This repays municipal-style bonds issued by the CDD to fund the initial construction of infrastructure. It's like a long-term loan for the community's \"backbone\" (e.g., utilities and roads). This portion is often fixed and can last 20–30 years, decreasing over time as the debt is paid off. Homeowners can sometimes pay it off early to reduce future costs.\n     - **Operations and Maintenance (O&M) Assessment**: This covers ongoing expenses like repairs, landscaping, utilities, and administrative costs. It's more variable and can fluctuate based on the district's annual budget, which is set by the board and subject to public input.\n   - **How Much Do They Cost?** Fees",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 0,
+                "competitors": [],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        },
+        {
+          "query": "Top-rated schools near Lakewood Ranch FL",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some consistently **top-rated public schools near Lakewood Ranch, FL** (using widely used rating sources like **GreatSchools** plus Florida’s **state school grades** where available). Ratings can vary by year and by the specific measure used.\n\n## Top-rated public elementary schools (near/serving Lakewood Ranch)\n- **Robert Willis Elementary School (Lakewood Ranch)** — **GreatSchools: 10/10** ([greatschools.org](https://www.greatschools.org/florida/lakewood-ranch/7446-Robert-Willis-Elementary-School/?utm_source=openai))  \n- **Gilbert W. McNeal Elementary School (Lakewood Ranch)** — **GreatSchools: 9/10** ([greatschools.org](https://www.greatschools.org/florida/lakewood-ranch/5338-Gilbert-W-Mcneal-Elementary-School/?utm_source=openai))  \n- **B.D. Gullett Elementary School (Bradenton; very close to LWR)** — **GreatSchools: 8/10** ([greatschools.org](https://www.greatschools.org/florida/bradenton/8002-B.D.-Gullett-Elementary-School/?utm_source=openai))  \n\n## Top-rated public middle schools (near/serving Lakewood Ranch)\n- **Dr. Mona Jain Middle School (Bradenton; serves parts of the LWR area)** — **GreatSchools: 7/10** ([greatschools.org](https://www.greatschools.org/florida/e-bradenton/19000-DR-MONA-JAIN-MIDDLE-SCHOOL/?utm_source=openai))  \n\n## Public high school (Lakewood Ranch area)\n- **Lakewood Ranch High School (Bradenton/LWR area)** — earned an **“A” grade from the State of Florida for 2024–2025** (per the school’s district site) ([manateeschools.net](https://www.manateeschools.net/o/lakewoodranch/article/2302327?utm_source=openai))  \n  - Also commonly ranked highly within Manatee County on Niche’s local rankings. ([niche.com](https://www.niche.com/k12/lakewood-ranch-high-school-bradenton-fl/rankings/?utm_source=openai))  \n\n---\n\n### Important note (so you don’t get surprised)\n**School assignment is address-zoned** and can change with boundary updates. If you tell me:\n1) your **address or nearest cross-streets** (or just your ZIP and community, like “Waterside,” “Greenbrook,” etc.), and  \n2) the **grades** you need (elementary / middle / high),  \n\n…I can narrow this to the best options that are realistically **zoned for you** vs. “nearby but not assigned.”",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Bradenton",
+                  "Waterside",
+                  "Greenbrook"
+                ],
+                "howDescribed": "Lakewood Ranch is the primary geographic focus of the response, described as a master community served by top-rated schools and containing specific residential neighborhoods like Waterside and Greenbrook."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for top-rated schools in the Lakewood Ranch, FL area for you.\nBased on my search results, here are the top-rated schools near Lakewood Ranch, FL:\n\n## Elementary Schools\n\n\n**Robert Willis Elementary School** and **Gilbert W. McNeal Elementary School** consistently rank among the top schools in the state\n. More specifically:\n\n- **Robert Willis Elementary**: \nConsistently ranks among Florida's top 100 elementary schools and excels in academic proficiency, especially in mathematics, with high scores on state assessments\n. \nIt has a 10/10 rating on GreatSchools and an A- on Niche\n.\n\n- **Gilbert W. McNeal Elementary**: \nRanked within the top 200 elementary schools in Florida, known for its exceptional performance in science, particularly in fifth grade\n.\n\n- **B.D. Gullett Elementary**: \nA PK-5 school with an A rating and focus on academic excellence\n.\n\n- **Lakeview Elementary**: \nRanks #120 among Florida elementary schools, with an impressive 87% of students scoring at or above proficient levels in math and 78% in reading\n.\n\n## Middle School\n\n\nDan Nolan Middle School earns consistent \"A\" rankings year over year, staying within the 90th percentile\n.\n\n## High School\n\n\nLakewood Ranch High School is ranked #1,741 in the National Rankings\n and \nhas an AP participation rate of 59%\n.\n\n## Charter and Private Schools\n\n\nLakewood Ranch Preparatory Academy serves grades K-12 and offers a holistic education experience with a student-teacher ratio of 18:1, praised for its comprehensive curriculum and character education programs",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 7,
+                "competitors": [],
+                "howDescribed": "Lakewood Ranch is utilized as the primary geographic context for the school search and is explicitly named in the high school and the preparatory academy listings."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Lakewood Ranch is known for its high-performing schools, with many consistently earning \"A\" ratings from the Florida Department of Education. The area is served primarily by the **School District of Manatee County**, though southern sections (near Waterside) fall within **Sarasota County Schools**.\n\nBelow are the top-rated schools near Lakewood Ranch, categorized by level and type.\n\n### **Top-Rated Public Elementary Schools**\nThese schools are widely considered the best in the area, often ranking in the top 5–10% of all elementary schools in Florida.\n*   **Robert E. Willis Elementary:** Consistently rated **10/10** on GreatSchools and \"A\" by the state. It is highly regarded for its STEAM programs and high math proficiency (85%+).\n*   **Gilbert W. McNeal Elementary:** Another **10/10** school known for strong literacy programs and a dedicated parent community.\n*   **B.D. Gullett Elementary:** Rated **9/10** on GreatSchools. It is a newer facility that has quickly become a top choice for families in the northeastern part of the Ranch.\n*   **Tatum Ridge Elementary:** For residents in the Sarasota County portion (Waterside), this is a top-rated **10/10** school located just south of University Parkway.\n\n### **Top-Rated Public Middle & High Schools**\n*   **R. Dan Nolan Middle School:** Rated **8/10** and \"A\" rated. It is known for its strong music and arts programs alongside solid academic performance.\n*   **Dr. Mona Jain Middle School:** A modern campus rated **8/10**. It features a heavy focus on STEM education and collaborative learning environments.\n*   **Lakewood Ranch High School:** The primary high school for the community, it has maintained an **\"A\" rating from the state for over seven consecutive years**. It offers extensive Advanced Placement (AP) courses and a 97% graduation rate.\n*   **Booker High School (Sarasota County):** Some southern Lakewood Ranch neighborhoods are zoned for Booker, which is famous for its **Visual and Performing Arts (VPA) Magnet Academy** and IB program.\n\n### **Charter & Magnet Options**\n*   **State College of Florida Collegiate School (SCFCS):** Located nearby in Bradenton, this charter school is ranked **A+ on Niche**. It allows students to graduate with both a high school diploma and an Associate’s Degree simultaneously.\n*   **Lakewood Ranch Preparatory Academy:** A newer WISH (Wellness, Innovation, Science, and Health) model charter school serving K–12. It has become very popular, requiring a lottery system for admission.\n*   **Pine View School (Sarasota):** Regularly ranked as the **#1 public high school in Florida** (and top 20 nationally), this is a magnet school for gifted students (grades 2–12). While located in Osprey, it is open to Lakewood Ranch residents in Sarasota County, and Manatee residents can apply if space permits.\n\n### **Top-Rated Private Schools**\n*   **The Out-of-Door Academy (ODA):** The Upper School (grades 6–12) is located right in Lakewood Ranch. It is a premier college-preparatory school with elite athletic and arts facilities.\n*   **St. Stephen’s Episcopal School:** Located in nearby Bradenton, it is an **A+ rated (Niche)** independent school serving PK–12.\n*   **Cardinal Mooney Catholic High School:** A top choice for families seeking a faith-based, college-prep environment.\n*   **The Pinnacle Academy:** Specializes in serving students with unique learning styles and differences, offering a highly personalized curriculum.\n\n### **New Schools (Coming Soon)**\nDue to the area's rapid growth, several new schools are under construction:\n*   **East County K-8 School:** Located near Star Farms (Northeast LWR), the elementary portion is slated to open in **2025**, followed by the middle school in **2026**.\n*   **Waterside K-5 School:** A new Sarasota County school planned for the Shellstone area, projected to open in **2028**.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 17,
+                "competitors": [
+                  "Waterside",
+                  "Star Farms",
+                  "Bradenton",
+                  "Sarasota",
+                  "Osprey"
+                ],
+                "howDescribed": "Lakewood Ranch is described as a high-growth community served by both Manatee and Sarasota County school districts, known for consistently 'A' rated schools and a wide variety of public, charter, and private educational options."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information from sources like GreatSchools, Niche, SchoolDigger, and local education guides (as of early 2026), Lakewood Ranch, Florida, is home to several highly rated public, private, and charter schools, primarily in the Manatee County School District (with some in Sarasota County for southern areas). The area is known for its family-friendly communities and strong emphasis on academic excellence, including STEM programs and high proficiency rates in subjects like math and reading. I'll break down some of the top-rated options by level, focusing on those with the highest rankings and ratings. Note that ratings can fluctuate slightly year-to-year, so I recommend checking official sites for the latest details.\n\n### Top-Rated Elementary Schools\nThese schools often rank in the top 5-10% statewide and emphasize personalized learning, STEM, and literacy.\n\n- **Robert E. Willis Elementary School** (PK-5, Public, Manatee County):\n  - Rating: 10/10 on GreatSchools; A-rated overall; consistently in Florida's top 100 elementary schools.\n  - Highlights: Strong STEM-focused curriculum with hands-on learning, low student-teacher ratio, and high proficiency (e.g., 86% in math and 70-80% in English Language Arts for recent grades). Located in Lakewood Ranch.\n  - Why top-rated: Excels in academic performance, outpacing district and state averages.\n\n- **Gilbert W. McNeal Elementary School** (K-5, Public, Manatee County):\n  - Rating: High statewide ranking (top tiers); strong proficiency scores (e.g., 77% in ELA and high math rates).\n  - Highlights: Focus on literacy programs and academic excellence. Also in Lakewood Ranch.\n\n- **B.D. Gullett Elementary School** (PK-5, Public, Manatee County):\n  - Rating: A-rated; known for academic excellence.\n  - Highlights: Strong overall performance in core subjects.\n\nOther notable options include the new **Lake Manatee East County School** (K-8, Public), which is Lakewood Ranch's newest addition and emphasizes comprehensive education.\n\n### Top-Rated Middle and High Schools\nMiddle and high schools in the area also perform well, with good college prep and extracurriculars.\n\n- **Lakewood Ranch High School** (PK, 9-12, Public, Manatee County):\n  - Rating: Highly rated on Niche (A- overall); ranked #1,741 nationally by U.S. News & World Report;",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 5,
+                "competitors": [],
+                "howDescribed": "Lakewood Ranch is described as home to several highly rated public, private, and charter schools, known for family-friendly communities and a strong emphasis on academic excellence, STEM programs, and high proficiency rates in subjects like math and reading."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

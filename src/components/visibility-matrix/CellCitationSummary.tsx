@@ -8,6 +8,7 @@ interface CellCitationSummaryProps {
   citations: Citation[];
   brandDomain?: string; // e.g., "lakewoodranch.com" to highlight if cited
   maxSources?: number;
+  isHistorical?: boolean; // true if viewing a historical run (citations not stored in DB)
 }
 
 interface DomainCount {
@@ -21,6 +22,7 @@ export function CellCitationSummary({
   citations,
   brandDomain,
   maxSources = 6,
+  isHistorical = false,
 }: CellCitationSummaryProps) {
   const { domainCounts, totalCitations, uniqueSources } = useMemo(() => {
     const domainMap = new Map<string, { count: number; sampleUrl?: string }>();
@@ -62,7 +64,11 @@ export function CellCitationSummary({
       <div className="py-3 px-4 bg-[#faf9f6] border border-dashed border-[#e3dacb]">
         <div className="flex items-center gap-2 text-black/30">
           <Link2 className="w-3 h-3" />
-          <span className="text-[10px] font-medium">No citations extracted</span>
+          <span className="text-[10px] font-medium">
+            {isHistorical
+              ? "No citations stored for this historical run"
+              : "No citations extracted"}
+          </span>
         </div>
       </div>
     );

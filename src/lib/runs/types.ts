@@ -10,6 +10,17 @@ import {
 export const ProviderSchema = z.enum(["openai", "anthropic", "gemini", "xai"]);
 export type Provider = z.infer<typeof ProviderSchema>;
 
+// Citation stored with responses (simplified from full Citation type)
+export const StoredCitationSchema = z.object({
+  url: z.string(),
+  domain: z.string(),
+  title: z.string().optional(),
+  snippet: z.string().optional(),
+  sourceType: z.enum(["url_citation", "grounding_chunk"]),
+});
+
+export type StoredCitation = z.infer<typeof StoredCitationSchema>;
+
 // Response with stage-specific score
 export const ResponseResultSchema = z.object({
   provider: ProviderSchema,
@@ -21,6 +32,8 @@ export const ResponseResultSchema = z.object({
     CompareExtractionSchema,
     DecideExtractionSchema,
   ]),
+  // Citations extracted from provider response (optional for backwards compatibility)
+  citations: z.array(StoredCitationSchema).optional(),
 });
 
 export type ResponseResult = z.infer<typeof ResponseResultSchema>;

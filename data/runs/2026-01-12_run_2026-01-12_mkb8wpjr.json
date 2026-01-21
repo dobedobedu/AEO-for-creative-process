@@ -1,0 +1,101 @@
+{
+  "id": "run_2026-01-12_mkb8wpjr",
+  "timestamp": "2026-01-12T14:15:47.799Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 1,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "luxury_explore": {
+      "intentId": "int_luxury_explore_mk189ge6",
+      "intentText": "Affluent buyer exploring upscale Florida communities",
+      "queriesUsed": [
+        "luxury gated communities in Sarasota Bradenton area with resort amenities"
+      ],
+      "metrics": {
+        "discoveryRate": 1,
+        "topThreeRate": 1
+      },
+      "results": [
+        {
+          "query": "luxury gated communities in Sarasota Bradenton area with resort amenities",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are some **luxury gated communities in the Sarasota–Bradenton area** that are best known for **resort-style amenities** (country club / spa / pools / dining / tennis, etc.):\n\n## Lakewood Ranch (Bradenton / East Sarasota) — “resort lifestyle” hotspot\n**1) The Lake Club (Lakewood Ranch)**\n- Luxury gated enclave with an upscale clubhouse experience (clubhouse, restaurant/bar spaces, resort-style pool, lifestyle programming; parks/trails and courts). ([lifeatlakewood.com](https://www.lifeatlakewood.com/the-lake-club?utm_source=openai))\n\n**2) Esplanade Golf & Country Club at Lakewood Ranch**\n- Gated, **true resort-amenity package**: lagoon-style pool + spa, fitness/activities center, pickleball/bocce, social spaces—and golf/country club living. ([candyswick.com](https://www.candyswick.com/communities/lakewood-ranch-esplanade/?utm_source=openai))\n\n**3) Lakewood Ranch Golf & Country Club (the “Country Club” village)**\n- Multiple gated entries with optional/club-focused amenities: **three 18-hole courses**, clubhouses, dining, tennis complex, pools, fitness/aquatics. ([lifeatlakewood.com](https://www.lifeatlakewood.com/country-club?utm_source=openai))\n\n## Sarasota (south of Sarasota, near Osprey) — premier private club lifestyle\n**4) The Oaks Club (Oaks / Oaks Bayside / The Preserve at The Oaks)**\n- Club-centered gated living with **championship golf**, extensive court sports, and strong “private club” feel (membership typically tied to homeownership). ([theoaksclub.com](https://www.theoaksclub.com/?utm_source=openai))\n\n---\n\n### Quick questions so I can narrow this to your best 5–8 options (and by “resort amenities” you mean the right thing):\n1) Do you want **golf required**, **golf optional**, or **no golf**?\n2) Preferred location: **West (near beaches)** vs **East (Lakewood Ranch / I‑75 convenience)**?\n3) Rough home budget range (e.g., **$800k–$1.2M, $1.2M–$2M, $2M+**)?\n\nIf you answer those, I’ll tailor a short list with what each community is best for (pool/club scene, dining, tennis/pickleball, spa/fitness, social calendar, etc.).",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "The Oaks Club"
+                ],
+                "howDescribed": "Described as a 'resort lifestyle' hotspot featuring several luxury gated enclaves (The Lake Club, Esplanade, and the Country Club village) with upscale clubhouses, resort-style pools, golf courses, and comprehensive social/fitness programming."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about luxury gated communities with resort amenities in the Sarasota-Bradenton area.\nBased on my research, here are the premier luxury gated communities with resort amenities in the Sarasota-Bradenton area:\n\n## Top Communities with Resort-Style Amenities\n\n**Legacy Estates at Esplanade (Palmer Ranch)**\n\nSet on nearly 100 acres within Palmer Ranch, Legacy Estates at Esplanade offers 147 custom homes with exclusive access to resort-style amenities, including the Palmer Ranch Wellness Center with state-of-the-art fitness center and wellness spa, tennis and pickleball courts, resort pool, and the Bahama Bar & Grill\n.\n\n**The Lake Club (Lakewood Ranch)**\n\nThe Lake Club is known as one of the best gated luxury communities in Sarasota, featuring manicured grounds, 24/7 security, and elite social amenities\n.\n\n**The Founders Club**\n\nThe Founders Club is Sarasota's premier private golf community with only 262 homesites spanning 700 acres\n. \nIt offers residents a luxurious lifestyle surrounded by green landscapes and a prestigious golf course designed by Robert Trent Jones Jr.\n\n\n**Bird Key**\n\nLocated between Downtown Sarasota and St. Armands, Bird Key is an exclusive gated island in Sarasota Bay—a 250-acre enclave offering coastal luxury with deepwater canals, a private yacht club, and elegant estate homes\n.\n\n**Esplanade at the Heights (Bradenton)**\n\nResidents enjoy a sparkling resort-style pool with cabanas and firepit, state-of-the-art fitness center, inviting clubhouse, community tennis court, and 4 pickleball courts\n.\n\n**Artistry Sarasota**\n\nResidents enjoy an artfully designed lakefront clubhouse",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 6,
+                "competitors": [
+                  "Legacy Estates at Esplanade (Palmer Ranch)",
+                  "The Founders Club",
+                  "Bird Key",
+                  "Esplanade at the Heights (Bradenton)",
+                  "Artistry Sarasota"
+                ],
+                "howDescribed": "The brand was mentioned as the location for The Lake Club, which was described as one of the best gated luxury communities in Sarasota, featuring manicured grounds, 24/7 security, and elite social amenities."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "The Sarasota-Bradenton area is home to some of the nation’s top-rated master-planned and boutique luxury gated communities. These neighborhoods distinguish themselves by offering \"resort-style\" living—meaning you have access to onsite full-service dining, professional spas, concierge services, and high-end fitness facilities without leaving the gates.\n\nHere are the top luxury gated communities in the area categorized by their primary lifestyle focus.\n\n### 1. The \"Ultra-Private & Elite\" Estates\nThese communities are characterized by low home density, oversized lots (often 1+ acres), and a focus on high-touch personalized service.\n\n*   **The Concession (Bradenton/Lakewood Ranch):** \n    *   **The Vibe:** An exclusive enclave of 255 estate homes set on 1,200 acres of oak hammocks. It is famous for its Jack Nicklaus-designed golf course, which has no residential development touching the fairways.\n    *   **Resort Amenities:** A 33,000-square-foot clubhouse with a **private wine cellar**, a wellness center with professional spa services, fine dining at \"The Bistro,\" and a dedicated sports clubhouse with an Olympic-sized pool.\n*   **The Founders Club (Sarasota):** \n    *   **The Vibe:** \"Quiet luxury\" with just 262 homes on 700 acres. It feels like a private park.\n    *   **Resort Amenities:** The 24,000-square-foot \"Golf Hall\" features a sophisticated bar and grille, formal dining, and an extensive social calendar. It includes a **traditional caddie program**, a fitness facility with personalized diet/training programs, and Har-Tru tennis courts.\n\n### 2. The \"Active Resort\" Communities\nThese are larger, \"lifestyle-first\" communities where the clubhouse serves as a social hub similar to a high-end Caribbean resort.\n\n*   **Wild Blue at Waterside (Lakewood Ranch):** \n    *   **The Vibe:** The newest pinnacle of luxury in Lakewood Ranch, centered around a 184-acre lake.\n    *   **Resort Amenities:** A 25,000-square-foot waterfront clubhouse with **concierge services**, a movie theater, a golf simulator, a \"Fiji-inspired\" lagoon pool, and both indoor/outdoor bars and cafes.\n*   **The Lake Club (Lakewood Ranch):** \n    *   **The Vibe:** The most established luxury village in Lakewood Ranch, featuring custom Mediterranean and modern estates.\n    *   **Resort Amenities:** A massive Tuscan-style clubhouse with a dedicated **Lifestyle Director**, a private massage studio, steam and sauna rooms, two resort pools, and a full-service concierge to assist with daily needs.\n*   **Star Farms (Lakewood Ranch):** \n    *   **The Vibe:** A unique \"resort ranch\" concept with four distinct amenity campuses.\n    *   **Resort Amenities:** The main hub, \"The Resort Club,\" is hospitality-staffed and includes a **professional coffee shop**, a performance fitness center, and planned poolside dining with cabana service.\n\n### 3. Coastal & Waterfront Gems\nFor those who prioritize proximity to the Gulf of Mexico or private boating access.\n\n*   **Bay Isles (Longboat Key):** \n    *   **The Vibe:** Located on the barrier island of Longboat Key, this is a secure, lushly landscaped harbor community.\n    *   **Resort Amenities:** Its crown jewel is the **private Beach Club** on the Gulf of Mexico (accessible only to residents), alongside a deep-water marina, the Longboat Key Club (golf/tennis membership available), and waterfront trails.\n*   **The Oaks Club (Osprey/Sarasota):** \n    *   **The Vibe:** A prestigious, established club with a mix of bayfront estates and golf-view mansions.\n    *   **Resort Amenities:** Two championship golf courses, a nationally recognized tennis program (12 Har-Tru courts), and a **full-service spa and fitness center**. The club is known for its high-end culinary program and formal social events.\n*   **Bird Key (Sarasota):** \n    *   **The Vibe:** A private island connected by a bridge to Downtown Sarasota and St. Armands Circle.\n    *   **Resort Amenities:** While homes are on the water, the social heart is the **Bird Key Yacht Club**, which offers fine dining, a private pool, and deep-water boat slips for residents who are yachting enthusiasts.\n\n### 4. Bundled Golf & Wellness\nIf you want resort amenities \"bundled\" into your home ownership fees.\n\n*   **Esplanade at Azario (Lakewood Ranch):** \n    *   **Resort Amenities:** Features a \"Culinary Center\" with cooking classes and wine tastings, a **full-service spa (facials, massages)**, a Bahama Bar (poolside restaurant), and an 18-hole championship course.\n*   **Sarasota National (Venice/Sarasota):** \n    *   **Resort Amenities:** Offers a massive \"Palm Club\" featuring a beach-entry resort pool with a poolside tiki bar and grill, a 7,000-sq-ft fitness center, and a 19th-hole bar for golfers.\n\n### Summary Comparison Table\n\n| Community | Best For | Standout Resort Amenity |\n| :--- | :--- | :--- |\n| **The Concession** | Seclusion & Elite Golf | Private Wine Cellar & Wellness Spa |\n| **Wild Blue** | Modern Waterfront Luxury | Concierge & In-house Movie Theater |\n| **Bay Isles** | Coastal Living | **Private Gulf Beach Club** |\n| **The Lake Club** | Master-Planned Social Life | Tuscan Clubhouse & Concierge |\n| **The Founders Club** | Privacy & Traditional Service | Caddie Program & 24/7 Fitness |",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 10,
+                "competitors": [
+                  "The Concession",
+                  "The Founders Club",
+                  "Bay Isles",
+                  "The Oaks Club",
+                  "Bird Key",
+                  "Sarasota National"
+                ],
+                "howDescribed": "Lakewood Ranch is presented as the premier hub for high-end master-planned living, featuring multiple distinct luxury villages ranging from modern waterfront estates to established Mediterranean-style enclaves and wellness-focused golf communities."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent information from real estate sources like NewHomeSource, PrivateCommunities.com, and local Sarasota-Bradenton area listings (as of early 2026), the Sarasota-Bradenton region in Florida is home to several luxury gated communities that offer resort-style amenities. These often include features like clubhouses, swimming pools, fitness centers, tennis and pickleball courts, walking trails, spas, and sometimes golf courses or waterfront access. The area is popular for its upscale living, proximity to beaches, and vibrant lifestyle, with options ranging from all-ages communities to 55+ active adult ones.\n\nI'll highlight some top examples below, focusing on those with strong resort amenities. Prices can vary widely (e.g., from the high $300,000s to over $1.5 million), and availability changes, so I recommend checking current listings or consulting a local realtor for the latest details. Communities are gated for security and exclusivity.\n\n### Lakewood Ranch (Sarasota Area)\n- **Esplanade at Azario Lakewood Ranch**: This is a standout resort-style community with British West Indies-inspired architecture. Amenities include a grand clubhouse, resort pools, a state-of-the-art fitness center, tennis and pickleball courts, a spa, walking/biking trails, and even a culinary center. It's part of the larger Lakewood Ranch master-planned area, which has golf options nearby. Homes start in the high $400,000s. (Source: PrivateCommunities.com)\n- **The Lake Club**: An ultra-luxury gated enclave within Lakewood Ranch, featuring waterfront estates and homes with resort amenities like a private clubhouse, concierge services, pools, fitness facilities, tennis courts, and boating access. It's ideal for those seeking high-end, resort living with prices from $1 million+. (Source: BuyLakewoodRanch.com)\n\n### Sarasota Proper\n- **The Founders Club**: A gated golf community with luxury homes and resort-like perks, including an 18-hole golf course, clubhouse with dining, a fitness center, pools, and tennis. It's known for its serene, upscale vibe and is close to downtown Sarasota. Homes range from $800,000 to over $2 million. (Source: DavidLiberatore.com and BuyLakewoodRanch.com)\n- **Prestancia**: Located on the TPC Prestancia golf course, this gated community offers resort amenities such as multiple pools, tennis courts, a clubhouse, and fitness options. It's a mix of villas and estates, with a focus on golf and",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 4,
+                "competitors": [
+                  "The Founders Club",
+                  "Prestancia"
+                ],
+                "howDescribed": "Lakewood Ranch is described as a large master-planned area featuring standout resort-style communities like Esplanade at Azario and ultra-luxury enclaves like The Lake Club. It is characterized by British West Indies-inspired architecture, waterfront estates, and high-end amenities including clubhouses, spas, and concierge services."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

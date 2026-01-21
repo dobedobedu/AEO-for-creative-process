@@ -1,0 +1,103 @@
+{
+  "id": "run_2026-01-12_mkb8whvo",
+  "timestamp": "2026-01-12T14:15:37.860Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0.5,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "retiree_explore": {
+      "intentId": "int_retiree_explore_mk189ge6",
+      "intentText": "Retiree exploring Florida retirement destinations",
+      "queriesUsed": [
+        "best 55+ communities in Sarasota with healthcare access and low HOA fees"
+      ],
+      "metrics": {
+        "discoveryRate": 0.5,
+        "topThreeRate": 0.5
+      },
+      "results": [
+        {
+          "query": "best 55+ communities in Sarasota with healthcare access and low HOA fees",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are **55+ options in/around Sarasota** that tend to line up best with your two constraints: **good healthcare access** and **not-crazy HOA/fees**. (In Sarasota proper, truly “low HOA” is often found in **older/villa-style** communities; newer resort-style 55+ typically has **higher monthly HOA**.)\n\n## Best fits (lower fees + solid healthcare access)\n\n### 1) **Strathmore Riverside Villas (Sarasota – near Phillippi Creek)**\n- **Why it fits:** One of the more **budget-friendly 55+** picks close to central Sarasota.\n- **Fees:** Commonly cited around **$200–$300/month** (varies by building/coverage). ([homesforsaleinsarasotaflorida.com](https://homesforsaleinsarasotaflorida.com/top-55-communities-around-sarasota?utm_source=openai))  \n- **Healthcare access:** Short drive to major Sarasota providers/hospitals (including Sarasota Memorial area depending on traffic).\n- **Good for:** Buyers who want **Sarasota address + lower monthly** and don’t need brand-new amenities.\n\n### 2) **Sun City Center (about 35–45 min north of Sarasota)**\n- **Why it fits:** If your top priority is **lower ongoing fees** and “everything close by,” Sun City Center is a strong value play (but it’s not Sarasota).\n- **Fees:** Fee structures vary by neighborhood; there are areas described as **low/no HOA**, plus other sections with additional HOA/maintenance layers. ([explore55plus.com](https://www.explore55plus.com/blog/55plus-communities-in-florida/sun-city-center-kings-point-55-plus-community?utm_source=openai))  \n- **Healthcare access:** Sun City Center is known for strong medical convenience (large retiree population + lots of services nearby). ([explore55plus.com](https://www.explore55plus.com/communities-1/sun-city-center?utm_source=openai))  \n- **Good for:** **Lowest-cost lifestyle** in the region with heavy retiree infrastructure.\n\n## Great healthcare access, but HOA is usually not “low”\n\n### 3) **Del Webb Catalina (Lakewood Ranch – 55+)**\n- **Why it’s popular:** Purpose-built 55+ with big amenities and a strong “active adult” scene.\n- **Fees:** Published HOA range around **$335–$409/month** (verify current). ([lakewoodranch.com](https://lakewoodranch.com/our-villages/del-webb/?utm_source=openai))  \n- **Healthcare access:** Very good access to medical options in the Lakewood Ranch/Sarasota corridor.\n- **Reality check:** This is **reasonable for new 55+**, but usually not “low” vs older communities.\n\n### 4) **Del Webb at Lakewood Ranch (55+)**\n- **Fees:** Often described in the **~$330–$390/month** range (varies by home/section and can change). ([55places.com](https://www.55places.com/blog/lakewood-ranch-a-new-del-webb-community-coming-to-florida?utm_source=openai))  \n- **Healthcare access:** Similar benefit—close to the Lakewood Ranch/Sarasota medical network.\n- **Reality check:** Again, more “mid” than “low.”\n\n### 5) **Pelican Cove (Sarasota area, waterfront; age-restricted rules vary by section)**\n- **Fees:** Condos commonly cited around **$500–$800/month** depending on unit and what’s included. ([zachosre.com](https://zachosre.com/pelican-cove-sarasota-floridas-best-budget-friendly-waterfront-community/?utm_source=openai))  \n- **Healthcare access:** Excellent for south Sarasota convenience.\n- **Reality check:** Usually **not low HOA**, but sometimes attractive if you want **waterfront + tons included**.\n\n---\n\n## To narrow this to the *best* 3–5 for you\nTell me:\n1) **Buy vs rent?** (Most “55+ communities” searches mix active-adult ownership with senior-living rentals.)  \n2) Target **max HOA/fees**: under **$250/mo**, **$350/mo**, or **$450/mo**?  \n3) Preferred hospital access: **Sarasota Memorial**, **Doctors Hospital**, or **Lakewood Ranch Medical Center**?  \n4) Home type: **villa/condo** (often lower upfront, higher HOA) vs **single-family** (often lower HOA, more upkeep).  \n\nIf you answer those, I’ll give a short ranked list with **drive-time-to-hospital**, typical fee ranges, and what to verify in the HOA docs (CDD, special assessments, reserves, insurance).",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Strathmore Riverside Villas",
+                  "Sun City Center",
+                  "Pelican Cove"
+                ],
+                "howDescribed": "Described as a popular area for purpose-built 55+ communities with a strong active adult scene and very good healthcare access, though the HOA fees are characterized as mid-range rather than strictly low."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about 55+ communities in Sarasota that offer good healthcare access and reasonable HOA fees.\nBased on my research, here are some of the best 55+ communities in Sarasota with good healthcare access and reasonable HOA fees:\n\n## Top Recommendations\n\n### **Cascades at Sarasota**\n\nCascades at Sarasota offers 453 single-family homes in a variety of different floor plans ranging from 1,429 to 2,489 square feet with two to four bedrooms\n. \nHOA fees are reasonable\n, and \nit offers the most home and highest level of amenities for the price, with relatively low HOA dues\n. \nIt's about 20-25 minutes from wonderful beaches and 15-25 minutes to the many cultural events in and around downtown Sarasota\n.\n\n### **Lakeridge Falls**\n\nLakeridge Falls mixes attached villas and single-family layouts, with recent listings spanning the high-$200ks to low-$500ks—an affordability sweet spot for seniors who still want a clubhouse, gated entries, and lakeside walking trails\n.\n\n### **Lake Tippecanoe**\n\nLake Tippecanoe is a hidden gem in Sarasota with low HOA fees and very reasonable home prices\n.\n\n### **Lakeshore Village**\n\nLakeshore Village is a lovely community in the heart of Sarasota where you can walk to grocery stores, restaurants, and medical facilities\n.\n\n### **Cedar Cove**\n\nCedar Cove is one of the more affordable over 55 communities in Sarasota offering an active Florida lifestyle, located just 1.5 miles from Crescent Beach on Siesta Key\n.\n\n## Healthcare Access",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Cascades at Sarasota",
+                  "Lakeridge Falls",
+                  "Lake Tippecanoe",
+                  "Lakeshore Village",
+                  "Cedar Cove"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Sarasota is one of the top retirement destinations in the U.S. due to its high concentration of medical facilities and variety of 55+ living options. \"Low\" HOA fees in Sarasota typically range from **$400 to $650 per month**, which often include maintenance, cable, and water.\n\nHere are the best 55+ communities in Sarasota that balance healthcare access with manageable fees:\n\n### 1. Cascades at Sarasota\nThis is widely considered one of the best \"resort-style\" values in the area. It offers single-family homes rather than just condos or villas.\n*   **HOA Fees:** ~$450 – $580/month (varies by home size; includes cable/internet and full lawn maintenance).\n*   **Healthcare Access:** Located near the **Sarasota Memorial Health Care Center at University Parkway** (outpatient, imaging, and urgent care) and about 20 minutes from the main SMH hospital.\n*   **Why it’s a top choice:** It is gated and has a massive 25,000 sq. ft. clubhouse with an indoor/outdoor pool, but avoids the high \"CDD\" fees found in newer Lakewood Ranch developments.\n\n### 2. Strathmore Riverside Villas\nIf you want to be close to the water and the city center, this is a prime location. It consists of one-story villas on 60+ acres.\n*   **HOA Fees:** ~$625/month (includes water, sewer, trash, cable, and exterior maintenance).\n*   **Healthcare Access:** Only **5 miles from Sarasota Memorial Hospital** (consistently ranked as one of the best hospitals in the world). It is also very close to the Doctors Hospital of Sarasota.\n*   **Why it’s a top choice:** It features a private marina and boat docks (on a first-come basis) for a much lower cost than typical waterfront communities.\n\n### 3. Tallywood\nTallywood is a \"hidden gem\" condo community located in the heart of Sarasota, making it one of the most convenient for frequent medical visits.\n*   **HOA Fees:** ~$450 – $640/month (includes roof replacement, building insurance, and basic utilities).\n*   **Healthcare Access:** Minutes away from **Sarasota Memorial Hospital** and surrounding specialist plazas.\n*   **Why it’s a top choice:** It is exceptionally dog-friendly and features a mature, tree-lined landscape that feels more like a forest than a typical Florida development.\n\n### 4. Village Plaza\nThis community is located near the intersection of Bee Ridge Road and Beneva Road, putting it in the middle of a major medical and shopping corridor.\n*   **HOA Fees:** ~$630/month (includes building insurance, water, sewer, trash, and pest control).\n*   **Healthcare Access:** Extremely close to the **Medical Center of Sarasota** and within 10–15 minutes of the main SMH campus.\n*   **Why it’s a top choice:** The units are larger than average (up to 1,700+ sq. ft.) and it is walkable to grocery stores and pharmacies.\n\n### 5. LakeRidge Falls\nLakeRidge Falls is a gated community known for being \"maintenance-free,\" meaning the HOA handles almost everything exterior.\n*   **HOA Fees:** ~$400 – $550/month (no CDD fees).\n*   **Healthcare Access:** Located just north of University Parkway, it is roughly 5 minutes from the **SMH University Parkway** facility and 15 minutes from **Lakewood Ranch Medical Center**.\n*   **Why it’s a top choice:** It has a very high \"pride of ownership\" with strict architectural standards, meaning the community stays in pristine condition without the massive price tag of new construction.\n\n### 6. Camelot Lakes Village (Best Budget Option)\nThis is a manufactured home community, which offers the lowest entry price for housing in Sarasota.\n*   **Fees:** Instead of an HOA, you pay a **Monthly Lot Rent** (typically $900 – $1,100). While this sounds high, it includes property taxes, water, lawn care, and gated security, often making the total cost of living lower than a condo with a mortgage + HOA + taxes.\n*   **Healthcare Access:** Located near Clark Road, it has quick access to **Sarasota Memorial’s Clark Road Health Care Center**.\n*   **Why it’s a top choice:** It offers two clubhouses and two pools, providing a very active social life for a fraction of the cost of a traditional home.\n\n### Summary of Healthcare Hubs in Sarasota:\n*   **Sarasota Memorial Hospital (Main Campus):** Best for specialized surgeries and emergencies.\n*   **Sarasota Memorial (Venice Campus):** A newer facility serving South Sarasota/Nokomis.\n*   **HCA Florida Sarasota Doctors Hospital:** Located on Bee Ridge, excellent for orthopedics and general care.\n*   **Lakewood Ranch Medical Center:** Serves the northeastern part of the county.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "inTopThree": true,
+                "totalOptionsListed": 6,
+                "competitors": [
+                  "Cascades at Sarasota",
+                  "Strathmore Riverside Villas",
+                  "Tallywood",
+                  "Village Plaza",
+                  "LakeRidge Falls",
+                  "Camelot Lakes Village"
+                ],
+                "howDescribed": "Lakewood Ranch is mentioned as a point of comparison for high CDD fees in its newer developments and serves as a geographic reference for the Lakewood Ranch Medical Center."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent web searches and up-to-date information as of early 2026, I'll highlight some of the best 55+ retirement communities in Sarasota, Florida, that emphasize healthcare access (such as proximity to top hospitals like Sarasota Memorial Hospital or on-site wellness services) and relatively low HOA fees. Keep in mind that \"low\" HOA fees can vary—typically under $500/month for these communities, but they fluctuate based on amenities, location, and current market conditions. I focused on highly rated options with positive reviews for active adult living, affordability, and healthcare convenience. Always verify the latest details directly with the communities, as fees and availability can change.\n\n### Top Recommendations\nHere are some standout 55+ communities in Sarasota that fit your criteria, drawn from sources like 55places.com, Seniorly.com, and Florida for Boomers. These are often praised for their amenities (e.g., pools, fitness centers, social activities), vibrant lifestyles, and access to healthcare without being overly expensive.\n\n1. **The Alloro at University Groves**  \n   - **Why it fits**: This luxury 55+ community offers resort-style living with robust wellness programs, including fitness classes and easy access to nearby medical facilities like Sarasota Memorial Hospital (about 10-15 minutes away). It's designed for active seniors with amenities like a clubhouse, pool, and social events.  \n   - **HOA Fees**: Generally low to moderate, starting around $300-$400/month (affordable for the area, covering maintenance and amenities).  \n   - **Homes**: Condos and villas from the mid-$300,000s.  \n   - **More info**: Check thealloro.com for tours and current pricing. It's frequently ranked as a top choice for its balance of luxury and accessibility.\n\n2. **Sarasota Bay Club**  \n   - **Why it fits**: A high-end retirement community with on-site health and wellness services, including fitness centers and concierge support for medical needs. It's located downtown, providing quick access (under 5 minutes) to Sarasota Memorial Hospital and other healthcare providers. The focus is on vibrant, tailored senior living with dining, arts, and recreational options.  \n   - **HOA Fees**: On the lower end for luxury options, around $400-$600/month, which includes utilities, security, and maintenance—considered affordable given the upscale features.  \n   - **Homes**: Residences start in the $500,000s, with some more affordable entry points.  \n   -",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 2,
+                "competitors": [
+                  "The Alloro at University Groves",
+                  "Sarasota Bay Club"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "run_2026-01-12_mkb90wl1",
+  "timestamp": "2026-01-12T14:19:03.541Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0.875,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_consider": {
+      "intentId": "int_move_up_consider_mk189ge6",
+      "intentText": "Family evaluating master-planned communities with good schools",
+      "queriesUsed": [
+        "best master-planned communities in Sarasota Bradenton area with top-rated schools"
+      ],
+      "metrics": {
+        "sentimentScore": 0.875
+      },
+      "results": [
+        {
+          "query": "best master-planned communities in Sarasota Bradenton area with top-rated schools",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are the **best master-planned communities in the Sarasota–Bradenton area** that are most consistently associated with **strong public-school zones** (plus a few “check this street address” notes, because zoning can change by neighborhood and even by side of a road).\n\n## Top picks (master-planned + strongest “family/schools” reputation)\n\n### 1) **Lakewood Ranch (Manatee + Sarasota counties)**\n**Why it’s a top choice:** It’s one of the largest, most established master-planned communities in the region, with many neighborhoods feeding into **high-performing Manatee County schools** (and some into Sarasota County). It also ranks extremely high nationally for master-planned community sales. ([rclco.com](https://www.rclco.com/publication/the-top-selling-master-planned-communities-of-2024/?utm_source=openai))  \n**School-zone notes (depends on village/neighborhood):**\n- Common high-school assignments in/around LWR include **Lakewood Ranch HS** and **Braden River HS** (both widely regarded as strong options in Manatee).  \n**Lifestyle/format:** Lots of distinct villages (Waterside, Greenbrook, Country Club, etc.), extensive amenities, broad housing mix.\n\n### 2) **Palmer Ranch (Sarasota)**\n**Why it’s a top choice:** A long-running Sarasota master-planned area with many neighborhoods that tend to feed into well-regarded Sarasota County schools, and great access to I-75, Costco area, and beaches. Sarasota County Schools has maintained an **“A” district grade** in Florida’s school grading releases. ([sarasotacountyschools.net](https://www.sarasotacountyschools.net/article/2300107?utm_source=openai))  \n**School-zone notes:** Palmer Ranch assignments often vary by subsection, but frequently connect to high-performing Sarasota-area schools (confirm for the exact address).  \n**Lifestyle/format:** Multiple subdivisions rather than one “town center” feel; very convenient location.\n\n### 3) **Wellen Park (Venice / South Sarasota County)**\n**Why it’s a top choice:** One of Florida’s and the nation’s top-selling master-planned communities recently, with major amenities and new development (including the Braves’ spring training complex). ([rclco.com](https://www.rclco.com/publication/the-top-selling-master-planned-communities-of-2024-florida-edition/?utm_source=openai))  \n**School-zone notes:** This is in **Sarasota County Schools (A-rated district overall)**, but specific school assignments depend heavily on the neighborhood and can shift as new schools open/redistricting occurs. ([sarasotacountyschools.net](https://www.sarasotacountyschools.net/article/2300107?utm_source=openai))  \n**Lifestyle/format:** Newer inventory, lots of community programming, growing commercial core.\n\n## Also worth considering (depending on budget + exact school target)\n\n### 4) **Waterside at Lakewood Ranch (Sarasota side of LWR)**\n**Why:** You get the Lakewood Ranch master-plan + a more Sarasota-oriented location, and you may land in Sarasota County school zoning depending on the specific section (verify by address).\n\n### 5) **University Park / UTC-adjacent planned neighborhoods**\nNot always marketed as one single MPC the way LWR/Wellen Park are, but there are several **planned communities** around UTC/University Parkway with strong convenience + commonly sought-after school zones. Worth shortlisting if commute to Tampa/airport/UTC matters.\n\n---\n\n## How to ensure you’re really getting “top-rated schools” (fast checklist)\n1) **Pick your must-have schools first** (e.g., a specific elementary and high school), then shop communities that feed them—zoning beats “community reputation.”\n2) **Verify by exact address** using the district boundary tools (Sarasota County Schools vs Manatee County Schools), because “Lakewood Ranch” spans areas and assignments can differ.\n3) If you tell me:\n   - kids’ grades (or “elementary only,” “middle,” etc.)\n   - budget range\n   - commute targets (downtown Sarasota? Bradenton? Tampa airport?)\n   - preference for newer builds vs mature trees/older homes  \n…I’ll narrow this to a **shortlist of 5–8 specific neighborhoods/villages** and the **most likely school assignments** for each.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.8,
+                "strengthsMentioned": [
+                  "One of the largest and most established master-planned communities in the region",
+                  "High-performing Manatee County schools",
+                  "High national ranking for master-planned community sales",
+                  "Extensive amenities",
+                  "Broad housing mix",
+                  "Multiple distinct villages like Waterside, Greenbrook, and Country Club"
+                ],
+                "concernsRaised": [
+                  "School zoning can change by neighborhood or street address",
+                  "Community spans two different counties (Manatee and Sarasota) which affects school assignments"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premier, top-selling master-planned community that is a leading choice for families due to its scale, amenities, and access to highly-regarded schools."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about master-planned communities in the Sarasota-Bradenton area that have top-rated schools.\nBased on my search, here are the best master-planned communities in the Sarasota-Bradenton area with top-rated schools:\n\n## Top Master-Planned Communities\n\n### **Lakewood Ranch**\n\nLakewood Ranch is nationally ranked as the \"best-selling, master-planned multi-generational community in the U.S.\" and the best in Manatee County.\n \nLakewood Ranch is a master-planned community known for its top-rated elementary schools, including Robert E. Willis Elementary, Nolan Middle School, and Lakewood Ranch High School.\n \nLocated in Sarasota and Manatee counties and spanning over 33,000 acres, this vibrant destination offers more than 25 villages, 150 miles of trails, and 10,000 acres of shimmering lakes.\n\n\n### **Skye Ranch**\n\nSkye Ranch offers something unique in central Sarasota: a true master-planned feel without having to live far north in Lakewood Ranch or far south in Wellen Park. Located just 10–11 miles from Siesta Key, this Taylor Morrison community has developed into a vibrant hub with multiple sections, each offering a range of amenities.\n \nA major addition is Skye Ranch School, opening in 2025, which will feature STEM programs and partnerships with Mote Marine Aquarium.\n\n\n### **Wellen Park**\n\nWellen Park offers A-rated schools, family-oriented amenities, planned activities for all ages, and safe, walkable neighborhoods designed with families in mind.\n \nWellen Park in Venice, FL, earned the #6 spot nationally. This multigenerational community spans over 11,000 acres and features more than a dozen distinct residential neighborhoods",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.9,
+                "strengthsMentioned": [
+                  "Nationally ranked as the best-selling master-planned multi-generational community in the U.S.",
+                  "Best community in Manatee County",
+                  "Top-rated schools including Robert E. Willis Elementary, Nolan Middle School, and Lakewood Ranch High School",
+                  "Extensive amenities with 150 miles of trails and 10,000 acres of lakes",
+                  "Large-scale development with over 25 distinct villages"
+                ],
+                "concernsRaised": [
+                  "Positioned geographically as being 'far north' compared to central Sarasota"
+                ],
+                "overallPortrayal": "Lakewood Ranch is portrayed as the premier, gold-standard master-planned community in the region, defined by its top-tier national rankings, excellent schools, and massive scale."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "The Sarasota-Bradenton area is home to some of the nation’s top-selling master-planned communities, many of which are specifically designed around \"A-rated\" school districts. Below are the best communities categorized by their specific school zones and academic performance for the 2024-2025 and 2025-2026 school years.\n\n### **1. Lakewood Ranch (Sarasota & Manatee Counties)**\nConsistently ranked as the #1 multi-generational community in the U.S., Lakewood Ranch is widely considered the gold standard for school-focused families.\n*   **Top-Rated Schools:**\n    *   **Elementary:** Robert Willis (A), Gilbert W. McNeal (A), and B.D. Gullett (A). McNeal has held an \"A\" rating since 2004.\n    *   **Middle:** R. Dan Nolan (A) and Dr. Mona Jain (A). Both are high-performing schools with heavy community involvement.\n    *   **High:** Lakewood Ranch High School (A). It maintains a 97% graduation rate and a strong college acceleration program.\n*   **Unique Features:** The community features an \"educational hub\" design where schools are often within walking or biking distance of residential villages. \n*   **Note:** The southern section (**Waterside**) is in Sarasota County and is currently zoned for **Tatum Ridge Elementary (A)** and **Booker High (B)**, though a new K-8 school is planned for that area by 2028.\n\n### **2. Palmer Ranch (Sarasota County)**\nAn established, upscale community in South Sarasota known for its mature landscaping and central location.\n*   **Top-Rated Schools:**\n    *   **Elementary:** Ashton Elementary (A) or Gulf Gate Elementary (A). Ashton is frequently ranked in the top 5% of all Florida elementary schools.\n    *   **Middle:** Sarasota Middle School (A), which is a top-10% school statewide.\n    *   **High:** Riverview High School (A). Known for its prestigious International Baccalaureate (IB) program and award-winning music department.\n*   **Bonus:** Residents are also in close proximity to **Pine View School (A)**, the #1 ranked public school in Florida for gifted students (grades 2-12).\n\n### **3. Wellen Park (Venice/North Port)**\nFormerly known as West Villages, this is one of the fastest-growing areas in Florida and is investing heavily in new academic infrastructure.\n*   **Top-Rated Schools:**\n    *   **Elementary:** Taylor Ranch Elementary (A).\n    *   **Secondary:** Currently served by **Venice High School (A)**, which is highly regarded for its athletics and academics.\n    *   **Charter:** College Preparatory Academy at Wellen Park recently improved to an \"A\" rating.\n*   **Future Growth:** A brand-new **Wellen Park High School** is set to open in August 2026, along with a new K-8 school on the same campus to alleviate overcrowding and provide state-of-the-art facilities.\n\n### **4. Skye Ranch (Sarasota County)**\nA newer community east of I-75 that is currently transitioning into its own dedicated school zone.\n*   **Top-Rated Schools:**\n    *   **K-8 Innovation:** The **Skye Ranch School (K-8)** is opening in **August 2025**. It will be a state-of-the-art STEM-focused facility.\n    *   **Transition Zoning:** Currently, students are primarily zoned for high-performing schools like **Lakeview Elementary (A)** and **Sarasota Middle (A)**.\n    *   **High:** Riverview High School (A) or Sarasota High (A), both of which are high-performing institutions.\n\n### **5. North River Ranch (Parrish/Bradenton)**\nLocated in the northern part of Manatee County, this community is the \"new\" frontier for families seeking brand-new homes with high academic standards.\n*   **Top-Rated Schools:**\n    *   **Elementary:** Barbara A. Harvey Elementary (A).\n    *   **Middle:** A new North County/North River Ranch Middle School is opening in **August 2025**.\n    *   **High:** Parrish Community High School (A). This school earned its first \"A\" rating in 2024 and features modern career academies in medical and technical fields.\n\n### **Summary Table: Best Communities by Grade Level (2025 Updates)**\n\n| Community | Elementary | Middle | High School |\n| :--- | :--- | :--- | :--- |\n| **Lakewood Ranch** | Willis / McNeal (A) | Nolan / Mona Jain (A) | Lakewood Ranch High (A) |\n| **Palmer Ranch** | Ashton / Gulf Gate (A) | Sarasota Middle (A) | Riverview High (A) |\n| **Wellen Park** | Taylor Ranch (A) | Venice Middle (A) | Venice High (A) |\n| **North River Ranch**| Barbara Harvey (A) | New Parrish Middle (2025) | Parrish Community (A) |\n| **Skye Ranch** | Skye Ranch K-8 (2025) | Skye Ranch K-8 (2025) | Riverview / Sarasota High (A) |\n\n**Pro Tip:** Always verify the specific address on the [Sarasota County School Zone Lookup](https://www.sarasotacountyschools.net/page/school-maps) or [Manatee County School Locator](https://www.manateeschools.net/locator) before purchasing, as boundaries can shift due to the rapid growth in these communities.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.9,
+                "strengthsMentioned": [
+                  "Ranked as the #1 multi-generational community in the U.S.",
+                  "Considered the gold standard for school-focused families",
+                  "Consistently A-rated schools at elementary, middle, and high school levels",
+                  "97% graduation rate at Lakewood Ranch High School",
+                  "Educational hub design with schools in walking or biking distance",
+                  "Strong college acceleration program",
+                  "Heavy community involvement in schools"
+                ],
+                "concernsRaised": [
+                  "The southern section (Waterside) is currently zoned for a B-rated high school (Booker High)"
+                ],
+                "overallPortrayal": "Lakewood Ranch is presented as the top-tier choice for families in the region, characterized by its elite school ratings and walkability to educational facilities."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent data from real estate sources and local rankings (including reports from RCLCO Real Estate Consulting, Sarasota Magazine, and community developers as of early 2026), here are some of the best master-planned communities in the Sarasota-Bradenton area, with a focus on those near top-rated schools. These communities are highly regarded for their amenities, lifestyle offerings, and proximity to excellent education options in Sarasota and Manatee Counties. School ratings are often based on GreatSchools.org or Florida Department of Education metrics, where \"top-rated\" typically means scores of 8-10/10 for academics, test scores, and college readiness.\n\nI'll highlight a few standout options, prioritizing those with strong recent sales, awards, and school access. Keep in mind that \"best\" can be subjective based on your priorities (e.g., family-friendly vibes, amenities, or home prices), so I recommend visiting or consulting a local realtor for the latest details. Home prices in these areas generally range from $400,000 to over $1 million for new builds.\n\n### 1. **Lakewood Ranch** (Sarasota-Manatee Border)\n   - **Why it's top-rated**: Consistently ranked as one of the nation's best master-planned communities. In 2025, it placed in the top 10 nationally by RCLCO for new-home sales (over 3,000 combined with nearby areas), earning recognition for the seventh straight year. It's known for its award-winning design, with amenities like golf courses, trails, parks, shopping districts (e.g., Main Street), and events. The community spans 50 square miles and feels like a self-contained town.\n   - **Top-rated schools nearby**: Zoned for highly regarded schools in the Manatee County School District, including Lakewood Ranch High School (rated 9/10 on GreatSchools), Braden River Middle (8/10), and elementary options like Gullett Elementary (9/10). Many families praise the focus on STEM and extracurriculars.\n   - **Best for**: Families seeking a vibrant, all-in-one lifestyle. New developments include expanded waterfront areas and eco-friendly homes.\n   - **Source info**: LakewoodRanch.com and Sarasota Magazine (January 2026 update).\n\n### 2. **Wellen Park** (South of Sarasota, in Venice/North Port area, but accessible to Bradenton)\n   - **Why it's top-rated**: Another national standout, ranking in the top 10 for 2025 by R",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "sentiment": "positive",
+                "sentimentScore": 0.9,
+                "strengthsMentioned": [
+                  "Consistently ranked as one of the nation's best master-planned communities",
+                  "Top 10 nationally for new-home sales according to RCLCO",
+                  "Award-winning design",
+                  "Extensive amenities including golf courses, trails, parks, and shopping districts",
+                  "Self-contained town feel spanning 50 square miles",
+                  "Zoned for top-rated schools with ratings of 8/10 and 9/10",
+                  "Strong focus on STEM and extracurricular activities",
+                  "Vibrant, all-in-one lifestyle",
+                  "Availability of eco-friendly homes and waterfront areas"
+                ],
+                "concernsRaised": [],
+                "overallPortrayal": "Lakewood Ranch is portrayed as a premier, award-winning national leader among master-planned communities, highly recommended for its top-tier schools and comprehensive lifestyle amenities."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

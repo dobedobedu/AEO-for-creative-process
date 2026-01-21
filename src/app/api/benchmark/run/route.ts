@@ -142,13 +142,23 @@ export async function POST(req: Request) {
       // Note: We currently store one intent text as "primary" for the cell summary in old format
       // but queries now have intentId attached.
       const queryResults: CellResult["results"] = benchmarkResult.queries.map((qr) => {
-        const responses: Record<string, { model: string; responseText: string; score: StageExtraction }> = {};
+        const responses: Record<string, { model: string; responseText: string; score: StageExtraction; citations?: { url: string; domain: string; title?: string; snippet?: string; sourceType: "url_citation" | "grounding_chunk" }[] }> = {};
 
         for (const resp of qr.responses) {
+          // Convert citations to stored format (strip unnecessary fields like startIndex, endIndex, raw)
+          const storedCitations = resp.citations?.map(c => ({
+            url: c.url,
+            domain: c.domain,
+            title: c.title,
+            snippet: c.snippet,
+            sourceType: c.sourceType,
+          }));
+
           responses[resp.provider] = {
             model: resp.model,
             responseText: resp.text,
             score: resp.stageExtraction ?? emptyExtraction(cell.stage),
+            citations: storedCitations,
           };
         }
 

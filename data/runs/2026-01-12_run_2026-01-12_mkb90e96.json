@@ -1,0 +1,116 @@
+{
+  "id": "run_2026-01-12_mkb90e96",
+  "timestamp": "2026-01-12T14:18:39.786Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 1,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "luxury_decide": {
+      "intentId": "int_luxury_decide_mk189ge6",
+      "intentText": "Luxury buyer ready to invest in specific high-end options",
+      "queriesUsed": [
+        "Lakewood Ranch luxury homes for sale with private golf course access"
+      ],
+      "metrics": {
+        "recommendationRate": 1
+      },
+      "results": [
+        {
+          "query": "Lakewood Ranch luxury homes for sale with private golf course access",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are the **best Lakewood Ranch–area luxury communities** where you can buy a home with **private golf course access** (typically via a private club membership or bundled/included golf, depending on the neighborhood).\n\n## 1) The Concession (private, ultra-luxury)\n- **Type:** Gated estate community tied to **The Concession Golf Club** (private).\n- **Home style:** Custom luxury estates, generally larger lots; some of the highest-end inventory in the area. ([lakewoodranchlife.com](https://www.lakewoodranchlife.com/bradenton-fl-real-estate/the-concession/?utm_source=openai))  \n- **Current for-sale hub:** ([zfc.com](https://www.zfc.com/real-estate/Lakewood-Ranch/The-Concession/?utm_source=openai))\n\n## 2) Lakewood Ranch Golf & Country Club (private club; multiple villages)\n- **Type:** Large master-planned set of neighborhoods centered on the **Lakewood Ranch Golf & Country Club** (private).\n- **Golf:** Multiple courses and full club amenities; access is typically via club membership rather than “included with the deed.” ([lakewoodranchlife.com](https://www.lakewoodranchlife.com/lakewood-ranch-country-club/?utm_source=openai))\n\n## 3) Esplanade Golf & Country Club (often “golf included” for many homes)\n- **Type:** Resort-style gated community with an 18-hole course.\n- **Golf:** Many listings are marketed as **golf membership included** (often for two household members), but it can vary by listing—confirm for each property. ([lakewoodranchlife.com](https://www.lakewoodranchlife.com/esplanade-golf-and-country-club-lakewood-ranch/?utm_source=openai))  \n- **Example active listing page:** ([lifeatlakewood.com](https://www.lifeatlakewood.com/homes-for-sale-in-esplanade?utm_source=openai))\n\n---\n\n### Quick questions so I can narrow it to exact listings (and not waste your time)\n1) What price range is “luxury” for you (e.g., **$1M–$2M**, **$2M–$5M**, **$5M+**)?\n2) Do you want **golf membership included** (Esplanade-style), or is **optional private membership** fine (Country Club / Concession-style)?\n3) Minimum beds/baths and must-haves (e.g., **3-car garage**, **new build**, **water/golf view**, **guard-gated**)?\n\nAnswer those and I’ll return a tight shortlist of current listings that match.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "typically via a private club membership or bundled/included golf",
+                  "access can vary by listing",
+                  "dependent on price range",
+                  "choice depends on preference for included vs optional membership"
+                ],
+                "alternativesOffered": [
+                  "The Concession",
+                  "Lakewood Ranch Golf & Country Club",
+                  "Esplanade Golf & Country Club"
+                ],
+                "decisionRationale": "The AI presented Lakewood Ranch as the primary solution for the user's query, breaking down the brand's territory into specific luxury sub-communities that offer the requested private golf course access while distinguishing between their different membership structures."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current luxury homes in Lakewood Ranch with private golf course access.\nBased on current market information, here's what I found about luxury homes in Lakewood Ranch with private golf course access:\n\n## Primary Golf Communities\n\n\nLakewood National Golf and Country Club is the newest luxury and maintenance provided community on a nearly 900-acre enclave in Lakewood Ranch, Florida\n. \nThe 36 hole golf course was designed by Arnold Palmer—one of his last\n. \nLakewood National Golf & Country Club is Lennar's newest 36 hole championship golf course with high end amenities starting in the high 100's\n.\n\n\nEsplanade at Lakewood Ranch is a private golf club featuring an 18-hole championship golf course, located in Bradenton, Florida this bundled golf community offers a resort-like lifestyle with lush landscaping and beautifully manicured golf course and practice facility\n.\n\n\nAt the heart of this golf-centric paradise is the Lakewood Ranch Golf and Country Club, one of the most sought-after gated communities featuring three championship courses designed by Arnold Palmer\n. \nWith the recent addition of a fourth private golf course, The Legacy, Lakewood Ranch Golf and Country Club Members have unparalleled access to the area's finest golf\n.\n\n## Property Options\n\n\n12 golf communities offer 93 available new homes, ready to build, starting at just $399,990. With spacious floorplans featuring up to 5 bedrooms in 3,270 square feet, home shoppers can live comfortably in their luxurious new home on the greens\n.\n\n\nNew golf villas for sale in Lakewood Ranch provide spacious layouts with high-end finishes and private courtyards\n.\n\n## Amenities & Features",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "luxury and maintenance provided",
+                  "bundled golf community",
+                  "resort-like lifestyle",
+                  "sought-after gated communities",
+                  "ready to build"
+                ],
+                "alternativesOffered": [],
+                "decisionRationale": "The response provides a detailed and positive overview of the specific luxury golf communities within Lakewood Ranch, highlighting world-class golf course designs by Arnold Palmer, resort-style amenities, and high-end property availability to satisfy the user's specific luxury criteria."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Lakewood Ranch offers several premier luxury communities that provide private golf course access, ranging from **exclusive private clubs** (where membership is separate) to **\"bundled\" golf communities** (where membership is included with your home purchase).\n\nAs of early 2026, the following communities represent the pinnacle of luxury golf living in Lakewood Ranch:\n\n### 1. Lakewood Ranch Country Club & Country Club East\nThis is the most established luxury golf destination in the area. It is a **private, members-only** club featuring 54 holes of championship golf.\n*   **The Courses:** Three distinct courses: *Cypress Links* and *King’s Dunes* (Arnold Palmer designs), and *Royal Lakes* (Rick Robbins design).\n*   **Home Styles:** Features everything from maintenance-free villas to sprawling estates over 10,000 sq. ft.\n*   **Luxury Pricing:** Homes generally range from **$1.2 million to over $4 million**. Exclusive enclaves like *Highfield* and *La Cantera* feature the highest-end custom builds.\n*   **Amenities:** A 45,000 sq. ft. clubhouse, 18 tennis courts, pickleball, and a massive fitness center.\n\n### 2. The Lake Club\nWhile The Lake Club does not have its own golf course within its gates, it is widely considered the most prestigious address in Lakewood Ranch. Residents typically hold memberships at the adjacent Lakewood Ranch Country Club.\n*   **Private Access:** Residents are just minutes from five premier courses and the Sarasota Polo Club.\n*   **Luxury Features:** Tuscan-inspired architecture, cobblestone bridges, and custom-built estates by top-tier builders (e.g., Stock Signature, AR Homes).\n*   **Luxury Pricing:** Homes start around **$2 million** and frequently exceed **$7 million**.\n\n### 3. Esplanade Golf & Country Club\nThis is a **\"bundled\" golf community**, meaning a golf membership is deeded to the home. It is ideal for those who want a resort-style lifestyle with guaranteed course access.\n*   **The Course:** A meticulously maintained 18-hole championship course.\n*   **Home Styles:** Mediterranean-style single-family homes and luxury detached villas.\n*   **Luxury Pricing:** High-end homes on \"Golf Deeded\" lots typically range from **$1 million to $2.5 million**.\n*   **Amenities:** Known for its \"Lifestyle Director,\" offering a wellness center, Bahama Bar (tiki bar), and full-service spa.\n\n### 4. Esplanade at Azario\nOne of the newest luxury additions, Azario offers a similar bundled golf model but with more modern construction and expanded amenities.\n*   **The Course:** An 18-hole championship course designed to be both challenging and scenic.\n*   **Home Styles:** New construction luxury villas and estate homes with golf course frontage.\n*   **Luxury Pricing:** Recently listed luxury homes range from **$1.3 million to over $2.2 million**.\n\n### 5. Lakewood National Golf Club\nA top choice for serious golfers, this community features **36 holes of Arnold Palmer-designed golf**.\n*   **The Courses:** The *Commander* and *Piper* courses.\n*   **Model:** Bundled golf community.\n*   **Luxury Pricing:** Large estate-style \"Executive\" homes with panoramic fairway views typically range from **$1.1 million to $2.5 million**.\n\n### 6. The Concession (Adjacent to Lakewood Ranch)\nFor the ultimate in privacy and prestige, The Concession is an ultra-exclusive gated community located on the border of Lakewood Ranch.\n*   **The Course:** A Jack Nicklaus signature course (consistently ranked as one of the best in the U.S.).\n*   **Estates:** Large, private lots of 1+ acres.\n*   **Luxury Pricing:** Estates here are frequently priced between **$3 million and $10 million+**.\n\n### Summary of Market Features (Jan 2026)\n| Community | Access Type | Typical Luxury Price Range | Key Feature |\n| :--- | :--- | :--- | :--- |\n| **LWR Country Club** | Private Club | $1.2M – $4.5M | 54 Holes / Established |\n| **The Lake Club** | Nearby Access | $2.0M – $7.0M+ | Most Exclusive / Custom Estates |\n| **Esplanade / Azario** | Bundled | $1.0M – $2.5M | Resort Lifestyle / New Builds |\n| **Lakewood National** | Bundled | $900K – $2.5M | 36 Holes (Arnold Palmer) |\n| **The Concession** | Private Club | $3.0M – $10M+ | 1-Acre Lots / World-Class Golf |\n\n**Key Tip:** When searching, clarify if the property is **\"Golf Deeded.\"** In bundled communities like Esplanade or Lakewood National, the membership is mandatory and included. In the Country Club, membership is optional but requires an initiation fee and monthly dues.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "membership separate for exclusive private clubs",
+                  "membership included for bundled golf communities",
+                  "The Lake Club requires membership at adjacent Lakewood Ranch Country Club",
+                  "clarify if property is Golf Deeded"
+                ],
+                "alternativesOffered": [
+                  "The Concession"
+                ],
+                "decisionRationale": "The AI presents Lakewood Ranch as the primary destination for the user's request, describing its communities as the 'pinnacle of luxury golf living' and providing detailed breakdowns of five distinct neighborhoods within the brand that meet the luxury and golf criteria."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent web information, Lakewood Ranch in Florida is a highly sought-after master-planned community known for its luxury homes and exclusive golf amenities. It's ranked as one of America's top master-planned communities, offering resort-style living with access to private golf courses, waterfront views, and family-friendly neighborhoods. I'll summarize some key options for luxury homes with private golf course access, drawing from current listings (as of early 2026). Note that real estate markets fluctuate, so I recommend contacting a local agent or visiting the sites directly for the latest details, prices, and virtual tours.\n\n### Key Communities and Listings\nLakewood Ranch features several gated neighborhoods with private golf course access, often including championship courses, clubhouses, and high-end amenities like spas, tennis courts, and fitness centers. Here's a breakdown of standout options:\n\n- **Lakewood Ranch Country Club**: This upscale area offers luxury homes with direct access to a private 54-hole golf complex. There are currently around 49 homes for sale here, ranging from elegant villas to custom estates. Prices typically start in the high $500,000s and go well into the millions for properties with golf course views. Check listings on sites like buysarasota.com or lwrhome.com for daily updates from the MLS.\n\n- **Lakewood National Golf & Country Club**: Developed by Lennar, this community boasts a 36-hole Arnold Palmer-designed championship golf course. It's ideal for those seeking newer construction with private access. There are about 252 golf community homes listed across Lakewood Ranch, with many in Lakewood National starting in the high $100,000s for condos and villas, scaling up to luxury single-family homes in the $1M+ range. Visit buylakewoodranch.com or buylakewoodranch.com/lakewood-ranch/lakewood-national-golf-and-country-club for more on amenities and available properties.\n\n- **General Lakewood Ranch Golf Course Homes**: Overall, there are over 1,189 homes for sale in Lakewood Ranch, with a significant portion in golf-oriented neighborhoods. Luxury options often include waterfront or fairway-facing properties in areas like Country Club West or other enclaves. For example:\n  - Homes with stunning golf views are highlighted on davidliberatore.com/lakewood-ranch/golf-course-homes, focusing on premier spots like Lakewood National and the Country Club.\n  - A recent blog post on buylakewoodranch.com (dated September 2025) explores luxury golf course homes alongside waterfront and new construction options,",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "real estate markets fluctuate",
+                  "recommend contacting a local agent",
+                  "visit sites directly for latest details"
+                ],
+                "alternativesOffered": [
+                  "Lakewood Ranch Country Club",
+                  "Lakewood National Golf & Country Club",
+                  "Country Club West"
+                ],
+                "decisionRationale": "Lakewood Ranch is presented as a premier choice, ranked as one of America's top master-planned communities. The AI highlights its luxury homes, resort-style living, and extensive private golf amenities, including a 54-hole complex and Arnold Palmer-designed championship courses."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

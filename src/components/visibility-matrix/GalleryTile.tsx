@@ -39,6 +39,7 @@ interface GalleryTileProps {
     brandDomain?: string;
     onClick: () => void;
     accentColor?: string;
+    isMissing?: boolean; // NEW: indicates no data for this cell (partial run)
 }
 
 export function GalleryTile({
@@ -54,6 +55,7 @@ export function GalleryTile({
     brandDomain,
     onClick,
     accentColor = "#1f3b2c",
+    isMissing = false,
 }: GalleryTileProps) {
     const hasContent = intents.length > 0;
     const queryCount = intents.reduce((acc, i) => acc + (i.generatedQueries?.length || 0), 0);
@@ -94,7 +96,17 @@ export function GalleryTile({
             className="group cursor-pointer h-full"
             onClick={onClick}
         >
-            <Card className={`h-full border-[#e3dacb] hover:border-black/20 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 shadow-none p-6 flex flex-col gap-6 ${heatmapClass}`}>
+            <Card className={`h-full border-[#e3dacb] hover:border-black/20 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 shadow-none p-6 flex flex-col gap-6 ${isMissing ? "bg-black/5" : heatmapClass}`}>
+                {/* Missing Cell State */}
+                {isMissing ? (
+                    <div className="h-full flex items-center justify-center">
+                        <div className="text-center">
+                            <p className="text-xs text-black/30 italic">No data captured</p>
+                            <p className="text-[9px] text-black/20 mt-1">for this cell</p>
+                        </div>
+                    </div>
+                ) : (
+                    <>
                 {/* Header: Stage Identifier */}
                 <div className="flex items-start justify-between">
                     <div className="flex flex-col gap-1">
@@ -242,6 +254,8 @@ export function GalleryTile({
                         </>
                     )}
                 </div>
+                    </>
+                )}
             </Card>
         </motion.div>
     );

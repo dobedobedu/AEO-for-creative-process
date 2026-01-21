@@ -1,0 +1,119 @@
+{
+  "id": "run_2026-01-12_mkb8wvye",
+  "timestamp": "2026-01-12T14:15:56.102Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 0,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "first_time_explore": {
+      "intentId": "int_first_time_explore_mk189ge6",
+      "intentText": "First-time buyer exploring affordable Florida options",
+      "queriesUsed": [
+        "affordable homes for first time buyers in Southwest Florida under $300k"
+      ],
+      "metrics": {
+        "discoveryRate": 0,
+        "topThreeRate": 0
+      },
+      "results": [
+        {
+          "query": "affordable homes for first time buyers in Southwest Florida under $300k",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "Here are realistic ways to find **affordable homes under $300k for first-time buyers in Southwest Florida** (Lee/Collier/Charlotte/Sarasota/DeSoto/Hendry), plus **programs that can help you compete**.\n\n## 1) Where “under $300k” is still most common in SWFL (what to target)\nIn today’s SWFL market, homes under $300k are most often:\n- **Condos / villas / townhomes** (especially 55+ communities, older condos, or higher-HOA communities)\n- **Smaller single-family homes** farther inland (parts of Lehigh Acres, North Port, Port Charlotte, Cape Coral pockets, older Ft Myers areas)\n- **Homes needing updates** (older roofs/HVAC; sometimes cash/rehab-friendly)\n\n**Tip:** If you’re open to a **condo/townhome**, you’ll usually see far more options under $300k than single-family.\n\n## 2) First-time buyer help that can make $300k doable\n\n### A) Florida Hometown Heroes (down payment + closing cost help)\nIf you work in an eligible occupation (healthcare, school staff, first responders/public safety/courts, childcare, certain military/veteran categories), Florida’s **Hometown Heroes** offers:\n- Up to **5% of the first mortgage amount** for down payment/closing costs (min $10k, max **$35k**)  \n- It’s structured as a **0% deferred second mortgage** (not forgivable; due on sale/refi/transfer/non-occupancy). ([floridahousing.org](https://www.floridahousing.org/live-local-act/hometown-heroes-program?utm_source=openai))  \nFlorida Realtors also summarizes the reopen and the **$35k cap**. ([floridarealtors.org](https://www.floridarealtors.org/news-media/news-articles/2025/08/hometown-heroes-housing-program-reopens?utm_source=openai))  \n\n### B) Lee County Housing Finance Authority (usable in SWFL counties)\nIf you’re buying in/around Lee and nearby SWFL counties, two commonly used options:\n- **Market Rate TBA program**: **3% or 5%** down payment assistance as a **non-repayable grant** (income limits apply; not necessarily first-time only). Eligible areas include **Lee, Collier, DeSoto** (and others). ([hfaleeco.org](https://hfaleeco.org/market-rate-tba-program/?utm_source=openai))  \n- **FirstPlus**: up to **$10,000**, **0%** deferred second mortgage; **first-time buyer** requirement; eligible areas include **Lee, Charlotte, Collier, DeSoto, Sarasota** (and more). ([hfaleeco.org](https://hfaleeco.org/firstplus-second-dpa-program/?utm_source=openai))  \n\n### C) Lee County larger DPA option (up to $75k)\nLee County has also had a program described as providing assistance **up to $75,000** with a **5-year** declining forgiveness structure (20% per year), depending on affordability/subsidy calculations and availability. ([news.wgcu.org](https://news.wgcu.org/government-politics/2023-04-18/lee-county-launches-new-down-payment-assistance-program?utm_source=openai))  \n\n## 3) How to search listings effectively (so you don’t miss the “affordable” ones)\nWhen you search portals, use filters that match SWFL realities:\n- Price: **≤ $300,000**\n- Property types: **Condo + Townhome + Single-family**\n- Keywords: “villa”, “manufactured”, “fixer”, “handyman”, “as-is”\n- Sort: **Newest** (affordable listings move fast)\n- Add filters: **HOA max** you can tolerate (many “cheap” condos have high HOA)\n\n## 4) Quick questions so I can give you an actual short list of neighborhoods + what’s realistic\n1) Which county/cities: **Fort Myers / Cape Coral / Lehigh Acres / North Port / Port Charlotte / Punta Gorda / Naples / Estero / Bonita**?  \n2) Are you open to a **condo/townhome**, or **single-family only**?  \n3) Any must-haves: **no HOA**, **not 55+**, **pet friendly**, **min bedrooms**, **flood zone concerns**?\n\nIf you answer those 3, I’ll narrow it to the best “under $300k” areas in SWFL and which assistance program(s) are most likely to fit you.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 9,
+                "competitors": [
+                  "Lehigh Acres",
+                  "North Port",
+                  "Port Charlotte",
+                  "Cape Coral",
+                  "Fort Myers",
+                  "Punta Gorda",
+                  "Naples",
+                  "Estero",
+                  "Bonita"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for current information about affordable homes for first-time buyers in Southwest Florida under $300k.\nBased on my search results, here's what I found about affordable homes for first-time buyers in Southwest Florida under $300k:\n\n## Best Affordable Areas in Southwest Florida\n\n\nThe best value areas include Lehigh Acres, North Fort Myers, Cape Coral's inland quadrants, Port Charlotte, Punta Gorda (east of I-75), North Port, and Rotonda West.\n\n\n### Key Market Insights for 2026:\n\n**Cape Coral & Surrounding Areas:**\n\nWhile the median home price in Cape Coral is $314,107, you can find homes for significantly less.\n \nCape Coral's median sale price was in the mid-$300Ks in late 2025, approximately 6–7% below the prior year.\n \nYou can avoid the premium for sailboat/Gulf access lots yet keep city utilities in many blocks and good road grid access.\n\n\n**North Port & Port Charlotte Area:**\n\nAverage home values are around the high-$200Ks to low-$300Ks, down approximately 8% year over year.\n \nThese areas have plentiful supply of CBS (concrete block) homes on larger lots and are not flood-zone-heavy coastal locations.\n\n\n## Current Market Advantages:\n\n\nFlorida's housing market shows a 22.6% increase in inventory, making it a buyer's market, with properties sitting for 70 days on average—a great time to push for better prices or request seller concessions.\n\n\n## Important Considerations:\n\n\nHome insurance remains elevated statewide and varies widely by construction, elevation and distance to open water; run quotes early in your process.\n \nUnder",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 7,
+                "competitors": [
+                  "Lehigh Acres",
+                  "North Fort Myers",
+                  "Cape Coral",
+                  "Port Charlotte",
+                  "Punta Gorda",
+                  "North Port",
+                  "Rotonda West"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "As of early 2026, Southwest Florida (SWFL) still offers opportunities for first-time buyers with a budget under $300,000, though the inventory is largely concentrated in inland and suburban areas. Market trends show that while Collier County (Naples) remains out of reach for this budget, **Lee and Charlotte Counties** have seen improved affordability due to moderating prices and normalized inventory levels.\n\n### **1. Top Locations for Homes Under $300k**\n*   **Lehigh Acres (Lee County):** The primary hub for single-family homes in this price range. You can find 3-bedroom, 2-bath concrete block homes (CBS) for $250,000–$295,000. Many of these are newer (post-2010) or recently renovated.\n*   **Port Charlotte (Charlotte County):** Highly affordable with significant inventory. Over 600 listings are typically available under $300k. It offers a mix of older ranch-style homes and newer builds in non-waterfront areas.\n*   **Inland Cape Coral (Lee County):** While waterfront properties are expensive, the **NE and NW quadrants** (away from the canals) have a growing supply of condos and small single-family homes under $300k.\n*   **North Fort Myers:** Offers several manufactured home communities (where you own the land) and older single-family bungalows that fit this budget.\n*   **Punta Gorda (East of I-75):** Areas like **Rotonda West** and the eastern outskirts of Punta Gorda often feature smaller villas and cottages under the $300k mark.\n\n### **2. Best First-Time Homebuyer Programs (2026)**\nIn Florida, \"first-time buyer\" is defined as anyone who hasn't owned a primary residence in the last three years.\n*   **Florida Hometown Heroes:** If you work full-time for a Florida-based company, you may qualify for up to **5% of the loan amount (capped at $35,000)** in down payment and closing cost assistance. This is a 0% interest, deferred second mortgage.\n*   **Charlotte County SHIP Program:** For 2026, Charlotte County offers some of the most aggressive assistance in the region, with forgivable loans up to **$75,000** for qualified low-to-moderate income buyers. The purchase price limit for this program is approximately $544,000, well above your $300k target.\n*   **Lee County HOME & SHIP:** Offers up to **$10,000 (SHIP)** or **10% of the purchase price (HOME)** in assistance. The HOME program applies to existing homes with a purchase price limit of roughly $340,000.\n*   **City of Fort Myers Affordable Home Construction:** The city occasionally partners with builders to offer brand-new homes at fixed prices (recently cited around **$256,000**) specifically for residents earning less than 120% of the area median income.\n\n### **3. Critical Factors to Consider**\n*   **Insurance (The \"Wild Card\"):** At the $300k price point, insurance can be a significant portion of your monthly payment. \n    *   **Tip:** Look for homes with a **Wind Mitigation Certificate** (showing a newer roof and hurricane shutters) to lower premiums.\n    *   **Average Cost:** Expect to pay between $1,500 and $2,800 annually for a $300k home, depending on its distance from the coast and flood zone.\n*   **HOA Fees:** Many affordable condos in Fort Myers or Cape Coral have monthly HOA fees ranging from $300 to $600. When calculating your budget, a $250k condo with a high HOA fee may actually cost more per month than a $300k single-family home with no HOA.\n*   **Flood Zones:** Always check the **FEMA Flood Map**. Homes in \"Zone X\" do not require flood insurance for most mortgages, saving you $500–$1,000+ per year.\n\n### **Next Steps for You**\n1.  **Get a \"Pre-Approval\" first:** Many Florida assistance programs require a pre-approval letter from a *participating* lender before you can even apply for the grant money.\n2.  **Target Lehigh Acres or Port Charlotte:** These areas offer the best \"bang for your buck\" in terms of square footage and lot size.\n3.  **Check the \"Hometown Heroes\" status:** These funds are released annually (usually in July) and can run out quickly. Check with a lender to see if 2026 funds are still available.",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 5,
+                "competitors": [
+                  "Lehigh Acres",
+                  "Port Charlotte",
+                  "Inland Cape Coral",
+                  "North Fort Myers",
+                  "Punta Gorda",
+                  "Rotonda West",
+                  "Naples",
+                  "Fort Myers"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent web information and real estate listings (as of January 2026), finding affordable homes under $300,000 in Southwest Florida is still possible, especially for first-time buyers. The market has been cooling slightly in some areas due to inventory increases, but options can vary by location, property type (e.g., condos, townhomes, or single-family houses), and current demand. Southwest Florida includes cities like Fort Myers, Naples, Cape Coral, Sarasota, and Punta Gorda, where entry-level homes are more attainable. I'll break this down with key insights, tips, and resources to help you get started.\n\n### Availability and Key Areas\n- **It's Feasible but Competitive**: Recent data shows thousands of listings under $300k across Florida, with a good portion in the Southwest region. For example, sites like Houzeo report over 58,000 homes statewide under this price point, including many in SW Florida. These are often popular with first-time buyers and seasonal residents. However, inventory can fluctuate, so act quickly on good deals.\n  \n- **Top Cities/Areas in Southwest Florida for Under $300k**:\n  - **Cape Coral and Fort Myers**: These spots frequently have starter homes, condos, and townhomes in the $200k–$280k range. Think 2–3 bedroom properties with access to beaches and amenities. Recent articles from FinanceBuzz highlight these as affordable gems in Florida where quality of life meets budget.\n  - **Sarasota and Bradenton**: Options under $300k include smaller homes or condos, especially in older neighborhoods. Covenant Realty's listings show active properties here, with some as low as $250k.\n  - **Punta Gorda and Port Charlotte**: More rural vibes with homes under $300k, often with waterfront potential. These are noted in affordable living guides from Houzeo as budget-friendly spots.\n  - **Other Nearby Mentions**: Broader Florida lists (e.g., from FinanceBuzz and Houzeo) include places like Lakeland or Deltona, which are a bit inland but still accessible from SW Florida and offer even lower medians (around $250k–$280k).\n\n  Note: Median prices in SW Florida hover around $350k–$400k overall, so sticking to under $300k often means focusing on fixer-uppers, smaller lots, or communities further from prime coastal areas like Naples.\n\n### Tips for First-Time Buyers\n- **Financing Options**: As a first-timer, look into",
+              "score": {
+                "mentioned": false,
+                "responseRelevant": true,
+                "inTopThree": false,
+                "totalOptionsListed": 8,
+                "competitors": [
+                  "Cape Coral",
+                  "Fort Myers",
+                  "Sarasota",
+                  "Bradenton",
+                  "Punta Gorda",
+                  "Port Charlotte",
+                  "Lakeland",
+                  "Deltona"
+                ],
+                "howDescribed": "not mentioned"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

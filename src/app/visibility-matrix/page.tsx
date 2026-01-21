@@ -20,6 +20,8 @@ import {
   Pencil,
   Check,
   MessageSquare,
+  X,
+  Clock,
 } from "lucide-react";
 import Image from "next/image";
 import { ChatPanel } from "@/components/chat-panel";
@@ -43,6 +45,7 @@ import {
   Area,
   CartesianGrid,
   XAxis,
+  ReferenceLine,
 } from "recharts";
 
 import type { IntentLibrary, IntentNode } from "@/lib/intents/types";
@@ -89,7 +92,7 @@ interface CellData {
   results: QueryResult[];
   avgScore: number;
   mentionRate: number;
-  status: "idle" | "running" | "complete";
+  status: "idle" | "running" | "complete" | "partial";
   // Stage-specific metrics from new scoring system
   stageMetrics?: {
     discoveryRate?: number;
@@ -101,6 +104,7 @@ interface CellData {
 }
 
 interface BenchmarkRun {
+  id: string;
   timestamp: number;
   label: string;
   providerScores: Record<Provider, { avgScore: number; mentionRate: number }>;
@@ -192,27 +196,36 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
   return bank;
 }
 
+// Convert a StoredRun to a QueryBank for displaying historical intent/query data
+function storedRunToQueryBank(run: StoredRun): QueryBank {
+  const bank = createEmptyQueryBank();
+
+  for (const [cellKey, cellResult] of Object.entries(run.cells)) {
+    // cellKey is "persona_stage" format (e.g., "luxury_explore")
+    const parts = cellKey.split("_");
+    const stage = parts.pop() as Stage;
+    const persona = parts.join("_") as Persona;
+
+    if (!bank[persona] || !bank[persona][stage]) continue;
+
+    // Create an intent node from the stored cell data
+    const intentNode: IntentNode = {
+      id: cellResult.intentId,
+      text: cellResult.intentText,
+      role: "cpo",           // Default role (not stored in historical runs)
+      queryStyle: 0.75,      // Default style (not stored in historical runs)
+      generatedQueries: cellResult.queriesUsed,
+    };
+
+    bank[persona][stage].intents.push(intentNode);
+  }
+
+  return bank;
+}
+
 const BRAND = "Lakewood Ranch";
 const BRAND_ALIASES = ["LWR", "Lakewood"];
 const BRAND_DOMAIN = "lakewoodranch.com";
-
-// Deterministic mock historical data for time slider demo (13 weeks)
-// Using fixed values to avoid hydration errors from Math.random()
-const MOCK_HISTORY: BenchmarkRun[] = [
-  { timestamp: 1, label: "W1", providerScores: { openai: { avgScore: 0.38, mentionRate: 0.42 }, anthropic: { avgScore: 0.32, mentionRate: 0.37 }, gemini: { avgScore: 0.28, mentionRate: 0.33 }, xai: { avgScore: 0.22, mentionRate: 0.27 } }, stageData: { positionCounts: { "1st": 3, "2nd": 4, "3rd": 5, later: 4, absent: 9 }, sentimentScore: -0.15, winRate: 0.32, recStrength: 0.25 }, competitorRanking: ["The Villages", "Nocatee", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 2, label: "W2", providerScores: { openai: { avgScore: 0.40, mentionRate: 0.45 }, anthropic: { avgScore: 0.34, mentionRate: 0.39 }, gemini: { avgScore: 0.31, mentionRate: 0.36 }, xai: { avgScore: 0.24, mentionRate: 0.29 } }, stageData: { positionCounts: { "1st": 4, "2nd": 4, "3rd": 4, later: 3, absent: 8 }, sentimentScore: -0.08, winRate: 0.36, recStrength: 0.30 }, competitorRanking: ["The Villages", "Nocatee", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 3, label: "W3", providerScores: { openai: { avgScore: 0.42, mentionRate: 0.48 }, anthropic: { avgScore: 0.35, mentionRate: 0.41 }, gemini: { avgScore: 0.34, mentionRate: 0.40 }, xai: { avgScore: 0.25, mentionRate: 0.30 } }, stageData: { positionCounts: { "1st": 4, "2nd": 5, "3rd": 4, later: 3, absent: 7 }, sentimentScore: -0.02, winRate: 0.40, recStrength: 0.34 }, competitorRanking: ["The Villages", "Nocatee", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 4, label: "W4", providerScores: { openai: { avgScore: 0.44, mentionRate: 0.51 }, anthropic: { avgScore: 0.37, mentionRate: 0.43 }, gemini: { avgScore: 0.38, mentionRate: 0.44 }, xai: { avgScore: 0.27, mentionRate: 0.32 } }, stageData: { positionCounts: { "1st": 5, "2nd": 5, "3rd": 4, later: 3, absent: 6 }, sentimentScore: 0.05, winRate: 0.44, recStrength: 0.38 }, competitorRanking: ["The Villages", "Nocatee", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 5, label: "W5", providerScores: { openai: { avgScore: 0.46, mentionRate: 0.54 }, anthropic: { avgScore: 0.38, mentionRate: 0.45 }, gemini: { avgScore: 0.41, mentionRate: 0.48 }, xai: { avgScore: 0.28, mentionRate: 0.34 } }, stageData: { positionCounts: { "1st": 5, "2nd": 5, "3rd": 4, later: 3, absent: 6 }, sentimentScore: 0.10, winRate: 0.48, recStrength: 0.42 }, competitorRanking: ["The Villages", "Nocatee", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 6, label: "W6", providerScores: { openai: { avgScore: 0.48, mentionRate: 0.56 }, anthropic: { avgScore: 0.40, mentionRate: 0.47 }, gemini: { avgScore: 0.44, mentionRate: 0.51 }, xai: { avgScore: 0.29, mentionRate: 0.35 } }, stageData: { positionCounts: { "1st": 6, "2nd": 5, "3rd": 3, later: 3, absent: 5 }, sentimentScore: 0.14, winRate: 0.51, recStrength: 0.45 }, competitorRanking: ["The Villages", "Nocatee", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 7, label: "W7", providerScores: { openai: { avgScore: 0.50, mentionRate: 0.58 }, anthropic: { avgScore: 0.41, mentionRate: 0.49 }, gemini: { avgScore: 0.47, mentionRate: 0.54 }, xai: { avgScore: 0.30, mentionRate: 0.36 } }, stageData: { positionCounts: { "1st": 6, "2nd": 5, "3rd": 3, later: 2, absent: 5 }, sentimentScore: 0.18, winRate: 0.54, recStrength: 0.48 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 8, label: "W8", providerScores: { openai: { avgScore: 0.52, mentionRate: 0.60 }, anthropic: { avgScore: 0.43, mentionRate: 0.51 }, gemini: { avgScore: 0.49, mentionRate: 0.56 }, xai: { avgScore: 0.31, mentionRate: 0.37 } }, stageData: { positionCounts: { "1st": 7, "2nd": 5, "3rd": 3, later: 2, absent: 4 }, sentimentScore: 0.22, winRate: 0.57, recStrength: 0.51 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 9, label: "W9", providerScores: { openai: { avgScore: 0.54, mentionRate: 0.62 }, anthropic: { avgScore: 0.44, mentionRate: 0.53 }, gemini: { avgScore: 0.51, mentionRate: 0.58 }, xai: { avgScore: 0.32, mentionRate: 0.38 } }, stageData: { positionCounts: { "1st": 7, "2nd": 5, "3rd": 3, later: 2, absent: 4 }, sentimentScore: 0.25, winRate: 0.59, recStrength: 0.54 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 10, label: "W10", providerScores: { openai: { avgScore: 0.56, mentionRate: 0.64 }, anthropic: { avgScore: 0.46, mentionRate: 0.55 }, gemini: { avgScore: 0.53, mentionRate: 0.60 }, xai: { avgScore: 0.33, mentionRate: 0.40 } }, stageData: { positionCounts: { "1st": 8, "2nd": 5, "3rd": 3, later: 2, absent: 3 }, sentimentScore: 0.28, winRate: 0.61, recStrength: 0.56 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 11, label: "W11", providerScores: { openai: { avgScore: 0.57, mentionRate: 0.66 }, anthropic: { avgScore: 0.47, mentionRate: 0.56 }, gemini: { avgScore: 0.54, mentionRate: 0.62 }, xai: { avgScore: 0.34, mentionRate: 0.41 } }, stageData: { positionCounts: { "1st": 8, "2nd": 5, "3rd": 3, later: 2, absent: 3 }, sentimentScore: 0.30, winRate: 0.63, recStrength: 0.58 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 12, label: "W12", providerScores: { openai: { avgScore: 0.58, mentionRate: 0.68 }, anthropic: { avgScore: 0.48, mentionRate: 0.58 }, gemini: { avgScore: 0.55, mentionRate: 0.64 }, xai: { avgScore: 0.35, mentionRate: 0.42 } }, stageData: { positionCounts: { "1st": 8, "2nd": 5, "3rd": 3, later: 2, absent: 3 }, sentimentScore: 0.32, winRate: 0.65, recStrength: 0.60 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
-  { timestamp: 13, label: "W13", providerScores: { openai: { avgScore: 0.60, mentionRate: 0.70 }, anthropic: { avgScore: 0.50, mentionRate: 0.60 }, gemini: { avgScore: 0.56, mentionRate: 0.65 }, xai: { avgScore: 0.36, mentionRate: 0.43 } }, stageData: { positionCounts: { "1st": 9, "2nd": 5, "3rd": 2, later: 2, absent: 3 }, sentimentScore: 0.35, winRate: 0.67, recStrength: 0.62 }, competitorRanking: ["Nocatee", "The Villages", "Wellen Park", "Sun City Center", "On Top of the World"] },
-];
 
 const PROVIDER_MODELS: Record<Provider, string> = {
   openai: "gpt-5.2",
@@ -344,6 +357,7 @@ function toUiBenchmarkRun(run: StoredRun): BenchmarkRun {
   const runLabel = run.timestamp.split("T")[0];
 
   return {
+    id: run.id,
     timestamp: Date.parse(run.timestamp),
     label: runLabel,
     providerScores,
@@ -361,6 +375,135 @@ function toUiBenchmarkRun(run: StoredRun): BenchmarkRun {
     },
     competitorRanking,
   };
+}
+
+// Convert a StoredRun to the matrixData format used by the grid
+// Handles ALL 16 cells, marking missing ones as "partial"
+function storedRunToMatrixData(run: StoredRun): Record<string, CellData> {
+  const data: Record<string, CellData> = {};
+
+  // Process all 16 cells (4 personas × 4 stages)
+  for (const persona of DEFAULT_PERSONAS.map(p => p.id)) {
+    for (const stage of STAGES.map(s => s.id)) {
+      const cellKey = `${persona}_${stage}`;
+      const uiKey = `${persona}-${stage}`;
+      const cellResult = run.cells[cellKey];
+
+      if (!cellResult) {
+        // Missing cell - mark as partial
+        data[uiKey] = {
+          persona,
+          stage,
+          intents: [],
+          results: [],
+          avgScore: 0,
+          mentionRate: 0,
+          status: "partial",
+          stageMetrics: undefined,
+        };
+        continue;
+      }
+
+      // Convert stored QueryResults to UI QueryResults
+      const uiResults: QueryResult[] = cellResult.results.map((qr) => {
+        const responses: QueryResult["responses"] = [];
+
+        for (const [provider, resp] of Object.entries(qr.responses)) {
+          const extraction = resp.score;
+
+          // Extract visibility info from extraction
+          const mentioned = extraction.mentioned ?? false;
+          const score = extractionToScalarScore(stage, extraction);
+
+          // Determine sentiment from extraction
+          let sentiment: "positive" | "negative" | "neutral" = "neutral";
+          if ("sentimentScore" in extraction) {
+            sentiment = extraction.sentimentScore > 0.3 ? "positive"
+              : extraction.sentimentScore < -0.3 ? "negative" : "neutral";
+          }
+
+          // Determine position
+          let position = "absent";
+          if ("inTopThree" in extraction) {
+            position = extraction.mentioned ? (extraction.inTopThree ? "1st" : "later") : "absent";
+          }
+
+          // Determine comparison outcome
+          let comparisonOutcome: "favorable" | "unfavorable" | "neutral" | "none" = "none";
+          if ("outcome" in extraction) {
+            comparisonOutcome = extraction.outcome === "win" ? "favorable"
+              : extraction.outcome === "lose" ? "unfavorable"
+              : extraction.outcome === "tie" || extraction.outcome === "mixed" ? "neutral" : "none";
+          }
+
+          // Determine recommendation strength
+          let recommendationStrength: "strong" | "moderate" | "weak" | "none" = "none";
+          if ("recommendationStrength" in extraction) {
+            const rs = extraction.recommendationStrength;
+            recommendationStrength = rs === "strongly_recommended" || rs === "recommended" ? "strong"
+              : rs === "suggested" ? "moderate"
+              : rs === "mentioned" ? "weak" : "none";
+          }
+
+          // Convert stored citations to UI format (or empty array for older runs)
+          const storedCitations = (resp as { citations?: { url: string; domain: string; title?: string; snippet?: string; sourceType: "url_citation" | "grounding_chunk" }[] }).citations;
+          const uiCitations: Citation[] = storedCitations?.map(c => ({
+            url: c.url,
+            domain: c.domain,
+            title: c.title,
+            snippet: c.snippet,
+            sourceType: c.sourceType,
+          })) ?? [];
+
+          responses.push({
+            provider: provider as Provider,
+            model: resp.model,
+            text: resp.responseText,
+            citations: uiCitations,
+            visibility: {
+              score,
+              mentioned,
+              sentiment,
+              category: stage,
+              position,
+              competitorsMentioned: extractionCompetitors(extraction),
+              comparisonOutcome,
+              recommendationStrength,
+            },
+            latencyMs: 0,
+          });
+        }
+
+        return { query: qr.query, responses };
+      });
+
+      // Calculate aggregate metrics
+      let totalScore = 0;
+      let mentionCount = 0;
+      let totalResponses = 0;
+
+      for (const qr of uiResults) {
+        for (const resp of qr.responses) {
+          totalScore += resp.visibility.score;
+          totalResponses++;
+          if (resp.visibility.mentioned) mentionCount++;
+        }
+      }
+
+      data[uiKey] = {
+        persona,
+        stage,
+        intents: [], // Historical runs don't include intent info
+        results: uiResults,
+        avgScore: totalResponses > 0 ? totalScore / totalResponses : 0,
+        mentionRate: totalResponses > 0 ? mentionCount / totalResponses : 0,
+        status: "complete",
+        stageMetrics: cellResult.metrics,
+      };
+    }
+  }
+
+  return data;
 }
 
 // Chart configuration for shadcn/recharts
@@ -399,6 +542,11 @@ export default function VisibilityMatrixPage() {
   const [insightModalOpen, setInsightModalOpen] = useState(false);
   const [answersPanelOpen, setAnswersPanelOpen] = useState(false);
 
+  // Historical run linking state
+  const [historicalRuns, setHistoricalRuns] = useState<StoredRun[]>([]);
+  const [selectedHistoricalRunId, setSelectedHistoricalRunId] = useState<string | null>(null);
+  const [selectedHistoricalRun, setSelectedHistoricalRun] = useState<StoredRun | null>(null);
+
   // Global progress bar state
   const { state: progressState, startProgress, completeProgress: completeProgressBar, failProgress: failProgressBar } = useGlobalProgress();
 
@@ -422,6 +570,68 @@ export default function VisibilityMatrixPage() {
   const allCellsHaveQueries = useMemo(() => {
     return Object.values(cellStatus).every(status => status === "has-queries");
   }, [cellStatus]);
+
+  // Effective matrix data: use historical run data when selected, otherwise current data
+  const effectiveMatrixData = useMemo(() => {
+    if (selectedHistoricalRun) {
+      return storedRunToMatrixData(selectedHistoricalRun);
+    }
+    return matrixData;
+  }, [selectedHistoricalRun, matrixData]);
+
+  // Effective query bank: use historical run's intents/queries when selected, otherwise current
+  const effectiveQueryBank = useMemo(() => {
+    if (selectedHistoricalRun) {
+      return storedRunToQueryBank(selectedHistoricalRun);
+    }
+    return localQueryBank;
+  }, [selectedHistoricalRun, localQueryBank]);
+
+  // Chart click handler to select a historical run
+  const handleChartClick = useCallback(async (data: { activeTooltipIndex?: number }) => {
+    if (data.activeTooltipIndex !== undefined && historicalRuns[data.activeTooltipIndex]) {
+      const run = historicalRuns[data.activeTooltipIndex];
+      setSelectedHistoricalRunId(run.id);
+
+      // Fetch full run data from API
+      try {
+        const response = await fetch(`/api/benchmark/runs/${run.id}`);
+        if (response.ok) {
+          const fullRun = await response.json();
+          setSelectedHistoricalRun(fullRun);
+        } else {
+          console.error(`Failed to fetch run ${run.id}`);
+          setSelectedHistoricalRun(null);
+        }
+      } catch (err) {
+        console.error(`Error fetching run ${run.id}:`, err);
+        setSelectedHistoricalRun(null);
+      }
+    }
+  }, [historicalRuns]);
+
+  // Clear historical selection to return to current data
+  const clearHistoricalSelection = useCallback(() => {
+    setSelectedHistoricalRunId(null);
+    setSelectedHistoricalRun(null);
+  }, []);
+
+  // Get the date label for the selected historical run
+  const selectedRunDateLabel = useMemo(() => {
+    if (!selectedHistoricalRun) return null;
+    const date = new Date(selectedHistoricalRun.timestamp);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }, [selectedHistoricalRun]);
+
+  // Find the index of selected run in modelTrendData for ReferenceLine
+  const selectedRunChartIndex = useMemo(() => {
+    if (!selectedHistoricalRunId || !historicalRuns.length) return null;
+    const idx = historicalRuns.findIndex((r) => r.id === selectedHistoricalRunId);
+    if (idx === -1) return null;
+    // Get the date string that matches modelTrendData's date key
+    const run = historicalRuns[idx];
+    return run.timestamp.split("T")[0];
+  }, [selectedHistoricalRunId, historicalRuns]);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -449,15 +659,18 @@ export default function VisibilityMatrixPage() {
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load history"))))
       .then((data: { runs: StoredRun[] }) => {
         if (cancelled) return;
-        const runs = data.runs.map(toUiBenchmarkRun);
-        // Only use real data - no mock fallback
-        const history = runs.slice().reverse();
-        setBenchmarkHistory(history);
-        setSelectedTimeIndex(Math.max(0, history.length - 1));
+        // Store raw runs for historical linking
+        const sortedRawRuns = data.runs.slice().sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+        setHistoricalRuns(sortedRawRuns);
+        // Transform to chart format
+        const runs = sortedRawRuns.map(toUiBenchmarkRun);
+        setBenchmarkHistory(runs);
+        setSelectedTimeIndex(Math.max(0, runs.length - 1));
       })
       .catch(() => {
         if (cancelled) return;
         // Keep empty - no mock data fallback
+        setHistoricalRuns([]);
         setBenchmarkHistory([]);
         setSelectedTimeIndex(0);
       });
@@ -820,7 +1033,7 @@ export default function VisibilityMatrixPage() {
   }, [enabledProviders]);
 
   const overallStats = useMemo(() => {
-    const cells = Object.values(matrixData).filter(c => c.status === "complete");
+    const cells = Object.values(effectiveMatrixData).filter(c => c.status === "complete");
     if (cells.length === 0) return null;
 
     let totalScore = 0;
@@ -840,30 +1053,30 @@ export default function VisibilityMatrixPage() {
     const avgMentionRate = totalResponses > 0 ? totalMentions / totalResponses : 0;
 
     return { avgScore, avgMentionRate, blindSpots, totalCells: cells.length };
-  }, [matrixData, getFilteredCellStats]);
+  }, [effectiveMatrixData, getFilteredCellStats]);
 
   const selectedCellsData = useMemo(() => {
     const cells: CellData[] = [];
 
     if (selection.type === "all") {
-      cells.push(...Object.values(matrixData).filter(c => c.status === "complete"));
+      cells.push(...Object.values(effectiveMatrixData).filter(c => c.status === "complete"));
     } else if (selection.type === "cell") {
-      const cell = matrixData[`${selection.persona}-${selection.stage}`];
+      const cell = effectiveMatrixData[`${selection.persona}-${selection.stage}`];
       if (cell?.status === "complete") cells.push(cell);
     } else if (selection.type === "row") {
       for (const stage of STAGES) {
-        const cell = matrixData[`${selection.persona}-${stage.id}`];
+        const cell = effectiveMatrixData[`${selection.persona}-${stage.id}`];
         if (cell?.status === "complete") cells.push(cell);
       }
     } else if (selection.type === "column") {
       for (const persona of personas) {
-        const cell = matrixData[`${persona.id}-${selection.stage}`];
+        const cell = effectiveMatrixData[`${persona.id}-${selection.stage}`];
         if (cell?.status === "complete") cells.push(cell);
       }
     }
 
     return cells;
-  }, [selection, matrixData, personas]);
+  }, [selection, effectiveMatrixData, personas]);
 
   const competitorCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -1233,7 +1446,7 @@ export default function VisibilityMatrixPage() {
   }, [selection, personas, localQueryBank]);
 
   return (
-    <div className="min-h-screen bg-[#f6f1e8] pb-16">
+    <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}
       <div className="bg-white border-b border-[#e3dacb]">
         <div className="max-w-6xl mx-auto">
@@ -1248,6 +1461,25 @@ export default function VisibilityMatrixPage() {
 
         </div>
       </div>
+
+      {/* Historical Run Banner */}
+      {selectedHistoricalRun && selectedRunDateLabel && (
+        <div className="bg-[#1f3b2c]/5 border-b border-[#1f3b2c]/10">
+          <div className="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between">
+            <span className="text-xs text-[#1f3b2c]/80">
+              Viewing run from {selectedRunDateLabel}
+            </span>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={clearHistoricalSelection}
+              className="text-[#1f3b2c] hover:bg-[#1f3b2c]/10 h-7 px-3 text-[10px] font-bold uppercase tracking-wider"
+            >
+              Clear
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-6xl mx-auto p-6 space-y-6">
         {/* Provider KPI Strip */}
@@ -1295,8 +1527,8 @@ export default function VisibilityMatrixPage() {
                   <p className="text-xs mt-1">Run a benchmark to see performance trends</p>
                 </div>
               ) : (
-                <ChartContainer config={chartConfig} className="h-full w-full">
-                  <RechartsAreaChart data={modelTrendData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
+                <ChartContainer config={chartConfig} className="h-full w-full cursor-pointer">
+                  <RechartsAreaChart data={modelTrendData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }} onClick={handleChartClick}>
                     <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="#efe6d9" />
                     <XAxis
                       dataKey="date"
@@ -1309,6 +1541,9 @@ export default function VisibilityMatrixPage() {
                       padding={{ left: 12, right: 12 }}
                     />
                     <ChartTooltip cursor={{ stroke: "#d4c9b8", strokeDasharray: "4 4" }} content={<ChartTooltipContent />} />
+                    {selectedRunChartIndex && (
+                      <ReferenceLine x={selectedRunChartIndex} stroke="#1f3b2c" strokeWidth={2} strokeDasharray="4 4" />
+                    )}
                     {enabledProviders.has("openai") && (
                       <Area type="monotone" stackId="mentions" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.2} strokeWidth={2} />
                     )}
@@ -1381,9 +1616,28 @@ export default function VisibilityMatrixPage() {
           </div>
 
           <p className="text-[10px] text-black/20 font-bold uppercase tracking-widest mt-6 text-center">
-            Legend: Select models to filter trend lines • Range: View window size
+            Legend: Select models to filter trend lines • Click chart to view historical run • Range: View window size
           </p>
         </div>
+
+        {/* Historical Run Banner */}
+        {selectedHistoricalRun && (
+          <div className="mt-6 flex items-center justify-between bg-[#1f3b2c]/10 border border-[#1f3b2c]/20 rounded-lg px-4 py-3">
+            <div className="flex items-center gap-3">
+              <Clock className="h-4 w-4 text-[#1f3b2c]" />
+              <span className="text-sm font-medium text-[#1f3b2c]">
+                Viewing historical run from {selectedRunDateLabel}
+              </span>
+            </div>
+            <button
+              onClick={clearHistoricalSelection}
+              className="flex items-center gap-1.5 text-xs font-semibold text-[#1f3b2c] hover:text-[#1f3b2c]/70 transition-colors"
+            >
+              <X className="h-3.5 w-3.5" />
+              Return to current
+            </button>
+          </div>
+        )}
 
         {/* Group Tabs and Workspace for Cohesion */}
         <div className="mt-8">
@@ -1393,12 +1647,13 @@ export default function VisibilityMatrixPage() {
 
           <div className="flex-1 mt-0">
             {(() => {
-              // Transform matrixData into a format SplitViewEditor can use for the 'summary' mode
+              // Transform effectiveMatrixData into a format SplitViewEditor can use for the 'summary' mode
+              // effectiveMatrixData is either the current run or a selected historical run
               const cellResults: Record<string, Record<string, { discoveryRate: number; sentimentScore: number; topCompetitor?: string; winRate?: number; recommendationRate?: number; responses?: { provider: string; model: string; text: string; query: string; visibility: { score: number; mentioned: boolean; sentiment: string } }[]; citations?: Citation[] }>> = {};
 
-              Object.keys(matrixData).forEach(key => {
+              Object.keys(effectiveMatrixData).forEach(key => {
                 const [pId, sId] = key.split("-") as [Persona, Stage];
-                const cell = matrixData[key];
+                const cell = effectiveMatrixData[key];
                 if (!cellResults[pId]) cellResults[pId] = {};
 
                 const results = cell.results || [];
@@ -1493,7 +1748,7 @@ export default function VisibilityMatrixPage() {
                   activeTab={viewMode}
                   personas={personas}
                   stages={STAGES}
-                  queryBank={localQueryBank}
+                  queryBank={effectiveQueryBank}
                   cellResults={cellResults}
                   brandDomain={BRAND_DOMAIN}
                   onSelectCell={(persona, stage) => {
@@ -1852,7 +2107,7 @@ export default function VisibilityMatrixPage() {
 
       {selectedCell && (() => {
         const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
-        const cellData = matrixData[cellKey];
+        const cellData = effectiveMatrixData[cellKey];
         console.log(`[DEBUG] InsightModal opening for ${cellKey}:`, {
           cellExists: !!cellData,
           status: cellData?.status,
@@ -1881,7 +2136,7 @@ export default function VisibilityMatrixPage() {
       {/* Answers Panel - LLM Response Viewer */}
       {selectedCell && (() => {
         const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
-        const cellData = matrixData[cellKey];
+        const cellData = effectiveMatrixData[cellKey];
         return (
           <AnswersPanel
             open={answersPanelOpen}
@@ -1893,6 +2148,7 @@ export default function VisibilityMatrixPage() {
             results={cellData?.results || []}
             brand={BRAND}
             brandAliases={BRAND_ALIASES}
+            isHistorical={!!selectedHistoricalRun}
             onRunCell={() => {
               setAnswersPanelOpen(false);
               runCellsBenchmark([`${selectedCell.persona}-${selectedCell.stage}`], true);

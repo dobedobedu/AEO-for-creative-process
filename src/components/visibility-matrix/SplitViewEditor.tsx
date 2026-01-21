@@ -207,6 +207,7 @@ export function SplitViewEditor({
                         >
                             {filteredCells.map((cell) => {
                                 const cellResult = cellResults?.[cell.persona]?.[cell.stage];
+                                const isMissing = !cellResult;
                                 return (
                                     <GalleryTile
                                         key={`${cell.persona}-${cell.stage}`}
@@ -222,6 +223,7 @@ export function SplitViewEditor({
                                         brandDomain={brandDomain}
                                         onClick={() => onSelectCell(cell.persona, cell.stage)}
                                         accentColor={STAGE_COLORS[cell.stage] || "#1f3b2c"}
+                                        isMissing={isMissing}
                                     />
                                 );
                             })}

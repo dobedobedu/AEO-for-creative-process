@@ -1,0 +1,117 @@
+{
+  "id": "run_2026-01-12_mkb90qng",
+  "timestamp": "2026-01-12T14:18:55.852Z",
+  "intentLibraryVersion": 49,
+  "metricsConfigVersion": 1,
+  "brand": "Lakewood Ranch",
+  "summary": {
+    "overall": {
+      "recommendationRate": 1,
+      "discoveryRate": 0,
+      "avgSentiment": 0,
+      "avgWinRate": 0
+    }
+  },
+  "cells": {
+    "move_up_decide": {
+      "intentId": "int_move_up_decide_mk189ge6",
+      "intentText": "Family ready to choose a neighborhood in their top community",
+      "queriesUsed": [
+        "best Lakewood Ranch neighborhood for families with young kids"
+      ],
+      "metrics": {
+        "recommendationRate": 1
+      },
+      "results": [
+        {
+          "query": "best Lakewood Ranch neighborhood for families with young kids",
+          "responses": {
+            "openai": {
+              "model": "gpt-5.2",
+              "responseText": "If your priority is **families with young kids (toddlers–elementary)**, the most consistently “best fit” inside Lakewood Ranch is usually:\n\n## #1 pick: **Greenbrook Village**\nWhy it tends to win for young families:\n- **Big, kid-centered parks + playgrounds** (especially **Greenbrook Adventure Park**) and lots of neighborhood green space/trails for stroller walks and bike rides. ([lifeatlakewood.com](https://www.lifeatlakewood.com/greenbrook-village?utm_source=openai))  \n- **Established, family-heavy vibe** (not a “mostly retirees” village) and generally strong day-to-day livability. ([lifeatlakewood.com](https://www.lifeatlakewood.com/greenbrook-village?utm_source=openai))  \n- **Convenient location** between SR-70 and University Pkwy for schools/errands. ([lifeatlakewood.com](https://www.lifeatlakewood.com/greenbrook-village?utm_source=openai))  \n\n## Strong runner-up (if you want “newer + splash-pad energy”): **Central Park**\n- Known for a **large central park** setup and kid-friendly recreation (including splash-park-style amenities described in community guides). ([lifeatlakewood.com](https://www.lifeatlakewood.com/amenities?utm_source=openai))  \n\n## Also great (especially if you want proximity to newer development + town center): **Waterside-area neighborhoods**\n- **Waterside Park** has a **splash park + playground** and is next to **Waterside Place**, which many parents like for walks and events. ([lakewoodranch.com](https://lakewoodranch.com/life-on-the-ranch/parks-trails/?utm_source=openai))  \n\n---\n\n### Quick questions so I can give a single “best neighborhood” recommendation (not just a shortlist)\n1) Kids’ ages (e.g., 2 & 5)?  \n2) Do you care more about **public school zoning** or **walkability to parks/town center**?  \n3) Budget range (or home type: townhome vs single-family)?  \n4) Any must-haves: gated, pool, CDD avoidance, short commute (to where)?",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "families with young kids (toddlers–elementary)",
+                  "if you want newer + splash-pad energy",
+                  "if you want proximity to newer development + town center"
+                ],
+                "alternativesOffered": [
+                  "Greenbrook Village",
+                  "Central Park",
+                  "Waterside-area neighborhoods"
+                ],
+                "decisionRationale": "The AI confirms Lakewood Ranch as a 'best fit' for the user's demographic and provides a structured recommendation of neighborhoods within the community, citing specific family-friendly amenities like Greenbrook Adventure Park and splash pads as the primary reasons for the recommendation."
+              }
+            },
+            "anthropic": {
+              "model": "claude-haiku-4-5",
+              "responseText": "I'll search for information about the best Lakewood Ranch neighborhoods for families with young children.\nBased on current information, here are the best Lakewood Ranch neighborhoods for families with young kids:\n\n## Top Recommendations\n\n**Star Farms** stands out as a premier choice for young families. \nIt features gated security, resort-style pools, playgrounds, sports courts, and top-rated schools nearby, making it ideal for raising children.\n \nA brand-new school backs directly up to Star Farms, and the ability to walk to a new, modern school facility represents an enormous advantage for families with elementary-age children.\n \nThe abundance of young families and children creates natural social opportunities, and kids find playmates easily.\n\n\n**Lorraine Lakes** and **Central Park** are also excellent options. \nLorraine Lakes and Star Farms lead in resort-style family amenities, featuring massive clubhouses, multiple pools, sports courts, and constant programming for children.\n \nCentral Park is built entirely around a huge central park with splash pads and playgrounds.\n\n\n**Greenbrook** offers another strong option for families. \nThe trail system running throughout Greenbrook is one of the neighborhood's most beloved features, with families regularly using trails for walking and biking, and Adventure Park is consistently rated as one of the best playgrounds in the entire Lakewood Ranch area.\n \nGreenbrook typically offers more affordable pricing than new construction options, with families often getting more space for their money.\n\n\n**Summerfield** is also recommended, as \nit's a quiet, family-oriented neighborhood with excellent access to schools and parks.\n\n\nAll these neighborhoods benefit from \nLakewood Ranch being zoned for consistently A-rated schools throughout the district, with the school system ranking among Florida's best",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "for families with young kids",
+                  "elementary-age children",
+                  "resort-style family amenities",
+                  "more affordable pricing than new construction"
+                ],
+                "alternativesOffered": [],
+                "decisionRationale": "The response highlights Lakewood Ranch as an ideal location for families due to its A-rated schools, extensive resort-style amenities, gated security, and community-specific features like splash pads, trails, and proximity to schools."
+              }
+            },
+            "gemini": {
+              "model": "gemini-3-flash-preview",
+              "responseText": "Lakewood Ranch is widely considered one of the best family destinations in the U.S. because it is master-planned specifically for community connection. For families with young kids (infants through elementary age), the \"best\" neighborhood often depends on whether you prefer a resort-style vibe with constant activities or an established area with mature trees and large parks.\n\nBased on 2024–2025 community data and resident feedback, here are the top neighborhoods for young families:\n\n### 1. Central Park (The \"Social\" Choice)\nCentral Park is often the #1 recommendation for young families because the entire neighborhood is gated and wrapped around a massive 10nd-acre central park.\n*   **Why it’s great for young kids:** It features a dedicated **splash pad**, two large playgrounds, and open fields where kids naturally congregate. \n*   **The Vibe:** It has a very tight-knit, \"small-town\" feel where it is incredibly easy for both parents and kids to make friends.\n*   **Schools:** Zoned for highly-rated B.D. Gullett Elementary.\n\n### 2. Greenbrook (The \"Classic\" Choice)\nOne of the more established villages, Greenbrook offers mature landscaping and a less \"cookie-cutter\" feel.\n*   **Why it’s great for young kids:** It is home to **Adventure Park**, which is arguably the best playground in the area. It includes a specialized toddler area, a skate park for older siblings, and miles of shaded walking trails perfect for strollers.\n*   **The Vibe:** Active and outdoorsy. You’ll see families biking and walking to the park daily.\n*   **Schools:** Zoned for Robert Willis Elementary (one of the highest-rated in the district).\n\n### 3. Lorraine Lakes & Star Farms (The \"Resort\" Choice)\nThese are newer developments that offer a \"vacation-at-home\" lifestyle with massive amenity campuses.\n*   **Why it’s great for young kids:** These neighborhoods have **resort-style pools with beach entries** (perfect for toddlers), playgrounds, and a full-time \"lifestyle director\" who organizes events like \"Cookies with Santa,\" toddler playgroups, and outdoor movie nights.\n*   **The Vibe:** High-energy and social. If you want a brand-new home and plenty of organized activities, these are the top contenders.\n\n### 4. Summerfield (The \"Value & Safety\" Choice)\nAs one of the original villages, Summerfield offers a quieter environment with more affordable price points and larger lots.\n*   **Why it’s great for young kids:** **Summerfield Community Park** has a rare **fenced-in playground**, which is a \"holy grail\" for parents of toddlers who tend to wander. It also has a \"tot lot\" specifically designed for the smallest children.\n*   **The Vibe:** Peaceful and established. It's very close to the Lakewood Ranch Main Street, making it easy to pop over for ice cream or the monthly \"Music on Main\" events.\n\n### 5. Mallory Park (The \"Walkable\" Choice)\nThis neighborhood is unique for its \"Craftsman\" style architecture and its physical connection to nature.\n*   **Why it’s great for young kids:** It has a private path that allows families to walk or bike directly to **Bob Gardner Park**, which features a gravity rail, playground, and butterfly garden. \n*   **The Vibe:** High-end and picturesque with a very active community pool and clubhouse area.\n\n---\n\n### Best Amenities for Toddlers & Preschoolers\n*   **Top Splash Pad:** **Waterside Park** at Waterside Place. It's 8 acres and located right next to the Sunday Farmers Market.\n*   **Fenced Playgrounds:** **Summerfield Park** and **James L. Patton Park** (University Place).\n*   **Indoor Options:** The **Lakewood Ranch Library** (brand new) has a massive children's wing with \"Baby Storytime\" and \"Toddler Time\" sessions.\n\n### Highly-Rated Preschools & Daycares\nIf you are relocating, these centers are the most popular among residents:\n*   **The Goddard School:** Known for its play-based STEAM curriculum.\n*   **Primrose School of Lakewood Ranch:** Highly structured and focused on character development.\n*   **Creative Child Learning Center:** Located on Palmbrush Trail, it is a local favorite with long-term staff.\n*   **CapoKids:** A unique preschool that incorporates music and martial arts into the daily routine.\n\n### Pro-Tip for 2025\nIf you are commuting toward Sarasota or St. Pete, look at **Waterside** (south) or **Sapphire Point** (north). Both are newer family hubs that significantly cut down on the time you'll spend in traffic, which is one of the few complaints residents have about the Ranch's growth.",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "preference for resort-style vs established areas",
+                  "budget considerations",
+                  "commute needs towards Sarasota or St. Pete"
+                ],
+                "alternativesOffered": [
+                  "Central Park",
+                  "Greenbrook",
+                  "Lorraine Lakes",
+                  "Star Farms",
+                  "Summerfield",
+                  "Mallory Park",
+                  "Waterside",
+                  "Sapphire Point"
+                ],
+                "decisionRationale": "The AI describes Lakewood Ranch as one of the best family destinations in the U.S. due to its master-planned community focus, highly-rated schools, extensive child-friendly amenities like splash pads and fenced playgrounds, and variety of neighborhood vibes to suit different family lifestyles."
+              }
+            },
+            "xai": {
+              "model": "grok-4-latest",
+              "responseText": "Based on recent guides and local expert insights from sources like BuyLakewoodRanch.com, Zachos Realty, and Liberty Savings Bank's Lakewood Ranch Florida Guide (updated as of late 2025), Lakewood Ranch in Florida is an excellent master-planned community for families with young children. It offers top-rated schools, abundant parks, trails, playgrounds, and family-oriented amenities like community events and recreational facilities. The \"best\" neighborhood can be subjective, depending on factors like budget, home style, and specific needs (e.g., walkability to schools or gated security). However, several stand out consistently for families with young kids due to their proximity to education, kid-friendly spaces, and vibrant community atmospheres.\n\nHere's a breakdown of some top recommendations, prioritized for families with young children:\n\n### 1. **Star Farms** (Highly Recommended for Young Families)\n   - **Why it's great**: This newer neighborhood is ideal for families with elementary-age kids, featuring a brand-new school right next door for easy walking access. It's filled with young families, making it easy for kids to find playmates and parents to build social networks. Amenities include playgrounds, pools, and upcoming retail/dining options. The community is still developing, so it's a smart long-term investment with improving features like landscaping and events.\n   - **Home types**: Mostly single-family homes, with prices starting around the mid-$400s (as of 2025 data).\n   - **Best for**: Families prioritizing school convenience and a growing, social vibe.\n\n### 2. **Greenbrook**\n   - **Why it's great**: Known for its spacious homes, extensive parks, trails, and green spaces perfect for family outings, biking, or picnics. It's family-oriented with excellent access to highly rated schools in the Lakewood Ranch area. The neighborhood has a welcoming atmosphere with community events that encourage kid-friendly activities.\n   - **Home types**: Single-family homes and some townhomes, with a range of sizes and prices (entry-level around $400k+).\n   - **Best for**: Active families who want outdoor recreation and a suburban feel.\n\n### 3. **Summerfield**\n   - **Why it's great**: A quieter, more established spot with strong school proximity and plenty of parks for young children. It's designed with families in mind, offering a peaceful environment while still being close to Lakewood Ranch's main amenities like shopping and dining. The focus on safety and community makes it a solid choice for raising kids.\n   - **Home types**: Mix of single-family",
+              "score": {
+                "mentioned": true,
+                "responseRelevant": true,
+                "recommended": true,
+                "recommendationStrength": "strongly_recommended",
+                "qualifiers": [
+                  "budget",
+                  "home style",
+                  "walkability to schools",
+                  "gated security"
+                ],
+                "alternativesOffered": [],
+                "decisionRationale": "The AI describes Lakewood Ranch as an \"excellent master-planned community\" for families, citing its top-rated schools, abundant parks, trails, playgrounds, and family-oriented amenities as the primary reasons for its strong recommendation."
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
