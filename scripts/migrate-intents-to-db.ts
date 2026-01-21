@@ -25,7 +25,9 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const sql = postgres(DATABASE_URL, { ssl: "require" });
+// Disable SSL for local connections (localhost/127.0.0.1)
+const isLocal = DATABASE_URL.includes("127.0.0.1") || DATABASE_URL.includes("localhost");
+const sql = postgres(DATABASE_URL, { ssl: isLocal ? false : "require" });
 
 const LIBRARY_PATH = join(process.cwd(), "data", "intents", "library.json");
 

@@ -36,6 +36,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local settings with credentials
+.claude/settings.local.json
+
+# generated data files
+data/runs/run-id-map.json
+
+# local supabase
+supabase/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -5,8 +5,16 @@ import { sql } from "@/lib/db";
 import { z } from "zod";
 
 export async function GET() {
-  const library = await loadIntentLibrary();
-  return Response.json(library);
+  try {
+    const library = await loadIntentLibrary();
+    return Response.json(library);
+  } catch (err) {
+    console.error("/api/intents/library GET failed:", err);
+    return Response.json(
+      { error: err instanceof Error ? err.message : "Failed to load intent library" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(req: Request) {

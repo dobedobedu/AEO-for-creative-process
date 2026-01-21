@@ -265,11 +265,31 @@ export async function fetchHistory(): Promise<IntentHistoryEntry[]> {
     SELECT * FROM intent_history ORDER BY version ASC;
   ` as HistoryRow[];
 
-  return rows.map((row) => ({
-    version: row.version,
-    date: row.date.toISOString().split("T")[0],
-    changes: row.changes,
-  }));
+  return rows.map((row) => {
+    // Handle double-encoded JSON for changes field
+    let changes: IntentChange[] = [];
+    if (row.changes) {
+      if (Array.isArray(row.changes)) {
+        changes = row.changes;
+      } else if (typeof row.changes === "string") {
+        try {
+          const parsed = JSON.parse(row.changes);
+          changes = Array.isArray(parsed) ? parsed : [];
+        } catch {
+          changes = [];
+        }
+      }
+    }
+
+    return {
+      version: row.version,
+      // postgres.js may return DATE as string (YYYY-MM-DD) or Date object
+      date: typeof row.date === "string"
+        ? row.date
+        : row.date.toISOString().split("T")[0],
+      changes,
+    };
+  });
 }
 
 /**
@@ -312,15 +332,30 @@ export async function bulkInsertHistory(entries: IntentHistoryEntry[]): Promise<
  * Converts a database row to an Intent object.
  */
 function rowToIntent(row: IntentRow): Intent {
+  // Helper to handle double-encoded JSON (string instead of array)
+  const parseJsonArray = (val: string[] | string | null): string[] | undefined => {
+    if (val === null || val === undefined) return undefined;
+    if (Array.isArray(val)) return val;
+    if (typeof val === "string") {
+      try {
+        const parsed = JSON.parse(val);
+        return Array.isArray(parsed) ? parsed : undefined;
+      } catch {
+        return undefined;
+      }
+    }
+    return undefined;
+  };
+
   return {
     id: row.id,
     persona: row.persona as Persona,
     stage: row.stage as Stage,
     text: row.text,
-    defaultQueries: row.default_queries ?? undefined,
+    defaultQueries: parseJsonArray(row.default_queries as string[] | string | null),
     role: row.role as "cpo" | "family_unit",
     queryStyle: row.query_style,
-    generatedQueries: row.generated_queries ?? undefined,
+    generatedQueries: parseJsonArray(row.generated_queries as string[] | string | null),
     createdAt: row.created_at.toISOString(),
     active: row.active,
   };

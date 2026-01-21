@@ -375,6 +375,7 @@ export default function VisibilityMatrixPage() {
   const [matrixData, setMatrixData] = useState<Record<string, CellData>>({});
   const [selection, setSelection] = useState<SelectionType>({ type: "all" });
   const [isRunning, setIsRunning] = useState(false);
+  const [isSelectingQueries, setIsSelectingQueries] = useState(false);
   const [enabledProviders, setEnabledProviders] = useState<Set<Provider>>(
     new Set(["openai", "anthropic", "gemini", "xai"])
   );
@@ -416,21 +417,33 @@ export default function VisibilityMatrixPage() {
     });
     return status;
   }, [localQueryBank, personas]);
+
+  // Check if all cells have queries - determines if we show "Run All" or "Select Queries to Run"
+  const allCellsHaveQueries = useMemo(() => {
+    return Object.values(cellStatus).every(status => status === "has-queries");
+  }, [cellStatus]);
+
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/intents/library")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load intents"))))
-      .then((library: IntentLibrary) => {
+    // Fetch intent library with polling for multi-user sync
+    const fetchLibrary = async () => {
+      try {
+        const r = await fetch("/api/intents/library");
+        if (!r.ok || cancelled) return;
+        const library: IntentLibrary = await r.json();
         if (cancelled) return;
         setIntentLibrary(library);
         setLocalQueryBank(buildQueryBankFromIntentLibrary(library));
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Failed to load intent library:", err);
-      });
+      }
+    };
+
+    fetchLibrary(); // Initial fetch
+    const interval = setInterval(fetchLibrary, 10000); // Poll every 10s for multi-user sync
 
     fetch("/api/benchmark/runs/history?limit=13")
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load history"))))
@@ -451,6 +464,7 @@ export default function VisibilityMatrixPage() {
 
     return () => {
       cancelled = true;
+      clearInterval(interval);
     };
   }, []);
 
@@ -1900,13 +1914,26 @@ export default function VisibilityMatrixPage() {
         isRunning={isRunning}
         selectionLabel={selectionLabel}
         selectionType={selection.type}
-        onRun={() => runBenchmark(false)}
+        allCellsHaveQueries={allCellsHaveQueries}
+        isSelectingQueries={isSelectingQueries}
+        onRun={() => {
+          runBenchmark(false);
+          setIsSelectingQueries(false); // Exit selection mode after run
+        }}
         onStop={stopBenchmark}
         onAskAI={() => {
           const allResults = Object.values(matrixData)
             .filter(cell => cell.status === "complete")
             .flatMap(cell => cell.results);
           openChat({ scope: "global" }, allResults);
+        }}
+        onStartSelection={() => {
+          setIsSelectingQueries(true);
+          setSelection({ type: "all" }); // Reset selection when entering mode
+        }}
+        onCancelSelection={() => {
+          setIsSelectingQueries(false);
+          setSelection({ type: "all" });
         }}
       />
 
