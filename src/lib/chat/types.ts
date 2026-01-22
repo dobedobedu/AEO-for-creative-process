@@ -1,5 +1,6 @@
-export type Persona = "move_up" | "retiree" | "luxury" | "first_time";
-export type Stage = "explore" | "consider" | "compare" | "decide";
+// Types - using string to support dynamic config
+export type Persona = string;
+export type Stage = string;
 export type Provider = "openai" | "anthropic" | "gemini" | "xai";
 export type EvidenceType = "position" | "sentiment" | "competitor" | "winrate" | "recommendation";
 

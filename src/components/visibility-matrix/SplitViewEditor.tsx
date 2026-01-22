@@ -2,8 +2,12 @@
 
 import { useState, useMemo } from "react";
 import { GalleryTile } from "./GalleryTile";
-import { Persona, Stage, Role } from "./types";
+import { Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
+
+// Types - using string to support dynamic config
+type Persona = string;
+type Stage = string;
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Zap, SlidersHorizontal } from "lucide-react";
@@ -23,10 +27,10 @@ interface ResponseData {
 
 interface SplitViewEditorProps {
     activeTab: "summary" | "intents" | "queries" | "answers";
-    personas: { id: Persona; label: string }[];
-    stages: { id: Stage; label: string }[];
-    queryBank: Record<Persona, Record<Stage, { intents: IntentNode[] }>>;
-    cellResults?: Record<Persona, Record<Stage, {
+    personas: { id: string; label: string }[];
+    stages: { id: string; label: string }[];
+    queryBank: Record<string, Record<string, { intents: IntentNode[] }>>;
+    cellResults?: Record<string, Record<string, {
         discoveryRate: number;      // was: visibilityScore
         sentimentScore: number;
         topCompetitor?: string;
@@ -36,7 +40,7 @@ interface SplitViewEditorProps {
         citations?: Citation[];
     }>>;
     brandDomain?: string;
-    onSelectCell: (persona: Persona, stage: Stage) => void;
+    onSelectCell: (persona: string, stage: string) => void;
     // Bulk Actions
     onShowAll?: () => void;
     onGenerateAll?: (mode: "summary" | "intents" | "queries" | "answers") => void;

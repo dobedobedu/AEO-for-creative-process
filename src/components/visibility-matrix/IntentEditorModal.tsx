@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Persona, Stage, Role } from "./types";
+import { Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
+
+// Types - using string to support dynamic config
+type Persona = string;
+type Stage = string;
 import {
   Dialog,
   DialogContent,
@@ -22,12 +26,12 @@ interface IntentEditorModalProps {
   onClose: () => void;
   defaultTab?: "intents" | "queries";
   // Context
-  persona: Persona;
-  stage: Stage;
-  personas: { id: Persona; label: string }[];
-  stages: { id: Stage; label: string }[];
+  persona: string;
+  stage: string;
+  personas: { id: string; label: string }[];
+  stages: { id: string; label: string }[];
   cellStatus: Record<string, "empty" | "has-intents" | "has-queries">;
-  onSelectCell: (persona: Persona, stage: Stage) => void;
+  onSelectCell: (persona: string, stage: string) => void;
   // Data
   intents: IntentNode[];
   queries: Record<string, string[]>; // intentId -> queries
@@ -44,7 +48,8 @@ interface IntentEditorModalProps {
   isRunning?: boolean;
 }
 
-const PERSONA_LABELS: Record<Persona, string> = {
+// Default persona labels (fallback if not found in props)
+const DEFAULT_PERSONA_LABELS: Record<string, string> = {
   move_up: "Move-Up",
   retiree: "Retiree",
   luxury: "Luxury",
@@ -171,7 +176,7 @@ export function IntentEditorModal({
             <div className="p-6 border-b border-[#e3dacb] bg-white">
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-black/20 mb-1">Focus Mode</h2>
               <h3 className="text-xl font-light tracking-tight text-black">
-                {PERSONA_LABELS[persona]}
+                {DEFAULT_PERSONA_LABELS[persona] || personas.find(p => p.id === persona)?.label || persona}
               </h3>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-[11px] font-bold text-black px-2 py-0.5 bg-[#e3dacb]/30">

@@ -53,9 +53,9 @@ import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import type { Citation } from "@/lib/parsers/types";
 
-// Types
-type Persona = "move_up" | "retiree" | "luxury" | "first_time";
-type Stage = "explore" | "consider" | "compare" | "decide";
+// Types - using string type to support dynamic config
+type Persona = string;
+type Stage = string;
 type Provider = "openai" | "anthropic" | "gemini" | "xai";
 type SelectionType =
   | { type: "all" }
@@ -139,7 +139,7 @@ interface PersonaConfig {
   description: string;
 }
 
-// Default configuration
+// Default configuration (fallback if config API fails)
 const DEFAULT_PERSONAS: PersonaConfig[] = [
   { id: "move_up", label: "Move-Up", description: "Upgrading from starter home" },
   { id: "retiree", label: "Retiree", description: "55+ active lifestyle" },
@@ -147,7 +147,7 @@ const DEFAULT_PERSONAS: PersonaConfig[] = [
   { id: "first_time", label: "First-Time", description: "Entry-level, value-conscious" },
 ];
 
-const STAGES: { id: Stage; label: string; description: string }[] = [
+const DEFAULT_STAGES: { id: Stage; label: string; description: string }[] = [
   { id: "explore", label: "Explore", description: "Starting research" },
   { id: "consider", label: "Consider", description: "Evaluating options" },
   { id: "compare", label: "Compare", description: "Narrowing choices" },
@@ -378,13 +378,14 @@ function toUiBenchmarkRun(run: StoredRun): BenchmarkRun {
 }
 
 // Convert a StoredRun to the matrixData format used by the grid
-// Handles ALL 16 cells, marking missing ones as "partial"
-function storedRunToMatrixData(run: StoredRun): Record<string, CellData> {
+// Handles ALL cells, marking missing ones as "partial"
+function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages: { id: Stage; label: string; description: string }[]): Record<string, CellData> {
   const data: Record<string, CellData> = {};
 
-  // Process all 16 cells (4 personas × 4 stages)
+  // Process all cells (personas × stages) from the run's cells
+  // For cells that exist in run but not in current config, still include them (historical compatibility)
   for (const persona of DEFAULT_PERSONAS.map(p => p.id)) {
-    for (const stage of STAGES.map(s => s.id)) {
+    for (const stage of DEFAULT_STAGES.map(s => s.id)) {
       const cellKey = `${persona}_${stage}`;
       const uiKey = `${persona}-${stage}`;
       const cellResult = run.cells[cellKey];
@@ -528,6 +529,8 @@ export default function VisibilityMatrixPage() {
   const [kpiRange, setKpiRange] = useState<"day" | "week" | "month">("week");
   const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
   const [personas, setPersonas] = useState<PersonaConfig[]>(DEFAULT_PERSONAS);
+  const [stages, setStages] = useState<{ id: Stage; label: string; description: string }[]>(DEFAULT_STAGES);
+  const [matrixConfigLoading, setMatrixConfigLoading] = useState(true);
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null);
   const [editValue, setEditValue] = useState("");
   const [evidenceModal, setEvidenceModal] = useState<EvidenceModalData | null>(null);
@@ -554,8 +557,8 @@ export default function VisibilityMatrixPage() {
   const cellStatus = useMemo(() => {
     const status: Record<string, "empty" | "has-intents" | "has-queries"> = {};
     personas.forEach((p) => {
-      STAGES.forEach((s) => {
-        const intents = localQueryBank[p.id][s.id].intents;
+      stages.forEach((s) => {
+        const intents = localQueryBank[p.id]?.[s.id]?.intents || [];
         const hasQueries = intents.some((i) => (i.generatedQueries?.length || 0) > 0);
 
         if (hasQueries) status[`${p.id}-${s.id}`] = "has-queries";
@@ -564,7 +567,7 @@ export default function VisibilityMatrixPage() {
       });
     });
     return status;
-  }, [localQueryBank, personas]);
+  }, [localQueryBank, personas, stages]);
 
   // Check if all cells have queries - determines if we show "Run All" or "Select Queries to Run"
   const allCellsHaveQueries = useMemo(() => {
@@ -574,10 +577,10 @@ export default function VisibilityMatrixPage() {
   // Effective matrix data: use historical run data when selected, otherwise current data
   const effectiveMatrixData = useMemo(() => {
     if (selectedHistoricalRun) {
-      return storedRunToMatrixData(selectedHistoricalRun);
+      return storedRunToMatrixData(selectedHistoricalRun, personas, stages);
     }
     return matrixData;
-  }, [selectedHistoricalRun, matrixData]);
+  }, [selectedHistoricalRun, matrixData, personas, stages]);
 
   // Effective query bank: use historical run's intents/queries when selected, otherwise current
   const effectiveQueryBank = useMemo(() => {
@@ -638,6 +641,46 @@ export default function VisibilityMatrixPage() {
   }, [selectedHistoricalRunId, historicalRuns]);
 
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Load matrix config from API
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchMatrixConfig = async () => {
+      try {
+        const r = await fetch("/api/matrix/active");
+        if (!r.ok || cancelled) return;
+        const config = await r.json();
+        if (cancelled) return;
+
+        // Transform API data to UI format
+        if (config.personas && config.personas.length > 0) {
+          setPersonas(config.personas.map((p: any) => ({
+            id: p.id,
+            label: p.label,
+            description: p.description || "",
+          })));
+        }
+
+        if (config.stages && config.stages.length > 0) {
+          setStages(config.stages.map((s: any) => ({
+            id: s.id,
+            label: s.label,
+            description: s.description || "",
+          })));
+        }
+
+        setMatrixConfigLoading(false);
+      } catch (err) {
+        console.error("[visibility-matrix] Failed to load matrix config:", err);
+        if (cancelled) return;
+        // Fallback to defaults already set
+        setMatrixConfigLoading(false);
+      }
+    };
+
+    fetchMatrixConfig();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -746,9 +789,9 @@ export default function VisibilityMatrixPage() {
   const initializeMatrix = useCallback(() => {
     const data: Record<string, CellData> = {};
     for (const persona of personas) {
-      for (const stage of STAGES) {
+      for (const stage of stages) {
         const key = `${persona.id}-${stage.id}`;
-        const entry = localQueryBank[persona.id][stage.id];
+        const entry = localQueryBank[persona.id]?.[stage.id] || { intents: [] };
         data[key] = {
           persona: persona.id,
           stage: stage.id,
@@ -761,7 +804,7 @@ export default function VisibilityMatrixPage() {
       }
     }
     return data;
-  }, [personas, localQueryBank]);
+  }, [personas, stages, localQueryBank]);
 
   useEffect(() => {
     if (Object.keys(matrixData).length === 0) {
@@ -936,7 +979,7 @@ export default function VisibilityMatrixPage() {
     } else if (selection.type === "cell") {
       cellKeys = [`${selection.persona}-${selection.stage}`];
     } else if (selection.type === "row") {
-      cellKeys = STAGES.map((s) => `${selection.persona}-${s.id}`);
+      cellKeys = stages.map((s) => `${selection.persona}-${s.id}`);
     } else if (selection.type === "column") {
       cellKeys = personas.map((p) => `${p.id}-${selection.stage}`);
     }
@@ -1070,7 +1113,7 @@ export default function VisibilityMatrixPage() {
       const cell = effectiveMatrixData[`${selection.persona}-${selection.stage}`];
       if (cell?.status === "complete") cells.push(cell);
     } else if (selection.type === "row") {
-      for (const stage of STAGES) {
+      for (const stage of stages) {
         const cell = effectiveMatrixData[`${selection.persona}-${stage.id}`];
         if (cell?.status === "complete") cells.push(cell);
       }
@@ -1082,7 +1125,7 @@ export default function VisibilityMatrixPage() {
     }
 
     return cells;
-  }, [selection, effectiveMatrixData, personas]);
+  }, [selection, effectiveMatrixData, personas, stages]);
 
   const competitorCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -1430,39 +1473,39 @@ export default function VisibilityMatrixPage() {
     if (selection.type === "all") return "All Cells";
     if (selection.type === "cell") {
       const p = personas.find(x => x.id === selection.persona)?.label;
-      const s = STAGES.find(x => x.id === selection.stage)?.label;
+      const s = stages.find(x => x.id === selection.stage)?.label;
       return `${p} × ${s}`;
     }
     if (selection.type === "row") {
       return `${personas.find(x => x.id === selection.persona)?.label}`;
     }
     if (selection.type === "column") {
-      return `${STAGES.find(x => x.id === selection.stage)?.label}`;
+      return `${stages.find(x => x.id === selection.stage)?.label}`;
     }
     return "";
-  }, [selection, personas]);
+  }, [selection, personas, stages]);
 
   const queryCount = useMemo(() => {
     let count = 0;
     if (selection.type === "all") {
       for (const p of personas) {
-        for (const s of STAGES) {
-          count += localQueryBank[p.id][s.id].intents.length;
+        for (const s of stages) {
+          count += localQueryBank[p.id]?.[s.id]?.intents.length || 0;
         }
       }
     } else if (selection.type === "cell") {
-      count = localQueryBank[selection.persona][selection.stage].intents.length;
+      count = localQueryBank[selection.persona]?.[selection.stage]?.intents.length || 0;
     } else if (selection.type === "row") {
-      for (const s of STAGES) {
-        count += localQueryBank[selection.persona][s.id].intents.length;
+      for (const s of stages) {
+        count += localQueryBank[selection.persona]?.[s.id]?.intents.length || 0;
       }
     } else if (selection.type === "column") {
       for (const p of personas) {
-        count += localQueryBank[p.id][selection.stage].intents.length;
+        count += localQueryBank[p.id]?.[selection.stage]?.intents.length || 0;
       }
     }
     return count;
-  }, [selection, personas, localQueryBank]);
+  }, [selection, personas, stages, localQueryBank]);
 
   return (
     <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
@@ -1769,7 +1812,7 @@ export default function VisibilityMatrixPage() {
                 <SplitViewEditor
                   activeTab={viewMode}
                   personas={personas}
-                  stages={STAGES}
+                  stages={stages}
                   queryBank={effectiveQueryBank}
                   cellResults={cellResults}
                   brandDomain={BRAND_DOMAIN}
@@ -1898,7 +1941,7 @@ export default function VisibilityMatrixPage() {
             {selectedCellsData.map((cell, cellIdx) => (
               <div key={cellIdx}>
                 <h4 className="font-medium text-[#1e1b16] mb-2 text-sm">
-                  {personas.find(p => p.id === cell.persona)?.label} × {STAGES.find(s => s.id === cell.stage)?.label}
+                  {personas.find(p => p.id === cell.persona)?.label} × {stages.find(s => s.id === cell.stage)?.label}
                 </h4>
                 {cell.results.map((qr, qIdx) => (
                   <div key={qIdx} className="mb-4 p-4 bg-[#efe6d9] rounded-xl">
@@ -2025,15 +2068,17 @@ export default function VisibilityMatrixPage() {
             persona={selectedCell.persona}
             stage={selectedCell.stage}
             personas={personas}
-            stages={STAGES}
+            stages={stages}
             cellStatus={cellStatus}
             onSelectCell={(p, s) => setSelectedCell({ persona: p, stage: s })}
-            intents={localQueryBank[selectedCell.persona][selectedCell.stage].intents}
+            intents={localQueryBank[selectedCell.persona]?.[selectedCell.stage]?.intents || []}
             queries={Object.fromEntries(
-              localQueryBank[selectedCell.persona][selectedCell.stage].intents.map(i => [i.id, i.generatedQueries || []])
+              (localQueryBank[selectedCell.persona]?.[selectedCell.stage]?.intents || []).map(i => [i.id, i.generatedQueries || []])
             )}
             onIntentChange={(updatedIntent) => {
               const newBank = { ...localQueryBank };
+              if (!newBank[selectedCell.persona]) newBank[selectedCell.persona] = {};
+              if (!newBank[selectedCell.persona][selectedCell.stage]) newBank[selectedCell.persona][selectedCell.stage] = { intents: [] };
               newBank[selectedCell.persona][selectedCell.stage].intents = newBank[selectedCell.persona][selectedCell.stage].intents.map(i =>
                 i.id === updatedIntent.id ? updatedIntent : i
               );
@@ -2042,6 +2087,8 @@ export default function VisibilityMatrixPage() {
             }}
             onIntentDelete={(intentId) => {
               const newBank = { ...localQueryBank };
+              if (!newBank[selectedCell.persona]) newBank[selectedCell.persona] = {};
+              if (!newBank[selectedCell.persona][selectedCell.stage]) newBank[selectedCell.persona][selectedCell.stage] = { intents: [] };
               newBank[selectedCell.persona][selectedCell.stage].intents = newBank[selectedCell.persona][selectedCell.stage].intents.filter(
                 i => i.id !== intentId
               );
@@ -2050,6 +2097,8 @@ export default function VisibilityMatrixPage() {
             }}
             onIntentAdd={(text, role, style) => {
               const newBank = { ...localQueryBank };
+              if (!newBank[selectedCell.persona]) newBank[selectedCell.persona] = {};
+              if (!newBank[selectedCell.persona][selectedCell.stage]) newBank[selectedCell.persona][selectedCell.stage] = { intents: [] };
               const newIntent: IntentNode = {
                 id: `new_${Date.now()}`,
                 text,
@@ -2063,7 +2112,7 @@ export default function VisibilityMatrixPage() {
             }}
             onQueryChange={(intentId, queryIndex, text) => {
               const newBank = { ...localQueryBank };
-              const intent = newBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              const intent = newBank[selectedCell.persona]?.[selectedCell.stage]?.intents.find(i => i.id === intentId);
               if (intent) {
                 const newQueries = [...(intent.generatedQueries || [])];
                 newQueries[queryIndex] = text;
@@ -2074,7 +2123,7 @@ export default function VisibilityMatrixPage() {
             }}
             onQueryDelete={(intentId, queryIndex) => {
               const newBank = { ...localQueryBank };
-              const intent = newBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              const intent = newBank[selectedCell.persona]?.[selectedCell.stage]?.intents.find(i => i.id === intentId);
               if (intent) {
                 intent.generatedQueries = (intent.generatedQueries || []).filter((_, i) => i !== queryIndex);
                 setLocalQueryBank(newBank);
@@ -2083,7 +2132,7 @@ export default function VisibilityMatrixPage() {
             }}
             onQueryAdd={(intentId) => {
               const newBank = { ...localQueryBank };
-              const intent = newBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              const intent = newBank[selectedCell.persona]?.[selectedCell.stage]?.intents.find(i => i.id === intentId);
               if (intent) {
                 intent.generatedQueries = [...(intent.generatedQueries || []), ""];
                 setLocalQueryBank(newBank);
@@ -2091,7 +2140,7 @@ export default function VisibilityMatrixPage() {
               }
             }}
             onQueryRegenerate={async (intentId) => {
-              const intent = localQueryBank[selectedCell.persona][selectedCell.stage].intents.find(i => i.id === intentId);
+              const intent = localQueryBank[selectedCell.persona]?.[selectedCell.stage]?.intents.find(i => i.id === intentId);
               if (!intent) return [];
 
               const resp = await fetch("/api/intents/generate", {
@@ -2110,6 +2159,8 @@ export default function VisibilityMatrixPage() {
               const data = await resp.json();
 
               const newBank = { ...localQueryBank };
+              if (!newBank[selectedCell.persona]) newBank[selectedCell.persona] = {};
+              if (!newBank[selectedCell.persona][selectedCell.stage]) newBank[selectedCell.persona][selectedCell.stage] = { intents: [] };
               newBank[selectedCell.persona][selectedCell.stage].intents = newBank[selectedCell.persona][selectedCell.stage].intents.map(
                 (i) => (i.id === intentId ? { ...i, generatedQueries: data.queries } : i)
               );
@@ -2143,7 +2194,7 @@ export default function VisibilityMatrixPage() {
           persona={selectedCell.persona}
           stage={selectedCell.stage}
           personaLabel={personas.find(p => p.id === selectedCell.persona)?.label || ""}
-          stageLabel={STAGES.find(s => s.id === selectedCell.stage)?.label || ""}
+          stageLabel={stages.find(s => s.id === selectedCell.stage)?.label || ""}
           results={cellData?.results || []}
           brand={BRAND}
           onRunCell={() => {
@@ -2166,7 +2217,7 @@ export default function VisibilityMatrixPage() {
             persona={selectedCell.persona}
             stage={selectedCell.stage}
             personaLabel={personas.find(p => p.id === selectedCell.persona)?.label || ""}
-            stageLabel={STAGES.find(s => s.id === selectedCell.stage)?.label || ""}
+            stageLabel={stages.find(s => s.id === selectedCell.stage)?.label || ""}
             results={cellData?.results || []}
             brand={BRAND}
             brandAliases={BRAND_ALIASES}

@@ -1,12 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Persona, Stage, Role } from "./types";
+import { Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, Target, Bot, Link2 } from "lucide-react";
 import type { Citation } from "@/lib/parsers/types";
+
+// Types - using string to support dynamic config
+type Persona = string;
+type Stage = string;
 
 interface ResponsePreview {
     provider: string;
@@ -21,9 +25,9 @@ interface ResponsePreview {
 }
 
 interface GalleryTileProps {
-    persona: Persona;
+    persona: string;
     personaLabel: string;
-    stage: Stage;
+    stage: string;
     stageLabel: string;
     intents: IntentNode[];
     activeTab: "summary" | "intents" | "queries" | "answers";

@@ -1,8 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { Stage, Provider } from "./types";
+import { Provider } from "./types";
 import { TrendingUp, TrendingDown, Minus, BarChart3, Award, MessageCircle } from "lucide-react";
+
+// Types - using string to support dynamic config
+type Stage = string;
 
 interface QueryResult {
   query: string;
@@ -25,7 +28,7 @@ interface QueryResult {
 }
 
 interface StageMetricsSummaryProps {
-  stage: Stage;
+  stage: string;
   results: QueryResult[];
 }
 

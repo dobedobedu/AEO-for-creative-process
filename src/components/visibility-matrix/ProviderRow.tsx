@@ -29,7 +29,7 @@ interface ResponseItem {
   };
 }
 
-type Stage = "explore" | "consider" | "compare" | "decide";
+type Stage = string; // Changed to string to support dynamic config
 
 interface ProviderRowProps {
   provider: Provider;

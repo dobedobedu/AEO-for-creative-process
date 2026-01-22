@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+// Core stages are fixed for scoring logic
+export const CoreStageSchema = z.enum(["explore", "consider", "compare", "decide"]);
+export type CoreStage = z.infer<typeof CoreStageSchema>;
+
+// Note: PersonaSchema and StageSchema remain as enums for now
+// They will be migrated to strings in Task 7 after all consumers are updated
 export const PersonaSchema = z.enum(["move_up", "retiree", "luxury", "first_time"]);
 export const StageSchema = z.enum(["explore", "consider", "compare", "decide"]);
 

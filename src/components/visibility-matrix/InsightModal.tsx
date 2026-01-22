@@ -4,13 +4,16 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useEffect, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
-import { Persona, Stage } from "./types";
+import type { ChatContext, QueryResultData, ResponseData, VisibilityData } from "@/lib/chat/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, AlertCircle, Send, Loader2, Bot, User, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import type { ChatContext, QueryResultData, ResponseData, VisibilityData } from "@/lib/chat/types";
+
+// Types - using string to support dynamic config
+type Persona = string;
+type Stage = string;
 
 interface ResponseObject {
     text: string;
@@ -28,8 +31,8 @@ interface ResponseObject {
 interface InsightModalProps {
     open: boolean;
     onClose: () => void;
-    persona: Persona;
-    stage: Stage;
+    persona: string;
+    stage: string;
     personaLabel: string;
     stageLabel: string;
     results: any[]; // QueryResult[]

@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Fragment } from "react";
-import { Persona, Stage } from "./types";
 import {
     Tooltip,
     TooltipContent,
@@ -12,11 +11,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Zap, Eye, Filter } from "lucide-react";
 
+// Types - using string to support dynamic config
+type Persona = string;
+type Stage = string;
+
 interface MiniMatrixNavigationProps {
-    personas: { id: Persona; label: string }[];
-    stages: { id: Stage; label: string }[];
-    selectedCell: { persona: Persona; stage: Stage } | null;
-    onSelect: (persona: Persona, stage: Stage) => void;
+    personas: { id: string; label: string }[];
+    stages: { id: string; label: string }[];
+    selectedCell: { persona: string; stage: string } | null;
+    onSelect: (persona: string, stage: string) => void;
     cellStatus?: Record<string, "empty" | "has-intents" | "has-queries">;
     // New Props for Actions & Filters
     onShowAll?: () => void;

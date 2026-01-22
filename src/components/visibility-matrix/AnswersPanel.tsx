@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useEffect, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
-import { Persona, Stage, Provider } from "./types";
+import { Provider } from "./types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Send, Loader2, Bot, User, Play, ChevronDown, ChevronRight } from "lucide-react";
@@ -40,8 +40,8 @@ interface QueryResult {
 interface AnswersPanelProps {
   open: boolean;
   onClose: () => void;
-  persona: Persona;
-  stage: Stage;
+  persona: string;
+  stage: string;
   personaLabel: string;
   stageLabel: string;
   results: QueryResult[];
