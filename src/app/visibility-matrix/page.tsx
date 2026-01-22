@@ -234,6 +234,15 @@ const PROVIDER_MODELS: Record<Provider, string> = {
   xai: "grok-4-latest",
 };
 
+// Helper functions for label lookup with fallback for historical compatibility
+function getPersonaLabel(id: Persona, personas: PersonaConfig[]): string {
+  return personas.find(p => p.id === id)?.label || id;
+}
+
+function getStageLabel(id: Stage, stages: { id: Stage; label: string; description: string }[]): string {
+  return stages.find(s => s.id === id)?.label || id;
+}
+
 function recommendationStrengthToScore(strength: string): number {
   switch (strength) {
     case "strongly_recommended":
@@ -382,10 +391,23 @@ function toUiBenchmarkRun(run: StoredRun): BenchmarkRun {
 function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages: { id: Stage; label: string; description: string }[]): Record<string, CellData> {
   const data: Record<string, CellData> = {};
 
-  // Process all cells (personas × stages) from the run's cells
+  // Get unique personas and stages from the run (for historical compatibility)
+  const runPersonas = new Set(
+    Object.keys(run.cells).map(key => key.split("_")[0])
+  );
+  const runStages = new Set(
+    Object.keys(run.cells).map(key => key.split("_").slice(1).join("_"))
+  );
+
+  // Process all cells from:
+  // 1. Active config (personas × stages)
+  // 2. Run data (for historical compatibility with personas/stages not in config)
+  const allPersonas = new Set([...personas.map(p => p.id), ...runPersonas]);
+  const allStages = new Set([...stages.map(s => s.id), ...runStages]);
+
   // For cells that exist in run but not in current config, still include them (historical compatibility)
-  for (const persona of DEFAULT_PERSONAS.map(p => p.id)) {
-    for (const stage of DEFAULT_STAGES.map(s => s.id)) {
+  for (const persona of allPersonas) {
+    for (const stage of allStages) {
       const cellKey = `${persona}_${stage}`;
       const uiKey = `${persona}-${stage}`;
       const cellResult = run.cells[cellKey];
@@ -1854,7 +1876,7 @@ export default function VisibilityMatrixPage() {
                           consider: `Evaluate specific lifestyle fit, community amenities, and long-term suitability for ${personas.find(p => p.id === cell.persona)?.label}.`,
                           compare: `Directly compare financial trade-offs, CDD fees, and specific village logistics for ${personas.find(p => p.id === cell.persona)?.label}.`,
                           decide: `Address final transactional hurdles, closing costs, and immediate life integration logistics for ${personas.find(p => p.id === cell.persona)?.label}.`
-                        }[cell.stage];
+                        }[cell.stage] || `Generate research objectives for ${personas.find(p => p.id === cell.persona)?.label || cell.persona} during the ${stages.find(s => s.id === cell.stage)?.label || cell.stage} phase.`;
 
                         newBank[cell.persona][cell.stage].intents.push({
                           id: `intent-${cell.persona}-${cell.stage}-${Date.now()}`,

@@ -77,14 +77,16 @@ export const DEFAULT_PROVIDERS: Array<{ provider: Provider; model: string }> = [
 ];
 
 /**
- * All personas in the system
+ * @deprecated Use getActivePersonaIds() from @/lib/matrix/runtime instead
+ * This hardcoded list doesn't reflect the dynamic configuration
  */
-export const ALL_PERSONAS: Persona[] = ["move_up", "retiree", "luxury", "first_time"];
+export const ALL_PERSONAS: string[] = ["move_up", "retiree", "luxury", "first_time"];
 
 /**
- * All stages in the buyer journey
+ * @deprecated Use getActiveStageIds() from @/lib/matrix/runtime instead
+ * This hardcoded list doesn't reflect the dynamic configuration
  */
-export const ALL_STAGES: Stage[] = ["explore", "consider", "compare", "decide"];
+export const ALL_STAGES: string[] = ["explore", "consider", "compare", "decide"];
 
 /**
  * Default brand configuration

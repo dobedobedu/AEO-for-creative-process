@@ -6,7 +6,7 @@ import {
   StageMetricsConfig,
   MetricDefinition,
 } from "./types";
-import { Stage } from "../intents/types";
+import type { Stage } from "../intents/types";
 
 const DATA_DIR = join(process.cwd(), "data", "config");
 const CONFIG_PATH = join(DATA_DIR, "metrics.json");
@@ -36,11 +36,15 @@ export function saveMetricsConfig(config: MetricsConfig): void {
 }
 
 export function getStageMetrics(config: MetricsConfig, stage: Stage): StageMetricsConfig {
-  return config.stageMetrics[stage];
+  // Cast stage to a valid key for stageMetrics
+  const key = stage as keyof typeof config.stageMetrics;
+  return config.stageMetrics[key];
 }
 
 export function getPrimaryMetric(config: MetricsConfig, stage: Stage): string {
-  return config.stageMetrics[stage].primary;
+  // Cast stage to a valid key for stageMetrics
+  const key = stage as keyof typeof config.stageMetrics;
+  return config.stageMetrics[key].primary;
 }
 
 export function getMetricDefinition(
@@ -59,7 +63,9 @@ export function updateStagePrimaryMetric(
     throw new Error(`Unknown metric: ${metricKey}`);
   }
 
-  const oldValue = config.stageMetrics[stage].primary;
+  // Cast stage to a valid key for stageMetrics
+  const key = stage as keyof typeof config.stageMetrics;
+  const oldValue = config.stageMetrics[key].primary;
   if (oldValue === metricKey) {
     return config;
   }
@@ -73,8 +79,8 @@ export function updateStagePrimaryMetric(
     updatedAt: now.toISOString(),
     stageMetrics: {
       ...config.stageMetrics,
-      [stage]: {
-        ...config.stageMetrics[stage],
+      [key]: {
+        ...config.stageMetrics[key],
         primary: metricKey,
       },
     },
@@ -107,7 +113,9 @@ export function updateStageSecondaryMetrics(
     }
   }
 
-  const oldValue = config.stageMetrics[stage].secondary;
+  // Cast stage to a valid key for stageMetrics
+  const key = stage as keyof typeof config.stageMetrics;
+  const oldValue = config.stageMetrics[key].secondary;
   const newVersion = config.version + 1;
   const now = new Date();
 
@@ -117,8 +125,8 @@ export function updateStageSecondaryMetrics(
     updatedAt: now.toISOString(),
     stageMetrics: {
       ...config.stageMetrics,
-      [stage]: {
-        ...config.stageMetrics[stage],
+      [key]: {
+        ...config.stageMetrics[key],
         secondary: metricKeys,
       },
     },

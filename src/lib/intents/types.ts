@@ -4,13 +4,13 @@ import { z } from "zod";
 export const CoreStageSchema = z.enum(["explore", "consider", "compare", "decide"]);
 export type CoreStage = z.infer<typeof CoreStageSchema>;
 
-// Note: PersonaSchema and StageSchema remain as enums for now
-// They will be migrated to strings in Task 7 after all consumers are updated
-export const PersonaSchema = z.enum(["move_up", "retiree", "luxury", "first_time"]);
-export const StageSchema = z.enum(["explore", "consider", "compare", "decide"]);
+// Personas and stages are now strings from config
+// These schemas validate non-empty strings
+export const PersonaSchema = z.string().min(1, "Persona cannot be empty");
+export const StageSchema = z.string().min(1, "Stage cannot be empty");
 
-export type Persona = z.infer<typeof PersonaSchema>;
-export type Stage = z.infer<typeof StageSchema>;
+export type Persona = string;
+export type Stage = string;
 
 export const IntentSchema = z.object({
   id: z.string(),
@@ -73,9 +73,17 @@ export function getCellKey(persona: Persona, stage: Stage): string {
 }
 
 export function parseCellKey(key: string): { persona: Persona; stage: Stage } | null {
-  const [persona, stage] = key.split("_") as [Persona, Stage];
-  if (PersonaSchema.safeParse(persona).success && StageSchema.safeParse(stage).success) {
+  // Key format: "persona_stage" where persona may contain underscores
+  // Find the last underscore to split persona from stage
+  const lastUnderscore = key.lastIndexOf("_");
+  if (lastUnderscore === -1) {
+    return null;
+  }
+  const persona = key.slice(0, lastUnderscore);
+  const stage = key.slice(lastUnderscore + 1);
+  if (persona && stage) {
     return { persona, stage };
   }
   return null;
 }
+
