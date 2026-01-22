@@ -36,7 +36,8 @@ export interface ProviderConfig {
 }
 
 export interface BenchmarkConfig {
-  stage: Stage;
+  stage: string; // Custom stage ID (supports dynamic config)
+  coreStage?: "explore" | "consider" | "compare" | "decide"; // For scoring - defaults to stage if it's a core stage
   // Multiple intent support: each intent has an ID and a list of queries
   intents: Array<{
     id: string;
@@ -213,8 +214,13 @@ function extractDomainFromUrl(url: string): string {
 }
 
 export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
-  const { stage, intents, brand, brandAliases = [], providers, concurrency = 2 } = config;
+  const { stage, coreStage, intents, brand, brandAliases = [], providers, concurrency = 2 } = config;
   const startTime = Date.now();
+
+  // Determine scoring stage: use explicit coreStage, or stage if it's a valid core stage
+  const CORE_STAGES = ["explore", "consider", "compare", "decide"] as const;
+  const scoringStage: typeof CORE_STAGES[number] = coreStage ??
+    (CORE_STAGES.includes(stage as typeof CORE_STAGES[number]) ? stage as typeof CORE_STAGES[number] : "explore");
 
   const results: QueryResult[] = [];
   const mentionCounts: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
@@ -248,7 +254,7 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
 
             if (!response.error) {
               const extraction = await extractStageMetrics({
-                stage,
+                stage: scoringStage,
                 query,
                 responseText: response.text,
                 provider: providerConfig.provider,
@@ -258,7 +264,7 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
 
               if (extraction.success && extraction.extraction) {
                 response.stageExtraction = extraction.extraction;
-                response.visibility = computeVisibilityFromExtraction(stage, extraction.extraction);
+                response.visibility = computeVisibilityFromExtraction(scoringStage, extraction.extraction);
               }
             }
 
@@ -305,7 +311,7 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
   };
 }
 
-function computeVisibilityFromExtraction(stage: Stage, extraction: StageExtraction): VisibilityScore {
+function computeVisibilityFromExtraction(stage: string, extraction: StageExtraction): VisibilityScore {
   const mentioned = extraction.mentioned;
 
   // Stage-normalized score (0..1) for UI

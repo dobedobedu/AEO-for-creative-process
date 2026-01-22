@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { runBenchmark, type Provider } from "@/lib/benchmark";
 import type { BenchmarkResult } from "@/lib/benchmark/runner";
-import { PersonaSchema, StageSchema, type Persona, type Stage } from "@/lib/intents/types";
+import { type Persona, type Stage } from "@/lib/intents/types";
 import { loadIntentLibrary } from "@/lib/intents/library";
 import { loadMetricsConfig } from "@/lib/metrics/config";
 import { saveRun, generateRunId } from "@/lib/runs/storage";
@@ -17,6 +17,7 @@ import { uploadRunAsync } from "@/lib/filesearch/uploader";
 import { saveRunAggregates } from "@/lib/runs/aggregator";
 import { DEFAULT_PROVIDERS, getCellKey, emptyExtraction, calculateRunSummary } from "@/lib/runs/utils";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
+import { getActiveMatrixConfigCached, assertValidPersonaStage, getCoreStageMapping } from "@/lib/matrix/runtime";
 import { cookies } from "next/headers";
 import { initProgress, logProgress, incrementProgress, completeProgress, failProgress } from "@/lib/benchmark/progress";
 import { getCurrentUser } from "@/lib/auth/supabase";
@@ -29,8 +30,8 @@ const RequestSchema = z.object({
   cells: z
     .array(
       z.object({
-        persona: PersonaSchema,
-        stage: StageSchema,
+        persona: z.string().min(1),
+        stage: z.string().min(1),
       })
     )
     .min(1)
@@ -52,6 +53,21 @@ export async function POST(req: Request) {
   try {
     const payload = await req.json();
     const data = RequestSchema.parse(payload);
+
+    // Load active matrix config
+    const cfg = await getActiveMatrixConfigCached();
+
+    // Validate all cells against active config
+    for (const cell of data.cells) {
+      try {
+        assertValidPersonaStage(cell.persona, cell.stage, cfg);
+      } catch (err) {
+        return Response.json(
+          { error: `Invalid cell: ${cell.persona}/${cell.stage} - ${err instanceof Error ? err.message : "Not in active config"}` },
+          { status: 400 }
+        );
+      }
+    }
 
     const providers = data.providers ?? DEFAULT_PROVIDERS;
 
@@ -84,11 +100,13 @@ export async function POST(req: Request) {
       if (activeIntents.length === 0) continue;
 
       // Generate queries via DeepSeek for each intent
+      const coreStage = getCoreStageMapping(cell.stage, cfg);
       const intentsToRun = await Promise.all(
         activeIntents.map(async (intent) => {
           const generated = await generateQueriesFromIntent({
             persona: cell.persona,
             stage: cell.stage,
+            coreStage, // Pass core stage for prompt context
             intent: intent.text,
             role: intent.role,
             queryStyle: intent.queryStyle,
@@ -103,6 +121,7 @@ export async function POST(req: Request) {
 
       const benchmarkResult = await runBenchmark({
         stage: cell.stage,
+        coreStage, // Pass core stage for scoring
         intents: intentsToRun,
         brand: data.brand,
         brandAliases: data.brandAliases,

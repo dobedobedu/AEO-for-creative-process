@@ -101,6 +101,7 @@ export async function GET(req: Request) {
 
                     const benchmarkResult = await runBenchmark({
                         stage,
+                        coreStage: stage, // Stage is already a core stage in this legacy route
                         intents: intentsToRun,
                         brand: DEFAULT_BRAND,
                         brandAliases: DEFAULT_ALIASES,

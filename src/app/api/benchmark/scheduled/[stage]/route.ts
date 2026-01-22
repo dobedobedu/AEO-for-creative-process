@@ -27,13 +27,12 @@ import {
   calculateDecideMetrics,
 } from "@/lib/scoring/extractor";
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
+import { getActiveMatrixConfigCached, getActivePersonaIds, getCoreStageMapping } from "@/lib/matrix/runtime";
 import type { Persona, Stage } from "@/lib/intents/types";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
 import { saveRunAggregates, refreshRunMetadata } from "@/lib/runs/aggregator";
 import {
   DEFAULT_PROVIDERS,
-  ALL_PERSONAS,
-  ALL_STAGES,
   DEFAULT_BRAND,
   DEFAULT_ALIASES,
   getCellKey,
@@ -44,9 +43,6 @@ import {
 // Set to 300s (5 min) for safety margin
 export const maxDuration = 300;
 
-// Valid stages for URL validation
-const VALID_STAGES = new Set<Stage>(ALL_STAGES);
-
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ stage: string }> }
@@ -54,29 +50,42 @@ export async function GET(
   const startTime = Date.now();
   const { stage: stageParam } = await params;
 
-  // Validate stage parameter
-  if (!VALID_STAGES.has(stageParam as Stage)) {
-    return Response.json(
-      { error: `Invalid stage: ${stageParam}. Must be one of: ${ALL_STAGES.join(", ")}` },
-      { status: 400 }
-    );
-  }
-
-  const stage = stageParam as Stage;
-  const isLastStage = stage === "decide";
-
-  console.log(`[cron/${stage}] Starting stage-specific benchmark...`);
+  console.log(`[cron/${stageParam}] Starting stage-specific benchmark...`);
 
   // Verify cron secret
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    console.error(`[cron/${stage}] Unauthorized - invalid or missing CRON_SECRET`);
+    console.error(`[cron/${stageParam}] Unauthorized - invalid or missing CRON_SECRET`);
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
+    // Load active matrix config
+    const cfg = await getActiveMatrixConfigCached();
+
+    // Validate stage parameter against active config
+    const activeStageIds = cfg.stages.filter((s) => s.active).map((s) => s.id);
+    if (!activeStageIds.includes(stageParam)) {
+      return Response.json(
+        { error: `Invalid stage: ${stageParam}. Active stages: ${activeStageIds.join(", ")}` },
+        { status: 400 }
+      );
+    }
+
+    const stage = stageParam as Stage;
+    const coreStage = getCoreStageMapping(stage, cfg);
+
+    // Determine if this is the last stage (for finalization tasks)
+    const sortedStages = cfg.stages
+      .filter((s) => s.active)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+    const isLastStage = sortedStages.length > 0 && sortedStages[sortedStages.length - 1].id === stage;
+
+    // Use config personas instead of hardcoded ALL_PERSONAS
+    const activePersonas = getActivePersonaIds(cfg);
+
     const intentLibrary = await loadIntentLibrary();
     console.log(`[cron/${stage}] Loaded ${intentLibrary.intents.length} intents from library`);
 
@@ -98,10 +107,10 @@ export async function GET(
     // Track how many cells we've saved (for determining isLastStage logic)
     let savedCellCount = 0;
 
-    // Process all 4 personas for THIS stage IN PARALLEL
+    // Process all active personas for THIS stage IN PARALLEL
     // Each persona SAVES IMMEDIATELY after completion - no data lost on timeout!
     const personaResults = await Promise.allSettled(
-      ALL_PERSONAS.map(async (persona) => {
+      activePersonas.map(async (persona) => {
         console.log(`[cron/${stage}] Processing ${persona}/${stage}...`);
 
         // Fetch active intents for this cell
@@ -120,6 +129,7 @@ export async function GET(
             const generated = await generateQueriesFromIntent({
               persona,
               stage,
+              coreStage, // Pass core stage for prompt context
               intent: intent.text,
               role: intent.role,
               queryStyle: intent.queryStyle,
@@ -140,6 +150,7 @@ export async function GET(
 
         const benchmarkResult = await runBenchmark({
           stage,
+          coreStage, // Pass core stage for scoring
           intents: intentsToRun,
           brand: DEFAULT_BRAND,
           brandAliases: DEFAULT_ALIASES,
@@ -247,7 +258,7 @@ export async function GET(
     // Collect results for response (cells already saved above)
     for (let i = 0; i < personaResults.length; i++) {
       const result = personaResults[i];
-      const persona = ALL_PERSONAS[i];
+      const persona = activePersonas[i];
 
       if (result.status === "fulfilled" && result.value) {
         runCells[getCellKey(result.value.persona, stage)] = result.value.cellResult;
@@ -311,11 +322,11 @@ export async function GET(
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (err) {
-    console.error(`[cron/${stage}] Error:`, err instanceof Error ? err.message : err);
+    console.error(`[cron/${stageParam}] Error:`, err instanceof Error ? err.message : err);
     return Response.json(
       {
         success: false,
-        stage,
+        stage: stageParam,
         error: err instanceof Error ? err.message : "Unknown error",
         executionTimeMs: Date.now() - startTime,
       },

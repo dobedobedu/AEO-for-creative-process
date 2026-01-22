@@ -62,7 +62,7 @@ export function calculateRunSummary(cells: Record<string, CellResult>): RunSumma
 /**
  * Generate a cell key from persona and stage
  */
-export function getCellKey(persona: Persona, stage: Stage): string {
+export function getCellKey(persona: string, stage: string): string {
     return `${persona}_${stage}`;
 }
 
@@ -95,8 +95,13 @@ export const DEFAULT_ALIASES = ["LWR", "Lakewood"];
 /**
  * Generate an empty extraction for a given stage (used for error cases)
  */
-export function emptyExtraction(stage: Stage): StageExtraction {
-    switch (stage) {
+export function emptyExtraction(stage: string): StageExtraction {
+    // Map custom stages to core stages for extraction generation
+    const coreStage = stage === "explore" || stage === "consider" || stage === "compare" || stage === "decide"
+        ? stage
+        : "explore"; // Default to explore for unknown stages
+
+    switch (coreStage) {
         case "explore":
             return {
                 mentioned: false,

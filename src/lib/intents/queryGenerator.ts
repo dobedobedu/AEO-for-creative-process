@@ -6,11 +6,11 @@
 
 import { callOpenRouter } from "../providers/openrouter";
 import { safeAsync } from "../utils";
-import type { Persona, Stage } from "./types";
 
 export interface QueryGenerationParams {
-    persona: Persona;
-    stage: Stage;
+    persona: string;
+    stage: string;
+    coreStage?: string; // For prompt context - maps custom stages to core stages
     intent: string;
     role: "cpo" | "family_unit";
     queryStyle: number;  // 0.5 (common) to 1.0 (niche)
@@ -22,8 +22,8 @@ export interface GeneratedQueries {
     reasoning?: string;
 }
 
-// Persona descriptions
-const PERSONA_DESCRIPTIONS: Record<Persona, string> = {
+// Persona descriptions - now as Record<string, string> to support dynamic personas
+const PERSONA_DESCRIPTIONS: Record<string, string> = {
     move_up: "a growing family upgrading from their starter home, needing more space for kids",
     retiree: "an active adult 55+ couple seeking vibrant community with healthcare access",
     luxury: "a high-net-worth buyer seeking premium amenities and exclusivity",
@@ -36,8 +36,9 @@ const ROLE_DESCRIPTORS: Record<"cpo" | "family_unit", string> = {
     family_unit: "a family unit weighing lifestyle fit, community feel, schools, and day-to-day happiness",
 };
 
-// Stage context
-const STAGE_CONTEXT: Record<Stage, { focus: string; brandPolicy: string }> = {
+// Stage context - keyed by core stage for prompt generation
+// Custom stages map to core stages for scoring, but prompts use core stage context
+const STAGE_CONTEXT: Record<string, { focus: string; brandPolicy: string }> = {
     explore: {
         focus: "Discovery phase - researching what's available, understanding options",
         brandPolicy: "Do NOT mention Lakewood Ranch or any specific brand. Keep queries generic and need-based.",
@@ -60,11 +61,13 @@ const STAGE_CONTEXT: Record<Stage, { focus: string; brandPolicy: string }> = {
  * Build system prompt for DeepSeek
  */
 function buildSystemPrompt(params: QueryGenerationParams): string {
-    const { persona, stage, role, queryStyle } = params;
+    const { persona, stage, coreStage, role, queryStyle } = params;
 
-    const personaDesc = PERSONA_DESCRIPTIONS[persona];
+    // Use coreStage for context, fallback to stage if not provided
+    const stageKey = coreStage || stage;
+    const personaDesc = PERSONA_DESCRIPTIONS[persona] || `a ${persona} home buyer`;
     const roleDesc = ROLE_DESCRIPTORS[role];
-    const stageInfo = STAGE_CONTEXT[stage];
+    const stageInfo = STAGE_CONTEXT[stageKey] || STAGE_CONTEXT.explore; // Default to explore context
 
     const styleDirective = queryStyle < 0.7
         ? "Generate COMMON, high-volume queries that many buyers would type."
@@ -76,7 +79,7 @@ function buildSystemPrompt(params: QueryGenerationParams): string {
 
 BUYER: ${personaDesc}
 ROLE: Right now, ${roleDesc} is doing the research.
-STAGE: ${stage.toUpperCase()} - ${stageInfo.focus}
+STAGE: ${stage.toUpperCase()} (${stageKey.toUpperCase()} phase) - ${stageInfo.focus}
 
 BRAND POLICY:
 ${stageInfo.brandPolicy}

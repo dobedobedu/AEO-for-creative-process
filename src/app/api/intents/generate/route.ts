@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
-import { PersonaSchema, StageSchema } from "@/lib/intents/types";
+import { getActiveMatrixConfigCached, assertValidPersonaStage, getCoreStageMapping } from "@/lib/matrix/runtime";
 
 const GenerateRequestSchema = z.object({
-  persona: PersonaSchema,
-  stage: StageSchema,
+  persona: z.string().min(1),
+  stage: z.string().min(1),
   intent: z.string(),
   role: z.enum(["cpo", "family_unit"]),
   queryStyle: z.number().min(0.5).max(1),
@@ -15,9 +15,26 @@ export async function POST(req: Request) {
     const body = await req.json();
     const params = GenerateRequestSchema.parse(body);
 
+    // Load active matrix config
+    const cfg = await getActiveMatrixConfigCached();
+
+    // Validate persona/stage against active config
+    try {
+      assertValidPersonaStage(params.persona, params.stage, cfg);
+    } catch (err) {
+      return Response.json(
+        { error: err instanceof Error ? err.message : "Invalid persona or stage" },
+        { status: 400 }
+      );
+    }
+
+    // Get core stage for prompt context
+    const coreStage = getCoreStageMapping(params.stage, cfg);
+
     const result = await generateQueriesFromIntent({
       persona: params.persona,
       stage: params.stage,
+      coreStage, // Pass core stage for prompt context
       intent: params.intent,
       role: params.role,
       queryStyle: params.queryStyle,
