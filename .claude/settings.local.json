@@ -40,7 +40,8 @@
       "mcp__plugin_supabase_supabase__execute_sql",
       "Bash(PGPASSWORD='qynsYx-jykbo3-nygpes' psql:*)",
       "Bash(__NEW_LINE_91c31f8760ee7ae9__ echo \"\")",
-      "Bash(__NEW_LINE_5bbfa907675ddbd5__ echo \"\")"
+      "Bash(__NEW_LINE_5bbfa907675ddbd5__ echo \"\")",
+      "Bash(git show:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
