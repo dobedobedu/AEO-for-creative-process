@@ -29,6 +29,7 @@ import {
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
 import type { Persona, Stage } from "@/lib/intents/types";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
+import { saveRunAggregates, refreshRunMetadata } from "@/lib/runs/aggregator";
 import {
   DEFAULT_PROVIDERS,
   ALL_PERSONAS,
@@ -243,6 +244,16 @@ export async function GET(
       },
       isLastStage
     );
+
+    // Save aggregates to optimization tables
+    console.log(`[cron/${stage}] Saving aggregates to run_metrics, run_citations, run_summary...`);
+    await saveRunAggregates(updatedRun);
+
+    // Refresh materialized view after last stage completes
+    if (isLastStage) {
+      console.log(`[cron/${stage}] Last stage complete, refreshing materialized view...`);
+      await refreshRunMetadata();
+    }
 
     // Upload to FileSearch only after last stage completes
     if (isLastStage) {

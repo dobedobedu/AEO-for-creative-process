@@ -75,6 +75,14 @@ function sqlFn(stringsOrValues: TemplateStringsArray | unknown[], ...values: unk
   return (client.unsafe as any)(query, params);
 };
 
+// Add begin helper for transactions
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(sqlFn as any).begin = function<T>(callback: (sql: any) => Promise<T>): Promise<T> {
+  const client = getClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return client.begin(callback) as Promise<T>;
+};
+
 export const sql = sqlFn as typeof sqlFn & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   array: <T>(arr: readonly T[], oid?: number) => any;
@@ -83,6 +91,8 @@ export const sql = sqlFn as typeof sqlFn & {
   end: () => Promise<void>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   unsafe: (query: string, params?: unknown[]) => any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  begin: <T>(callback: (sql: any) => Promise<T>) => Promise<T>;
 };
 
 // Helper function for type-safe queries

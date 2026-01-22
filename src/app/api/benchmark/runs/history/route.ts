@@ -1,10 +1,11 @@
-import { loadAllRuns } from "@/lib/runs/storage";
+import { getRunMetadataList } from "@/lib/runs/aggregator";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const limit = Math.min(Number(url.searchParams.get("limit") ?? "20") || 20, 100);
 
-  const allRuns = await loadAllRuns();
-  const runs = allRuns.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-  return Response.json({ runs: runs.slice(0, limit) });
+  // Use optimized materialized view instead of loading all runs
+  const metadata = await getRunMetadataList(limit);
+
+  return Response.json({ runs: metadata });
 }
