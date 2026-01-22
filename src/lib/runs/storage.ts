@@ -125,6 +125,36 @@ export async function loadAllRuns(): Promise<BenchmarkRun[]> {
   return runs;
 }
 
+/**
+ * Load recent runs with full data (for timeline UI)
+ * More efficient than loadAllRuns for fetching limited results
+ */
+export async function loadRecentRuns(limit: number = 30): Promise<BenchmarkRun[]> {
+  await ensureReady();
+
+  const rows = await sql`
+    SELECT result_json FROM runs
+    WHERE result_json IS NOT NULL
+    ORDER BY completed_at DESC NULLS LAST, created_at DESC
+    LIMIT ${limit};
+  `;
+
+  const runs: BenchmarkRun[] = [];
+
+  for (const row of rows) {
+    try {
+      runs.push(BenchmarkRunSchema.parse(row.result_json));
+    } catch (err) {
+      console.error("[loadRecentRuns] Schema validation failed for run:",
+        row.result_json?.id,
+        err instanceof Error ? err.message : err
+      );
+    }
+  }
+
+  return runs;
+}
+
 export async function getRunsForDateRange(startDate: string, endDate: string): Promise<BenchmarkRun[]> {
   const allRuns = await loadAllRuns();
 

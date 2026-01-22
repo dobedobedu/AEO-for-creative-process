@@ -1,11 +1,11 @@
-import { getRunMetadataList } from "@/lib/runs/aggregator";
+import { loadRecentRuns } from "@/lib/runs/storage";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const limit = Math.min(Number(url.searchParams.get("limit") ?? "20") || 20, 100);
+  const limit = Math.min(Number(url.searchParams.get("limit") ?? "30") || 30, 100);
 
-  // Use optimized materialized view instead of loading all runs
-  const metadata = await getRunMetadataList(limit);
+  // Load full runs with cells data for UI timeline
+  const runs = await loadRecentRuns(limit);
 
-  return Response.json({ runs: metadata });
+  return Response.json({ runs });
 }
