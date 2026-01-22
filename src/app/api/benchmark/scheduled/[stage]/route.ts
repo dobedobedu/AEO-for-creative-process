@@ -88,9 +88,10 @@ export async function GET(
     const runId = getTodayRunId();
     console.log(`[cron/${stage}] Using run ID: ${runId}`);
 
-    // Process all 4 personas for THIS stage only
-    for (const persona of ALL_PERSONAS) {
-      try {
+    // Process all 4 personas for THIS stage IN PARALLEL
+    // This reduces time from 4×75s=300s to ~75s (slowest persona)
+    const personaResults = await Promise.allSettled(
+      ALL_PERSONAS.map(async (persona) => {
         console.log(`[cron/${stage}] Processing ${persona}/${stage}...`);
 
         // Fetch active intents for this cell
@@ -100,7 +101,7 @@ export async function GET(
 
         if (activeIntents.length === 0) {
           console.log(`[cron/${stage}] Skipping ${persona}/${stage} - no active intents`);
-          continue;
+          return null; // Skip this persona
         }
 
         // Generate queries via DeepSeek for each intent (3 queries)
@@ -133,7 +134,7 @@ export async function GET(
           brand: DEFAULT_BRAND,
           brandAliases: DEFAULT_ALIASES,
           providers: DEFAULT_PROVIDERS,
-          concurrency: 2,
+          concurrency: 4, // Increased from 2 to 4 for more throughput
         });
 
         // Calculate stage-specific metrics
@@ -213,7 +214,7 @@ export async function GET(
           };
         });
 
-        runCells[getCellKey(persona, stage)] = {
+        const cellResult: CellResult = {
           intentId: activeIntents[0].id,
           intentText: activeIntents[0].text,
           queriesUsed: benchmarkResult.queries.map((q) => q.query),
@@ -222,12 +223,23 @@ export async function GET(
         };
 
         console.log(`[cron/${stage}] Completed ${persona}/${stage}`);
-      } catch (cellError) {
-        console.error(`[cron/${stage}] Error processing ${persona}/${stage}:`, cellError);
+        return { persona, cellResult };
+      })
+    );
+
+    // Collect results from parallel execution
+    for (let i = 0; i < personaResults.length; i++) {
+      const result = personaResults[i];
+      const persona = ALL_PERSONAS[i];
+
+      if (result.status === "fulfilled" && result.value) {
+        runCells[getCellKey(result.value.persona, stage)] = result.value.cellResult;
+      } else if (result.status === "rejected") {
+        console.error(`[cron/${stage}] Error processing ${persona}/${stage}:`, result.reason);
         errors.push({
           persona,
           stage,
-          error: cellError instanceof Error ? cellError.message : String(cellError),
+          error: result.reason instanceof Error ? result.reason.message : String(result.reason),
         });
       }
     }
