@@ -207,7 +207,7 @@ export function SplitViewEditor({
                     <AnimatePresence mode="popLayout">
                         <motion.div
                             layout
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#e3dacb] border border-[#e3dacb]"
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#e3dacb] border border-[#e3dacb] auto-rows-fr"
                         >
                             {filteredCells.map((cell) => {
                                 const cellResult = cellResults?.[cell.persona]?.[cell.stage];

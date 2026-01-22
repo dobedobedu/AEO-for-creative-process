@@ -97,7 +97,8 @@ export function GalleryTile({
         <motion.div
             layoutId={`cell-${persona}-${stage}`}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="group cursor-pointer h-full"
+            className="group cursor-pointer"
+            style={{ height: "380px" }}  // Fixed height for consistent rows
             onClick={onClick}
         >
             <Card className={`h-full border-[#e3dacb] hover:border-black/20 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 shadow-none p-6 flex flex-col gap-6 ${isMissing ? "bg-black/5" : heatmapClass}`}>
