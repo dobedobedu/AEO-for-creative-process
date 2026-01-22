@@ -45,6 +45,7 @@ import {
   Area,
   CartesianGrid,
   XAxis,
+  YAxis,
   ReferenceLine,
 } from "recharts";
 
@@ -751,6 +752,25 @@ export default function VisibilityMatrixPage() {
       clearInterval(interval);
     };
   }, []);
+
+  // Load most recent run into matrix after personas/stages are available
+  useEffect(() => {
+    // Only proceed if personas and stages are loaded
+    if (matrixConfigLoading || personas.length === 0 || stages.length === 0) {
+      return;
+    }
+
+    // Only load if matrixData is empty (don't override if user has already run benchmarks)
+    if (Object.keys(matrixData).length > 0) {
+      return;
+    }
+
+    // Load the most recent historical run into matrixData
+    if (historicalRuns.length > 0) {
+      const latestRun = historicalRuns[historicalRuns.length - 1];
+      setMatrixData(storedRunToMatrixData(latestRun, personas, stages));
+    }
+  }, [matrixConfigLoading, personas, stages, historicalRuns, matrixData]);
 
 
   const persistQueryBank = async (queryBank: QueryBank) => {
@@ -1601,7 +1621,7 @@ export default function VisibilityMatrixPage() {
             </div>
           </div>
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 h-[220px]">
+            <div className="flex-1 h-[160px]">
               {benchmarkHistory.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-black/30 border border-dashed border-[#e3dacb] rounded-lg">
                   <svg className="w-10 h-10 mb-3 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -1624,21 +1644,28 @@ export default function VisibilityMatrixPage() {
                       tickFormatter={formatKpiTick}
                       padding={{ left: 12, right: 12 }}
                     />
+                    <YAxis 
+                      domain={[0, 100]}
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={9}
+                      width={24}
+                    />
                     <ChartTooltip cursor={{ stroke: "#d4c9b8", strokeDasharray: "4 4" }} content={<ChartTooltipContent />} />
                     {selectedRunChartIndex && (
                       <ReferenceLine x={selectedRunChartIndex} stroke="#1f3b2c" strokeWidth={2} strokeDasharray="4 4" />
                     )}
                     {enabledProviders.has("openai") && (
-                      <Area type="monotone" stackId="mentions" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.2} strokeWidth={2} />
+                      <Area type="monotone" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.15} strokeWidth={2} />
                     )}
                     {enabledProviders.has("anthropic") && (
-                      <Area type="monotone" stackId="mentions" dataKey="anthropic" stroke="#b86f3a" fill="#b86f3a" fillOpacity={0.2} strokeWidth={2} />
+                      <Area type="monotone" dataKey="anthropic" stroke="#b86f3a" fill="#b86f3a" fillOpacity={0.15} strokeWidth={2} />
                     )}
                     {enabledProviders.has("gemini") && (
-                      <Area type="monotone" stackId="mentions" dataKey="gemini" stroke="#6e7c5b" fill="#6e7c5b" fillOpacity={0.2} strokeWidth={2} />
+                      <Area type="monotone" dataKey="gemini" stroke="#6e7c5b" fill="#6e7c5b" fillOpacity={0.15} strokeWidth={2} />
                     )}
                     {enabledProviders.has("xai") && (
-                      <Area type="monotone" stackId="mentions" dataKey="xai" stroke="#7c6b7c" fill="#7c6b7c" fillOpacity={0.2} strokeWidth={2} />
+                      <Area type="monotone" dataKey="xai" stroke="#7c6b7c" fill="#7c6b7c" fillOpacity={0.15} strokeWidth={2} />
                     )}
                   </RechartsAreaChart>
                 </ChartContainer>
