@@ -220,42 +220,43 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
   for (const chunk of chunks) {
     const chunkResults = await Promise.all(
       chunk.map(async ({ query, intentId }) => {
-        const responses: ProviderResponse[] = [];
-
-        for (const providerConfig of providers) {
-          const response = await runSingleQuery({
-            query,
-            provider: providerConfig.provider,
-            model: providerConfig.model,
-          });
-
-          if (!response.error) {
-            const extraction = await extractStageMetrics({
-              stage,
+        // Run all providers in PARALLEL for this query (10s instead of 40s)
+        const responses = await Promise.all(
+          providers.map(async (providerConfig) => {
+            const response = await runSingleQuery({
               query,
-              responseText: response.text,
               provider: providerConfig.provider,
-              brand,
-              brandTerms: brandAliases,
+              model: providerConfig.model,
             });
 
-            if (extraction.success && extraction.extraction) {
-              response.stageExtraction = extraction.extraction;
-              response.visibility = computeVisibilityFromExtraction(stage, extraction.extraction);
-            }
-          }
+            if (!response.error) {
+              const extraction = await extractStageMetrics({
+                stage,
+                query,
+                responseText: response.text,
+                provider: providerConfig.provider,
+                brand,
+                brandTerms: brandAliases,
+              });
 
-          // Track stats
-          if (!response.error) {
-            responseCounts[providerConfig.provider]++;
-            scoreSums[providerConfig.provider] += response.visibility.score;
-            if (response.visibility.mentioned) {
-              mentionCounts[providerConfig.provider]++;
+              if (extraction.success && extraction.extraction) {
+                response.stageExtraction = extraction.extraction;
+                response.visibility = computeVisibilityFromExtraction(stage, extraction.extraction);
+              }
             }
-          }
 
-          responses.push(response);
-        }
+            // Track stats
+            if (!response.error) {
+              responseCounts[providerConfig.provider]++;
+              scoreSums[providerConfig.provider] += response.visibility.score;
+              if (response.visibility.mentioned) {
+                mentionCounts[providerConfig.provider]++;
+              }
+            }
+
+            return response;
+          })
+        );
 
         return { query, intentId, responses };
       })

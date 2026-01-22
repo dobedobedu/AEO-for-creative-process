@@ -3,6 +3,7 @@ import {
   BenchmarkRun,
   BenchmarkRunSchema,
   RunMetadata,
+  CellResult,
   generateRunId,
   getRunFilename,
 } from "./types";
@@ -190,6 +191,124 @@ export function createEmptyRun(
     },
     cells: {},
   };
+}
+
+/**
+ * Create or update a run with new cells (for incremental stage-based cron jobs)
+ *
+ * @param runId - The run ID to create/update
+ * @param cells - New cells to add to the run
+ * @param metadata - Run metadata (used only on first call to create the run)
+ * @param isLastStage - If true, recalculate summary and mark as completed
+ */
+export async function upsertRunCells(
+  runId: string,
+  cells: Record<string, CellResult>,
+  metadata: {
+    brand: string;
+    intentLibraryVersion: number;
+    metricsConfigVersion: number;
+  },
+  isLastStage: boolean = false
+): Promise<BenchmarkRun> {
+  await ensureReady();
+
+  // Check if run exists
+  const existing = await sql`
+    SELECT result_json FROM runs WHERE id = ${runId}::text::uuid
+    LIMIT 1;
+  `;
+
+  let run: BenchmarkRun;
+
+  if (existing.length > 0 && existing[0].result_json) {
+    // Update existing run - merge new cells
+    run = BenchmarkRunSchema.parse(existing[0].result_json);
+    run.cells = { ...run.cells, ...cells };
+  } else {
+    // Create new run
+    run = {
+      id: runId,
+      timestamp: new Date().toISOString(),
+      intentLibraryVersion: metadata.intentLibraryVersion,
+      metricsConfigVersion: metadata.metricsConfigVersion,
+      brand: metadata.brand,
+      summary: {
+        overall: {
+          discoveryRate: 0,
+          avgSentiment: 0,
+          avgWinRate: 0,
+          recommendationRate: 0,
+        },
+      },
+      cells,
+    };
+  }
+
+  // Recalculate summary if this is the last stage or always keep it updated
+  if (isLastStage || Object.keys(run.cells).length > 0) {
+    const allCells = Object.values(run.cells);
+    const discoveryRates = allCells.map(c => c.metrics.discoveryRate).filter((v): v is number => v !== undefined);
+    const sentimentScores = allCells.map(c => c.metrics.sentimentScore).filter((v): v is number => v !== undefined);
+    const winRates = allCells.map(c => c.metrics.winRate).filter((v): v is number => v !== undefined);
+    const recommendationRates = allCells.map(c => c.metrics.recommendationRate).filter((v): v is number => v !== undefined);
+
+    run.summary = {
+      overall: {
+        discoveryRate: discoveryRates.length > 0 ? discoveryRates.reduce((a, b) => a + b, 0) / discoveryRates.length : 0,
+        avgSentiment: sentimentScores.length > 0 ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length : 0,
+        avgWinRate: winRates.length > 0 ? winRates.reduce((a, b) => a + b, 0) / winRates.length : 0,
+        recommendationRate: recommendationRates.length > 0 ? recommendationRates.reduce((a, b) => a + b, 0) / recommendationRates.length : 0,
+      },
+    };
+  }
+
+  // Save to database
+  const validated = BenchmarkRunSchema.parse(run);
+
+  if (existing.length > 0) {
+    await sql`
+      UPDATE runs
+      SET result_json = ${JSON.stringify(validated)}::jsonb,
+          completed_at = ${isLastStage ? sql`NOW()` : sql`completed_at`}
+      WHERE id = ${runId}::text::uuid;
+    `;
+  } else {
+    await sql`
+      INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
+      VALUES (
+        ${runId}::text::uuid,
+        ${isLastStage ? 'completed' : 'running'},
+        ${JSON.stringify({ brand: metadata.brand })}::jsonb,
+        ${JSON.stringify(validated)}::jsonb,
+        0,
+        ${isLastStage ? sql`NOW()` : null}
+      );
+    `;
+  }
+
+  return validated;
+}
+
+/**
+ * Get today's run ID (consistent across stage crons for the same day)
+ * Format: date-based UUID seed to ensure same ID across all stages
+ */
+export function getTodayRunId(): string {
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+  // Use a deterministic seed based on date to generate consistent ID
+  // This ensures all stage crons on the same day write to the same run
+  const seed = `daily-run-${today}`;
+  // Create a simple hash-based UUID v4-like string
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  // Format as UUID-like string
+  const hex = Math.abs(hash).toString(16).padStart(8, '0');
+  return `${today.replace(/-/g, '')}-${hex.slice(0, 4)}-4${hex.slice(4, 7)}-8000-${hex}${hex.slice(0, 4)}`;
 }
 
 export { generateRunId, getRunFilename };

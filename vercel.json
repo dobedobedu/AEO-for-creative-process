@@ -2,8 +2,20 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
-      "path": "/api/benchmark/scheduled",
+      "path": "/api/benchmark/scheduled/explore",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/benchmark/scheduled/consider",
+      "schedule": "5 5 * * *"
+    },
+    {
+      "path": "/api/benchmark/scheduled/compare",
+      "schedule": "10 5 * * *"
+    },
+    {
+      "path": "/api/benchmark/scheduled/decide",
+      "schedule": "15 5 * * *"
     }
   ]
 }
