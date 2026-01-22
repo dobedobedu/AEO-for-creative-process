@@ -287,7 +287,9 @@ export async function upsertSingleCell(
 ): Promise<void> {
   await ensureReady();
 
-  const cellJson = JSON.stringify(cellResult);
+  // Use sql.json() to properly serialize the cell as JSONB
+  // Do NOT use JSON.stringify() + ::jsonb which causes double-serialization
+  const cellJsonb = sql.json(cellResult);
   const timestamp = new Date().toISOString();
 
   // Use a single atomic upsert with jsonb_set
@@ -314,7 +316,7 @@ export async function upsertSingleCell(
             'recommendationRate', 0
           )
         ),
-        'cells', jsonb_build_object(${cellKey}::text, ${cellJson}::jsonb)
+        'cells', jsonb_build_object(${cellKey}::text, ${cellJsonb})
       ),
       0,
       NULL
@@ -357,7 +359,7 @@ export async function upsertSingleCell(
           ELSE runs.result_json
         END,
         ARRAY['cells', ${cellKey}::text],
-        ${cellJson}::jsonb,
+        ${cellJsonb},
         true
       )
   `;
