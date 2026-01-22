@@ -265,17 +265,31 @@ export async function GET(
     console.log(`[cron/${stage}] Loading full run to update aggregates...`);
     const updatedRun = await upsertRunCells(runId, {}, runMetadata, isLastStage);
 
-    // Save aggregates to optimization tables
+    // Save aggregates to optimization tables (non-blocking error handling)
     console.log(`[cron/${stage}] Saving aggregates to run_metrics, run_citations, run_summary...`);
-    await saveRunAggregates(updatedRun);
+    try {
+      await saveRunAggregates(updatedRun);
+    } catch (aggErr) {
+      console.error(`[cron/${stage}] Aggregation failed (non-fatal):`, aggErr instanceof Error ? aggErr.message : aggErr);
+      errors.push({
+        persona: "all",
+        stage,
+        error: `Aggregation failed: ${aggErr instanceof Error ? aggErr.message : String(aggErr)}`,
+      });
+    }
 
     // Refresh materialized view after last stage completes
     if (isLastStage) {
       console.log(`[cron/${stage}] Last stage complete, refreshing materialized view...`);
-      await refreshRunMetadata();
+      try {
+        await refreshRunMetadata();
+      } catch (mvErr) {
+        console.error(`[cron/${stage}] Materialized view refresh failed (non-fatal):`, mvErr instanceof Error ? mvErr.message : mvErr);
+      }
     }
 
     // Upload to FileSearch only after last stage completes
+    // Note: uploadRunAsync already handles errors internally with try/catch
     if (isLastStage) {
       console.log(`[cron/${stage}] Last stage complete, uploading run to FileSearch...`);
       uploadRunAsync(updatedRun);

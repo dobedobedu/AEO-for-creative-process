@@ -304,7 +304,7 @@ export function getTodayRunId(): string {
   for (let i = 0; i < seed.length; i++) {
     const char = seed.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+    hash = hash | 0; // Convert to 32-bit integer
   }
   // Format as UUID-like string
   const hex = Math.abs(hash).toString(16).padStart(8, '0');

@@ -410,27 +410,61 @@ export async function getRunMetrics(
   runId: string,
   filters?: MetricFilters
 ): Promise<RunMetricRow[]> {
-  let query = sql`SELECT * FROM run_metrics WHERE run_id = ${runId}::uuid`;
-  const conditions: string[] = [];
+  // Build query with proper parameterization to prevent SQL injection
+  const hasPersona = !!filters?.persona;
+  const hasStage = !!filters?.stage;
+  const hasProvider = !!filters?.provider;
 
-  if (filters?.persona) {
-    conditions.push(`persona = ${filters.persona}`);
+  let rows;
+  if (hasPersona && hasStage && hasProvider) {
+    rows = await sql`
+      SELECT * FROM run_metrics
+      WHERE run_id = ${runId}::uuid
+        AND persona = ${filters!.persona}
+        AND stage = ${filters!.stage}
+        AND provider = ${filters!.provider}
+    `;
+  } else if (hasPersona && hasStage) {
+    rows = await sql`
+      SELECT * FROM run_metrics
+      WHERE run_id = ${runId}::uuid
+        AND persona = ${filters!.persona}
+        AND stage = ${filters!.stage}
+    `;
+  } else if (hasPersona && hasProvider) {
+    rows = await sql`
+      SELECT * FROM run_metrics
+      WHERE run_id = ${runId}::uuid
+        AND persona = ${filters!.persona}
+        AND provider = ${filters!.provider}
+    `;
+  } else if (hasStage && hasProvider) {
+    rows = await sql`
+      SELECT * FROM run_metrics
+      WHERE run_id = ${runId}::uuid
+        AND stage = ${filters!.stage}
+        AND provider = ${filters!.provider}
+    `;
+  } else if (hasPersona) {
+    rows = await sql`
+      SELECT * FROM run_metrics
+      WHERE run_id = ${runId}::uuid AND persona = ${filters!.persona}
+    `;
+  } else if (hasStage) {
+    rows = await sql`
+      SELECT * FROM run_metrics
+      WHERE run_id = ${runId}::uuid AND stage = ${filters!.stage}
+    `;
+  } else if (hasProvider) {
+    rows = await sql`
+      SELECT * FROM run_metrics
+      WHERE run_id = ${runId}::uuid AND provider = ${filters!.provider}
+    `;
+  } else {
+    rows = await sql`
+      SELECT * FROM run_metrics WHERE run_id = ${runId}::uuid
+    `;
   }
-  if (filters?.stage) {
-    conditions.push(`stage = ${filters.stage}`);
-  }
-  if (filters?.provider) {
-    conditions.push(`provider = ${filters.provider}`);
-  }
-
-  if (conditions.length > 0) {
-    query = sql.unsafe(
-      `SELECT * FROM run_metrics WHERE run_id = $1 AND ${conditions.join(" AND ")}`,
-      [runId]
-    ) as any;
-  }
-
-  const rows = await query;
   return rows.map((row: any) => ({
     run_id: row.run_id,
     persona: row.persona,

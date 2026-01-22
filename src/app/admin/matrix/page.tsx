@@ -71,7 +71,7 @@ export default function AdminMatrixStudioPage() {
 
   // Handle persona add
   const handlePersonaAdd = (newPersona: Omit<MatrixPersona, "id">) => {
-    const id = `persona_${Date.now()}`;
+    const id = `persona_${crypto.randomUUID().slice(0, 8)}`;
     setConfig((prev) => ({
       ...prev,
       personas: [...prev.personas, { ...newPersona, id }],
@@ -88,7 +88,7 @@ export default function AdminMatrixStudioPage() {
 
   // Handle stage add
   const handleStageAdd = (newStage: Omit<MatrixStage, "id">) => {
-    const id = `stage_${Date.now()}`;
+    const id = `stage_${crypto.randomUUID().slice(0, 8)}`;
     setConfig((prev) => ({
       ...prev,
       stages: [...prev.stages, { ...newStage, id }],

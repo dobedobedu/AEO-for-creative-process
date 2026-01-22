@@ -45,6 +45,7 @@ export async function getAllStages(): Promise<MatrixStage[]> {
       order_index as "orderIndex",
       active,
       core_stage as "coreStage",
+      core_stage_mapping as "coreStageMapping",
       primary_metric as "primaryMetric"
     FROM matrix_stages
     ORDER BY order_index
@@ -135,6 +136,13 @@ export async function updateStage(
       WHERE stage_id = ${stageId}
     `;
   }
+  if (updates.coreStageMapping !== undefined) {
+    await sql`
+      UPDATE matrix_stages
+      SET core_stage_mapping = ${updates.coreStageMapping}
+      WHERE stage_id = ${stageId}
+    `;
+  }
   if (updates.primaryMetric !== undefined) {
     await sql`
       UPDATE matrix_stages
@@ -163,8 +171,8 @@ export async function deletePersona(personaId: string): Promise<void> {
 // Add stage
 export async function addStage(stage: MatrixStage): Promise<void> {
   await sql`
-    INSERT INTO matrix_stages (stage_id, label, description, order_index, active, core_stage, primary_metric)
-    VALUES (${stage.id}, ${stage.label}, ${stage.description || null}, ${stage.orderIndex}, ${stage.active}, ${stage.coreStage || false}, ${stage.primaryMetric || null})
+    INSERT INTO matrix_stages (stage_id, label, description, order_index, active, core_stage, core_stage_mapping, primary_metric)
+    VALUES (${stage.id}, ${stage.label}, ${stage.description || null}, ${stage.orderIndex}, ${stage.active}, ${stage.coreStage || false}, ${stage.coreStageMapping || null}, ${stage.primaryMetric || null})
   `;
 }
 
@@ -271,14 +279,15 @@ export async function publishConfig(
     // Upsert stages
     for (const stage of config.stages) {
       await sql`
-        INSERT INTO matrix_stages (stage_id, label, description, order_index, active, core_stage, primary_metric)
-        VALUES (${stage.id}, ${stage.label}, ${stage.description || null}, ${stage.orderIndex}, ${stage.active}, ${stage.coreStage || false}, ${stage.primaryMetric || null})
+        INSERT INTO matrix_stages (stage_id, label, description, order_index, active, core_stage, core_stage_mapping, primary_metric)
+        VALUES (${stage.id}, ${stage.label}, ${stage.description || null}, ${stage.orderIndex}, ${stage.active}, ${stage.coreStage || false}, ${stage.coreStageMapping || null}, ${stage.primaryMetric || null})
         ON CONFLICT (stage_id) DO UPDATE SET
           label = EXCLUDED.label,
           description = EXCLUDED.description,
           order_index = EXCLUDED.order_index,
           active = EXCLUDED.active,
           core_stage = EXCLUDED.core_stage,
+          core_stage_mapping = EXCLUDED.core_stage_mapping,
           primary_metric = EXCLUDED.primary_metric,
           updated_at = NOW()
       `;

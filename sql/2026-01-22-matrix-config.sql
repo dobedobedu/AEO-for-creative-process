@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS matrix_stages (
   order_index INT NOT NULL DEFAULT 0,
   active BOOLEAN NOT NULL DEFAULT true,
   core_stage BOOLEAN NOT NULL DEFAULT false,  -- Whether this is a core stage
-  primary_metric TEXT,               -- Primary metric for this stage: "discovery_rate", "sentiment_score", "win_rate", "recommendation_rate"
+  core_stage_mapping TEXT,           -- Maps to core stage for scoring: "explore", "consider", "compare", "decide"
+  primary_metric TEXT,               -- Primary metric for this stage: "discovery_rate", "mention_rate", "top3_rate", "sentiment_score", "win_rate", "recommendation_rate"
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -81,12 +82,12 @@ ON CONFLICT (persona_id) DO NOTHING;
 -- 5. Insert default stages
 -- ============================================
 
-INSERT INTO matrix_stages (stage_id, label, description, order_index, active, core_stage, primary_metric)
+INSERT INTO matrix_stages (stage_id, label, description, order_index, active, core_stage, core_stage_mapping, primary_metric)
 VALUES
-  ('explore', 'Explore', 'Starting research', 0, true, true, 'discovery_rate'),
-  ('consider', 'Consider', 'Evaluating options', 1, true, true, 'sentiment_score'),
-  ('compare', 'Compare', 'Narrowing choices', 2, true, true, 'win_rate'),
-  ('decide', 'Decide', 'Ready to buy', 3, true, true, 'recommendation_rate')
+  ('explore', 'Explore', 'Starting research', 0, true, true, 'explore', 'discovery_rate'),
+  ('consider', 'Consider', 'Evaluating options', 1, true, true, 'consider', 'sentiment_score'),
+  ('compare', 'Compare', 'Narrowing choices', 2, true, true, 'compare', 'win_rate'),
+  ('decide', 'Decide', 'Ready to buy', 3, true, true, 'decide', 'recommendation_rate')
 ON CONFLICT (stage_id) DO NOTHING;
 
 -- ============================================
@@ -112,6 +113,7 @@ SELECT 1, 'published',
     'orderIndex', s.order_index,
     'active', s.active,
     'coreStage', s.core_stage,
+    'coreStageMapping', s.core_stage_mapping,
     'primaryMetric', s.primary_metric
   ) ORDER BY s.order_index)
   FROM matrix_stages s
@@ -120,6 +122,15 @@ SELECT 1, 'published',
 -- ============================================
 -- 7. Create trigger for updated_at
 -- ============================================
+
+-- Create update_updated_at_column function if it doesn't exist
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ language 'plpgsql';
 
 -- Drop existing triggers if any
 DROP TRIGGER IF EXISTS update_matrix_personas_updated_at ON matrix_personas;
@@ -165,6 +176,7 @@ BEGIN
       'orderIndex', s.order_index,
       'active', s.active,
       'coreStage', s.core_stage,
+      'coreStageMapping', s.core_stage_mapping,
       'primaryMetric', s.primary_metric
     ) ORDER BY s.order_index)
     FROM matrix_stages s

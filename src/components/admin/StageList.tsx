@@ -383,6 +383,26 @@ export function StageList({ stages, onUpdate, onReorder, onAdd, onDelete }: Stag
             </select>
           </div>
 
+          {editCoreStage && (
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <span className="text-gray-600">Maps to:</span>
+                <select
+                  value={editCoreStageMapping}
+                  onChange={(e) => setEditCoreStageMapping(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">Select core stage...</option>
+                  {CORE_STAGE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )}
+
           <div className="flex justify-end gap-2">
             <Button
               size="sm"

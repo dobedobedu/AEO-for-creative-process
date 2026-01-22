@@ -82,9 +82,10 @@ export async function rescoreRun(
 
   // Process each cell
   for (const [cellKey, cellResult] of Object.entries(run.cells)) {
-    // Extract stage from cell key (format: "persona_stage")
-    const parts = cellKey.split("_");
-    const stage = parts[parts.length - 1] as Stage;
+    // Extract stage from cell key (format: "persona_stage", e.g., "move_up_explore")
+    // Use lastIndexOf to handle personas with underscores
+    const lastUnderscoreIdx = cellKey.lastIndexOf("_");
+    const stage = cellKey.slice(lastUnderscoreIdx + 1) as Stage;
 
     onProgress?.({
       completed,
@@ -270,8 +271,9 @@ export async function dryRunRescore(
   };
 
   for (const [cellKey, cellResult] of Object.entries(run.cells)) {
-    const parts = cellKey.split("_");
-    const stage = parts[parts.length - 1] as Stage;
+    // Use lastIndexOf to handle personas with underscores (e.g., "move_up_explore")
+    const lastUnderscoreIdx = cellKey.lastIndexOf("_");
+    const stage = cellKey.slice(lastUnderscoreIdx + 1) as Stage;
     stages[stage]++;
 
     for (const qr of cellResult.results) {
