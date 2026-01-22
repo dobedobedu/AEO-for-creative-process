@@ -753,15 +753,19 @@ export default function VisibilityMatrixPage() {
     };
   }, []);
 
-  // Load most recent run into matrix after personas/stages are available
+  // Track whether we've done initial data load (to avoid overwriting user's benchmark runs)
+  const initialDataLoadedRef = useRef(false);
+
+  // Load most recent run into matrix after personas/stages AND historical runs are available
+  // This must run BEFORE the initialize effect to prioritize real data over empty cells
   useEffect(() => {
     // Only proceed if personas and stages are loaded
     if (matrixConfigLoading || personas.length === 0 || stages.length === 0) {
       return;
     }
 
-    // Only load if matrixData is empty (don't override if user has already run benchmarks)
-    if (Object.keys(matrixData).length > 0) {
+    // Only do initial load once (don't override if user has already run benchmarks)
+    if (initialDataLoadedRef.current) {
       return;
     }
 
@@ -769,8 +773,9 @@ export default function VisibilityMatrixPage() {
     if (historicalRuns.length > 0) {
       const latestRun = historicalRuns[historicalRuns.length - 1];
       setMatrixData(storedRunToMatrixData(latestRun, personas, stages));
+      initialDataLoadedRef.current = true;
     }
-  }, [matrixConfigLoading, personas, stages, historicalRuns, matrixData]);
+  }, [matrixConfigLoading, personas, stages, historicalRuns]);
 
 
   const persistQueryBank = async (queryBank: QueryBank) => {
@@ -849,6 +854,10 @@ export default function VisibilityMatrixPage() {
   }, [personas, stages, localQueryBank]);
 
   useEffect(() => {
+    // Don't initialize empty cells if we've already loaded historical data
+    if (initialDataLoadedRef.current) {
+      return;
+    }
     if (Object.keys(matrixData).length === 0) {
       setMatrixData(initializeMatrix());
     }
