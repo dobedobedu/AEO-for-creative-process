@@ -82,7 +82,10 @@ export function computeRunMetrics(run: BenchmarkRun): RunMetricRow[] {
   const metrics: RunMetricRow[] = [];
 
   for (const [cellKey, cell] of Object.entries(run.cells)) {
-    const [persona, stage] = cellKey.split("_") as [Persona, Stage];
+    // Split from end - stage is always last part (e.g., "move_up_explore" → ["move_up", "explore"])
+    const lastUnderscoreIdx = cellKey.lastIndexOf("_");
+    const persona = cellKey.slice(0, lastUnderscoreIdx) as Persona;
+    const stage = cellKey.slice(lastUnderscoreIdx + 1) as Stage;
 
     // Collect all responses by provider
     const providerResponses: Record<Provider, ResponseResult[]> = {
@@ -186,7 +189,10 @@ export function computeRunCitations(run: BenchmarkRun): RunCitationRow[] {
   const citations: RunCitationRow[] = [];
 
   for (const [cellKey, cell] of Object.entries(run.cells)) {
-    const [persona, stage] = cellKey.split("_") as [Persona, Stage];
+    // Split from end - stage is always last part (e.g., "move_up_explore" → ["move_up", "explore"])
+    const lastUnderscoreIdx = cellKey.lastIndexOf("_");
+    const persona = cellKey.slice(0, lastUnderscoreIdx) as Persona;
+    const stage = cellKey.slice(lastUnderscoreIdx + 1) as Stage;
 
     // Group citations by (provider, domain)
     const citationGroups: Map<string, RunCitationRow> = new Map();

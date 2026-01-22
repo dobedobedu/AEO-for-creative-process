@@ -31,6 +31,7 @@ const PROTECTED_API_ROUTES = [
   "/api/run/execute",  // AI execution endpoint
   "/api/run/analyze",  // AI analysis endpoint
   "/api/chat",
+  "/api/matrix/config", // Admin matrix configuration
 ];
 
 export async function middleware(request: NextRequest) {

@@ -246,7 +246,10 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
 
   // Create a document for each cell
   for (const [cellKey, cell] of Object.entries(run.cells)) {
-    const [persona, stage] = cellKey.split("_") as [string, Stage];
+    // Split from end - stage is always last part (e.g., "move_up_explore" → ["move_up", "explore"])
+    const lastUnderscoreIdx = cellKey.lastIndexOf("_");
+    const persona = cellKey.slice(0, lastUnderscoreIdx);
+    const stage = cellKey.slice(lastUnderscoreIdx + 1) as Stage;
     
     const header = [
       `# Benchmark Run: ${runDate} (${run.id})`,

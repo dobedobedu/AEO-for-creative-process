@@ -26,7 +26,21 @@
       "mcp__plugin_supabase_supabase__get_publishable_keys",
       "mcp__plugin_supabase_supabase__apply_migration",
       "mcp__plugin_supabase_supabase__list_tables",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "mcp__plugin_supabase_supabase__search_docs",
+      "mcp__plugin_supabase_supabase__get_logs",
+      "Bash(supabase start)",
+      "Bash(supabase status:*)",
+      "Bash(cd /Users/spacegreyodyssey/Business/SMR\\\\ AEO/AI\\\\ Visibility\\\\ Baseline/app && npm run import:runs:*)",
+      "Bash(npm run import:runs)",
+      "Bash(ANON_KEY=\"eyJhbGciOiJFUzI1NiIsImtpZCI6ImI4MTI2OWYxLTIxZDgtNGYyZS1iNzE5LWMyMjQwYTg0MGQ5MCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwODQzMzA4MjR9.xiD7RP5Fc7QvIXp5KWKIdG1hnV8mDQG5diULz6X46oIrGqJLmaadlZZ1foJQV-qvbyF_dSmvoY6G9h510YsT0g\")",
+      "Bash(supabase stop:*)",
+      "Bash(cd /Users/spacegreyodyssey/Business/SMR\\\\ AEO/AI\\\\ Visibility\\\\ Baseline/app/supabase:*)",
+      "Bash(PGPASSWORD=postgres psql:*)",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "Bash(PGPASSWORD='qynsYx-jykbo3-nygpes' psql:*)",
+      "Bash(__NEW_LINE_91c31f8760ee7ae9__ echo \"\")",
+      "Bash(__NEW_LINE_5bbfa907675ddbd5__ echo \"\")"
     ]
   },
   "enableAllProjectMcpServers": true,
