@@ -34,7 +34,7 @@ export async function saveRun(run: BenchmarkRun): Promise<string> {
     // Update existing run with result
     await sql`
       UPDATE runs
-      SET result_json = ${JSON.stringify(validated)}::jsonb,
+      SET result_json = ${sql.json(validated)},
           completed_at = NOW()
       WHERE id = ${validated.id}::text::uuid;
     `;
@@ -45,8 +45,8 @@ export async function saveRun(run: BenchmarkRun): Promise<string> {
       VALUES (
         ${validated.id}::text::uuid,
         'completed',
-        ${JSON.stringify({ brand: validated.brand })}::jsonb,
-        ${JSON.stringify(validated)}::jsonb,
+        ${sql.json({ brand: validated.brand })},
+        ${sql.json(validated)},
         0,
         NOW()
       );
@@ -287,79 +287,68 @@ export async function upsertSingleCell(
 ): Promise<void> {
   await ensureReady();
 
-  // Use sql.json() to properly serialize the cell as JSONB
-  // Do NOT use JSON.stringify() + ::jsonb which causes double-serialization
-  const cellJsonb = sql.json(cellResult);
   const timestamp = new Date().toISOString();
 
+  // Build initial run structure as a full JSON object
+  // This avoids issues with jsonb_build_object and parameter type detection
+  const initialRun = {
+    id: runId,
+    timestamp,
+    intentLibraryVersion: metadata.intentLibraryVersion,
+    metricsConfigVersion: metadata.metricsConfigVersion,
+    brand: metadata.brand,
+    summary: {
+      overall: {
+        discoveryRate: 0,
+        avgSentiment: 0,
+        avgWinRate: 0,
+        recommendationRate: 0,
+      },
+    },
+    cells: {
+      [cellKey]: cellResult,
+    },
+  };
+
+  const emptyRun = {
+    id: runId,
+    timestamp,
+    intentLibraryVersion: metadata.intentLibraryVersion,
+    metricsConfigVersion: metadata.metricsConfigVersion,
+    brand: metadata.brand,
+    summary: {
+      overall: {
+        discoveryRate: 0,
+        avgSentiment: 0,
+        avgWinRate: 0,
+        recommendationRate: 0,
+      },
+    },
+    cells: {},
+  };
+
   // Use a single atomic upsert with jsonb_set
-  // This avoids the read-modify-write race condition
-  // Note: We must ensure result_json is a valid object before using jsonb_set
-  // COALESCE handles NULL, but CASE handles non-object types (scalar, string, etc.)
+  // IMPORTANT: Use sql.json() NOT JSON.stringify()::jsonb to avoid double-serialization
+  // The postgres library escapes strings, so JSON.stringify() + ::jsonb results in a JSON string, not object
   await sql`
     INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
     VALUES (
       ${runId}::text::uuid,
       'running',
-      ${JSON.stringify({ brand: metadata.brand })}::jsonb,
-      jsonb_build_object(
-        'id', ${runId}::text,
-        'timestamp', ${timestamp}::text,
-        'intentLibraryVersion', ${metadata.intentLibraryVersion}::int,
-        'metricsConfigVersion', ${metadata.metricsConfigVersion}::int,
-        'brand', ${metadata.brand}::text,
-        'summary', jsonb_build_object(
-          'overall', jsonb_build_object(
-            'discoveryRate', 0,
-            'avgSentiment', 0,
-            'avgWinRate', 0,
-            'recommendationRate', 0
-          )
-        ),
-        'cells', jsonb_build_object(${cellKey}::text, ${cellJsonb})
-      ),
+      ${sql.json({ brand: metadata.brand })},
+      ${sql.json(initialRun)},
       0,
       NULL
     )
     ON CONFLICT (id) DO UPDATE SET
       result_json = jsonb_set(
         CASE
-          WHEN runs.result_json IS NULL THEN jsonb_build_object(
-            'id', ${runId}::text,
-            'timestamp', ${timestamp}::text,
-            'intentLibraryVersion', ${metadata.intentLibraryVersion}::int,
-            'metricsConfigVersion', ${metadata.metricsConfigVersion}::int,
-            'brand', ${metadata.brand}::text,
-            'summary', jsonb_build_object(
-              'overall', jsonb_build_object(
-                'discoveryRate', 0,
-                'avgSentiment', 0,
-                'avgWinRate', 0,
-                'recommendationRate', 0
-              )
-            ),
-            'cells', '{}'::jsonb
-          )
-          WHEN jsonb_typeof(runs.result_json) != 'object' THEN jsonb_build_object(
-            'id', ${runId}::text,
-            'timestamp', ${timestamp}::text,
-            'intentLibraryVersion', ${metadata.intentLibraryVersion}::int,
-            'metricsConfigVersion', ${metadata.metricsConfigVersion}::int,
-            'brand', ${metadata.brand}::text,
-            'summary', jsonb_build_object(
-              'overall', jsonb_build_object(
-                'discoveryRate', 0,
-                'avgSentiment', 0,
-                'avgWinRate', 0,
-                'recommendationRate', 0
-              )
-            ),
-            'cells', '{}'::jsonb
-          )
+          WHEN runs.result_json IS NULL THEN ${sql.json(emptyRun)}
+          WHEN jsonb_typeof(runs.result_json) != 'object' THEN ${sql.json(emptyRun)}
           ELSE runs.result_json
         END,
         ARRAY['cells', ${cellKey}::text],
-        ${cellJsonb},
+        ${sql.json(cellResult)},
         true
       )
   `;
@@ -409,7 +398,7 @@ export async function upsertRunCells(
   const validated = BenchmarkRunSchema.parse(run);
   await sql`
     UPDATE runs
-    SET result_json = ${JSON.stringify(validated)}::jsonb,
+    SET result_json = ${sql.json(validated)},
         status = ${isLastStage ? 'completed' : 'running'},
         completed_at = ${isLastStage ? sql`NOW()` : sql`completed_at`}
     WHERE id = ${runId}::text::uuid;
