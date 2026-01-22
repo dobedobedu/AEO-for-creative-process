@@ -292,6 +292,8 @@ export async function upsertSingleCell(
 
   // Use a single atomic upsert with jsonb_set
   // This avoids the read-modify-write race condition
+  // Note: We must ensure result_json is a valid object before using jsonb_set
+  // COALESCE handles NULL, but CASE handles non-object types (scalar, string, etc.)
   await sql`
     INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
     VALUES (
@@ -319,7 +321,41 @@ export async function upsertSingleCell(
     )
     ON CONFLICT (id) DO UPDATE SET
       result_json = jsonb_set(
-        COALESCE(runs.result_json, '{}'::jsonb),
+        CASE
+          WHEN runs.result_json IS NULL THEN jsonb_build_object(
+            'id', ${runId}::text,
+            'timestamp', ${timestamp}::text,
+            'intentLibraryVersion', ${metadata.intentLibraryVersion}::int,
+            'metricsConfigVersion', ${metadata.metricsConfigVersion}::int,
+            'brand', ${metadata.brand}::text,
+            'summary', jsonb_build_object(
+              'overall', jsonb_build_object(
+                'discoveryRate', 0,
+                'avgSentiment', 0,
+                'avgWinRate', 0,
+                'recommendationRate', 0
+              )
+            ),
+            'cells', '{}'::jsonb
+          )
+          WHEN jsonb_typeof(runs.result_json) != 'object' THEN jsonb_build_object(
+            'id', ${runId}::text,
+            'timestamp', ${timestamp}::text,
+            'intentLibraryVersion', ${metadata.intentLibraryVersion}::int,
+            'metricsConfigVersion', ${metadata.metricsConfigVersion}::int,
+            'brand', ${metadata.brand}::text,
+            'summary', jsonb_build_object(
+              'overall', jsonb_build_object(
+                'discoveryRate', 0,
+                'avgSentiment', 0,
+                'avgWinRate', 0,
+                'recommendationRate', 0
+              )
+            ),
+            'cells', '{}'::jsonb
+          )
+          ELSE runs.result_json
+        END,
         ARRAY['cells', ${cellKey}::text],
         ${cellJson}::jsonb,
         true

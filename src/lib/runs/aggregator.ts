@@ -11,6 +11,7 @@
  */
 
 import { sql } from "@/lib/db";
+import { getActiveMatrixConfigCached, getCoreStageMapping } from "@/lib/matrix/runtime";
 import type {
   BenchmarkRun,
   CellResult,
@@ -25,7 +26,6 @@ import type {
   DecideExtraction,
   StageExtraction,
 } from "@/lib/scoring/schemas";
-import type { Persona, Stage } from "@/lib/intents/types";
 import { parseCellKey } from "./utils";
 
 // ============================================
@@ -34,8 +34,9 @@ import { parseCellKey } from "./utils";
 
 export interface RunMetricRow {
   run_id: string;
-  persona: Persona;
-  stage: Stage;
+  persona: string;
+  stage_id: string;      // The actual stage ID from config
+  core_stage: string;    // explore|consider|compare|decide for scoring
   provider: Provider;
   responses_count: number;
   mentions_count: number;
@@ -48,8 +49,9 @@ export interface RunMetricRow {
 
 export interface RunCitationRow {
   run_id: string;
-  persona: Persona;
-  stage: Stage;
+  persona: string;
+  stage_id: string;      // The actual stage ID from config
+  core_stage: string;    // explore|consider|compare|decide for scoring
   provider: Provider;
   domain: string;
   citation_count: number;
@@ -67,8 +69,8 @@ export interface RunSummaryRow {
 }
 
 export interface MetricFilters {
-  persona?: Persona;
-  stage?: Stage;
+  persona?: string;
+  stage?: string;
   provider?: Provider;
 }
 
@@ -79,11 +81,15 @@ export interface MetricFilters {
 /**
  * Compute run_metrics rows from a benchmark run
  */
-export function computeRunMetrics(run: BenchmarkRun): RunMetricRow[] {
+export async function computeRunMetrics(run: BenchmarkRun): Promise<RunMetricRow[]> {
+  const cfg = await getActiveMatrixConfigCached();
   const metrics: RunMetricRow[] = [];
 
   for (const [cellKey, cell] of Object.entries(run.cells)) {
-    const { persona, stage } = parseCellKey(cellKey);
+    const { persona, stage: stageId } = parseCellKey(cellKey);
+
+    // Get core stage for scoring
+    const coreStage = getCoreStageMapping(stageId, cfg);
 
     // Collect all responses by provider
     const providerResponses: Record<Provider, ResponseResult[]> = {
@@ -106,10 +112,11 @@ export function computeRunMetrics(run: BenchmarkRun): RunMetricRow[] {
     for (const [provider, responses] of Object.entries(providerResponses)) {
       if (responses.length === 0) continue;
 
-      const metricRow = computeMetricsForProvider(
+      const metricRow = await computeMetricsForProvider(
         run.id,
         persona,
-        stage,
+        stageId,
+        coreStage,
         provider as Provider,
         responses
       );
@@ -124,13 +131,14 @@ export function computeRunMetrics(run: BenchmarkRun): RunMetricRow[] {
 /**
  * Compute metrics for a single (run, persona, stage, provider) combination
  */
-function computeMetricsForProvider(
+async function computeMetricsForProvider(
   runId: string,
-  persona: Persona,
-  stage: Stage,
+  persona: string,
+  stageId: string,
+  coreStage: string,
   provider: Provider,
   responses: ResponseResult[]
-): RunMetricRow {
+): Promise<RunMetricRow> {
   const totalResponses = responses.length;
   const mentioned = responses.filter((r) => r.score.mentioned === true);
   const mentionsCount = mentioned.length;
@@ -139,21 +147,22 @@ function computeMetricsForProvider(
   const baseMetrics: RunMetricRow = {
     run_id: runId,
     persona,
-    stage,
+    stage_id: stageId,      // Store actual stage ID
+    core_stage: coreStage,    // Store core stage for scoring
     provider,
     responses_count: totalResponses,
     mentions_count: mentionsCount,
     mention_rate: mentionRate,
   };
 
-  // Stage-specific metrics
-  if (stage === "explore") {
+  // Stage-specific metrics based on core stage
+  if (coreStage === "explore") {
     const topThree = mentioned.filter((r) => {
       const extraction = r.score as ExploreExtraction;
       return extraction.inTopThree === true;
     });
     baseMetrics.top3_rate = mentionsCount > 0 ? topThree.length / mentionsCount : 0;
-  } else if (stage === "consider") {
+  } else if (coreStage === "consider") {
     const sentimentScores = mentioned.map((r) => {
       const extraction = r.score as ConsiderExtraction;
       return extraction.sentimentScore;
@@ -163,12 +172,12 @@ function computeMetricsForProvider(
         ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length
         : 0;
     baseMetrics.sentiment_score = avgSentiment;
-  } else if (stage === "compare") {
+  } else if (coreStage === "compare") {
     const extractions = mentioned.map((r) => r.score as CompareExtraction);
     const comparisons = extractions.filter((e) => e.outcome !== "not_compared");
     const wins = comparisons.filter((e) => e.outcome === "win");
     baseMetrics.win_rate = comparisons.length > 0 ? wins.length / comparisons.length : 0;
-  } else if (stage === "decide") {
+  } else if (coreStage === "decide") {
     const recommended = mentioned.filter((r) => {
       const extraction = r.score as DecideExtraction;
       return extraction.recommended === true;
@@ -183,11 +192,13 @@ function computeMetricsForProvider(
 /**
  * Compute run_citations rows from a benchmark run
  */
-export function computeRunCitations(run: BenchmarkRun): RunCitationRow[] {
+export async function computeRunCitations(run: BenchmarkRun): Promise<RunCitationRow[]> {
+  const cfg = await getActiveMatrixConfigCached();
   const citations: RunCitationRow[] = [];
 
   for (const [cellKey, cell] of Object.entries(run.cells)) {
-    const { persona, stage } = parseCellKey(cellKey);
+    const { persona, stage: stageId } = parseCellKey(cellKey);
+    const coreStage = getCoreStageMapping(stageId, cfg);
 
     // Group citations by (provider, domain)
     const citationGroups: Map<string, RunCitationRow> = new Map();
@@ -203,7 +214,8 @@ export function computeRunCitations(run: BenchmarkRun): RunCitationRow[] {
             citationGroups.set(key, {
               run_id: run.id,
               persona,
-              stage,
+              stage_id: stageId,      // Actual stage ID
+              core_stage: coreStage,    // Core stage for scoring
               provider: provider as Provider,
               domain: citation.domain,
               citation_count: 0,
@@ -248,8 +260,8 @@ export function computeRunSummary(run: BenchmarkRun): RunSummaryRow {
  * Save all aggregates for a run (metrics, citations, summary)
  */
 export async function saveRunAggregates(run: BenchmarkRun): Promise<void> {
-  const metrics = computeRunMetrics(run);
-  const citations = computeRunCitations(run);
+  const metrics = await computeRunMetrics(run);
+  const citations = await computeRunCitations(run);
   const summary = computeRunSummary(run);
 
   // Use transaction for consistency
@@ -258,14 +270,15 @@ export async function saveRunAggregates(run: BenchmarkRun): Promise<void> {
     for (const metric of metrics) {
       await sql`
         INSERT INTO run_metrics (
-          run_id, persona, stage, provider,
+          run_id, persona, stage_id, core_stage, provider,
           responses_count, mentions_count, mention_rate,
           sentiment_score, win_rate, recommendation_rate, top3_rate
         )
         VALUES (
           ${metric.run_id}::uuid,
           ${metric.persona},
-          ${metric.stage},
+          ${metric.stage_id},
+          ${metric.core_stage},
           ${metric.provider},
           ${metric.responses_count},
           ${metric.mentions_count},
@@ -275,7 +288,7 @@ export async function saveRunAggregates(run: BenchmarkRun): Promise<void> {
           ${metric.recommendation_rate ?? null},
           ${metric.top3_rate ?? null}
         )
-        ON CONFLICT (run_id, persona, stage, provider)
+        ON CONFLICT (run_id, persona, stage_id, provider)
         DO UPDATE SET
           responses_count = EXCLUDED.responses_count,
           mentions_count = EXCLUDED.mentions_count,
@@ -292,18 +305,19 @@ export async function saveRunAggregates(run: BenchmarkRun): Promise<void> {
     for (const citation of citations) {
       await sql`
         INSERT INTO run_citations (
-          run_id, persona, stage, provider, domain, citation_count, sample_url
+          run_id, persona, stage_id, core_stage, provider, domain, citation_count, sample_url
         )
         VALUES (
           ${citation.run_id}::uuid,
           ${citation.persona},
-          ${citation.stage},
+          ${citation.stage_id},
+          ${citation.core_stage},
           ${citation.provider},
           ${citation.domain},
           ${citation.citation_count},
           ${citation.sample_url ?? null}
         )
-        ON CONFLICT (run_id, persona, stage, provider, domain)
+        ON CONFLICT (run_id, persona, stage_id, provider, domain)
         DO UPDATE SET
           citation_count = EXCLUDED.citation_count,
           sample_url = EXCLUDED.sample_url
@@ -521,8 +535,8 @@ export async function getTopCitedDomains(
   const rows = await query;
   return rows.map((row: any) => ({
     run_id: runId,
-    persona: filters?.persona ?? ("all" as Persona),
-    stage: filters?.stage ?? ("all" as Stage),
+    persona: filters?.persona ?? "all",
+    stage: filters?.stage ?? "all",
     provider: filters?.provider ?? ("all" as Provider),
     domain: row.domain,
     citation_count: parseInt(row.total_count),
