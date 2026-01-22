@@ -88,8 +88,18 @@ export async function GET(
     const runId = getTodayRunId();
     console.log(`[cron/${stage}] Using run ID: ${runId}`);
 
+    // Metadata for saving cells
+    const runMetadata = {
+      brand: DEFAULT_BRAND,
+      intentLibraryVersion: intentLibrary.version,
+      metricsConfigVersion: metricsConfig.version,
+    };
+
+    // Track how many cells we've saved (for determining isLastStage logic)
+    let savedCellCount = 0;
+
     // Process all 4 personas for THIS stage IN PARALLEL
-    // This reduces time from 4×75s=300s to ~75s (slowest persona)
+    // Each persona SAVES IMMEDIATELY after completion - no data lost on timeout!
     const personaResults = await Promise.allSettled(
       ALL_PERSONAS.map(async (persona) => {
         console.log(`[cron/${stage}] Processing ${persona}/${stage}...`);
@@ -222,12 +232,19 @@ export async function GET(
           results: queryResults,
         };
 
-        console.log(`[cron/${stage}] Completed ${persona}/${stage}`);
+        // SAVE IMMEDIATELY - don't wait for other personas!
+        // This ensures no API calls are wasted if cron times out
+        const cellKey = getCellKey(persona, stage);
+        console.log(`[cron/${stage}] Saving ${cellKey} immediately to database...`);
+        await upsertRunCells(runId, { [cellKey]: cellResult }, runMetadata, false);
+        savedCellCount++;
+
+        console.log(`[cron/${stage}] Completed and saved ${persona}/${stage}`);
         return { persona, cellResult };
       })
     );
 
-    // Collect results from parallel execution
+    // Collect results for response (cells already saved above)
     for (let i = 0; i < personaResults.length; i++) {
       const result = personaResults[i];
       const persona = ALL_PERSONAS[i];
@@ -244,18 +261,9 @@ export async function GET(
       }
     }
 
-    // Save cells to the shared run
-    console.log(`[cron/${stage}] Saving ${Object.keys(runCells).length} cells to run ${runId}...`);
-    const updatedRun = await upsertRunCells(
-      runId,
-      runCells,
-      {
-        brand: DEFAULT_BRAND,
-        intentLibraryVersion: intentLibrary.version,
-        metricsConfigVersion: metricsConfig.version,
-      },
-      isLastStage
-    );
+    // Load the full run with all cells (including from other stages)
+    console.log(`[cron/${stage}] Loading full run to update aggregates...`);
+    const updatedRun = await upsertRunCells(runId, {}, runMetadata, isLastStage);
 
     // Save aggregates to optimization tables
     console.log(`[cron/${stage}] Saving aggregates to run_metrics, run_citations, run_summary...`);
