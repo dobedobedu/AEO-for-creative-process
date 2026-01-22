@@ -488,49 +488,40 @@ export async function getTopCitedDomains(
   limit: number = 10,
   filters?: MetricFilters
 ): Promise<RunCitationRow[]> {
-  let query = sql`
-    SELECT domain, SUM(citation_count) as total_count, MAX(sample_url) as sample_url
-    FROM run_citations
-    WHERE run_id = ${runId}::uuid
-  `;
+  // Build query with all filter combinations
+  const conditions: string[] = ["run_id = $1"];
+  const params: (string | number)[] = [runId];
+  let paramIdx = 2;
 
   if (filters?.persona) {
-    query = sql.unsafe(
-      `SELECT domain, SUM(citation_count) as total_count, MAX(sample_url) as sample_url
-       FROM run_citations
-       WHERE run_id = $1 AND persona = $2`,
-      [runId, filters.persona]
-    ) as any;
+    conditions.push(`persona = $${paramIdx}`);
+    params.push(filters.persona);
+    paramIdx++;
   }
 
   if (filters?.stage) {
-    const baseCondition = filters?.persona
-      ? `run_id = $1 AND persona = $2 AND stage = $3`
-      : `run_id = $1 AND stage = $2`;
-    const params = filters?.persona
-      ? [runId, filters.persona, filters.stage]
-      : [runId, filters.stage];
-
-    query = sql.unsafe(
-      `SELECT domain, SUM(citation_count) as total_count, MAX(sample_url) as sample_url
-       FROM run_citations
-       WHERE ${baseCondition}
-       GROUP BY domain
-       ORDER BY total_count DESC
-       LIMIT $${params.length + 1}`,
-      [...params, limit]
-    ) as any;
-  } else {
-    query = sql.unsafe(
-      `SELECT domain, SUM(citation_count) as total_count, MAX(sample_url) as sample_url
-       FROM run_citations
-       WHERE run_id = $1
-       GROUP BY domain
-       ORDER BY total_count DESC
-       LIMIT $2`,
-      [runId, limit]
-    ) as any;
+    conditions.push(`stage = $${paramIdx}`);
+    params.push(filters.stage);
+    paramIdx++;
   }
+
+  if (filters?.provider) {
+    conditions.push(`provider = $${paramIdx}`);
+    params.push(filters.provider);
+    paramIdx++;
+  }
+
+  params.push(limit);
+
+  const query = sql.unsafe(
+    `SELECT domain, SUM(citation_count) as total_count, MAX(sample_url) as sample_url
+     FROM run_citations
+     WHERE ${conditions.join(" AND ")}
+     GROUP BY domain
+     ORDER BY total_count DESC
+     LIMIT $${paramIdx}`,
+    params
+  );
 
   const rows = await query;
   return rows.map((row: any) => ({

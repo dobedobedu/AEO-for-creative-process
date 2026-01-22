@@ -224,7 +224,69 @@ export function createEmptyRun(
 }
 
 /**
+ * Atomically upsert a single cell into a run (safe for concurrent writes)
+ * Uses jsonb_set to avoid read-modify-write race conditions
+ *
+ * @param runId - The run ID to update
+ * @param cellKey - The cell key (e.g., "move_up_explore")
+ * @param cellResult - The cell result data
+ * @param metadata - Run metadata (used only if creating new run)
+ */
+export async function upsertSingleCell(
+  runId: string,
+  cellKey: string,
+  cellResult: CellResult,
+  metadata: {
+    brand: string;
+    intentLibraryVersion: number;
+    metricsConfigVersion: number;
+  }
+): Promise<void> {
+  await ensureReady();
+
+  const cellJson = JSON.stringify(cellResult);
+  const timestamp = new Date().toISOString();
+
+  // Use a single atomic upsert with jsonb_set
+  // This avoids the read-modify-write race condition
+  await sql`
+    INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
+    VALUES (
+      ${runId}::text::uuid,
+      'running',
+      ${JSON.stringify({ brand: metadata.brand })}::jsonb,
+      jsonb_build_object(
+        'id', ${runId}::text,
+        'timestamp', ${timestamp}::text,
+        'intentLibraryVersion', ${metadata.intentLibraryVersion}::int,
+        'metricsConfigVersion', ${metadata.metricsConfigVersion}::int,
+        'brand', ${metadata.brand}::text,
+        'summary', jsonb_build_object(
+          'overall', jsonb_build_object(
+            'discoveryRate', 0,
+            'avgSentiment', 0,
+            'avgWinRate', 0,
+            'recommendationRate', 0
+          )
+        ),
+        'cells', jsonb_build_object(${cellKey}::text, ${cellJson}::jsonb)
+      ),
+      0,
+      NULL
+    )
+    ON CONFLICT (id) DO UPDATE SET
+      result_json = jsonb_set(
+        COALESCE(runs.result_json, '{}'::jsonb),
+        ARRAY['cells', ${cellKey}::text],
+        ${cellJson}::jsonb,
+        true
+      )
+  `;
+}
+
+/**
  * Create or update a run with new cells (for incremental stage-based cron jobs)
+ * Now uses atomic jsonb_set per cell to prevent race conditions
  *
  * @param runId - The run ID to create/update
  * @param cells - New cells to add to the run
@@ -243,79 +305,47 @@ export async function upsertRunCells(
 ): Promise<BenchmarkRun> {
   await ensureReady();
 
-  // Check if run exists
-  const existing = await sql`
-    SELECT result_json FROM runs WHERE id = ${runId}::text::uuid
-    LIMIT 1;
+  // Upsert each cell atomically (safe for concurrent calls)
+  for (const [cellKey, cellResult] of Object.entries(cells)) {
+    await upsertSingleCell(runId, cellKey, cellResult, metadata);
+  }
+
+  // Now read the full run to calculate summary and return
+  const rows = await sql`
+    SELECT result_json FROM runs WHERE id = ${runId}::text::uuid LIMIT 1;
   `;
 
-  let run: BenchmarkRun;
-
-  if (existing.length > 0 && existing[0].result_json) {
-    // Update existing run - merge new cells
-    run = BenchmarkRunSchema.parse(existing[0].result_json);
-    run.cells = { ...run.cells, ...cells };
-  } else {
-    // Create new run
-    run = {
-      id: runId,
-      timestamp: new Date().toISOString(),
-      intentLibraryVersion: metadata.intentLibraryVersion,
-      metricsConfigVersion: metadata.metricsConfigVersion,
-      brand: metadata.brand,
-      summary: {
-        overall: {
-          discoveryRate: 0,
-          avgSentiment: 0,
-          avgWinRate: 0,
-          recommendationRate: 0,
-        },
-      },
-      cells,
-    };
+  if (rows.length === 0 || !rows[0].result_json) {
+    throw new Error(`Run ${runId} not found after upsert`);
   }
 
-  // Recalculate summary if this is the last stage or always keep it updated
-  if (isLastStage || Object.keys(run.cells).length > 0) {
-    const allCells = Object.values(run.cells);
-    const discoveryRates = allCells.map(c => c.metrics.discoveryRate).filter((v): v is number => v !== undefined);
-    const sentimentScores = allCells.map(c => c.metrics.sentimentScore).filter((v): v is number => v !== undefined);
-    const winRates = allCells.map(c => c.metrics.winRate).filter((v): v is number => v !== undefined);
-    const recommendationRates = allCells.map(c => c.metrics.recommendationRate).filter((v): v is number => v !== undefined);
+  let run = BenchmarkRunSchema.parse(rows[0].result_json);
 
-    run.summary = {
-      overall: {
-        discoveryRate: discoveryRates.length > 0 ? discoveryRates.reduce((a, b) => a + b, 0) / discoveryRates.length : 0,
-        avgSentiment: sentimentScores.length > 0 ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length : 0,
-        avgWinRate: winRates.length > 0 ? winRates.reduce((a, b) => a + b, 0) / winRates.length : 0,
-        recommendationRate: recommendationRates.length > 0 ? recommendationRates.reduce((a, b) => a + b, 0) / recommendationRates.length : 0,
-      },
-    };
-  }
+  // Recalculate summary
+  const allCells = Object.values(run.cells);
+  const discoveryRates = allCells.map(c => c.metrics.discoveryRate).filter((v): v is number => v !== undefined);
+  const sentimentScores = allCells.map(c => c.metrics.sentimentScore).filter((v): v is number => v !== undefined);
+  const winRates = allCells.map(c => c.metrics.winRate).filter((v): v is number => v !== undefined);
+  const recommendationRates = allCells.map(c => c.metrics.recommendationRate).filter((v): v is number => v !== undefined);
 
-  // Save to database
+  run.summary = {
+    overall: {
+      discoveryRate: discoveryRates.length > 0 ? discoveryRates.reduce((a, b) => a + b, 0) / discoveryRates.length : 0,
+      avgSentiment: sentimentScores.length > 0 ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length : 0,
+      avgWinRate: winRates.length > 0 ? winRates.reduce((a, b) => a + b, 0) / winRates.length : 0,
+      recommendationRate: recommendationRates.length > 0 ? recommendationRates.reduce((a, b) => a + b, 0) / recommendationRates.length : 0,
+    },
+  };
+
+  // Update with recalculated summary
   const validated = BenchmarkRunSchema.parse(run);
-
-  if (existing.length > 0) {
-    await sql`
-      UPDATE runs
-      SET result_json = ${JSON.stringify(validated)}::jsonb,
-          completed_at = ${isLastStage ? sql`NOW()` : sql`completed_at`}
-      WHERE id = ${runId}::text::uuid;
-    `;
-  } else {
-    await sql`
-      INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
-      VALUES (
-        ${runId}::text::uuid,
-        ${isLastStage ? 'completed' : 'running'},
-        ${JSON.stringify({ brand: metadata.brand })}::jsonb,
-        ${JSON.stringify(validated)}::jsonb,
-        0,
-        ${isLastStage ? sql`NOW()` : null}
-      );
-    `;
-  }
+  await sql`
+    UPDATE runs
+    SET result_json = ${JSON.stringify(validated)}::jsonb,
+        status = ${isLastStage ? 'completed' : 'running'},
+        completed_at = ${isLastStage ? sql`NOW()` : sql`completed_at`}
+    WHERE id = ${runId}::text::uuid;
+  `;
 
   return validated;
 }

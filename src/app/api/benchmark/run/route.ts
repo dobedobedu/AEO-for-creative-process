@@ -14,6 +14,7 @@ import {
   calculateDecideMetrics,
 } from "@/lib/scoring/extractor";
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
+import { saveRunAggregates } from "@/lib/runs/aggregator";
 import { DEFAULT_PROVIDERS, getCellKey, emptyExtraction } from "@/lib/runs/utils";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
 import { cookies } from "next/headers";
@@ -227,6 +228,13 @@ export async function POST(req: Request) {
     // Persist + upload
     await saveRun(run);
     uploadRunAsync(run);
+
+    // Save aggregates to optimization tables (run_metrics, run_citations, run_summary)
+    try {
+      await saveRunAggregates(run);
+    } catch (aggErr) {
+      console.error("[benchmark/run] Aggregation failed (non-fatal):", aggErr instanceof Error ? aggErr.message : aggErr);
+    }
 
     // Mark progress complete
     await completeProgress(id);

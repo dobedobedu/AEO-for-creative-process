@@ -11,7 +11,7 @@
 import { runBenchmark } from "@/lib/benchmark";
 import { loadIntentLibrary, updateIntent } from "@/lib/intents/library";
 import { loadMetricsConfig } from "@/lib/metrics/config";
-import { upsertRunCells, getTodayRunId } from "@/lib/runs/storage";
+import { upsertRunCells, upsertSingleCell, getTodayRunId } from "@/lib/runs/storage";
 import type { CellResult } from "@/lib/runs/types";
 import type {
   StageExtraction,
@@ -232,11 +232,11 @@ export async function GET(
           results: queryResults,
         };
 
-        // SAVE IMMEDIATELY - don't wait for other personas!
-        // This ensures no API calls are wasted if cron times out
+        // SAVE IMMEDIATELY with atomic upsert - safe for concurrent writes!
+        // Uses jsonb_set to avoid read-modify-write race conditions
         const cellKey = getCellKey(persona, stage);
-        console.log(`[cron/${stage}] Saving ${cellKey} immediately to database...`);
-        await upsertRunCells(runId, { [cellKey]: cellResult }, runMetadata, false);
+        console.log(`[cron/${stage}] Saving ${cellKey} atomically to database...`);
+        await upsertSingleCell(runId, cellKey, cellResult, runMetadata);
         savedCellCount++;
 
         console.log(`[cron/${stage}] Completed and saved ${persona}/${stage}`);
