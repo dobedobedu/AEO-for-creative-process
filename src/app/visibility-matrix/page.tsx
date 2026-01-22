@@ -672,7 +672,8 @@ export default function VisibilityMatrixPage() {
         setBenchmarkHistory(runs);
         setSelectedTimeIndex(Math.max(0, runs.length - 1));
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("[visibility-matrix] Failed to load history:", err);
         if (cancelled) return;
         // Keep empty - no mock data fallback
         setHistoricalRuns([]);

@@ -37,19 +37,24 @@ import {
 export const maxDuration = 800; // Max for Pro plan (800 seconds)
 
 export async function GET(req: Request) {
+    const startTime = Date.now();
+
+    console.log("[cron] Starting scheduled benchmark...");
+
     // Verify this is a legitimate cron request (Vercel adds this header)
     const authHeader = req.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
 
     // In production, verify the cron secret
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+        console.error("[cron] Unauthorized - invalid or missing CRON_SECRET");
         return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const startTime = Date.now();
-
     try {
         const intentLibrary = await loadIntentLibrary();
+        console.log(`[cron] Loaded ${intentLibrary.intents.length} intents from library`);
+
         const metricsConfig = loadMetricsConfig();
         const runCells: Record<string, CellResult> = {};
         const errors: Array<{ persona: string; stage: string; error: string }> = [];
@@ -58,12 +63,15 @@ export async function GET(req: Request) {
         for (const persona of ALL_PERSONAS) {
             for (const stage of ALL_STAGES) {
                 try {
+                    console.log(`[cron] Processing ${persona}/${stage}...`);
+
                     // Fetch active intents for this cell
                     const activeIntents = intentLibrary.intents
                         .filter((i) => i.persona === persona && i.stage === stage && i.active)
                         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
                     if (activeIntents.length === 0) {
+                        console.log(`[cron] Skipping ${persona}/${stage} - no active intents`);
                         continue; // No intents for this cell
                     }
 
@@ -176,6 +184,8 @@ export async function GET(req: Request) {
         const id = generateRunId();
         const timestamp = new Date().toISOString();
 
+        console.log(`[cron] All cells processed, creating run ${id}...`);
+
         const cells = Object.values(runCells);
         const discoveryRates = cells.map((c) => c.metrics.discoveryRate).filter((v): v is number => v !== undefined);
         const sentimentScores = cells.map((c) => c.metrics.sentimentScore).filter((v): v is number => v !== undefined);
@@ -210,10 +220,13 @@ export async function GET(req: Request) {
         };
 
         // Persist + upload
+        console.log(`[cron] Saving run ${id} to database...`);
         await saveRun(run);
+        console.log(`[cron] Run saved, starting async upload to FileSearch...`);
         uploadRunAsync(run);
 
         const executionTimeMs = Date.now() - startTime;
+        console.log(`[cron] Completed in ${executionTimeMs}ms (${(executionTimeMs / 1000).toFixed(1)}s)`);
 
         return Response.json({
             success: true,
@@ -224,6 +237,7 @@ export async function GET(req: Request) {
             errors: errors.length > 0 ? errors : undefined,
         });
     } catch (err) {
+        console.error("[cron] Error:", err instanceof Error ? err.message : err);
         return Response.json(
             {
                 success: false,

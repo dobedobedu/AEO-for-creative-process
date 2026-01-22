@@ -113,8 +113,11 @@ export async function loadAllRuns(): Promise<BenchmarkRun[]> {
   for (const row of rows) {
     try {
       runs.push(BenchmarkRunSchema.parse(row.result_json));
-    } catch {
-      // Skip invalid entries
+    } catch (err) {
+      console.error("[loadAllRuns] Schema validation failed for run:",
+        row.result_json?.id,
+        err instanceof Error ? err.message : err
+      );
     }
   }
 
