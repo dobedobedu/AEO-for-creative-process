@@ -15,7 +15,7 @@ import {
 } from "@/lib/scoring/extractor";
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
 import { saveRunAggregates } from "@/lib/runs/aggregator";
-import { DEFAULT_PROVIDERS, getCellKey, emptyExtraction } from "@/lib/runs/utils";
+import { DEFAULT_PROVIDERS, getCellKey, emptyExtraction, calculateRunSummary } from "@/lib/runs/utils";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
 import { cookies } from "next/headers";
 import { initProgress, logProgress, incrementProgress, completeProgress, failProgress } from "@/lib/benchmark/progress";
@@ -191,37 +191,14 @@ export async function POST(req: Request) {
 
     const timestamp = new Date().toISOString();
 
-    // Overall summary across all returned cells
-    const cells = Object.values(runCells);
-    const discoveryRates = cells.map((c) => c.metrics.discoveryRate).filter((v): v is number => v !== undefined);
-    const sentimentScores = cells.map((c) => c.metrics.sentimentScore).filter((v): v is number => v !== undefined);
-    const winRates = cells.map((c) => c.metrics.winRate).filter((v): v is number => v !== undefined);
-    const recommendationRates = cells.map((c) => c.metrics.recommendationRate).filter((v): v is number => v !== undefined);
-
+    // Build run with summary calculated from cells
     const run: BenchmarkRun = {
       id,
       timestamp,
       intentLibraryVersion: intentLibrary.version,
       metricsConfigVersion: metricsConfig.version,
       brand: data.brand,
-      summary: {
-        overall: {
-          discoveryRate:
-            discoveryRates.length > 0
-              ? discoveryRates.reduce((a, b) => a + b, 0) / discoveryRates.length
-              : 0,
-          avgSentiment:
-            sentimentScores.length > 0
-              ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length
-              : 0,
-          avgWinRate:
-            winRates.length > 0 ? winRates.reduce((a, b) => a + b, 0) / winRates.length : 0,
-          recommendationRate:
-            recommendationRates.length > 0
-              ? recommendationRates.reduce((a, b) => a + b, 0) / recommendationRates.length
-              : 0,
-        },
-      },
+      summary: calculateRunSummary(runCells),
       cells: runCells,
     };
 

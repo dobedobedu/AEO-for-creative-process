@@ -13,6 +13,23 @@ import type { Citation } from "@/lib/parsers/types";
 
 export type Provider = "openai" | "anthropic" | "gemini" | "xai";
 
+/**
+ * Default visibility score for error cases or when scoring is unavailable
+ * Extracted as constant to avoid duplication and ensure consistency
+ */
+export const DEFAULT_VISIBILITY_SCORE: VisibilityScore = {
+  score: 0,
+  category: "blind_spot",
+  sentiment: "neutral",
+  mentioned: false,
+  mentionCount: 0,
+  firstMentionPosition: null,
+  position: "absent",
+  competitorsMentioned: [],
+  comparisonOutcome: "none",
+  recommendationStrength: "none",
+};
+
 export interface ProviderConfig {
   provider: Provider;
   model: string;
@@ -88,7 +105,7 @@ export async function runSingleQuery(params: {
         model,
         text: cached.text,
         citations: cachedCitations,
-        visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
+        visibility: DEFAULT_VISIBILITY_SCORE,
         latencyMs: 0, // Instant from cache
         raw: cached.raw,
       };
@@ -153,7 +170,7 @@ export async function runSingleQuery(params: {
       model,
       text,
       citations,
-      visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
+      visibility: DEFAULT_VISIBILITY_SCORE,
       latencyMs: Date.now() - start,
       raw,
     };
@@ -177,7 +194,7 @@ export async function runSingleQuery(params: {
       model,
       text: "",
       citations: [],
-      visibility: { score: 0, category: "blind_spot", sentiment: "neutral", mentioned: false, mentionCount: 0, firstMentionPosition: null, position: "absent", competitorsMentioned: [], comparisonOutcome: "none", recommendationStrength: "none" },
+      visibility: DEFAULT_VISIBILITY_SCORE,
       latencyMs: Date.now() - start,
       error: errorMessage,
       raw: null,
@@ -397,22 +414,7 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
   return chunks;
 }
 
-// Response text extractors
-function extractOpenAIText(response: { output?: Array<Record<string, unknown>> }): string {
-  const parts: string[] = [];
-  for (const item of response.output ?? []) {
-    if (item.type === "message") {
-      const content = item.content as Array<{ type?: string; text?: string }> | undefined;
-      for (const block of content ?? []) {
-        if (block.type === "output_text" && block.text) {
-          parts.push(block.text);
-        }
-      }
-    }
-  }
-  return parts.join("\n").trim();
-}
-
+// Response text extractors (OpenAI uses parseOpenAIResponse, Gemini uses parseGeminiResponse)
 function extractAnthropicText(response: { content?: Array<Record<string, unknown>> }): string {
   const parts: string[] = [];
   for (const block of response.content ?? []) {
@@ -421,12 +423,6 @@ function extractAnthropicText(response: { content?: Array<Record<string, unknown
     }
   }
   return parts.join("\n").trim();
-}
-
-function extractGeminiText(response: { candidates?: Array<Record<string, unknown>> }): string {
-  const candidate = response.candidates?.[0] as { content?: { parts?: Array<{ text?: string }> } } | undefined;
-  const parts = candidate?.content?.parts ?? [];
-  return parts.map(p => p.text ?? "").join("\n").trim();
 }
 
 function extractXaiText(response: { choices?: Array<Record<string, unknown>> }): string {

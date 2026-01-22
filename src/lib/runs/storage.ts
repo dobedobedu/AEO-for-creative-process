@@ -7,14 +7,16 @@ import {
   generateRunId,
   getRunFilename,
 } from "./types";
+import { calculateRunSummary } from "./utils";
 
 // Ensure schema is up to date on first query
-let schemaReady = false;
+// Use Promise-based singleton to prevent race conditions in serverless
+let schemaReadyPromise: Promise<void> | null = null;
 async function ensureReady(): Promise<void> {
-  if (!schemaReady) {
-    await ensureSchema();
-    schemaReady = true;
+  if (!schemaReadyPromise) {
+    schemaReadyPromise = ensureSchema();
   }
+  await schemaReadyPromise;
 }
 
 export async function saveRun(run: BenchmarkRun): Promise<string> {
@@ -156,12 +158,31 @@ export async function loadRecentRuns(limit: number = 30): Promise<BenchmarkRun[]
 }
 
 export async function getRunsForDateRange(startDate: string, endDate: string): Promise<BenchmarkRun[]> {
-  const allRuns = await loadAllRuns();
+  await ensureReady();
 
-  return allRuns.filter((run) => {
-    const runDate = run.timestamp.split("T")[0];
-    return runDate >= startDate && runDate <= endDate;
-  });
+  // Use SQL filtering instead of loading all runs (performance optimization)
+  const rows = await sql`
+    SELECT result_json FROM runs
+    WHERE result_json IS NOT NULL
+      AND (result_json->>'timestamp')::date >= ${startDate}::date
+      AND (result_json->>'timestamp')::date <= ${endDate}::date
+    ORDER BY completed_at ASC NULLS LAST, created_at ASC;
+  `;
+
+  const runs: BenchmarkRun[] = [];
+
+  for (const row of rows) {
+    try {
+      runs.push(BenchmarkRunSchema.parse(row.result_json));
+    } catch (err) {
+      console.error("[getRunsForDateRange] Schema validation failed for run:",
+        row.result_json?.id,
+        err instanceof Error ? err.message : err
+      );
+    }
+  }
+
+  return runs;
 }
 
 export async function getLatestRun(): Promise<BenchmarkRun | null> {
@@ -182,8 +203,30 @@ export async function getLatestRun(): Promise<BenchmarkRun | null> {
 }
 
 export async function getRunsByIntentLibraryVersion(version: number): Promise<BenchmarkRun[]> {
-  const allRuns = await loadAllRuns();
-  return allRuns.filter((run) => run.intentLibraryVersion === version);
+  await ensureReady();
+
+  // Use SQL filtering instead of loading all runs (performance optimization)
+  const rows = await sql`
+    SELECT result_json FROM runs
+    WHERE result_json IS NOT NULL
+      AND (result_json->>'intentLibraryVersion')::int = ${version}
+    ORDER BY completed_at ASC NULLS LAST, created_at ASC;
+  `;
+
+  const runs: BenchmarkRun[] = [];
+
+  for (const row of rows) {
+    try {
+      runs.push(BenchmarkRunSchema.parse(row.result_json));
+    } catch (err) {
+      console.error("[getRunsByIntentLibraryVersion] Schema validation failed for run:",
+        row.result_json?.id,
+        err instanceof Error ? err.message : err
+      );
+    }
+  }
+
+  return runs;
 }
 
 export async function deleteRun(runId: string): Promise<boolean> {
@@ -321,21 +364,8 @@ export async function upsertRunCells(
 
   let run = BenchmarkRunSchema.parse(rows[0].result_json);
 
-  // Recalculate summary
-  const allCells = Object.values(run.cells);
-  const discoveryRates = allCells.map(c => c.metrics.discoveryRate).filter((v): v is number => v !== undefined);
-  const sentimentScores = allCells.map(c => c.metrics.sentimentScore).filter((v): v is number => v !== undefined);
-  const winRates = allCells.map(c => c.metrics.winRate).filter((v): v is number => v !== undefined);
-  const recommendationRates = allCells.map(c => c.metrics.recommendationRate).filter((v): v is number => v !== undefined);
-
-  run.summary = {
-    overall: {
-      discoveryRate: discoveryRates.length > 0 ? discoveryRates.reduce((a, b) => a + b, 0) / discoveryRates.length : 0,
-      avgSentiment: sentimentScores.length > 0 ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length : 0,
-      avgWinRate: winRates.length > 0 ? winRates.reduce((a, b) => a + b, 0) / winRates.length : 0,
-      recommendationRate: recommendationRates.length > 0 ? recommendationRates.reduce((a, b) => a + b, 0) / recommendationRates.length : 0,
-    },
-  };
+  // Recalculate summary using shared utility
+  run.summary = calculateRunSummary(run.cells);
 
   // Update with recalculated summary
   const validated = BenchmarkRunSchema.parse(run);
