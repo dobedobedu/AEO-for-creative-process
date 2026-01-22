@@ -101,7 +101,7 @@ export function GalleryTile({
             style={{ height: "320px" }}  // Fixed height for consistent rows
             onClick={onClick}
         >
-            <Card className={`h-full border-[#e3dacb] hover:border-black/20 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 shadow-none p-6 flex flex-col gap-6 ${isMissing ? "bg-black/5" : heatmapClass}`}>
+            <Card className={`h-full border-[#e3dacb] hover:border-black/20 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 shadow-none p-5 flex flex-col ${isMissing ? "bg-black/5" : heatmapClass}`}>
                 {/* Missing Cell State */}
                 {isMissing ? (
                     <div className="h-full flex items-center justify-center">
@@ -112,8 +112,11 @@ export function GalleryTile({
                     </div>
                 ) : (
                     <>
-                {/* Header: Stage Identifier */}
-                <div className="flex items-start justify-between">
+                {/* Header: Stage Identifier - Fixed height */}
+                <motion.div 
+                    layout="position"
+                    className="flex items-start justify-between min-h-[56px]"
+                >
                     <div className="flex flex-col gap-1">
                         <span
                             className="text-[10px] font-bold uppercase tracking-[0.2em]"
@@ -121,23 +124,31 @@ export function GalleryTile({
                         >
                             {stageLabel}
                         </span>
-                        <h3 className="text-2xl font-light tracking-tight text-black group-hover:text-black/80 transition-colors">
+                        <h3 className="text-xl font-light tracking-tight text-black group-hover:text-black/80 transition-colors">
                             {personaLabel}
                         </h3>
                     </div>
 
                     {activeTab === "intents" && (
-                        <div
-                            className="w-10 h-10 flex items-center justify-center border-2 font-black text-lg select-none transition-transform group-hover:rotate-3"
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="w-9 h-9 flex items-center justify-center border-2 font-black text-base select-none"
                             style={{ borderColor: accentColor, color: accentColor }}
                         >
                             {stageLabel.charAt(0)}
-                        </div>
+                        </motion.div>
                     )}
-                </div>
+                </motion.div>
 
-                {/* Content: Preview */}
-                <div className="flex-1 space-y-4 overflow-hidden">
+                {/* Content: Preview - Fixed height with consistent spacing */}
+                <motion.div 
+                    layout="position"
+                    className="flex-1 overflow-hidden flex flex-col"
+                    style={{ minHeight: "180px" }}
+                >
                     {activeTab === "answers" ? (
                         (() => {
                             // Aggregate citations by domain
@@ -243,10 +254,13 @@ export function GalleryTile({
                             No research goals for this stage.
                         </p>
                     )}
-                </div>
+                </motion.div>
 
-                {/* Footer: Stats - Hidden for Summary mode to maintain minimalist focus */}
-                <div className={`pt-4 flex items-center justify-between min-h-[44px] ${activeTab === "summary" ? "" : "border-t border-black/5"}`}>
+                {/* Footer: Stats - Fixed height for consistency */}
+                <motion.div 
+                    layout="position"
+                    className={`pt-3 flex items-center justify-between min-h-[40px] ${activeTab === "summary" ? "" : "border-t border-black/5"}`}
+                >
                     {activeTab !== "summary" && (
                         <>
                             <div />
@@ -258,7 +272,7 @@ export function GalleryTile({
                             )}
                         </>
                     )}
-                </div>
+                </motion.div>
                     </>
                 )}
             </Card>
