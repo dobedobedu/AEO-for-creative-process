@@ -152,12 +152,20 @@ export async function GET(request: Request): Promise<NextResponse> {
       WHERE id = ${runId}::uuid
     `;
 
-    return NextResponse.json({
-      runId,
-      run: runMeta[0] || null,
-      lanes,
-      thresholds: STATUS_THRESHOLDS,
-    });
+    // Cache for 30s, serve stale for 5min while revalidating
+    return NextResponse.json(
+      {
+        runId,
+        run: runMeta[0] || null,
+        lanes,
+        thresholds: STATUS_THRESHOLDS,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (error) {
     console.error("[api/kanban] Error:", error);
     return NextResponse.json(

@@ -7,7 +7,12 @@ import { z } from "zod";
 export async function GET() {
   try {
     const library = await loadIntentLibrary();
-    return Response.json(library);
+    // Short cache for navigation, serves stale while revalidating for polling
+    return Response.json(library, {
+      headers: {
+        "Cache-Control": "public, s-maxage=10, stale-while-revalidate=60",
+      },
+    });
   } catch (err) {
     console.error("/api/intents/library GET failed:", err);
     return Response.json(

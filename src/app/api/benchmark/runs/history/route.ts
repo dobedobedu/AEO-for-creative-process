@@ -7,5 +7,13 @@ export async function GET(req: Request) {
   // Load full runs with cells data for UI timeline
   const runs = await loadRecentRuns(limit);
 
-  return Response.json({ runs });
+  // Cache for 30s, serve stale for 5min while revalidating
+  return Response.json(
+    { runs },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=300",
+      },
+    }
+  );
 }

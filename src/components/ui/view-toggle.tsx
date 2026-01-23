@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCallback, useRef } from "react";
 
 type View = "matrix" | "kanban";
 
@@ -9,9 +10,45 @@ interface ViewToggleProps {
   className?: string;
 }
 
+// Prefetch data for the target view on hover (fires once per session)
+const prefetchedViews = new Set<string>();
+
 export function ViewToggle({ className = "" }: ViewToggleProps) {
   const pathname = usePathname();
   const activeView: View = pathname?.includes("visibility-board") ? "kanban" : "matrix";
+  const prefetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const prefetchMatrix = useCallback(() => {
+    if (prefetchedViews.has("matrix")) return;
+    prefetchedViews.add("matrix");
+
+    // Fire off the slow requests in parallel - results get cached by browser
+    fetch("/api/matrix/active").catch(() => {});
+    fetch("/api/intents/library").catch(() => {});
+    fetch("/api/benchmark/runs/history?limit=45").catch(() => {});
+  }, []);
+
+  const prefetchKanban = useCallback(() => {
+    if (prefetchedViews.has("kanban")) return;
+    prefetchedViews.add("kanban");
+
+    fetch("/api/kanban").catch(() => {});
+  }, []);
+
+  const handleMouseEnter = useCallback((view: View) => {
+    // Small delay to avoid prefetching on accidental hover
+    prefetchTimeoutRef.current = setTimeout(() => {
+      if (view === "matrix") prefetchMatrix();
+      else prefetchKanban();
+    }, 100);
+  }, [prefetchMatrix, prefetchKanban]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (prefetchTimeoutRef.current) {
+      clearTimeout(prefetchTimeoutRef.current);
+      prefetchTimeoutRef.current = null;
+    }
+  }, []);
 
   return (
     <div
@@ -19,6 +56,9 @@ export function ViewToggle({ className = "" }: ViewToggleProps) {
     >
       <Link
         href="/visibility-matrix"
+        prefetch={true}
+        onMouseEnter={() => handleMouseEnter("matrix")}
+        onMouseLeave={handleMouseLeave}
         className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
           activeView === "matrix"
             ? "bg-[var(--forest)] text-white shadow-sm"
@@ -34,6 +74,9 @@ export function ViewToggle({ className = "" }: ViewToggleProps) {
       </Link>
       <Link
         href="/visibility-board"
+        prefetch={true}
+        onMouseEnter={() => handleMouseEnter("kanban")}
+        onMouseLeave={handleMouseLeave}
         className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
           activeView === "kanban"
             ? "bg-[var(--forest)] text-white shadow-sm"
