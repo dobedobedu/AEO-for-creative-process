@@ -41,7 +41,7 @@ export default function LoginPage() {
     const supabase = createSupabaseBrowserClient();
 
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -51,7 +51,11 @@ export default function LoginPage() {
 
       if (error) {
         setError(error.message);
+      } else if (data.user?.email_confirmed_at) {
+        // Email confirmation disabled - user is already confirmed, redirect
+        window.location.href = "/visibility-matrix";
       } else {
+        // Email confirmation enabled - show message
         setSuccess("Check your email for the confirmation link!");
       }
     } else {
