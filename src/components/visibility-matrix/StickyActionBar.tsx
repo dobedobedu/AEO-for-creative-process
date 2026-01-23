@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Play, Square, MessageSquare, MousePointer2 } from "lucide-react";
+import { Play, Square, MessageSquare, MousePointer2, Clock } from "lucide-react";
 
 interface StickyActionBarProps {
   isRunning: boolean;
@@ -14,6 +14,8 @@ interface StickyActionBarProps {
   onAskAI: () => void;
   onStartSelection: () => void;
   onCancelSelection: () => void;
+  onTimeMachine?: () => void;
+  isTimeMachineOpen?: boolean;
 }
 
 export function StickyActionBar({
@@ -27,19 +29,37 @@ export function StickyActionBar({
   onAskAI,
   onStartSelection,
   onCancelSelection,
+  onTimeMachine,
+  isTimeMachineOpen,
 }: StickyActionBarProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#e3dacb] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-        <Button
-          onClick={onAskAI}
-          variant="outline"
-          size="sm"
-          className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#f6f1e8] hover:text-[#1f3b2c]"
-        >
-          <MessageSquare className="h-4 w-4 mr-2" />
-          Ask AI
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={onAskAI}
+            variant="outline"
+            size="sm"
+            className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#f6f1e8] hover:text-[#1f3b2c]"
+          >
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Ask AI
+          </Button>
+
+          {onTimeMachine && (
+            <Button
+              onClick={onTimeMachine}
+              variant="outline"
+              size="sm"
+              className={`border-[#e3dacb] text-[#1e1b16] hover:bg-[#f6f1e8] hover:text-[#1f3b2c] ${
+                isTimeMachineOpen ? "bg-[#f6f1e8] text-[#1f3b2c]" : ""
+              }`}
+            >
+              <Clock className="h-4 w-4 mr-2" />
+              Time Machine
+            </Button>
+          )}
+        </div>
 
         <div className="flex items-center gap-3">
           {isRunning ? (

@@ -25,13 +25,14 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { ChatPanel } from "@/components/chat-panel";
-import { ViewModeToggle } from "@/components/visibility-matrix/ViewModeToggle";
 import { MatrixCell } from "@/components/visibility-matrix/MatrixCell";
 import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor";
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
 import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
 import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
+import { TimeMachinePanel } from "@/components/visibility-matrix/TimeMachinePanel";
+import { ViewToggle } from "@/components/ui/view-toggle";
 import { GlobalProgressBar, useGlobalProgress } from "@/components/global-progress-bar";
 import type { ChatContext } from "@/lib/chat/types";
 import {
@@ -392,16 +393,41 @@ function toUiBenchmarkRun(run: StoredRun): BenchmarkRun {
 function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages: { id: Stage; label: string; description: string }[]): Record<string, CellData> {
   const data: Record<string, CellData> = {};
 
+  // Known stage IDs for proper cell key parsing
+  const knownStageIds = new Set(stages.map(s => s.id));
+
+  // Helper to parse cell key (handles persona IDs with underscores like "first_time")
+  const parseCellKey = (key: string): { persona: string; stage: string } | null => {
+    // Try each known stage from the end
+    for (const stageId of knownStageIds) {
+      const suffix = `_${stageId}`;
+      if (key.endsWith(suffix)) {
+        return {
+          persona: key.slice(0, key.length - suffix.length),
+          stage: stageId,
+        };
+      }
+    }
+    // Fallback: last segment is stage (may be wrong for unknown stages, but better than nothing)
+    const parts = key.split("_");
+    const stage = parts.pop() || "";
+    const persona = parts.join("_");
+    return { persona, stage };
+  };
+
   // Get unique personas and stages from the run (for historical compatibility)
-  const runPersonas = new Set(
-    Object.keys(run.cells).map(key => key.split("_")[0])
-  );
-  const runStages = new Set(
-    Object.keys(run.cells).map(key => key.split("_").slice(1).join("_"))
-  );
+  const runPersonas = new Set<string>();
+  const runStages = new Set<string>();
+  for (const key of Object.keys(run.cells)) {
+    const parsed = parseCellKey(key);
+    if (parsed) {
+      runPersonas.add(parsed.persona);
+      runStages.add(parsed.stage);
+    }
+  }
 
   // Process all cells from:
-  // 1. Active config (personas × stages)
+  // 1. Active config (personas x stages)
   // 2. Run data (for historical compatibility with personas/stages not in config)
   const allPersonas = new Set([...personas.map(p => p.id), ...runPersonas]);
   const allStages = new Set([...stages.map(s => s.id), ...runStages]);
@@ -567,6 +593,7 @@ export default function VisibilityMatrixPage() {
   const [intentEditorOpen, setIntentEditorOpen] = useState(false);
   const [insightModalOpen, setInsightModalOpen] = useState(false);
   const [answersPanelOpen, setAnswersPanelOpen] = useState(false);
+  const [timeMachineOpen, setTimeMachineOpen] = useState(false);
 
   // Historical run linking state
   const [historicalRuns, setHistoricalRuns] = useState<StoredRun[]>([]);
@@ -646,6 +673,29 @@ export default function VisibilityMatrixPage() {
     setSelectedHistoricalRun(null);
   }, []);
 
+  // Select a historical run by ID (used by Time Machine panel)
+  const handleSelectHistoricalRun = useCallback(async (runId: string) => {
+    const run = historicalRuns.find(r => r.id === runId);
+    if (!run) return;
+
+    setSelectedHistoricalRunId(run.id);
+
+    // Fetch full run data from API
+    try {
+      const response = await fetch(`/api/benchmark/runs/${run.id}`);
+      if (response.ok) {
+        const fullRun = await response.json();
+        setSelectedHistoricalRun(fullRun);
+      } else {
+        console.error(`Failed to fetch run ${run.id}`);
+        setSelectedHistoricalRun(null);
+      }
+    } catch (err) {
+      console.error(`Error fetching run ${run.id}:`, err);
+      setSelectedHistoricalRun(null);
+    }
+  }, [historicalRuns]);
+
   // Get the date label for the selected historical run
   const selectedRunDateLabel = useMemo(() => {
     if (!selectedHistoricalRun) return null;
@@ -662,6 +712,39 @@ export default function VisibilityMatrixPage() {
     const run = historicalRuns[idx];
     return run.timestamp.split("T")[0];
   }, [selectedHistoricalRunId, historicalRuns]);
+
+  // Compute all available run dates for WeekNavigator in AnswersPanel
+  const availableRunDates = useMemo(() => {
+    const dates = historicalRuns.map(r => r.timestamp.split("T")[0]);
+    // Deduplicate and sort
+    return [...new Set(dates)].sort();
+  }, [historicalRuns]);
+
+  // Handle date change from AnswersPanel WeekNavigator
+  const handleAnswersPanelDateChange = useCallback(async (date: string) => {
+    // Find runs for this date (may have multiple runs on same day)
+    const runsForDate = historicalRuns
+      .filter(r => r.timestamp.startsWith(date))
+      .sort((a, b) => b.timestamp.localeCompare(a.timestamp)); // Latest first
+
+    if (runsForDate.length === 0) return;
+
+    const targetRun = runsForDate[0]; // Use most recent run for that date
+    setSelectedHistoricalRunId(targetRun.id);
+
+    // Fetch full run data from API (same pattern as handleChartClick)
+    try {
+      const response = await fetch(`/api/benchmark/runs/${targetRun.id}`);
+      if (response.ok) {
+        const fullRun = await response.json();
+        setSelectedHistoricalRun(fullRun);
+      } else {
+        console.error(`Failed to fetch run ${targetRun.id}`);
+      }
+    } catch (err) {
+      console.error(`Error fetching run ${targetRun.id}:`, err);
+    }
+  }, [historicalRuns]);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -753,29 +836,31 @@ export default function VisibilityMatrixPage() {
     };
   }, []);
 
-  // Track whether we've done initial data load (to avoid overwriting user's benchmark runs)
-  const initialDataLoadedRef = useRef(false);
+  // Track whether user has run their own benchmark this session (don't override with historical)
+  const userRanBenchmarkRef = useRef(false);
 
   // Load most recent run into matrix after personas/stages AND historical runs are available
-  // This must run BEFORE the initialize effect to prioritize real data over empty cells
+  // This properly handles remounts when navigating back to the page
   useEffect(() => {
-    // Only proceed if personas and stages are loaded
+    // Only proceed if config is loaded
     if (matrixConfigLoading || personas.length === 0 || stages.length === 0) {
       return;
     }
 
-    // Only do initial load once (don't override if user has already run benchmarks)
-    if (initialDataLoadedRef.current) {
+    // Don't override if user has run their own benchmark this session
+    if (userRanBenchmarkRef.current) {
       return;
     }
 
-    // Load the most recent historical run into matrixData
-    if (historicalRuns.length > 0) {
+    // If matrixData has no actual results and we have historical runs, load the latest
+    // This handles both initial load AND navigation back to the page
+    // Note: Check for results, not just keys, because empty cells may have been initialized
+    const hasResults = Object.values(matrixData).some(cell => cell.results.length > 0);
+    if (!hasResults && historicalRuns.length > 0) {
       const latestRun = historicalRuns[historicalRuns.length - 1];
       setMatrixData(storedRunToMatrixData(latestRun, personas, stages));
-      initialDataLoadedRef.current = true;
     }
-  }, [matrixConfigLoading, personas, stages, historicalRuns]);
+  }, [matrixConfigLoading, personas, stages, historicalRuns, matrixData]);
 
 
   const persistQueryBank = async (queryBank: QueryBank) => {
@@ -854,14 +939,14 @@ export default function VisibilityMatrixPage() {
   }, [personas, stages, localQueryBank]);
 
   useEffect(() => {
-    // Don't initialize empty cells if we've already loaded historical data
-    if (initialDataLoadedRef.current) {
-      return;
-    }
-    if (Object.keys(matrixData).length === 0) {
+    // Only initialize empty matrix if:
+    // 1. No matrixData exists yet
+    // 2. No historical runs are available (otherwise, the historical loading effect will handle it)
+    // 3. Config has loaded (personas/stages available)
+    if (Object.keys(matrixData).length === 0 && historicalRuns.length === 0 && !matrixConfigLoading) {
       setMatrixData(initializeMatrix());
     }
-  }, [initializeMatrix, matrixData]);
+  }, [initializeMatrix, matrixData, historicalRuns.length, matrixConfigLoading]);
 
   const runCellsBenchmark = async (cellKeys: string[], quickTest: boolean, signal?: AbortSignal) => {
     const matrix = Object.keys(matrixData).length > 0 ? matrixData : initializeMatrix();
@@ -1017,6 +1102,7 @@ export default function VisibilityMatrixPage() {
   // Run benchmark for selection
   const runBenchmark = async (quickTest = false) => {
     setIsRunning(true);
+    userRanBenchmarkRef.current = true; // Prevent historical data from overwriting user's benchmark
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
 
@@ -1561,17 +1647,22 @@ export default function VisibilityMatrixPage() {
   return (
     <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}
-      <div className="bg-white border-b border-[#e3dacb]">
-        <div className="max-w-6xl mx-auto">
-          {/* Top row: Title */}
-          <div className="flex items-center justify-between px-6 py-3 border-b border-[#e3dacb]/50">
-            <div>
-              <h1 className="text-lg font-semibold text-[#1e1b16]">AI Visibility Matrix</h1>
-              <p className="text-xs text-[#1e1b16]/60">{BRAND} • Persona × Stage</p>
+      <div className="border-b border-[#e3dacb] bg-[var(--panel)]">
+        <div className="max-w-6xl mx-auto px-6 py-5 space-y-4">
+          {/* Top row: Toggle + Stats */}
+          <div className="flex items-center justify-between">
+            <ViewToggle />
+            <div className="flex items-center gap-4 text-sm text-[var(--ink)]/60">
+              <span><span className="font-semibold text-[var(--ink)]">{personas.length * stages.length}</span> cells</span>
+              <span className="text-[var(--ink)]/30">·</span>
+              <span>Last run <span className="font-medium text-[var(--ink)]">{historicalRuns.length > 0 ? new Date(historicalRuns[historicalRuns.length - 1].timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}</span></span>
             </div>
           </div>
 
-
+          {/* Title */}
+          <h1 className="text-2xl font-semibold text-[var(--forest)] font-display">
+            {BRAND} Visibility Matrix
+          </h1>
         </div>
       </div>
 
@@ -1759,13 +1850,9 @@ export default function VisibilityMatrixPage() {
           </div>
         )}
 
-        {/* Group Tabs and Workspace for Cohesion */}
-        <div className="mt-8">
-          <div className="flex justify-center">
-            <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
-          </div>
-
-          <div className="flex-1 mt-0">
+        {/* Matrix Workspace */}
+        <div className="mt-8 -mx-6">
+          <div className="flex-1">
             {(() => {
               // Transform effectiveMatrixData into a format SplitViewEditor can use for the 'summary' mode
               // effectiveMatrixData is either the current run or a selected historical run
@@ -1869,6 +1956,7 @@ export default function VisibilityMatrixPage() {
               return (
                 <SplitViewEditor
                   activeTab={viewMode}
+                  onTabChange={setViewMode}
                   personas={personas}
                   stages={stages}
                   queryBank={effectiveQueryBank}
@@ -2281,6 +2369,8 @@ export default function VisibilityMatrixPage() {
             brandAliases={BRAND_ALIASES}
             isHistorical={!!selectedHistoricalRun}
             runTimestamp={selectedHistoricalRun?.timestamp}
+            availableRunDates={availableRunDates}
+            onDateChange={handleAnswersPanelDateChange}
             onRunCell={() => {
               setAnswersPanelOpen(false);
               runCellsBenchmark([`${selectedCell.persona}-${selectedCell.stage}`], true);
@@ -2323,7 +2413,24 @@ export default function VisibilityMatrixPage() {
           setIsSelectingQueries(false);
           setSelection({ type: "all" });
         }}
+        onTimeMachine={() => setTimeMachineOpen(true)}
+        isTimeMachineOpen={timeMachineOpen}
       />
+
+      {/* Time Machine Panel */}
+      {timeMachineOpen && (
+        <TimeMachinePanel
+          runs={historicalRuns}
+          selectedRunId={selectedHistoricalRunId}
+          onSelectRun={handleSelectHistoricalRun}
+          onClose={() => setTimeMachineOpen(false)}
+          onBackToNow={() => {
+            clearHistoricalSelection();
+            setTimeMachineOpen(false);
+          }}
+          totalCells={personas.length * stages.length}
+        />
+      )}
 
       {/* Global Progress Bar */}
       <GlobalProgressBar externalState={progressState} autoHideDelay={4000} />

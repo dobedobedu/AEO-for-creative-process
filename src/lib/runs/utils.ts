@@ -108,6 +108,7 @@ export function emptyExtraction(stage: string): StageExtraction {
             return {
                 mentioned: false,
                 responseRelevant: false,
+                entitiesMentioned: [],
                 inTopThree: false,
                 totalOptionsListed: 0,
                 competitors: [],
@@ -117,6 +118,7 @@ export function emptyExtraction(stage: string): StageExtraction {
             return {
                 mentioned: false,
                 responseRelevant: false,
+                entitiesMentioned: [],
                 sentiment: "neutral",
                 sentimentScore: 0,
                 strengthsMentioned: [],
@@ -127,6 +129,7 @@ export function emptyExtraction(stage: string): StageExtraction {
             return {
                 mentioned: false,
                 responseRelevant: false,
+                entitiesMentioned: [],
                 outcome: "not_compared",
                 comparedTo: [],
                 winsOn: [],
@@ -137,6 +140,7 @@ export function emptyExtraction(stage: string): StageExtraction {
             return {
                 mentioned: false,
                 responseRelevant: false,
+                entitiesMentioned: [],
                 recommended: false,
                 recommendationStrength: "not_mentioned",
                 qualifiers: [],

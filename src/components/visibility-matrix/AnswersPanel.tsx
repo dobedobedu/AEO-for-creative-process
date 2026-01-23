@@ -49,6 +49,8 @@ interface AnswersPanelProps {
   brandAliases?: string[];
   isHistorical?: boolean; // true if viewing a historical run
   runTimestamp?: string; // ISO timestamp of the run being viewed (for historical runs)
+  availableRunDates?: string[]; // All dates (YYYY-MM-DD) that have runs available
+  onDateChange?: (date: string) => void; // Callback when user selects a different date
   onRunCell?: () => void;
   isRunning?: boolean;
 }
@@ -81,6 +83,8 @@ export function AnswersPanel({
   brandAliases = [],
   isHistorical = false,
   runTimestamp,
+  availableRunDates = [],
+  onDateChange,
   onRunCell,
   isRunning = false,
 }: AnswersPanelProps) {
@@ -90,20 +94,15 @@ export function AnswersPanel({
   const [input, setInput] = useState("");
   const [expandedProvider, setExpandedProvider] = useState<Provider | null>(null);
 
-  // Use run timestamp for historical runs, otherwise current date
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    if (runTimestamp) {
-      return runTimestamp.split("T")[0];
-    }
-    return new Date().toISOString().split("T")[0];
-  });
+  // Derive selected date from run timestamp (controlled by parent)
+  const selectedDate = runTimestamp?.split("T")[0] || new Date().toISOString().split("T")[0];
 
-  // Update selectedDate when runTimestamp changes (historical run selection)
-  useEffect(() => {
-    if (runTimestamp) {
-      setSelectedDate(runTimestamp.split("T")[0]);
+  // Handle date selection - call parent callback if provided
+  const handleDateSelect = (date: string) => {
+    if (onDateChange) {
+      onDateChange(date);
     }
-  }, [runTimestamp]);
+  };
 
   // Group responses by provider
   const responsesByProvider = useMemo(() => {
@@ -269,11 +268,11 @@ export function AnswersPanel({
         <div className="flex-1 flex overflow-hidden">
           {/* Left side - Provider Matrix */}
           <div className="w-1/2 overflow-y-auto border-r border-[#e3dacb] bg-[#faf9f6]/30">
-            {/* Week Navigator - placeholder for now */}
+            {/* Week Navigator - shows available run dates */}
             <WeekNavigator
               selectedDate={selectedDate}
-              onDateSelect={setSelectedDate}
-              availableDates={[selectedDate]}
+              onDateSelect={handleDateSelect}
+              availableDates={availableRunDates.length > 0 ? availableRunDates : [selectedDate]}
             />
 
             {/* Stage Metrics Summary */}

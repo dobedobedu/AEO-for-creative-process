@@ -25,8 +25,11 @@ interface ResponseData {
     };
 }
 
+type ViewMode = "summary" | "intents" | "queries" | "answers";
+
 interface SplitViewEditorProps {
-    activeTab: "summary" | "intents" | "queries" | "answers";
+    activeTab: ViewMode;
+    onTabChange?: (tab: ViewMode) => void;
     personas: { id: string; label: string }[];
     stages: { id: string; label: string }[];
     queryBank: Record<string, Record<string, { intents: IntentNode[] }>>;
@@ -43,7 +46,7 @@ interface SplitViewEditorProps {
     onSelectCell: (persona: string, stage: string) => void;
     // Bulk Actions
     onShowAll?: () => void;
-    onGenerateAll?: (mode: "summary" | "intents" | "queries" | "answers") => void;
+    onGenerateAll?: (mode: ViewMode) => void;
 }
 
 const STAGE_COLORS: Record<string, string> = {
@@ -55,6 +58,7 @@ const STAGE_COLORS: Record<string, string> = {
 
 export function SplitViewEditor({
     activeTab,
+    onTabChange,
     personas,
     stages,
     queryBank,
@@ -100,31 +104,54 @@ export function SplitViewEditor({
 
     return (
         <div className="flex flex-col min-h-screen bg-[#faf9f6]">
-            {/* Top Tier: Action Bar / Filters */}
-            <div className="sticky top-0 z-30 bg-[#faf9f6]/80 backdrop-blur-xl border-b border-[#e3dacb] px-8 py-4">
-                <div className="max-w-[1600px] mx-auto flex flex-col gap-6">
-                    {/* Level 1: Tabs & High-level Actions */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-8">
-                            <h2 className="text-sm font-bold uppercase tracking-widest text-black/40">
-                                {activeTab === "summary" ? "Research Summary" : activeTab === "intents" ? "Research Intents" : activeTab === "queries" ? "Query Bank" : "LLM Answers"}
-                            </h2>
-                            <div className="h-4 w-[1px] bg-[#e3dacb]" />
-                            {activeTab !== "answers" && activeTab !== "summary" && (
-                                <div className="flex gap-4">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => onGenerateAll?.(activeTab)}
-                                        className="h-8 gap-2 text-[11px] font-bold uppercase tracking-wider text-black/60 hover:text-black"
-                                    >
-                                        <Zap className="w-3.5 h-3.5" />
-                                        {activeTab === "intents" ? "Generate Intents" : "Generate Queries"}
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
+            {/* Top Tier: Tabs + Filters (Single Sticky) */}
+            <div className="sticky top-0 z-30 bg-[#f6f1e8]">
+                {/* Tab Row */}
+                {onTabChange && (
+                    <div className="flex items-center gap-1 w-full max-w-[1600px] mx-auto px-8 pt-2">
+                        {(["summary", "intents", "queries", "answers"] as const).map((m) => (
+                            <button
+                                key={m}
+                                onClick={() => onTabChange(m)}
+                                className={`
+                                    px-8 py-3 text-[11px] font-black uppercase tracking-[0.2em] transition-all relative rounded-t-xl
+                                    ${activeTab === m
+                                        ? "bg-[#faf9f6] text-black border-t border-l border-r border-[#e3dacb] -mb-[1px] z-10"
+                                        : "bg-transparent text-black/30 hover:text-black/50 hover:bg-black/5"
+                                    }
+                                `}
+                            >
+                                {m}
+                            </button>
+                        ))}
                     </div>
+                )}
+
+                {/* Filters Row */}
+                <div className="bg-[#faf9f6]/80 backdrop-blur-xl border-b border-[#e3dacb] px-8 py-4">
+                    <div className="max-w-[1600px] mx-auto flex flex-col gap-6">
+                        {/* Level 1: Title & High-level Actions */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-8">
+                                <h2 className="text-sm font-bold uppercase tracking-widest text-black/40">
+                                    {activeTab === "summary" ? "Research Summary" : activeTab === "intents" ? "Research Intents" : activeTab === "queries" ? "Query Bank" : "LLM Answers"}
+                                </h2>
+                                <div className="h-4 w-[1px] bg-[#e3dacb]" />
+                                {activeTab !== "answers" && activeTab !== "summary" && (
+                                    <div className="flex gap-4">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => onGenerateAll?.(activeTab)}
+                                            className="h-8 gap-2 text-[11px] font-bold uppercase tracking-wider text-black/60 hover:text-black"
+                                        >
+                                            <Zap className="w-3.5 h-3.5" />
+                                            {activeTab === "intents" ? "Generate Intents" : "Generate Queries"}
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
                     {/* Level 2: Dimensional Filters */}
                     <div className="flex flex-wrap items-center gap-x-12 gap-y-4">
@@ -199,6 +226,7 @@ export function SplitViewEditor({
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
 
             {/* Bottom Tier: Fluid Gallery Grid */}

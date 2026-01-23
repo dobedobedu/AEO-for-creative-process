@@ -25,8 +25,15 @@ import type {
   CompareExtraction,
   DecideExtraction,
   StageExtraction,
+  EntityMention,
 } from "@/lib/scoring/schemas";
 import { parseCellKey } from "./utils";
+import {
+  matchEntitiesToRegistry,
+  loadEntityRegistry,
+  type EntityTerm,
+  type MatchedEntity,
+} from "@/lib/scoring/entityMatcher";
 
 // ============================================
 // Type Definitions
@@ -571,4 +578,234 @@ export async function getRunMetadataList(limit: number = 20): Promise<any[]> {
     completed_at: row.completed_at,
     created_at: row.created_at,
   }));
+}
+
+// ============================================
+// Entity Aggregation Functions (Kanban)
+// ============================================
+
+export interface EntityMentionRow {
+  run_id: string;
+  persona: string;
+  stage_id: string;
+  provider: Provider;
+  query_index: number;
+  entity_term_id: string | null;
+  raw_mention: string;
+  sentiment: "positive" | "neutral" | "negative";
+  context_snippet: string;
+  match_confidence: number;
+}
+
+export interface EntitySummaryRow {
+  run_id: string;
+  entity_term_id: string;
+  category_id: string;
+  total_responses: number;
+  mention_count: number;
+  mention_rate: number;
+  avg_sentiment: number | null;
+  by_provider: Record<string, number>;
+}
+
+/**
+ * Extract entity mentions from a benchmark run and save to database
+ */
+export async function saveEntityMentions(run: BenchmarkRun): Promise<number> {
+  // Load entity registry for matching
+  const registry = await loadEntityRegistry(sql);
+  if (registry.length === 0) {
+    console.log("[aggregator] No entities in registry, skipping entity extraction");
+    return 0;
+  }
+
+  let totalMentions = 0;
+
+  for (const [cellKey, cell] of Object.entries(run.cells)) {
+    const { persona, stage: stageId } = parseCellKey(cellKey);
+
+    for (let queryIndex = 0; queryIndex < cell.results.length; queryIndex++) {
+      const queryResult = cell.results[queryIndex];
+
+      for (const [provider, response] of Object.entries(queryResult.responses)) {
+        // Get entities from extraction score
+        const score = response.score as StageExtraction & { entitiesMentioned?: EntityMention[] };
+        const extractedEntities = score.entitiesMentioned || [];
+
+        if (extractedEntities.length === 0) continue;
+
+        // Match to registry
+        const matched = matchEntitiesToRegistry(extractedEntities, registry);
+
+        // Save each mention
+        for (const entity of matched) {
+          await sql`
+            INSERT INTO run_entity_mentions (
+              run_id, persona, stage_id, provider, query_index,
+              entity_term_id, raw_mention, sentiment, context_snippet, match_confidence
+            )
+            VALUES (
+              ${run.id}::uuid,
+              ${persona},
+              ${stageId},
+              ${provider},
+              ${queryIndex},
+              ${entity.entityTermId ? entity.entityTermId : null}::uuid,
+              ${entity.rawMention},
+              ${entity.sentiment},
+              ${entity.contextSnippet.slice(0, 500)},
+              ${entity.matchConfidence}
+            )
+          `;
+          totalMentions++;
+        }
+      }
+    }
+  }
+
+  console.log(`[aggregator] Saved ${totalMentions} entity mentions for run ${run.id}`);
+  return totalMentions;
+}
+
+/**
+ * Compute and save entity summary (aggregated mention rates for Kanban)
+ */
+export async function computeEntitySummary(runId: string): Promise<void> {
+  // Count total responses for this run
+  const totalResult = await sql`
+    SELECT COUNT(DISTINCT (persona, stage_id, provider, query_index)) as total
+    FROM run_entity_mentions
+    WHERE run_id = ${runId}::uuid
+  `;
+
+  // If no mentions, try to get total from run_metrics
+  let totalResponses = parseInt(totalResult[0]?.total || "0");
+  if (totalResponses === 0) {
+    const metricsTotal = await sql`
+      SELECT SUM(responses_count) as total
+      FROM run_metrics
+      WHERE run_id = ${runId}::uuid
+    `;
+    totalResponses = parseInt(metricsTotal[0]?.total || "0");
+  }
+
+  if (totalResponses === 0) {
+    console.log(`[aggregator] No responses found for run ${runId}, skipping entity summary`);
+    return;
+  }
+
+  // Aggregate mentions by entity
+  const aggregated = await sql`
+    SELECT
+      entity_term_id,
+      t.category_id,
+      COUNT(*) as mention_count,
+      AVG(CASE
+        WHEN sentiment = 'positive' THEN 1
+        WHEN sentiment = 'negative' THEN -1
+        ELSE 0
+      END) as avg_sentiment,
+      jsonb_object_agg(
+        provider,
+        provider_count
+      ) as by_provider
+    FROM run_entity_mentions m
+    JOIN matrix_entity_terms t ON m.entity_term_id = t.id
+    JOIN LATERAL (
+      SELECT provider, COUNT(*) as provider_count
+      FROM run_entity_mentions
+      WHERE run_id = m.run_id AND entity_term_id = m.entity_term_id
+      GROUP BY provider
+    ) prov ON true
+    WHERE m.run_id = ${runId}::uuid
+      AND m.entity_term_id IS NOT NULL
+    GROUP BY entity_term_id, t.category_id
+  `;
+
+  // Insert/update summary rows
+  for (const row of aggregated) {
+    const mentionRate = row.mention_count / totalResponses;
+
+    await sql`
+      INSERT INTO run_entity_summary (
+        run_id, entity_term_id, category_id,
+        total_responses, mention_count, mention_rate,
+        avg_sentiment, by_provider
+      )
+      VALUES (
+        ${runId}::uuid,
+        ${row.entity_term_id}::uuid,
+        ${row.category_id},
+        ${totalResponses},
+        ${row.mention_count},
+        ${mentionRate},
+        ${row.avg_sentiment},
+        ${sql.json(row.by_provider || {})}
+      )
+      ON CONFLICT (run_id, entity_term_id)
+      DO UPDATE SET
+        total_responses = EXCLUDED.total_responses,
+        mention_count = EXCLUDED.mention_count,
+        mention_rate = EXCLUDED.mention_rate,
+        avg_sentiment = EXCLUDED.avg_sentiment,
+        by_provider = EXCLUDED.by_provider,
+        updated_at = NOW()
+    `;
+  }
+
+  console.log(`[aggregator] Computed entity summary for run ${runId}: ${aggregated.length} entities`);
+}
+
+/**
+ * Get entity summary for a run (used by Kanban API)
+ */
+export async function getEntitySummary(runId: string): Promise<EntitySummaryRow[]> {
+  const rows = await sql`
+    SELECT
+      s.run_id::text,
+      s.entity_term_id::text,
+      s.category_id,
+      s.total_responses,
+      s.mention_count,
+      s.mention_rate,
+      s.avg_sentiment,
+      s.by_provider,
+      t.canonical_name,
+      c.label as category_label
+    FROM run_entity_summary s
+    JOIN matrix_entity_terms t ON s.entity_term_id = t.id
+    JOIN matrix_entity_categories c ON s.category_id = c.id
+    WHERE s.run_id = ${runId}::uuid
+    ORDER BY c.display_order, s.mention_rate DESC
+  `;
+
+  return rows.map((row: any) => ({
+    run_id: row.run_id,
+    entity_term_id: row.entity_term_id,
+    category_id: row.category_id,
+    canonical_name: row.canonical_name,
+    category_label: row.category_label,
+    total_responses: row.total_responses,
+    mention_count: row.mention_count,
+    mention_rate: parseFloat(row.mention_rate),
+    avg_sentiment: row.avg_sentiment ? parseFloat(row.avg_sentiment) : null,
+    by_provider: row.by_provider || {},
+  }));
+}
+
+/**
+ * Get entity summary grouped by category (for Kanban lanes)
+ */
+export async function getEntitySummaryByCategory(runId: string): Promise<Record<string, any[]>> {
+  const rows = await getEntitySummary(runId);
+
+  const byCategory: Record<string, any[]> = {};
+  for (const row of rows) {
+    if (!byCategory[row.category_id]) {
+      byCategory[row.category_id] = [];
+    }
+    byCategory[row.category_id].push(row);
+  }
+
+  return byCategory;
 }

@@ -194,47 +194,39 @@ export function InsightModal({
     };
 
     const renderConsider = () => {
-        const rivalCounts: Record<string, number> = {};
-        const featuresByRival: Record<string, Set<string>> = {};
-
-        mentions.forEach((m: ResponseObject) => {
-            const comps = m.visibility?.competitorsMentioned || [];
-            comps.forEach((c: string) => {
-                rivalCounts[c] = (rivalCounts[c] || 0) + 1;
-                if (!featuresByRival[c]) featuresByRival[c] = new Set();
-                const text = (m.text || "").toLowerCase();
-                if (text.includes("pool")) featuresByRival[c].add("Resort Pools");
-                if (text.includes("golf")) featuresByRival[c].add("Championship Golf");
-                if (text.includes("trail")) featuresByRival[c].add("Nature Trails");
-                if (text.includes("clubhouse") || text.includes("facility")) featuresByRival[c].add("Lifestyle Centers");
-                if (text.includes("pickleball")) featuresByRival[c].add("Pickleball Courts");
-            });
+        // Calculate sentiment breakdown
+        const allResponses = results.flatMap(r => r.responses || []);
+        const sentimentCounts = { positive: 0, neutral: 0, negative: 0 };
+        allResponses.forEach((resp: ResponseObject) => {
+            const sentiment = resp.visibility?.sentiment || "neutral";
+            if (sentiment in sentimentCounts) {
+                sentimentCounts[sentiment as keyof typeof sentimentCounts]++;
+            }
         });
-
-        const topRivals = Object.entries(rivalCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        const totalSentimentResponses = allResponses.length;
+        const positiveRate = totalSentimentResponses > 0 ? (sentimentCounts.positive / totalSentimentResponses) * 100 : 0;
+        const neutralRate = totalSentimentResponses > 0 ? (sentimentCounts.neutral / totalSentimentResponses) * 100 : 0;
+        const negativeRate = totalSentimentResponses > 0 ? (sentimentCounts.negative / totalSentimentResponses) * 100 : 0;
 
         return (
             <div className="space-y-6">
-                <h4 className="text-[10px] font-black uppercase tracking-widest text-black/40">Rival Amenity Dominance</h4>
-                <div className="grid gap-3">
-                    {topRivals.map(([name, count]) => (
-                        <div key={name} className="bg-[#faf9f6] p-4 border border-black/5 flex items-center justify-between">
-                            <div>
-                                <h5 className="text-sm font-bold text-black">{name}</h5>
-                                <div className="flex flex-wrap gap-2 mt-1">
-                                    {Array.from(featuresByRival[name]).slice(0, 2).map(f => (
-                                        <Badge key={f} className="bg-white text-black/40 border-black/5 text-[8px] uppercase px-1.5 py-0 rounded-none">
-                                            {f}
-                                        </Badge>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <span className="text-[8px] font-black uppercase text-black/20">Mentions</span>
-                                <p className="text-lg font-light text-black">{count}</p>
-                            </div>
-                        </div>
-                    ))}
+                {/* Sentiment Breakdown */}
+                <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-[#dcf3dc] p-6 border border-black/5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Positive</span>
+                        <p className="text-4xl font-light text-black mt-2">{Math.round(positiveRate)}%</p>
+                        <p className="text-[10px] text-black/40 mt-1">{sentimentCounts.positive} responses</p>
+                    </div>
+                    <div className="bg-[#faf9f6] p-6 border border-black/5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Neutral</span>
+                        <p className="text-4xl font-light text-black mt-2">{Math.round(neutralRate)}%</p>
+                        <p className="text-[10px] text-black/40 mt-1">{sentimentCounts.neutral} responses</p>
+                    </div>
+                    <div className="bg-[#fce9e9] p-6 border border-black/5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Negative</span>
+                        <p className="text-4xl font-light text-black mt-2">{Math.round(negativeRate)}%</p>
+                        <p className="text-[10px] text-black/40 mt-1">{sentimentCounts.negative} responses</p>
+                    </div>
                 </div>
             </div>
         );

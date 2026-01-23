@@ -7,10 +7,36 @@
 
 import { z } from "zod";
 
+// Entity categories for Kanban tracking
+export const EntityCategorySchema = z.enum([
+  "amenities",
+  "activities",
+  "schools",
+  "nature",
+  "villages",
+  "builders",
+  "location",
+  "accolades",
+  "other",
+]);
+
+export type EntityCategory = z.infer<typeof EntityCategorySchema>;
+
+// Single entity mention extracted from response
+export const EntityMentionSchema = z.object({
+  name: z.string().describe("The feature, amenity, village, or differentiator mentioned"),
+  category: EntityCategorySchema.describe("Category this entity belongs to"),
+  sentiment: z.enum(["positive", "neutral", "negative"]).describe("How was this entity portrayed?"),
+  contextSnippet: z.string().describe("The sentence or phrase where this entity was mentioned"),
+});
+
+export type EntityMention = z.infer<typeof EntityMentionSchema>;
+
 // Base fields common to all stages
 const BaseScoreSchema = z.object({
   mentioned: z.boolean().describe("Was the brand mentioned in the response?"),
   responseRelevant: z.boolean().describe("Was the response relevant to the query?"),
+  entitiesMentioned: z.array(EntityMentionSchema).default([]).describe("Lakewood Ranch features, amenities, villages, builders, and differentiators mentioned in the response"),
 });
 
 // EXPLORE Stage: "What's out there?"
@@ -85,6 +111,24 @@ export function getExtractionSchemaForStage(stage: string) {
   }
 }
 
+// Entity extraction guidance appended to all stage prompts
+const ENTITY_EXTRACTION_SUFFIX = `
+
+ENTITY EXTRACTION (for all stages):
+Identify Lakewood Ranch features, amenities, and differentiators mentioned in the response.
+Categorize each into one of these categories:
+- amenities: golf, polo, tennis, pickleball, shopping, restaurants, health care, UTC, pools, fitness
+- activities: farmers market, Music on Main, arts, clubs, community foundation, events
+- schools: specific school names, school districts, school ratings
+- nature: parks (by name), trails, green space, preserves
+- villages: specific village names (Waterside, Cresswind, Del Webb, etc.)
+- builders: home builder companies (Taylor Morrison, Pulte, Lennar, etc.)
+- location: I-75 access, beach proximity, Tampa Bay, Sarasota, airport
+- accolades: awards, rankings, multi-generational community
+- other: anything else notable
+
+For each entity, note the name, category, sentiment (positive/neutral/negative), and context.`;
+
 // Stage-specific prompts for extraction
 // Note: Brand name is prepended to these prompts in extractor.ts
 export const STAGE_EXTRACTION_PROMPTS: Record<string, string> = {
@@ -96,7 +140,7 @@ Focus on:
 - If mentioned, was it in the first 3 options listed?
 - How many total options/communities were listed?
 - What other communities were mentioned (competitors)?
-- How was the brand described?`,
+- How was the brand described?${ENTITY_EXTRACTION_SUFFIX}`,
 
   consider: `Analyze this AI response about Florida communities/real estate.
 The user was in the CONSIDER stage - learning more about specific options.
@@ -105,7 +149,7 @@ Focus on:
 - What was the overall sentiment toward the brand?
 - What strengths or positive attributes were mentioned?
 - What concerns or negative aspects were raised?
-- How would you summarize how the brand was portrayed?`,
+- How would you summarize how the brand was portrayed?${ENTITY_EXTRACTION_SUFFIX}`,
 
   compare: `Analyze this AI response about Florida communities/real estate.
 The user was in the COMPARE stage - directly comparing options.
@@ -114,7 +158,7 @@ Focus on:
 - What was the brand compared against?
 - Did the brand win, lose, tie, or have mixed results in comparisons?
 - What attributes did the brand win on? Lose on?
-- What was the AI's overall conclusion?`,
+- What was the AI's overall conclusion?${ENTITY_EXTRACTION_SUFFIX}`,
 
   decide: `Analyze this AI response about Florida communities/real estate.
 The user was in the DECIDE stage - ready to make a choice and looking for final validation.
@@ -126,8 +170,8 @@ Focus on:
 - What alternatives were suggested?
 - What was the rationale for the recommendation (or lack thereof)?
 
-IMPORTANT - Concern Resolution Analysis:
-- List specific concerns/objections the AI explicitly addressed (e.g., 'addressed budget concerns by explaining financing options', 'addressed distance from airport by noting shuttle services')
-- List common buyer concerns the AI did NOT address (e.g., 'did not address property tax implications', 'did not address healthcare access')
-- Did the AI provide clear, actionable next steps (e.g., 'schedule a tour', 'contact a sales rep', 'visit the website')?`,
+Concern Resolution Analysis:
+- List concerns the AI explicitly addressed
+- List common buyer concerns the AI did NOT address
+- Did the AI provide clear, actionable next steps?${ENTITY_EXTRACTION_SUFFIX}`,
 };
