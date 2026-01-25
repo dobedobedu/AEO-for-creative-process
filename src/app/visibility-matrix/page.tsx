@@ -32,6 +32,7 @@ import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor"
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
 import { InlineErrorBanner } from "@/components/visibility-matrix/InlineErrorBanner";
+import { MatrixSkeleton } from "@/components/visibility-matrix/MatrixSkeleton";
 import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
 import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
 import { TimeMachinePanel } from "@/components/visibility-matrix/TimeMachinePanel";
@@ -65,7 +66,7 @@ import type { IntentLibrary, IntentNode } from "@/lib/intents/types";
 import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import type { Citation } from "@/lib/parsers/types";
-import { toUiBenchmarkRun } from "@/lib/matrix/history";
+import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
 
 // Types - using string type to support dynamic config
 type Persona = string;
@@ -669,6 +670,9 @@ export default function VisibilityMatrixPage() {
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Cache for transformed history runs to avoid re-processing
+  const historyCacheRef = useRef(new Map<string, BenchmarkRun>());
+
   // Centralized data loading hook - replaces multiple useEffect calls
   const matrixDataHook = useMatrixData({ active: isMatrixActive });
 
@@ -691,7 +695,18 @@ export default function VisibilityMatrixPage() {
     if (matrixDataHook.history.length > 0) {
       const sortedRawRuns = matrixDataHook.history.slice().sort((a, b) => a.timestamp.localeCompare(b.timestamp));
       setHistoricalRuns(sortedRawRuns);
-      const runs = sortedRawRuns.map(toUiBenchmarkRun);
+
+      // Use cache to avoid re-transforming runs we've already processed
+      const cache = historyCacheRef.current;
+      const runs = sortedRawRuns.map((run) => {
+        const key = getRunCacheKey(run);
+        const cached = cache.get(key);
+        if (cached) return cached;
+        const transformed = toUiBenchmarkRun(run);
+        cache.set(key, transformed);
+        return transformed;
+      });
+
       setBenchmarkHistory(runs);
       setSelectedTimeIndex(Math.max(0, runs.length - 1));
     }
@@ -874,23 +889,12 @@ export default function VisibilityMatrixPage() {
       const { run, resultsByCell }: { run: StoredRun; resultsByCell: Record<string, { queries: QueryResult[] }> } =
         await response.json();
 
-      // DEBUG: Log raw API response
-      console.log("[DEBUG] API resultsByCell keys:", Object.keys(resultsByCell));
-      console.log("[DEBUG] Target cell keys:", targetCells.map(t => t.key));
-      console.log("[DEBUG] Sample resultsByCell data:", Object.entries(resultsByCell).map(([k, v]) => ({
-        key: k,
-        queriesCount: v?.queries?.length,
-        firstQueryResponses: v?.queries?.[0]?.responses?.length
-      })));
-
       setMatrixData((prev) => {
         const next = { ...prev };
 
         for (const t of targetCells) {
           const result = resultsByCell[t.key];
-          console.log(`[DEBUG] Cell ${t.key}: result exists=${!!result}, queries=${result?.queries?.length}`);
           if (!result) {
-            console.log(`[DEBUG] Cell ${t.key}: NO RESULT - staying idle`);
             next[t.key] = { ...next[t.key], status: "idle" };
             continue;
           }
@@ -1568,15 +1572,8 @@ export default function VisibilityMatrixPage() {
         onRetry={handleRetryData}
       />
 
-      {/* Loading overlay for initial load only */}
-      {matrixDataHook.status === "loading" && (
-        <div className="fixed inset-0 bg-[#f6f1e8] flex items-center justify-center z-50">
-          <div className="flex flex-col items-center gap-3 text-[var(--ink)]/60">
-            <RefreshCw className="h-8 w-8 animate-spin" />
-            <p className="text-sm">Loading matrix data...</p>
-          </div>
-        </div>
-      )}
+      {/* Skeleton loading state for initial load */}
+      {matrixDataHook.status === "loading" && <MatrixSkeleton />}
 
       <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}

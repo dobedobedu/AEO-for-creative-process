@@ -10,6 +10,7 @@ import { z } from "zod";
 import { loadRun, saveRun } from "@/lib/runs/storage";
 import { backupRun } from "@/lib/runs/backup";
 import { rescoreRun } from "@/lib/runs/rescore";
+import { saveRunAggregates } from "@/lib/runs/aggregator";
 
 const RequestSchema = z.object({
   runIds: z.array(z.string().uuid()).min(1).max(10),
@@ -73,6 +74,8 @@ export async function POST(req: Request) {
         // Save the updated run
         if (rescoreResult.stats.successfulExtractions > 0) {
           await saveRun(rescoreResult.run);
+          // Populate metrics + entity tables for Kanban
+          await saveRunAggregates(rescoreResult.run);
           results.rescored++;
         }
 

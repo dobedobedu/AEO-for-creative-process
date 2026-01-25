@@ -1,6 +1,19 @@
 import { describe, it, expect } from "vitest";
-import { toUiBenchmarkRun } from "@/lib/matrix/history";
+import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
 import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
+
+describe("getRunCacheKey", () => {
+  it("generates stable cache key from id and timestamp", () => {
+    const run = { id: "abc", timestamp: "2026-01-25T00:00:00Z" } as any;
+    expect(getRunCacheKey(run)).toBe("abc:2026-01-25T00:00:00Z");
+  });
+
+  it("generates different keys for different runs", () => {
+    const run1 = { id: "abc", timestamp: "2026-01-25T00:00:00Z" } as any;
+    const run2 = { id: "def", timestamp: "2026-01-25T00:00:00Z" } as any;
+    expect(getRunCacheKey(run1)).not.toBe(getRunCacheKey(run2));
+  });
+});
 
 describe("benchmark history conversion", () => {
   it("computes mention rate from explore stage only", () => {

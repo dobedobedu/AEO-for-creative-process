@@ -18,6 +18,19 @@ export interface MatrixDataState {
   refreshToken: number;
 }
 
+/**
+ * Compare two arrays of runs by id and timestamp to determine if they're equivalent.
+ * This avoids unnecessary state updates and downstream transforms.
+ */
+export function areRunsEquivalent(prev: StoredRun[], next: StoredRun[]): boolean {
+  if (prev.length !== next.length) return false;
+  for (let i = 0; i < prev.length; i++) {
+    if (prev[i].id !== next[i].id) return false;
+    if (prev[i].timestamp !== next[i].timestamp) return false;
+  }
+  return true;
+}
+
 export function useMatrixData({ active }: { active: boolean }): MatrixDataState {
   const [status, setStatus] = useState<MatrixDataStatus>("idle");
   const [config, setConfig] = useState<MatrixDataState["config"]>(null);
@@ -25,6 +38,9 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
   const [intentLibrary, setIntentLibrary] = useState<IntentLibrary | null>(null);
   const [intentLibraryLoading, setIntentLibraryLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Cache previous history to avoid redundant state updates
+  const historyRef = useRef<StoredRun[]>([]);
 
   // Track previous active state to detect re-activation
   const prevActiveRef = useRef<boolean>(active);
@@ -73,7 +89,12 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
         .then(parseHistoryRuns)
         .then((hist) => {
           if (cancelled) return;
-          setHistory(hist.runs as StoredRun[]);
+          // Only update history if data actually changed
+          const next = hist.runs as StoredRun[];
+          if (!areRunsEquivalent(historyRef.current, next)) {
+            historyRef.current = next;
+            setHistory(next);
+          }
         }),
     ])
       .then(() => {

@@ -62,6 +62,14 @@ function extractionCompetitors(extraction: StageExtraction): string[] {
   return [];
 }
 
+/**
+ * Generate a stable cache key for a run based on id and timestamp.
+ * This allows caching transformed UI runs to avoid re-processing.
+ */
+export function getRunCacheKey(run: StoredRun): string {
+  return `${run.id}:${run.timestamp}`;
+}
+
 export function toUiBenchmarkRun(run: StoredRun): UiBenchmarkRun {
   const totals: Record<Provider, { totalScore: number; totalCount: number }> = {
     openai: { totalScore: 0, totalCount: 0 },

@@ -32,15 +32,45 @@ describe("matrix data parsers", () => {
     it("parses valid history payload", () => {
       const history = parseHistoryRuns({
         runs: [
-          { id: "run-1", timestamp: "2026-01-25T10:00:00Z" },
-          { id: "run-2", timestamp: "2026-01-24T10:00:00Z" },
+          {
+            id: "run-1",
+            timestamp: "2026-01-25T10:00:00Z",
+            brand: "Test Brand",
+            intentLibraryVersion: 1,
+            metricsConfigVersion: 1,
+            summary: {
+              overall: {
+                recommendationRate: 0.5,
+                discoveryRate: 0.6,
+                avgSentiment: 0.7,
+                avgWinRate: 0.8,
+              },
+            },
+            cells: {},
+          },
+          {
+            id: "run-2",
+            timestamp: "2026-01-24T10:00:00Z",
+            brand: "Test Brand",
+            intentLibraryVersion: 1,
+            metricsConfigVersion: 1,
+            summary: {
+              overall: {
+                recommendationRate: 0.5,
+                discoveryRate: 0.6,
+                avgSentiment: 0.7,
+                avgWinRate: 0.8,
+              },
+            },
+            cells: {},
+          },
         ],
       });
       expect(history.runs).toHaveLength(2);
       expect(history.runs[0].id).toBe("run-1");
     });
 
-    it("preserves full BenchmarkRun fields with passthrough", () => {
+    it("preserves full BenchmarkRun fields for downstream chart use", () => {
       const fullRun = {
         id: "run-1",
         timestamp: "2026-01-25T10:00:00Z",
@@ -61,7 +91,26 @@ describe("matrix data parsers", () => {
             intentText: "Find luxury communities",
             queriesUsed: ["query 1"],
             metrics: {},
-            results: [],
+            results: [
+              {
+                query: "test query",
+                responses: {
+                  openai: {
+                    model: "gpt-5.2",
+                    responseText: "Response text",
+                    score: {
+                      mentioned: true,
+                      responseRelevant: true,
+                      entitiesMentioned: [],
+                      inTopThree: true,
+                      totalOptionsListed: 3,
+                      competitors: ["Rival A"],
+                      howDescribed: "Great community",
+                    },
+                  },
+                },
+              },
+            ],
           },
         },
       };
@@ -98,12 +147,16 @@ describe("matrix data parsers", () => {
                 query: "test",
                 responses: {
                   openai: {
-                    provider: "openai",
-                    model: "gpt-4",
+                    model: "gpt-5.2",
                     responseText: "Response text",
                     score: {
                       mentioned: true,
+                      responseRelevant: true,
+                      entitiesMentioned: [],
                       inTopThree: true,
+                      totalOptionsListed: 3,
+                      competitors: ["Rival A"],
+                      howDescribed: "Great community",
                     },
                   },
                 },
