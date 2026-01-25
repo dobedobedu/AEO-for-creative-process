@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseMatrixConfig, parseHistoryRuns, parseIntentLibrary } from "@/lib/matrix/data/parse";
+import { toUiBenchmarkRun } from "@/lib/matrix/history";
 
 describe("matrix data parsers", () => {
   describe("parseMatrixConfig", () => {
@@ -37,6 +38,87 @@ describe("matrix data parsers", () => {
       });
       expect(history.runs).toHaveLength(2);
       expect(history.runs[0].id).toBe("run-1");
+    });
+
+    it("preserves full BenchmarkRun fields with passthrough", () => {
+      const fullRun = {
+        id: "run-1",
+        timestamp: "2026-01-25T10:00:00Z",
+        brand: "Test Brand",
+        intentLibraryVersion: 1,
+        metricsConfigVersion: 1,
+        summary: {
+          overall: {
+            recommendationRate: 0.5,
+            discoveryRate: 0.6,
+            avgSentiment: 0.7,
+            avgWinRate: 0.8,
+          },
+        },
+        cells: {
+          "luxury_explore": {
+            intentId: "int-1",
+            intentText: "Find luxury communities",
+            queriesUsed: ["query 1"],
+            metrics: {},
+            results: [],
+          },
+        },
+      };
+
+      const history = parseHistoryRuns({ runs: [fullRun] });
+      expect(history.runs[0]).toEqual(fullRun);
+      expect(history.runs[0].cells).toBeDefined();
+      expect(Object.keys(history.runs[0].cells || {})).toHaveLength(1);
+    });
+
+    it("parsed history works with toUiBenchmarkRun", () => {
+      const fullRun = {
+        id: "run-1",
+        timestamp: "2026-01-25T10:00:00Z",
+        brand: "Test Brand",
+        intentLibraryVersion: 1,
+        metricsConfigVersion: 1,
+        summary: {
+          overall: {
+            recommendationRate: 0.5,
+            discoveryRate: 0.6,
+            avgSentiment: 0.7,
+            avgWinRate: 0.8,
+          },
+        },
+        cells: {
+          "move_up_explore": {
+            intentId: "int-1",
+            intentText: "Find communities",
+            queriesUsed: ["test query"],
+            metrics: {},
+            results: [
+              {
+                query: "test",
+                responses: {
+                  openai: {
+                    provider: "openai",
+                    model: "gpt-4",
+                    responseText: "Response text",
+                    score: {
+                      mentioned: true,
+                      inTopThree: true,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      const history = parseHistoryRuns({ runs: [fullRun] });
+      const uiRun = toUiBenchmarkRun(history.runs[0]);
+
+      expect(uiRun.id).toBe("run-1");
+      expect(uiRun.providerScores).toBeDefined();
+      expect(uiRun.providerScores.openai).toBeDefined();
     });
 
     it("throws on invalid history payload", () => {

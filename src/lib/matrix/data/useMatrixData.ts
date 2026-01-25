@@ -48,25 +48,41 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
 
     Promise.all([
       fetch("/api/matrix/active")
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (!r.ok) {
+            throw new Error(`Matrix config API failed: ${r.status}`);
+          }
+          return r.json();
+        })
         .then(parseMatrixConfig)
         .then((cfg) => {
           if (cancelled) return;
           setConfig(cfg);
         }),
       fetch("/api/benchmark/runs/history?limit=45")
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (!r.ok) {
+            throw new Error(`History API failed: ${r.status}`);
+          }
+          return r.json();
+        })
         .then(parseHistoryRuns)
         .then((hist) => {
           if (cancelled) return;
-          setHistory(hist.runs as unknown as StoredRun[]);
+          // hist.runs now contains full BenchmarkRun objects with all fields
+          setHistory(hist.runs as StoredRun[]);
         }),
       fetch("/api/intents/library")
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (!r.ok) {
+            throw new Error(`Intent library API failed: ${r.status}`);
+          }
+          return r.json();
+        })
         .then(parseIntentLibrary)
         .then((lib) => {
           if (cancelled) return;
-          setIntentLibrary(lib as unknown as IntentLibrary);
+          setIntentLibrary(lib as IntentLibrary);
         }),
     ])
       .then(() => {
@@ -93,7 +109,7 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
         const r = await fetch("/api/intents/library");
         if (!r.ok) return;
         const lib = parseIntentLibrary(await r.json());
-        setIntentLibrary(lib as unknown as IntentLibrary);
+        setIntentLibrary(lib as IntentLibrary);
       } catch (err) {
         // Silently fail polling errors to avoid disrupting UI
         console.error("[useMatrixData] Polling error:", err);

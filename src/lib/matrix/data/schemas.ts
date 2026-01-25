@@ -1,6 +1,4 @@
 import { z } from "zod";
-import type { MatrixPersona, MatrixStage } from "../types";
-import type { BenchmarkRun as StoredRun } from "../../runs/types";
 
 // Schema for /api/matrix/active response
 export const MatrixConfigApiResponseSchema = z.object({
@@ -19,11 +17,13 @@ export const MatrixConfigApiResponseSchema = z.object({
 export type MatrixConfigApiResponse = z.infer<typeof MatrixConfigApiResponseSchema>;
 
 // Schema for /api/benchmark/runs/history response
+// Note: Using passthrough() to preserve all fields from full BenchmarkRun objects
+// The UI needs cells data for toUiBenchmarkRun conversion
 export const HistoryRunsApiResponseSchema = z.object({
   runs: z.array(z.object({
     id: z.string(),
     timestamp: z.string(),
-  })),
+  }).passthrough()),
 });
 
 export type HistoryRunsApiResponse = z.infer<typeof HistoryRunsApiResponseSchema>;

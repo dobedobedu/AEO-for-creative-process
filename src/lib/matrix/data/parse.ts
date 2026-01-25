@@ -14,6 +14,7 @@ export function parseMatrixConfig(input: unknown) {
 
 /**
  * Parse and validate history runs API response
+ * Note: Returns full BenchmarkRun objects with all fields preserved via passthrough()
  * @throws {ZodError} if response is invalid
  */
 export function parseHistoryRuns(input: unknown) {
