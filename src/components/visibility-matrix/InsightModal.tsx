@@ -167,10 +167,10 @@ export function InsightModal({
         "How do providers compare?",
     ];
 
-    if (!open) return null;
-
-    // Compute metrics using the helper
+    // Compute metrics using the helper - MUST be before early return to maintain hooks order
     const metrics = useMemo(() => computeInsightMetrics(stage, results), [stage, results]);
+
+    if (!open) return null;
 
     // Render provider breakdown table
     const renderProviderBreakdown = () => {

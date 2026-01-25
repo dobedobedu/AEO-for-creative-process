@@ -32,14 +32,13 @@ import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor"
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
 import { InlineErrorBanner } from "@/components/visibility-matrix/InlineErrorBanner";
-import { MatrixSkeleton } from "@/components/visibility-matrix/MatrixSkeleton";
 import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
+import { Skeleton } from "@/components/ui/skeleton";
 import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
 import { TimeMachinePanel } from "@/components/visibility-matrix/TimeMachinePanel";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { GlobalProgressBar, useGlobalProgress } from "@/components/global-progress-bar";
 import type { ChatContext } from "@/lib/chat/types";
-import { useActivationCounter } from "@/lib/hooks/useActivationCounter";
 import { useMatrixData } from "@/lib/matrix/data/useMatrixData";
 import {
   ChartContainer,
@@ -484,8 +483,6 @@ const chartConfig: ChartConfig = {
 export default function VisibilityMatrixPage() {
   const pathname = usePathname();
   const isMatrixActive = pathname ? pathname.startsWith("/visibility-matrix") : false;
-  const activationTick = useActivationCounter(isMatrixActive);
-
   const [matrixData, setMatrixData] = useState<Record<string, CellData>>({});
   const [selection, setSelection] = useState<SelectionType>({ type: "all" });
   const [isRunning, setIsRunning] = useState(false);
@@ -924,7 +921,6 @@ export default function VisibilityMatrixPage() {
           const runCell = run.cells[runCellKey];
           const stageMetrics = runCell?.metrics ?? {};
 
-          console.log(`[DEBUG] Cell ${t.key}: Setting results with ${result.queries.length} queries, avgScore=${avgScore}, mentionRate=${mentionRate}`);
           next[t.key] = {
             ...next[t.key],
             results: result.queries,
@@ -1572,9 +1568,6 @@ export default function VisibilityMatrixPage() {
         onRetry={handleRetryData}
       />
 
-      {/* Skeleton loading state for initial load */}
-      {matrixDataHook.status === "loading" && <MatrixSkeleton />}
-
       <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}
       <div className="border-b border-[#e3dacb] bg-[var(--panel)]">
@@ -1583,9 +1576,20 @@ export default function VisibilityMatrixPage() {
           <div className="flex items-center justify-between">
             <ViewToggle />
             <div className="flex items-center gap-4 text-sm text-[var(--ink)]/60">
-              <span><span className="font-semibold text-[var(--ink)]">{personas.length * stages.length}</span> cells</span>
+              <span>
+                <span className="font-semibold text-[var(--ink)]">{personas.length * stages.length}</span> cells
+              </span>
               <span className="text-[var(--ink)]/30">·</span>
-              <span>Last run <span className="font-medium text-[var(--ink)]">{historicalRuns.length > 0 ? new Date(historicalRuns[historicalRuns.length - 1].timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}</span></span>
+              <span>
+                Last run{" "}
+                {matrixDataHook.status === "loading" && historicalRuns.length === 0 ? (
+                  <Skeleton className="h-4 w-16 inline-block align-middle bg-[#e3dacb]/50" />
+                ) : (
+                  <span className="font-medium text-[var(--ink)]">
+                    {historicalRuns.length > 0 ? new Date(historicalRuns[historicalRuns.length - 1].timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}
+                  </span>
+                )}
+              </span>
             </div>
           </div>
 
@@ -1677,7 +1681,9 @@ export default function VisibilityMatrixPage() {
           </div>
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 h-[160px]">
-              {benchmarkHistory.length === 0 ? (
+              {matrixDataHook.status === "loading" && benchmarkHistory.length === 0 ? (
+                <Skeleton className="h-full w-full bg-[#e3dacb]/30" />
+              ) : benchmarkHistory.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-black/30 border border-dashed border-[#e3dacb] rounded-lg">
                   <svg className="w-10 h-10 mb-3 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -1946,6 +1952,7 @@ export default function VisibilityMatrixPage() {
                   cellResults={cellResults}
                   brandDomain={BRAND_DOMAIN}
                   showMissing={Boolean(selectedHistoricalRun)}
+                  loading={matrixDataHook.status === "loading" && Object.keys(effectiveMatrixData).length === 0}
                   onSelectCell={(persona, stage) => {
                     setSelectedCell({ persona, stage });
                     setSelection({ type: "cell", persona, stage });
@@ -2311,12 +2318,6 @@ export default function VisibilityMatrixPage() {
       {selectedCell && (() => {
         const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
         const cellData = effectiveMatrixData[cellKey];
-        console.log(`[DEBUG] InsightModal opening for ${cellKey}:`, {
-          cellExists: !!cellData,
-          status: cellData?.status,
-          resultsLength: cellData?.results?.length,
-          firstResultResponses: cellData?.results?.[0]?.responses?.length
-        });
         return (
         <InsightModal
           open={insightModalOpen}

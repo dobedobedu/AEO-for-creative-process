@@ -67,7 +67,17 @@ function extractionCompetitors(extraction: StageExtraction): string[] {
  * This allows caching transformed UI runs to avoid re-processing.
  */
 export function getRunCacheKey(run: StoredRun): string {
-  return `${run.id}:${run.timestamp}`;
+  const overall = run.summary?.overall;
+  const cellCount = run.cells ? Object.keys(run.cells).length : 0;
+  return [
+    run.id,
+    run.timestamp,
+    overall?.discoveryRate,
+    overall?.avgSentiment,
+    overall?.avgWinRate,
+    overall?.recommendationRate,
+    cellCount,
+  ].join("|");
 }
 
 export function toUiBenchmarkRun(run: StoredRun): UiBenchmarkRun {

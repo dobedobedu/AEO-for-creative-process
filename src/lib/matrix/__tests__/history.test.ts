@@ -3,14 +3,26 @@ import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
 import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
 
 describe("getRunCacheKey", () => {
-  it("generates stable cache key from id and timestamp", () => {
+  it("includes id and timestamp", () => {
     const run = { id: "abc", timestamp: "2026-01-25T00:00:00Z" } as any;
-    expect(getRunCacheKey(run)).toBe("abc:2026-01-25T00:00:00Z");
+    const key = getRunCacheKey(run);
+    expect(key).toContain("abc");
+    expect(key).toContain("2026-01-25T00:00:00Z");
   });
 
-  it("generates different keys for different runs", () => {
-    const run1 = { id: "abc", timestamp: "2026-01-25T00:00:00Z" } as any;
-    const run2 = { id: "def", timestamp: "2026-01-25T00:00:00Z" } as any;
+  it("changes when summary changes", () => {
+    const run1 = {
+      id: "abc",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    } as any;
+    const run2 = {
+      id: "abc",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.2, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    } as any;
     expect(getRunCacheKey(run1)).not.toBe(getRunCacheKey(run2));
   });
 });

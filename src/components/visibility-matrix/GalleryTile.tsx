@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { MessageSquare, Target, Bot, Link2 } from "lucide-react";
 import type { Citation } from "@/lib/parsers/types";
 import { getGalleryTileBgClass, getGalleryTileCardBaseClass, shouldShowGalleryTileFooter } from "@/lib/matrix/galleryTileStyle";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Types - using string to support dynamic config
 type Persona = string;
@@ -45,6 +46,7 @@ interface GalleryTileProps {
     onClick: () => void;
     accentColor?: string;
     isMissing?: boolean; // NEW: indicates no data for this cell (partial run)
+    loading?: boolean;   // Show skeleton placeholders while data loads
 }
 
 export function GalleryTile({
@@ -61,6 +63,7 @@ export function GalleryTile({
     onClick,
     accentColor = "#1f3b2c",
     isMissing = false,
+    loading = false,
 }: GalleryTileProps) {
     const hasContent = intents.length > 0;
     const queryCount = intents.reduce((acc, i) => acc + (i.generatedQueries?.length || 0), 0);
@@ -104,7 +107,7 @@ export function GalleryTile({
             style={{ height: "320px" }}  // Fixed height for consistent rows
             onClick={onClick}
         >
-            <Card className={`${cardBaseClass} ${isMissing ? "bg-black/5" : heatmapClass}`}>
+            <Card className={`${cardBaseClass} ${isMissing ? "bg-black/5" : loading ? "bg-[#faf9f6]" : heatmapClass}`}>
                 {/* Missing Cell State */}
                 {isMissing ? (
                     <div className="h-full flex items-center justify-center">
@@ -113,10 +116,32 @@ export function GalleryTile({
                             <p className="text-[9px] text-black/20 mt-1">for this cell</p>
                         </div>
                     </div>
+                ) : loading ? (
+                    <>
+                        {/* Header: Always visible during loading */}
+                        <div className="flex items-start justify-between min-h-[56px]">
+                            <div className="flex flex-col gap-1">
+                                <span
+                                    className="text-[10px] font-bold uppercase tracking-[0.2em]"
+                                    style={{ color: accentColor }}
+                                >
+                                    {stageLabel}
+                                </span>
+                                <h3 className="text-xl font-light tracking-tight text-black/60">
+                                    {personaLabel}
+                                </h3>
+                            </div>
+                        </div>
+                        {/* Skeleton content area */}
+                        <div className="flex-1 flex flex-col items-center justify-center py-4">
+                            <Skeleton className="h-3 w-20 mb-3 bg-[#e3dacb]/50" />
+                            <Skeleton className="h-10 w-24 bg-[#e3dacb]/50" />
+                        </div>
+                    </>
                 ) : (
                     <>
                 {/* Header: Stage Identifier - Fixed height */}
-                <motion.div 
+                <motion.div
                     layout="position"
                     className="flex items-start justify-between min-h-[56px]"
                 >

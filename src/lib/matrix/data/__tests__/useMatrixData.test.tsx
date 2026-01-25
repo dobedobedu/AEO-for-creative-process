@@ -7,30 +7,91 @@ beforeEach(() => {
 });
 
 describe("areRunsEquivalent", () => {
-  it("returns true when id and timestamp match", () => {
-    const a = [{ id: "1", timestamp: "2026-01-25T00:00:00Z" }] as any;
-    const b = [{ id: "1", timestamp: "2026-01-25T00:00:00Z" }] as any;
+  it("returns true when signatures match", () => {
+    const a = [{
+      id: "1",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
+    const b = [{
+      id: "1",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
     expect(areRunsEquivalent(a, b)).toBe(true);
   });
 
   it("returns false when ids differ", () => {
-    const a = [{ id: "1", timestamp: "2026-01-25T00:00:00Z" }] as any;
-    const b = [{ id: "2", timestamp: "2026-01-25T00:00:00Z" }] as any;
+    const a = [{
+      id: "1",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
+    const b = [{
+      id: "2",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
     expect(areRunsEquivalent(a, b)).toBe(false);
   });
 
   it("returns false when timestamps differ", () => {
-    const a = [{ id: "1", timestamp: "2026-01-25T00:00:00Z" }] as any;
-    const b = [{ id: "1", timestamp: "2026-01-26T00:00:00Z" }] as any;
+    const a = [{
+      id: "1",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
+    const b = [{
+      id: "1",
+      timestamp: "2026-01-26T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
     expect(areRunsEquivalent(a, b)).toBe(false);
   });
 
   it("returns false when array lengths differ", () => {
-    const a = [{ id: "1", timestamp: "2026-01-25T00:00:00Z" }] as any;
+    const a = [{
+      id: "1",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
     const b = [
-      { id: "1", timestamp: "2026-01-25T00:00:00Z" },
-      { id: "2", timestamp: "2026-01-25T00:00:00Z" },
+      {
+        id: "1",
+        timestamp: "2026-01-25T00:00:00Z",
+        summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+        cells: {},
+      },
+      {
+        id: "2",
+        timestamp: "2026-01-25T00:00:00Z",
+        summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+        cells: {},
+      },
     ] as any;
+    expect(areRunsEquivalent(a, b)).toBe(false);
+  });
+
+  it("returns false when summary changes", () => {
+    const a = [{
+      id: "1",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.1, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
+    const b = [{
+      id: "1",
+      timestamp: "2026-01-25T00:00:00Z",
+      summary: { overall: { discoveryRate: 0.9, avgSentiment: 0.2, avgWinRate: 0.3, recommendationRate: 0.4 } },
+      cells: {},
+    }] as any;
     expect(areRunsEquivalent(a, b)).toBe(false);
   });
 

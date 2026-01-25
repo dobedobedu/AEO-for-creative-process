@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
-import { Search, Loader2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ViewToggle } from "@/components/ui/view-toggle";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Types for mentions history
 interface MentionDay {
@@ -383,17 +384,6 @@ export default function VisibilityBoard() {
     return items.filter((item) => matchesQuery(item, query));
   }, [activeCategory, allItems, query, data]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-[var(--forest)]" />
-          <span className="text-sm text-[var(--ink)]/60">Loading Kanban data...</span>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--paper)]">
@@ -439,9 +429,22 @@ export default function VisibilityBoard() {
                 </>
               ) : (
                 <>
-                  <span><span className="font-semibold text-[var(--ink)]">{allItems.length}</span> entities</span>
+                  <span>
+                    {loading ? (
+                      <Skeleton className="h-4 w-6 inline-block align-middle bg-[#e3dacb]/50" />
+                    ) : (
+                      <span className="font-semibold text-[var(--ink)]">{allItems.length}</span>
+                    )} entities
+                  </span>
                   <span className="text-[var(--ink)]/30">·</span>
-                  <span>Last scan <span className="font-medium text-[var(--ink)]">{formatDate(data?.run?.completed_at || data?.run?.created_at)}</span></span>
+                  <span>
+                    Last scan{" "}
+                    {loading ? (
+                      <Skeleton className="h-4 w-20 inline-block align-middle bg-[#e3dacb]/50" />
+                    ) : (
+                      <span className="font-medium text-[var(--ink)]">{formatDate(data?.run?.completed_at || data?.run?.created_at)}</span>
+                    )}
+                  </span>
                 </>
               )}
             </div>
@@ -453,13 +456,27 @@ export default function VisibilityBoard() {
           </h1>
 
           {/* Mentions Graph */}
-          <MentionsGraph
-            data={mentionsHistory}
-            onHover={handleBarHover}
-            hoveredIndex={hoveredBarIndex}
-            onSelect={handleBarSelect}
-            selectedIndex={selectedBarIndex}
-          />
+          {loading ? (
+            <div className="rounded-xl bg-[#f0ebe2] p-4">
+              <div className="mb-2 flex items-center justify-between">
+                <Skeleton className="h-3 w-32 bg-[#e3dacb]/50" />
+              </div>
+              <Skeleton className="h-14 w-full bg-[#e3dacb]/40" />
+              <div className="mt-2 flex justify-between">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-2 w-10 bg-[#e3dacb]/30" />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <MentionsGraph
+              data={mentionsHistory}
+              onHover={handleBarHover}
+              hoveredIndex={hoveredBarIndex}
+              onSelect={handleBarSelect}
+              selectedIndex={selectedBarIndex}
+            />
+          )}
 
           {/* Search */}
           <div className="relative max-w-md">
@@ -495,15 +512,13 @@ export default function VisibilityBoard() {
             ))}
           </div>
 
-          <motion.div
+          <div
             className={`grid gap-0 rounded-b-2xl ${TAB_TONES[activeCategory].tint} lg:grid-cols-4`}
-            animate={{ opacity: kanbanLoading ? 0.5 : 1 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            style={{ pointerEvents: kanbanLoading ? "none" : "auto" }}
           >
             {COLUMNS.map((column, columnIndex) => {
               const tone = TONE_STYLES[column.tone];
               const cards = filteredItems.filter((item) => item.status === column.id);
+              const isLoading = loading || kanbanLoading;
               return (
                 <div
                   key={column.id}
@@ -516,35 +531,56 @@ export default function VisibilityBoard() {
                       <h3 className={`text-sm font-semibold ${tone.text}`}>{column.label}</h3>
                       <span className="text-[11px] text-[var(--ink)]/45">{column.description}</span>
                     </div>
-                    <span className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${tone.border} ${tone.bg} ${tone.text}`}>
-                      {cards.length}
-                    </span>
+                    {isLoading ? (
+                      <Skeleton className="h-6 w-8 rounded-full bg-[#e3dacb]/50" />
+                    ) : (
+                      <span className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${tone.border} ${tone.bg} ${tone.text}`}>
+                        {cards.length}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex flex-1 flex-col gap-3">
-                    {cards.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setSelectedItem(item)}
-                        className={`flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] px-4 py-3 text-left shadow-[0_10px_20px_rgba(31,59,44,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(31,59,44,0.12)] ${CARD_BG[item.status] || "bg-white"}`}
-                      >
-                        <span className="text-sm font-semibold text-[#4a4035]">{item.label}</span>
-                        <Badge className="bg-white/60 text-[#5c4d3d] font-medium">
-                          {formatPercent(item.mentionRate)}
-                        </Badge>
-                      </button>
-                    ))}
-                    {cards.length === 0 && (
-                      <div className="flex flex-1 items-center justify-center text-xs text-[var(--ink)]/40">
-                        No entities in this status
-                      </div>
+                    {isLoading ? (
+                      // Skeleton cards while loading
+                      <>
+                        {[1, 2, 3].map((i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-white/60 px-4 py-3"
+                          >
+                            <Skeleton className="h-4 w-24 bg-[#e3dacb]/50" />
+                            <Skeleton className="h-5 w-10 rounded-full bg-[#e3dacb]/50" />
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {cards.map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setSelectedItem(item)}
+                            className={`flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] px-4 py-3 text-left shadow-[0_10px_20px_rgba(31,59,44,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(31,59,44,0.12)] ${CARD_BG[item.status] || "bg-white"}`}
+                          >
+                            <span className="text-sm font-semibold text-[#4a4035]">{item.label}</span>
+                            <Badge className="bg-white/60 text-[#5c4d3d] font-medium">
+                              {formatPercent(item.mentionRate)}
+                            </Badge>
+                          </button>
+                        ))}
+                        {cards.length === 0 && (
+                          <div className="flex flex-1 items-center justify-center text-xs text-[var(--ink)]/40">
+                            No entities in this status
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </div>
 

@@ -22,11 +22,24 @@ export interface MatrixDataState {
  * Compare two arrays of runs by id and timestamp to determine if they're equivalent.
  * This avoids unnecessary state updates and downstream transforms.
  */
+function getRunSignature(run: StoredRun): string {
+  const overall = run.summary?.overall;
+  const cellCount = run.cells ? Object.keys(run.cells).length : 0;
+  return [
+    run.id,
+    run.timestamp,
+    overall?.discoveryRate,
+    overall?.avgSentiment,
+    overall?.avgWinRate,
+    overall?.recommendationRate,
+    cellCount,
+  ].join("|");
+}
+
 export function areRunsEquivalent(prev: StoredRun[], next: StoredRun[]): boolean {
   if (prev.length !== next.length) return false;
   for (let i = 0; i < prev.length; i++) {
-    if (prev[i].id !== next[i].id) return false;
-    if (prev[i].timestamp !== next[i].timestamp) return false;
+    if (getRunSignature(prev[i]) !== getRunSignature(next[i])) return false;
   }
   return true;
 }
