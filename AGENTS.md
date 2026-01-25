@@ -26,6 +26,14 @@ src/
 - **Never use `Math.random()` or `Date.now()` at module level** - causes hydration mismatch
 - Use deterministic mock data for demos (see `MOCK_HISTORY` constant)
 
+### Data Fetching Architecture
+- **Centralized data layer**: All Matrix page data fetching goes through `useMatrixData` hook (`src/lib/matrix/data/`)
+- **Explicit state machine**: Status = `"idle" | "loading" | "ready" | "error"` for clear UI states
+- **Zod-validated responses**: All API responses are parsed and validated at the data layer boundary
+- **Error boundary**: `MatrixDataBoundary` component wraps the Matrix page for error display and recovery
+- **Intent library polling**: Automatic 10s polling for multi-user sync, cleaned up on unmount/deactivate
+- **Re-activation handling**: Hook detects navigation back to page and reloads data via `refreshToken`
+
 ### Components
 - **Prefer shadcn over custom** - shadcn chart replaced our buggy custom SVG chart
 - shadcn handles SSR, accessibility, responsive design correctly
