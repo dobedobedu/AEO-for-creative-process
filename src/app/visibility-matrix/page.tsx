@@ -30,6 +30,7 @@ import { MatrixCell } from "@/components/visibility-matrix/MatrixCell";
 import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor";
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
+import { MatrixDataBoundary } from "@/components/visibility-matrix/MatrixDataBoundary";
 import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
 import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
 import { TimeMachinePanel } from "@/components/visibility-matrix/TimeMachinePanel";
@@ -1547,8 +1548,19 @@ export default function VisibilityMatrixPage() {
 
   const showWeightedArea = weightMode === "weighted";
 
+  // Handle retry from error boundary
+  const handleRetryData = () => {
+    // Force re-fetch by triggering a refresh
+    window.location.reload();
+  };
+
   return (
-    <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
+    <MatrixDataBoundary
+      error={matrixDataHook.error}
+      loading={matrixDataHook.status === "loading"}
+      onRetry={handleRetryData}
+    >
+      <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}
       <div className="border-b border-[#e3dacb] bg-[var(--panel)]">
         <div className="max-w-6xl mx-auto px-6 py-5 space-y-4">
@@ -2392,6 +2404,7 @@ export default function VisibilityMatrixPage() {
       {/* Global Progress Bar */}
       <GlobalProgressBar externalState={progressState} autoHideDelay={4000} />
     </div>
+    </MatrixDataBoundary>
   );
 }
 
