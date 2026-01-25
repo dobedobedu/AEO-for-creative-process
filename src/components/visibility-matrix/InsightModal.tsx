@@ -172,11 +172,10 @@ export function InsightModal({
 
     if (!open) return null;
 
-    // Render provider breakdown table
-    const renderProviderBreakdown = () => {
-        const providers = Object.entries(metrics.byProvider) as [ProviderKey, any][];
-        if (providers.length === 0) return null;
+    // Render provider breakdown table - always show all providers
+    const PROVIDER_ORDER: ProviderKey[] = ["openai", "anthropic", "gemini", "xai"];
 
+    const renderProviderBreakdown = () => {
         return (
             <div className="mt-6 space-y-3">
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-black/40">By Provider</h4>
@@ -200,58 +199,61 @@ export function InsightModal({
                             <span className="text-[10px] font-semibold text-black/50 text-right col-span-2">Rec Rate</span>
                         )}
                     </div>
-                    {/* Provider rows */}
-                    {providers.map(([provider, providerMetrics]) => (
-                        <div key={provider} className="grid grid-cols-[80px_1fr_1fr] gap-2 px-3 py-2 border-b border-black/5 last:border-b-0 hover:bg-[#faf9f6]/50">
-                            <span className="text-[10px] font-semibold capitalize text-black/70">{provider}</span>
-                            {stage === "explore" && (
-                                <>
-                                    <span className="text-[10px] text-black/70 text-right">
-                                        {providerMetrics.mentionRate !== null ? `${Math.round(providerMetrics.mentionRate * 100)}%` : "N/A"}
+                    {/* Provider rows - always show all providers */}
+                    {PROVIDER_ORDER.map((provider) => {
+                        const providerMetrics = metrics.byProvider[provider] as Record<string, number | null> | undefined;
+                        return (
+                            <div key={provider} className="grid grid-cols-[80px_1fr_1fr] gap-2 px-3 py-2 border-b border-black/5 last:border-b-0 hover:bg-[#faf9f6]/50">
+                                <span className="text-[10px] font-semibold capitalize text-black/70">{provider}</span>
+                                {stage === "explore" && (
+                                    <>
+                                        <span className="text-[10px] text-black/70 text-right">
+                                            {providerMetrics?.mentionRate !== null && providerMetrics?.mentionRate !== undefined ? `${Math.round(providerMetrics.mentionRate * 100)}%` : "N/A"}
+                                        </span>
+                                        <span className="text-[10px] text-black/70 text-right">
+                                            {providerMetrics?.top3Rate !== null && providerMetrics?.top3Rate !== undefined ? `${Math.round(providerMetrics.top3Rate * 100)}%` : "N/A"}
+                                        </span>
+                                    </>
+                                )}
+                                {stage === "consider" && (
+                                    <span className="text-[10px] text-black/70 text-right col-span-2">
+                                        {providerMetrics?.avgSentiment !== null && providerMetrics?.avgSentiment !== undefined ? providerMetrics.avgSentiment.toFixed(2) : "N/A"}
                                     </span>
-                                    <span className="text-[10px] text-black/70 text-right">
-                                        {providerMetrics.top3Rate !== null ? `${Math.round(providerMetrics.top3Rate * 100)}%` : "N/A"}
+                                )}
+                                {stage === "compare" && (
+                                    <span className="text-[10px] text-black/70 text-right col-span-2">
+                                        {providerMetrics?.winRate !== null && providerMetrics?.winRate !== undefined ? `${Math.round(providerMetrics.winRate * 100)}%` : "N/A"}
                                     </span>
-                                </>
-                            )}
-                            {stage === "consider" && (
-                                <span className="text-[10px] text-black/70 text-right col-span-2">
-                                    {providerMetrics.avgSentiment !== null ? providerMetrics.avgSentiment.toFixed(2) : "N/A"}
-                                </span>
-                            )}
-                            {stage === "compare" && (
-                                <span className="text-[10px] text-black/70 text-right col-span-2">
-                                    {providerMetrics.winRate !== null ? `${Math.round(providerMetrics.winRate * 100)}%` : "N/A"}
-                                </span>
-                            )}
-                            {stage === "decide" && (
-                                <span className="text-[10px] text-black/70 text-right col-span-2">
-                                    {providerMetrics.recommendationRate !== null ? `${Math.round(providerMetrics.recommendationRate * 100)}%` : "N/A"}
-                                </span>
-                            )}
-                        </div>
-                    ))}
+                                )}
+                                {stage === "decide" && (
+                                    <span className="text-[10px] text-black/70 text-right col-span-2">
+                                        {providerMetrics?.recommendationRate !== null && providerMetrics?.recommendationRate !== undefined ? `${Math.round(providerMetrics.recommendationRate * 100)}%` : "N/A"}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         );
     };
 
-    // Stage Specific Logic (same as before)
+    // Stage Specific Logic - show N/A when data is unavailable
     const renderExplore = () => {
         if (metrics.stage !== "explore") return null;
-        const mentionRate = metrics.overall.mentionRate !== null ? Math.round(metrics.overall.mentionRate * 100) : 0;
-        const top3Rate = metrics.overall.top3Rate !== null ? Math.round(metrics.overall.top3Rate * 100) : 0;
+        const mentionRate = metrics.overall.mentionRate !== null ? `${Math.round(metrics.overall.mentionRate * 100)}%` : "N/A";
+        const top3Rate = metrics.overall.top3Rate !== null ? `${Math.round(metrics.overall.top3Rate * 100)}%` : "N/A";
 
         return (
             <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[#faf9f6] p-6 border border-black/5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Mention Rate</span>
-                        <p className="text-4xl font-light text-black mt-2">{mentionRate}%</p>
+                        <p className="text-4xl font-light text-black mt-2">{mentionRate}</p>
                     </div>
                     <div className="bg-[#faf9f6] p-6 border border-black/5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Top 3 Ranking</span>
-                        <p className="text-4xl font-light text-black mt-2">{top3Rate}%</p>
+                        <p className="text-4xl font-light text-black mt-2">{top3Rate}</p>
                     </div>
                 </div>
                 {renderProviderBreakdown()}
@@ -261,15 +263,18 @@ export function InsightModal({
 
     const renderConsider = () => {
         if (metrics.stage !== "consider") return null;
-        const avgSentiment = metrics.overall.avgSentiment !== null ? metrics.overall.avgSentiment : 0;
-        const sentimentLabel = avgSentiment > 0.3 ? "Positive" : avgSentiment < -0.3 ? "Negative" : "Neutral";
+        const avgSentiment = metrics.overall.avgSentiment;
+        const sentimentDisplay = avgSentiment !== null ? avgSentiment.toFixed(2) : "N/A";
+        const sentimentLabel = avgSentiment !== null
+            ? (avgSentiment > 0.3 ? "Positive" : avgSentiment < -0.3 ? "Negative" : "Neutral")
+            : "";
 
         return (
             <div className="space-y-6">
                 {/* Sentiment Breakdown */}
                 <div className="bg-[#faf9f6] p-6 border border-black/5">
                     <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Avg Sentiment</span>
-                    <p className="text-4xl font-light text-black mt-2">{avgSentiment.toFixed(2)} <span className="text-lg text-black/50">({sentimentLabel})</span></p>
+                    <p className="text-4xl font-light text-black mt-2">{sentimentDisplay} {sentimentLabel && <span className="text-lg text-black/50">({sentimentLabel})</span>}</p>
                 </div>
                 {renderProviderBreakdown()}
             </div>
@@ -279,13 +284,13 @@ export function InsightModal({
     const renderCompare = () => {
         if (metrics.stage !== "compare") return null;
         const overall = metrics.overall as CompareMetrics;
-        const winRate = overall.winRate !== null ? Math.round(overall.winRate * 100) : 0;
+        const winRate = overall.winRate !== null ? `${Math.round(overall.winRate * 100)}%` : "N/A";
 
         return (
             <div className="space-y-6">
                 <div className="bg-[#dcf3dc] p-6 border border-black/5 text-center">
                     <span className="text-[10px] font-black uppercase tracking-widest text-black/40">Head-to-Head Win Rate</span>
-                    <p className="text-5xl font-light text-black tracking-tighter mt-1">{winRate}%</p>
+                    <p className="text-5xl font-light text-black tracking-tighter mt-1">{winRate}</p>
                 </div>
                 {renderProviderBreakdown()}
             </div>
@@ -295,13 +300,13 @@ export function InsightModal({
     const renderDecide = () => {
         if (metrics.stage !== "decide") return null;
         const overall = metrics.overall as DecideMetrics;
-        const recRate = overall.recommendationRate !== null ? Math.round(overall.recommendationRate * 100) : 0;
+        const recRate = overall.recommendationRate !== null ? `${Math.round(overall.recommendationRate * 100)}%` : "N/A";
 
         return (
             <div className="space-y-6">
                 <div className="bg-[#faf9f6] p-6 border border-black/5">
                     <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Recommendation Rate</span>
-                    <p className="text-4xl font-light text-black mt-2">{recRate}%</p>
+                    <p className="text-4xl font-light text-black mt-2">{recRate}</p>
                 </div>
                 {renderProviderBreakdown()}
             </div>

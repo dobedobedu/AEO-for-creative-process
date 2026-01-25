@@ -96,8 +96,12 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
   }
 
   if (stage === "compare") {
-    const total = validResponses.length;
-    const wins = validResponses.filter(
+    // Filter out "none" outcomes - these represent responses where no comparison was made
+    const compared = validResponses.filter(
+      (r) => r.visibility?.comparisonOutcome && r.visibility.comparisonOutcome !== "none"
+    );
+    const total = compared.length;
+    const wins = compared.filter(
       (r) => r.visibility?.comparisonOutcome === "favorable"
     ).length;
 
@@ -107,8 +111,12 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
 
     const per: Partial<Record<ProviderKey, CompareMetrics>> = {};
     for (const [p, arr] of Object.entries(byProvider) as [ProviderKey, Response[]][]) {
-      const t = arr.length;
-      const w = arr.filter((r) => r.visibility?.comparisonOutcome === "favorable").length;
+      // Also filter per-provider to exclude "none" outcomes
+      const providerCompared = arr.filter(
+        (r) => r.visibility?.comparisonOutcome && r.visibility.comparisonOutcome !== "none"
+      );
+      const t = providerCompared.length;
+      const w = providerCompared.filter((r) => r.visibility?.comparisonOutcome === "favorable").length;
       per[p] = { winRate: t > 0 ? w / t : null };
     }
 

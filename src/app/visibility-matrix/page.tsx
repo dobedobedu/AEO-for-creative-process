@@ -685,8 +685,11 @@ export default function VisibilityMatrixPage() {
         description: s.description || "",
       })));
       setMatrixConfigLoading(false);
+    } else if (matrixDataHook.status === "error") {
+      // Unblock config loading on error - let error banner show
+      setMatrixConfigLoading(false);
     }
-  }, [matrixDataHook.config]);
+  }, [matrixDataHook.config, matrixDataHook.status]);
 
   useEffect(() => {
     if (matrixDataHook.history.length > 0) {
@@ -706,8 +709,13 @@ export default function VisibilityMatrixPage() {
 
       setBenchmarkHistory(runs);
       setSelectedTimeIndex(Math.max(0, runs.length - 1));
+    } else if (matrixDataHook.status === "ready") {
+      // Clear stale data when history is empty (handles date changes, fresh state)
+      setHistoricalRuns([]);
+      setBenchmarkHistory([]);
+      setSelectedTimeIndex(0);
     }
-  }, [matrixDataHook.history]);
+  }, [matrixDataHook.history, matrixDataHook.status]);
 
   useEffect(() => {
     if (matrixDataHook.intentLibrary) {
@@ -1842,7 +1850,21 @@ export default function VisibilityMatrixPage() {
         {/* Matrix Workspace */}
         <div className="mt-8 -mx-6">
           <div className="flex-1">
-            {(() => {
+            {/* Empty State - when ready but no data */}
+            {matrixDataHook.status === "ready" && historicalRuns.length === 0 && Object.values(matrixData).every(cell => cell.results.length === 0) ? (
+              <div className="border border-dashed border-[#e3dacb] bg-white px-8 py-16 text-center mx-6">
+                <div className="max-w-md mx-auto space-y-4">
+                  <div className="w-12 h-12 mx-auto rounded-full bg-[#f6f1e8] flex items-center justify-center">
+                    <svg className="w-6 h-6 text-black/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-black/80">No benchmark data yet</h3>
+                  <p className="text-sm text-black/50">Run a benchmark to populate the visibility matrix with AI response data across personas and journey stages.</p>
+                </div>
+              </div>
+            ) : (
+            (() => {
               // Transform effectiveMatrixData into a format SplitViewEditor can use for the 'summary' mode
               // effectiveMatrixData is either the current run or a selected historical run
               const cellResults: Record<string, Record<string, { discoveryRate: number; sentimentScore: number; topCompetitor?: string; winRate?: number; recommendationRate?: number; responses?: { provider: string; model: string; text: string; query: string; visibility: { score: number; mentioned: boolean; sentiment: string } }[]; citations?: Citation[] }>> = {};
@@ -2063,7 +2085,8 @@ export default function VisibilityMatrixPage() {
                   }}
                 />
               );
-            })()}
+            })()
+            )}
           </div>
         </div>
       </div>

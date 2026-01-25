@@ -140,4 +140,24 @@ describe("computeInsightMetrics", () => {
     expect(metrics.overall.mentionRate).toBe(0.5);
     expect(metrics.byProvider.openai?.mentionRate).toBe(0.5);
   });
+
+  it("excludes comparisonOutcome 'none' from win-rate denominator", () => {
+    const results = [
+      {
+        query: "q1",
+        responses: [
+          { provider: "openai", visibility: { comparisonOutcome: "favorable" } },
+          { provider: "openai", visibility: { comparisonOutcome: "none" } },
+          { provider: "gemini", visibility: { comparisonOutcome: "unfavorable" } },
+          { provider: "gemini", visibility: { comparisonOutcome: "none" } },
+        ],
+      },
+    ];
+
+    const metrics = computeInsightMetrics("compare", results);
+    // Only 2 valid comparisons (favorable + unfavorable), 2 "none" excluded
+    expect(metrics.overall.winRate).toBe(0.5); // 1 favorable / 2 compared
+    expect(metrics.byProvider.openai?.winRate).toBe(1); // 1/1 (none excluded)
+    expect(metrics.byProvider.gemini?.winRate).toBe(0); // 0/1 (none excluded)
+  });
 });
