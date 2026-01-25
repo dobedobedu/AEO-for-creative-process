@@ -197,8 +197,8 @@ describe("InsightModal metrics", () => {
 
     // Should show metrics (only openai counts)
     expect(screen.getByText(/mention rate/i)).toBeInTheDocument();
-    // Should not show gemini in provider breakdown (all errored)
+    // All providers should now be shown (gemini with N/A since all errored)
     const geminiElements = screen.queryAllByText(/gemini/i);
-    expect(geminiElements.length).toBe(0);
+    expect(geminiElements.length).toBe(1); // Shows in provider breakdown with N/A
   });
 });
