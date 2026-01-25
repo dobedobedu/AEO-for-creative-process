@@ -92,8 +92,11 @@ export async function computeRunMetrics(run: BenchmarkRun): Promise<RunMetricRow
   const cfg = await getActiveMatrixConfigCached();
   const metrics: RunMetricRow[] = [];
 
+  if (!run.cells) return metrics;
+
   for (const [cellKey, cell] of Object.entries(run.cells)) {
     const { persona, stage: stageId } = parseCellKey(cellKey);
+    if (!cell?.results) continue;
 
     // Get core stage for scoring
     const coreStage = getCoreStageMapping(stageId, cfg);
@@ -107,6 +110,7 @@ export async function computeRunMetrics(run: BenchmarkRun): Promise<RunMetricRow
     };
 
     for (const queryResult of cell.results) {
+      if (!queryResult?.responses) continue;
       for (const [provider, response] of Object.entries(queryResult.responses)) {
         providerResponses[provider as Provider].push({
           provider: provider as Provider,
@@ -203,14 +207,18 @@ export async function computeRunCitations(run: BenchmarkRun): Promise<RunCitatio
   const cfg = await getActiveMatrixConfigCached();
   const citations: RunCitationRow[] = [];
 
+  if (!run.cells) return citations;
+
   for (const [cellKey, cell] of Object.entries(run.cells)) {
     const { persona, stage: stageId } = parseCellKey(cellKey);
+    if (!cell?.results) continue;
     const coreStage = getCoreStageMapping(stageId, cfg);
 
     // Group citations by (provider, domain)
     const citationGroups: Map<string, RunCitationRow> = new Map();
 
     for (const queryResult of cell.results) {
+      if (!queryResult?.responses) continue;
       for (const [provider, response] of Object.entries(queryResult.responses)) {
         if (!response.citations || response.citations.length === 0) continue;
 
@@ -342,6 +350,20 @@ export async function saveRunAggregates(run: BenchmarkRun): Promise<void> {
   // The ~800 citation rows were causing the transaction to hang
   // TODO: Add bulk insert for citations or move to async job
   console.log(`[aggregator] Skipping ${citations.length} citations (not critical)`);
+
+  // --- Entity Extraction for Kanban ---
+  // Extract entity mentions from LLM responses and compute summary
+  try {
+    const mentionCount = await saveEntityMentions(run);
+    if (mentionCount > 0) {
+      await computeEntitySummary(run.id);
+    }
+    console.log(`[aggregator] Entity extraction complete: ${mentionCount} mentions`);
+  } catch (entityErr) {
+    // Non-fatal - Kanban data is optional, Matrix still works
+    console.error(`[aggregator] Entity extraction failed (non-fatal):`,
+      entityErr instanceof Error ? entityErr.message : entityErr);
+  }
 }
 
 /**
@@ -612,6 +634,12 @@ export interface EntitySummaryRow {
  * Extract entity mentions from a benchmark run and save to database
  */
 export async function saveEntityMentions(run: BenchmarkRun): Promise<number> {
+  // Guard against missing data
+  if (!run.cells) {
+    console.log("[aggregator] No cells in run, skipping entity extraction");
+    return 0;
+  }
+
   // Load entity registry for matching
   const registry = await loadEntityRegistry(sql);
   if (registry.length === 0) {
@@ -623,9 +651,11 @@ export async function saveEntityMentions(run: BenchmarkRun): Promise<number> {
 
   for (const [cellKey, cell] of Object.entries(run.cells)) {
     const { persona, stage: stageId } = parseCellKey(cellKey);
+    if (!cell?.results) continue;
 
     for (let queryIndex = 0; queryIndex < cell.results.length; queryIndex++) {
       const queryResult = cell.results[queryIndex];
+      if (!queryResult?.responses) continue;
 
       for (const [provider, response] of Object.entries(queryResult.responses)) {
         // Get entities from extraction score
@@ -724,7 +754,8 @@ export async function computeEntitySummary(runId: string): Promise<void> {
 
   // Insert/update summary rows
   for (const row of aggregated) {
-    const mentionRate = row.mention_count / totalResponses;
+    // Cap at 1.0 (100%) since an entity can be mentioned multiple times per response
+    const mentionRate = Math.min(row.mention_count / totalResponses, 1.0);
 
     await sql`
       INSERT INTO run_entity_summary (

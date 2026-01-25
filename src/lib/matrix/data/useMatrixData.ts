@@ -13,6 +13,7 @@ export interface MatrixDataState {
   } | null;
   history: StoredRun[];
   intentLibrary: IntentLibrary | null;
+  intentLibraryLoading: boolean;
   error: string | null;
   refreshToken: number;
 }
@@ -22,6 +23,7 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
   const [config, setConfig] = useState<MatrixDataState["config"]>(null);
   const [history, setHistory] = useState<StoredRun[]>([]);
   const [intentLibrary, setIntentLibrary] = useState<IntentLibrary | null>(null);
+  const [intentLibraryLoading, setIntentLibraryLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Track previous active state to detect re-activation
@@ -36,6 +38,7 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
     prevActiveRef.current = active;
   }, [active]);
 
+  // Load critical data first (config + history), then intent library in background
   useEffect(() => {
     if (!active) {
       setStatus("idle");
@@ -46,6 +49,7 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
     setStatus("loading");
     setError(null);
 
+    // Load config and history first (critical path)
     Promise.all([
       fetch("/api/matrix/active")
         .then(async (r) => {
@@ -69,20 +73,7 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
         .then(parseHistoryRuns)
         .then((hist) => {
           if (cancelled) return;
-          // hist.runs now contains full BenchmarkRun objects with all fields
           setHistory(hist.runs as StoredRun[]);
-        }),
-      fetch("/api/intents/library")
-        .then(async (r) => {
-          if (!r.ok) {
-            throw new Error(`Intent library API failed: ${r.status}`);
-          }
-          return r.json();
-        })
-        .then(parseIntentLibrary)
-        .then((lib) => {
-          if (cancelled) return;
-          setIntentLibrary(lib as IntentLibrary);
         }),
     ])
       .then(() => {
@@ -95,16 +86,47 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
         setStatus("error");
       });
 
+    // Load intent library in parallel but don't block ready state
+    const loadIntentLibrary = async () => {
+      if (cancelled) return;
+      try {
+        setIntentLibraryLoading(true);
+        const r = await fetch("/api/intents/library");
+        if (!r.ok) {
+          // Soft fail on intent library errors - don't break the whole page
+          console.warn("[useMatrixData] Intent library fetch failed:", r.status);
+          return;
+        }
+        const lib = parseIntentLibrary(await r.json());
+        if (cancelled) return;
+        setIntentLibrary(lib as IntentLibrary);
+      } catch (err) {
+        // Silently fail intent library errors - it's non-critical
+        console.error("[useMatrixData] Intent library loading error:", err);
+      } finally {
+        if (!cancelled) {
+          setIntentLibraryLoading(false);
+        }
+      }
+    };
+
+    loadIntentLibrary();
+
     return () => {
       cancelled = true;
     };
   }, [active, refreshToken]);
 
-  // Poll intent library every 10s when active
+  // Poll intent library every 10s when active AND visible
   useEffect(() => {
     if (!active || status !== "ready") return;
 
     const interval = setInterval(async () => {
+      // Skip polling if tab is hidden
+      if (document.visibilityState !== "visible") {
+        return;
+      }
+
       try {
         const r = await fetch("/api/intents/library");
         if (!r.ok) return;
@@ -119,15 +141,39 @@ export function useMatrixData({ active }: { active: boolean }): MatrixDataState 
     return () => clearInterval(interval);
   }, [active, status]);
 
+  // Pause/resume polling when visibility changes
+  useEffect(() => {
+    if (!active || status !== "ready") return;
+
+    const handleVisibilityChange = () => {
+      // When tab becomes visible after being hidden, trigger an immediate refresh
+      if (document.visibilityState === "visible") {
+        fetch("/api/intents/library")
+          .then(async (r) => {
+            if (!r.ok) return;
+            const lib = parseIntentLibrary(await r.json());
+            setIntentLibrary(lib as IntentLibrary);
+          })
+          .catch((err) => {
+            console.error("[useMatrixData] Visibility refresh error:", err);
+          });
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [active, status]);
+
   return useMemo(
     () => ({
       status,
       config,
       history,
       intentLibrary,
+      intentLibraryLoading,
       error,
       refreshToken,
     }),
-    [status, config, history, intentLibrary, error, refreshToken]
+    [status, config, history, intentLibrary, intentLibraryLoading, error, refreshToken]
   );
 }

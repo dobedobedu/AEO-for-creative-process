@@ -244,6 +244,8 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
   const documents: FormattedBenchmark[] = [];
   const runDate = run.timestamp.split("T")[0];
 
+  if (!run.cells) return documents;
+
   // Create a document for each cell
   for (const [cellKey, cell] of Object.entries(run.cells)) {
     // Split from end - stage is always last part (e.g., "move_up_explore" → ["move_up", "explore"])
@@ -281,9 +283,11 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
 
     // Add query results
     const queryBlocks: string[] = [];
+    if (!cell.results) continue;
     for (const queryResult of cell.results) {
       queryBlocks.push(`## Query: "${queryResult.query}"`, ``);
 
+      if (!queryResult.responses) continue;
       for (const [provider, response] of Object.entries(queryResult.responses)) {
         queryBlocks.push(
           `### ${provider.toUpperCase()} (${response.model})`,
@@ -374,12 +378,15 @@ export function formatCellForUpload(
 
   // Add results
   const resultBlocks: string[] = [];
-  for (const result of cell.results) {
-    resultBlocks.push(`## "${result.query}"`, ``);
-    for (const [provider, response] of Object.entries(result.responses)) {
-      resultBlocks.push(`### ${provider}: ${response.model}`);
-      resultBlocks.push(formatStageExtraction(stage, response.score as StageExtraction));
-      resultBlocks.push(``, `> ${response.responseText.slice(0, 1500)}...`, ``, `---`, ``);
+  if (cell.results) {
+    for (const result of cell.results) {
+      resultBlocks.push(`## "${result.query}"`, ``);
+      if (!result.responses) continue;
+      for (const [provider, response] of Object.entries(result.responses)) {
+        resultBlocks.push(`### ${provider}: ${response.model}`);
+        resultBlocks.push(formatStageExtraction(stage, response.score as StageExtraction));
+        resultBlocks.push(``, `> ${response.responseText.slice(0, 1500)}...`, ``, `---`, ``);
+      }
     }
   }
 

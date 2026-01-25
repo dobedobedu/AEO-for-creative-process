@@ -23,6 +23,7 @@ import {
   MessageSquare,
   X,
   Clock,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 import { ChatPanel } from "@/components/chat-panel";
@@ -30,7 +31,7 @@ import { MatrixCell } from "@/components/visibility-matrix/MatrixCell";
 import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor";
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
-import { MatrixDataBoundary } from "@/components/visibility-matrix/MatrixDataBoundary";
+import { InlineErrorBanner } from "@/components/visibility-matrix/InlineErrorBanner";
 import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
 import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
 import { TimeMachinePanel } from "@/components/visibility-matrix/TimeMachinePanel";
@@ -213,6 +214,8 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
 function storedRunToQueryBank(run: StoredRun): QueryBank {
   const bank = createEmptyQueryBank();
 
+  if (!run.cells) return bank;
+
   for (const [cellKey, cellResult] of Object.entries(run.cells)) {
     // cellKey is "persona_stage" format (e.g., "luxury_explore")
     const parts = cellKey.split("_");
@@ -327,11 +330,13 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
   // Get unique personas and stages from the run (for historical compatibility)
   const runPersonas = new Set<string>();
   const runStages = new Set<string>();
-  for (const key of Object.keys(run.cells)) {
-    const parsed = parseCellKey(key);
-    if (parsed) {
-      runPersonas.add(parsed.persona);
-      runStages.add(parsed.stage);
+  if (run.cells) {
+    for (const key of Object.keys(run.cells)) {
+      const parsed = parseCellKey(key);
+      if (parsed) {
+        runPersonas.add(parsed.persona);
+        runStages.add(parsed.stage);
+      }
     }
   }
 
@@ -366,6 +371,8 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
       // Convert stored QueryResults to UI QueryResults
       const uiResults: QueryResult[] = cellResult.results.map((qr) => {
         const responses: QueryResult["responses"] = [];
+
+        if (!qr.responses) return { query: qr.query, responses };
 
         for (const [provider, resp] of Object.entries(qr.responses)) {
           const extraction = resp.score;
@@ -1548,18 +1555,29 @@ export default function VisibilityMatrixPage() {
 
   const showWeightedArea = weightMode === "weighted";
 
-  // Handle retry from error boundary
+  // Handle retry from error banner - force re-fetch by reloading page
   const handleRetryData = () => {
-    // Force re-fetch by triggering a refresh
     window.location.reload();
   };
 
   return (
-    <MatrixDataBoundary
-      error={matrixDataHook.error}
-      loading={matrixDataHook.status === "loading"}
-      onRetry={handleRetryData}
-    >
+    <>
+      {/* Inline error banner - doesn't unmount the page */}
+      <InlineErrorBanner
+        error={matrixDataHook.error}
+        onRetry={handleRetryData}
+      />
+
+      {/* Loading overlay for initial load only */}
+      {matrixDataHook.status === "loading" && (
+        <div className="fixed inset-0 bg-[#f6f1e8] flex items-center justify-center z-50">
+          <div className="flex flex-col items-center gap-3 text-[var(--ink)]/60">
+            <RefreshCw className="h-8 w-8 animate-spin" />
+            <p className="text-sm">Loading matrix data...</p>
+          </div>
+        </div>
+      )}
+
       <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}
       <div className="border-b border-[#e3dacb] bg-[var(--panel)]">
@@ -2404,7 +2422,7 @@ export default function VisibilityMatrixPage() {
       {/* Global Progress Bar */}
       <GlobalProgressBar externalState={progressState} autoHideDelay={4000} />
     </div>
-    </MatrixDataBoundary>
+    </>
   );
 }
 

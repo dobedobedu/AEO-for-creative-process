@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, Target, Bot, Link2 } from "lucide-react";
 import type { Citation } from "@/lib/parsers/types";
+import { getGalleryTileBgClass, getGalleryTileCardBaseClass, shouldShowGalleryTileFooter } from "@/lib/matrix/galleryTileStyle";
 
 // Types - using string to support dynamic config
 type Persona = string;
@@ -91,7 +92,9 @@ export function GalleryTile({
         return "bg-[#fce9e9] hover:bg-[#f9dada]"; // Red - weak
     };
 
-    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(results.discoveryRate || 0) : "bg-transparent hover:bg-white/40";
+    const baseBgClass = getGalleryTileBgClass(activeTab);
+    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(results.discoveryRate || 0) : baseBgClass;
+    const cardBaseClass = getGalleryTileCardBaseClass();
 
     return (
         <motion.div
@@ -101,7 +104,7 @@ export function GalleryTile({
             style={{ height: "320px" }}  // Fixed height for consistent rows
             onClick={onClick}
         >
-            <Card className={`h-full border-[#e3dacb] hover:border-black/20 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 shadow-none p-5 flex flex-col ${isMissing ? "bg-black/5" : heatmapClass}`}>
+            <Card className={`${cardBaseClass} ${isMissing ? "bg-black/5" : heatmapClass}`}>
                 {/* Missing Cell State */}
                 {isMissing ? (
                     <div className="h-full flex items-center justify-center">
@@ -257,22 +260,20 @@ export function GalleryTile({
                 </motion.div>
 
                 {/* Footer: Stats - Fixed height for consistency */}
-                <motion.div 
-                    layout="position"
-                    className={`pt-3 flex items-center justify-between min-h-[40px] ${activeTab === "summary" ? "" : "border-t border-black/5"}`}
-                >
-                    {activeTab !== "summary" && (
-                        <>
-                            <div />
-                            {results?.topCompetitor && (
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[9px] font-bold uppercase text-black/20">Rival</span>
-                                    <span className="text-[10px] font-bold text-black/40 truncate max-w-[80px]">{results.topCompetitor}</span>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </motion.div>
+                {shouldShowGalleryTileFooter(activeTab) && (
+                    <motion.div
+                        layout="position"
+                        className="pt-3 flex items-center justify-between min-h-[40px] border-t border-black/5"
+                    >
+                        <div />
+                        {results?.topCompetitor && (
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] font-bold uppercase text-black/20">Rival</span>
+                                <span className="text-[10px] font-bold text-black/40 truncate max-w-[80px]">{results.topCompetitor}</span>
+                            </div>
+                        )}
+                    </motion.div>
+                )}
                     </>
                 )}
             </Card>

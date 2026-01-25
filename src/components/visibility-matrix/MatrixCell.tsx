@@ -15,7 +15,7 @@ interface MatrixCellProps {
   intents: IntentNode[];
   queries: Record<string, string[]>; // intentId -> queries
   score: number;
-  mentionRate: number;
+  mentionRate: number | null;
   status: "idle" | "running" | "complete";
   lastRun?: Date;
   onCellClick: () => void;

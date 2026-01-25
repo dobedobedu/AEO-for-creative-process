@@ -44,6 +44,7 @@ interface SplitViewEditorProps {
     }>>;
     brandDomain?: string;
     onSelectCell: (persona: string, stage: string) => void;
+    showMissing?: boolean;
     // Bulk Actions
     onShowAll?: () => void;
     onGenerateAll?: (mode: ViewMode) => void;
@@ -65,6 +66,7 @@ export function SplitViewEditor({
     cellResults,
     brandDomain,
     onSelectCell,
+    showMissing = false,
     onGenerateAll,
 }: SplitViewEditorProps) {
     // Filter State
@@ -239,7 +241,8 @@ export function SplitViewEditor({
                         >
                             {filteredCells.map((cell) => {
                                 const cellResult = cellResults?.[cell.persona]?.[cell.stage];
-                                const isMissing = !cellResult;
+                                const hasResponses = (cellResult?.responses?.length || 0) > 0;
+                                const isMissing = showMissing && (!cellResult || !hasResponses);
                                 return (
                                     <GalleryTile
                                         key={`${cell.persona}-${cell.stage}`}

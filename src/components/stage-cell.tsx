@@ -11,7 +11,7 @@ interface StageCellProps {
     winRate?: number;
     recommendationRate?: number;
   };
-  mentionRate?: number;
+  mentionRate?: number | null;
   queryCount: number;
   completedCount?: number;
   isComplete: boolean;
@@ -51,8 +51,8 @@ function formatMetric(stage: Stage, value: number): string {
 }
 
 // Get color tone based on mention rate
-function getMentionTone(mentionRate?: number): { bg: string; border: string } {
-  if (mentionRate === undefined || Number.isNaN(mentionRate)) {
+function getMentionTone(mentionRate?: number | null): { bg: string; border: string } {
+  if (mentionRate === undefined || mentionRate === null || Number.isNaN(mentionRate)) {
     return { bg: "bg-white", border: "border-[#e3dacb]/50" };
   }
   if (mentionRate >= 0.6) {
@@ -164,7 +164,7 @@ export function StageCell({
         {stageLabel}
       </span>
       <span className="text-[10px] text-[#1e1b16]/45">
-        Mention rate {mentionRate !== undefined ? `${Math.round(mentionRate * 100)}%` : "—"}
+        Mention rate {mentionRate === undefined || mentionRate === null ? "—" : `${Math.round(mentionRate * 100)}%`}
       </span>
     </div>
   );

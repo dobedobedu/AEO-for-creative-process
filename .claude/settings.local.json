@@ -41,7 +41,14 @@
       "Bash(PGPASSWORD='qynsYx-jykbo3-nygpes' psql:*)",
       "Bash(__NEW_LINE_91c31f8760ee7ae9__ echo \"\")",
       "Bash(__NEW_LINE_5bbfa907675ddbd5__ echo \"\")",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(TZ=UTC date:*)",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql",
+      "Bash(git diff --unified=5 HEAD -- src/app/visibility-board/page.tsx)",
+      "Bash(git diff:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
