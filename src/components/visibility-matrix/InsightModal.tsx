@@ -8,10 +8,10 @@ import type { ChatContext, QueryResultData, ResponseData, VisibilityData } from 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, AlertCircle, Send, Loader2, Bot, User, Play } from "lucide-react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { computeInsightMetrics, type CompareMetrics, type DecideMetrics } from "@/lib/matrix/insightMetrics";
 import type { ProviderKey } from "@/lib/matrix/weights";
+import { InsightCards } from "@/components/chat/InsightCards";
 
 // Types - using string to support dynamic config
 type Persona = string;
@@ -41,6 +41,7 @@ interface InsightModalProps {
     brand: string;
     onRunCell?: () => void;
     isRunning?: boolean;
+    personas?: string[];
 }
 
 // Helper to extract text from message parts (AI SDK 6 format)
@@ -63,6 +64,7 @@ export function InsightModal({
     brand,
     onRunCell,
     isRunning = false,
+    personas = [],
 }: InsightModalProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [input, setInput] = useState("");
@@ -160,9 +162,8 @@ export function InsightModal({
         setInput("");
     };
 
-    // Build insight-specific starters based on context
-    const insightStarters = useMemo(() => {
-        // Extract top competitor from results
+    // Extract top competitors from results for InsightCards
+    const topCompetitors = useMemo(() => {
         const competitorCounts = new Map<string, number>();
         for (const r of results) {
             for (const resp of r.responses || []) {
@@ -171,39 +172,16 @@ export function InsightModal({
                 }
             }
         }
-        const topCompetitor = [...competitorCounts.entries()]
-            .sort((a, b) => b[1] - a[1])[0]?.[0];
+        return [...competitorCounts.entries()]
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name]) => name);
+    }, [results]);
 
-        // Stage-specific prompts
-        const stagePrompts: Record<string, string[]> = {
-            explore: [
-                topCompetitor ? `Why is ${topCompetitor} appearing before us?` : "Why are competitors appearing before us?",
-                "What sources is AI citing instead of us?",
-                "What content would help us get discovered?",
-            ],
-            consider: [
-                "Why is our sentiment lower than competitors?",
-                "What concerns are AI models raising about us?",
-                "What content would improve how we're portrayed?",
-            ],
-            compare: [
-                topCompetitor ? `Why are we losing to ${topCompetitor} in comparisons?` : "Why are we losing head-to-head comparisons?",
-                "What attributes do competitors win on?",
-                "What content would help us win comparisons?",
-            ],
-            decide: [
-                "Why aren't we being recommended?",
-                topCompetitor ? `Why does AI recommend ${topCompetitor} over us?` : "Why does AI prefer competitors?",
-                "What would make AI recommend us more strongly?",
-            ],
-        };
-
-        return stagePrompts[stage] || [
-            "Why are we losing here?",
-            "What sources is AI citing instead of us?",
-            "What content should we create?",
-        ];
-    }, [stage, results]);
+    // Handler for InsightCards submission
+    const handleInsightSubmit = (prompt: string) => {
+        sendMessage({ parts: [{ type: "text", text: prompt }] });
+    };
 
     // Compute metrics using the helper - MUST be before early return to maintain hooks order
     const metrics = useMemo(() => computeInsightMetrics(stage, results), [stage, results]);
@@ -444,28 +422,16 @@ export function InsightModal({
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4 min-h-0 bg-white">
+                        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0 bg-white">
                             {messages.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <p className="text-[11px] font-bold uppercase tracking-widest text-black/20 mb-6">
-                                        Get actionable insights
-                                    </p>
-                                    <div className="flex flex-col gap-2">
-                                        {insightStarters.map((prompt) => (
-                                            <button
-                                                key={prompt}
-                                                type="button"
-                                                onClick={() => {
-                                                    setInput(prompt);
-                                                    // Auto-submit for better UX
-                                                    sendMessage({ parts: [{ type: "text", text: prompt }] });
-                                                }}
-                                                className="px-4 py-2.5 text-[11px] font-medium text-left bg-white border border-[#e3dacb] text-black/70 hover:bg-[#efe6d9] hover:text-black hover:border-black/20 transition-colors"
-                                            >
-                                                {prompt}
-                                            </button>
-                                        ))}
-                                    </div>
+                                <div className="py-2">
+                                    <InsightCards
+                                        context={context}
+                                        topCompetitors={topCompetitors}
+                                        personas={personas}
+                                        onSubmit={handleInsightSubmit}
+                                        layout="vertical"
+                                    />
                                 </div>
                             ) : (
                                 messages.map((message) => {

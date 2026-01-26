@@ -2356,6 +2356,7 @@ export default function VisibilityMatrixPage() {
             runCellsBenchmark([`${selectedCell.persona}-${selectedCell.stage}`], true);
           }}
           isRunning={isRunning}
+          personas={personas.map(p => p.label)}
         />
         );
       })()}
@@ -2393,6 +2394,7 @@ export default function VisibilityMatrixPage() {
         open={chatOpen}
         onOpenChange={setChatOpen}
         context={chatContext}
+        personas={personas.map(p => p.label)}
       />
 
       {/* Sticky Action Bar */}

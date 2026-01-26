@@ -14,11 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Send, Loader2, User, Bot } from "lucide-react";
 import type { ChatContext } from "@/lib/chat/types";
+import { InsightCards } from "@/components/chat/InsightCards";
 
 interface ChatPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   context: ChatContext;
+  personas?: string[];
 }
 
 function getScopeLabel(context: ChatContext): string {
@@ -46,7 +48,7 @@ function getMessageText(message: { parts?: Array<{ type: string; text?: string }
     .join("");
 }
 
-export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
+export function ChatPanel({ open, onOpenChange, context, personas = [] }: ChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
   const [ragStatus, setRagStatus] = useState<{ hasDocuments: boolean } | null>(null);
@@ -54,6 +56,22 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
 
   // Enable File Search when there's no current query results (use historical RAG data)
   const hasCurrentData = context.queryResults && context.queryResults.length > 0;
+
+  // Extract top competitors from query results
+  const topCompetitors = useMemo(() => {
+    const competitorCounts = new Map<string, number>();
+    for (const result of context.queryResults || []) {
+      for (const response of result.responses || []) {
+        for (const comp of response.visibility?.competitorsMentioned || []) {
+          competitorCounts.set(comp, (competitorCounts.get(comp) || 0) + 1);
+        }
+      }
+    }
+    return [...competitorCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name]) => name);
+  }, [context.queryResults]);
   
   const transport = useMemo(
     () =>
@@ -114,31 +132,10 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
     setInput("");
   };
 
-  // Insight-focused prompts based on scope
-  const quickPrompts = useMemo(() => {
-    // For persona-specific contexts, show insight starters
-    if (context.persona || context.scope === "cell" || context.scope === "row") {
-      return [
-        "Why are we losing here?",
-        "What sources is AI citing instead of us?",
-        "What content should we create?",
-      ];
-    }
-    // For stage-specific contexts
-    if (context.stage || context.scope === "column") {
-      return [
-        "How do personas differ in this stage?",
-        "What patterns do you see?",
-        "Where are we exposed?",
-      ];
-    }
-    // Global fallback
-    return [
-      "What patterns do you see?",
-      "Where are we strong?",
-      "Where are we exposed?",
-    ];
-  }, [context.persona, context.stage, context.scope]);
+  // Handler for InsightCards submission
+  const handleInsightSubmit = (prompt: string) => {
+    sendMessage({ parts: [{ type: "text", text: prompt }] });
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -183,22 +180,13 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 min-h-0">
           {messages.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-[#1e1b16]/50 mb-4">
-                Get actionable insights for this persona
-              </p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {quickPrompts.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    onClick={() => setInput(prompt)}
-                    className="px-3 py-1.5 text-sm bg-white border border-[#e3dacb] rounded-full text-[#1e1b16]/70 hover:bg-[#efe6d9] hover:text-[#1e1b16] transition-colors"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
+            <div className="py-6 px-4">
+              <InsightCards
+                context={context}
+                topCompetitors={topCompetitors}
+                personas={personas}
+                onSubmit={handleInsightSubmit}
+              />
             </div>
           ) : (
             messages.map((message) => {
