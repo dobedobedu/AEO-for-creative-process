@@ -72,13 +72,27 @@ export async function rescoreRun(
   let cellsProcessed = 0;
 
   // Count total responses for progress tracking
-  for (const cellResult of Object.values(run.cells)) {
-    for (const qr of cellResult.results) {
-      totalResponses += Object.keys(qr.responses).length;
+  if (run.cells) {
+    for (const cellResult of Object.values(run.cells)) {
+      if (!cellResult?.results) continue;
+      for (const qr of cellResult.results) {
+        if (qr?.responses) {
+          totalResponses += Object.keys(qr.responses).length;
+        }
+      }
     }
   }
 
   let completed = 0;
+
+  if (!run.cells) {
+    return {
+      success: false,
+      run,
+      stats: { totalResponses: 0, successfulExtractions: 0, failedExtractions: 0, cellsProcessed: 0 },
+      errors: ["No cells in run"],
+    };
+  }
 
   // Process each cell
   for (const [cellKey, cellResult] of Object.entries(run.cells)) {
@@ -93,9 +107,13 @@ export async function rescoreRun(
       currentCell: cellKey,
     });
 
+    if (!cellResult?.results) continue;
+
     // Process each query result
     for (const queryResult of cellResult.results) {
       const query = queryResult.query;
+
+      if (!queryResult?.responses) continue;
 
       // Process each provider response
       for (const [provider, response] of Object.entries(queryResult.responses)) {
@@ -270,15 +288,22 @@ export async function dryRunRescore(
     decide: 0,
   };
 
+  if (!run.cells) {
+    return { cellCount: 0, queryCount: 0, responseCount: 0, stages };
+  }
+
   for (const [cellKey, cellResult] of Object.entries(run.cells)) {
     // Use lastIndexOf to handle personas with underscores (e.g., "move_up_explore")
     const lastUnderscoreIdx = cellKey.lastIndexOf("_");
     const stage = cellKey.slice(lastUnderscoreIdx + 1) as Stage;
     stages[stage]++;
 
+    if (!cellResult?.results) continue;
     for (const qr of cellResult.results) {
       queryCount++;
-      responseCount += Object.keys(qr.responses).length;
+      if (qr?.responses) {
+        responseCount += Object.keys(qr.responses).length;
+      }
     }
   }
 

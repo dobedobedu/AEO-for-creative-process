@@ -174,7 +174,7 @@ export function TimeMachinePanel({
           ) : (
             <div className="space-y-0">
               {flatRuns.map((run, index) => {
-                const cellCount = Object.keys(run.cells).length;
+                const cellCount = run.cells ? Object.keys(run.cells).length : 0;
                 const baseWidth = getCompletionWidth(cellCount, totalCells);
                 const isSelected = run.id === selectedRunId;
                 const scale = getScale(index);

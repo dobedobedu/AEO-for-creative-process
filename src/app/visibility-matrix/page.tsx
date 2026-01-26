@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useCallback, Fragment, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import { usePathname } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
   MessageSquare,
   X,
   Clock,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 import { ChatPanel } from "@/components/chat-panel";
@@ -29,12 +31,15 @@ import { MatrixCell } from "@/components/visibility-matrix/MatrixCell";
 import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor";
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
+import { InlineErrorBanner } from "@/components/visibility-matrix/InlineErrorBanner";
 import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
+import { Skeleton } from "@/components/ui/skeleton";
 import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
 import { TimeMachinePanel } from "@/components/visibility-matrix/TimeMachinePanel";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { GlobalProgressBar, useGlobalProgress } from "@/components/global-progress-bar";
 import type { ChatContext } from "@/lib/chat/types";
+import { useMatrixData } from "@/lib/matrix/data/useMatrixData";
 import {
   ChartContainer,
   ChartTooltip,
@@ -50,10 +55,17 @@ import {
   ReferenceLine,
 } from "recharts";
 
+import {
+  DEFAULT_PROVIDER_WEIGHTS,
+  normalizeWeights,
+  type WeightMode,
+} from "@/lib/matrix/weights";
+import { getExploreMentionStats } from "@/lib/matrix/mention";
 import type { IntentLibrary, IntentNode } from "@/lib/intents/types";
 import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import type { Citation } from "@/lib/parsers/types";
+import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
 
 // Types - using string type to support dynamic config
 type Persona = string;
@@ -93,7 +105,7 @@ interface CellData {
   intents: IntentNode[];
   results: QueryResult[];
   avgScore: number;
-  mentionRate: number;
+  mentionRate: number | null;
   status: "idle" | "running" | "complete" | "partial";
   // Stage-specific metrics from new scoring system
   stageMetrics?: {
@@ -109,13 +121,13 @@ interface BenchmarkRun {
   id: string;
   timestamp: number;
   label: string;
-  providerScores: Record<Provider, { avgScore: number; mentionRate: number }>;
+  providerScores: Record<Provider, { avgScore: number; mentionRate: number | null }>;
   // Stage-specific historical data
   stageData?: {
-    positionCounts: { "1st": number; "2nd": number; "3rd": number; later: number; absent: number };
-    sentimentScore: number;
-    winRate: number;
-    recStrength: number;
+    positionCounts: { "1st": number; "2nd": number; "3rd": number; later: number; absent: number } | null;
+    sentimentScore: number | null;
+    winRate: number | null;
+    recStrength: number | null;
   };
   competitorRanking?: string[];
 }
@@ -202,6 +214,8 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
 function storedRunToQueryBank(run: StoredRun): QueryBank {
   const bank = createEmptyQueryBank();
 
+  if (!run.cells) return bank;
+
   for (const [cellKey, cellResult] of Object.entries(run.cells)) {
     // cellKey is "persona_stage" format (e.g., "luxury_explore")
     const parts = cellKey.split("_");
@@ -286,108 +300,6 @@ function extractionCompetitors(extraction: StageExtraction): string[] {
   return [];
 }
 
-function toUiBenchmarkRun(run: StoredRun): BenchmarkRun {
-  const totals: Record<Provider, { totalScore: number; totalMentions: number; totalCount: number }> = {
-    openai: { totalScore: 0, totalMentions: 0, totalCount: 0 },
-    anthropic: { totalScore: 0, totalMentions: 0, totalCount: 0 },
-    gemini: { totalScore: 0, totalMentions: 0, totalCount: 0 },
-    xai: { totalScore: 0, totalMentions: 0, totalCount: 0 },
-  };
-
-  const positionCounts = { "1st": 0, "2nd": 0, "3rd": 0, later: 0, absent: 0 };
-  const sentimentScores: number[] = [];
-  const compareOutcomes: { win: number; total: number } = { win: 0, total: 0 };
-  const recStrengths: number[] = [];
-  const competitorCounts: Record<string, number> = {};
-
-  for (const [cellKey, cell] of Object.entries(run.cells)) {
-    const parts = cellKey.split("_");
-    const stage = parts[parts.length - 1] as Stage;
-    for (const qr of cell.results) {
-      for (const [provider, resp] of Object.entries(qr.responses) as Array<[
-        Provider,
-        { score: StageExtraction }
-      ]>) {
-        const extraction = resp.score;
-
-        totals[provider].totalCount++;
-        totals[provider].totalScore += extractionToScalarScore(stage, extraction);
-        if (extraction.mentioned) totals[provider].totalMentions++;
-
-        for (const comp of extractionCompetitors(extraction)) {
-          competitorCounts[comp] = (competitorCounts[comp] || 0) + 1;
-        }
-
-        if (stage === "explore" && "inTopThree" in extraction) {
-          if (!extraction.mentioned) positionCounts.absent++;
-          else if (extraction.inTopThree) positionCounts["1st"]++;
-          else positionCounts.later++;
-        }
-
-        if (stage === "consider" && "sentimentScore" in extraction) {
-          sentimentScores.push(extraction.sentimentScore);
-        }
-
-        if (stage === "compare" && "outcome" in extraction && extraction.outcome !== "not_compared") {
-          compareOutcomes.total++;
-          if (extraction.outcome === "win") compareOutcomes.win++;
-          if (extraction.outcome === "tie" || extraction.outcome === "mixed") compareOutcomes.win += 0.5;
-        }
-
-        if (stage === "decide" && "recommendationStrength" in extraction) {
-          recStrengths.push(recommendationStrengthToScore(extraction.recommendationStrength));
-        }
-      }
-    }
-  }
-
-  const providerScores: BenchmarkRun["providerScores"] = {
-    openai: {
-      avgScore: totals.openai.totalCount ? totals.openai.totalScore / totals.openai.totalCount : 0,
-      mentionRate: totals.openai.totalCount ? totals.openai.totalMentions / totals.openai.totalCount : 0,
-    },
-    anthropic: {
-      avgScore: totals.anthropic.totalCount ? totals.anthropic.totalScore / totals.anthropic.totalCount : 0,
-      mentionRate: totals.anthropic.totalCount ? totals.anthropic.totalMentions / totals.anthropic.totalCount : 0,
-    },
-    gemini: {
-      avgScore: totals.gemini.totalCount ? totals.gemini.totalScore / totals.gemini.totalCount : 0,
-      mentionRate: totals.gemini.totalCount ? totals.gemini.totalMentions / totals.gemini.totalCount : 0,
-    },
-    xai: {
-      avgScore: totals.xai.totalCount ? totals.xai.totalScore / totals.xai.totalCount : 0,
-      mentionRate: totals.xai.totalCount ? totals.xai.totalMentions / totals.xai.totalCount : 0,
-    },
-  };
-
-  const competitorRanking = Object.entries(competitorCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([name]) => name);
-
-  const runLabel = run.timestamp.split("T")[0];
-
-  return {
-    id: run.id,
-    timestamp: Date.parse(run.timestamp),
-    label: runLabel,
-    providerScores,
-    stageData: {
-      positionCounts,
-      sentimentScore:
-        sentimentScores.length > 0
-          ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length
-          : 0,
-      winRate: compareOutcomes.total > 0 ? compareOutcomes.win / compareOutcomes.total : 0,
-      recStrength:
-        recStrengths.length > 0
-          ? recStrengths.reduce((a, b) => a + b, 0) / recStrengths.length
-          : 0,
-    },
-    competitorRanking,
-  };
-}
-
 // Convert a StoredRun to the matrixData format used by the grid
 // Handles ALL cells, marking missing ones as "partial"
 function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages: { id: Stage; label: string; description: string }[]): Record<string, CellData> {
@@ -418,11 +330,13 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
   // Get unique personas and stages from the run (for historical compatibility)
   const runPersonas = new Set<string>();
   const runStages = new Set<string>();
-  for (const key of Object.keys(run.cells)) {
-    const parsed = parseCellKey(key);
-    if (parsed) {
-      runPersonas.add(parsed.persona);
-      runStages.add(parsed.stage);
+  if (run.cells) {
+    for (const key of Object.keys(run.cells)) {
+      const parsed = parseCellKey(key);
+      if (parsed) {
+        runPersonas.add(parsed.persona);
+        runStages.add(parsed.stage);
+      }
     }
   }
 
@@ -457,6 +371,8 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
       // Convert stored QueryResults to UI QueryResults
       const uiResults: QueryResult[] = cellResult.results.map((qr) => {
         const responses: QueryResult["responses"] = [];
+
+        if (!qr.responses) return { query: qr.query, responses };
 
         for (const [provider, resp] of Object.entries(qr.responses)) {
           const extraction = resp.score;
@@ -529,16 +445,16 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
 
       // Calculate aggregate metrics
       let totalScore = 0;
-      let mentionCount = 0;
       let totalResponses = 0;
 
       for (const qr of uiResults) {
         for (const resp of qr.responses) {
           totalScore += resp.visibility.score;
           totalResponses++;
-          if (resp.visibility.mentioned) mentionCount++;
         }
       }
+
+      const mentionStats = getExploreMentionStats({ stage, results: uiResults });
 
       data[uiKey] = {
         persona,
@@ -546,7 +462,7 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
         intents: [], // Historical runs don't include intent info
         results: uiResults,
         avgScore: totalResponses > 0 ? totalScore / totalResponses : 0,
-        mentionRate: totalResponses > 0 ? mentionCount / totalResponses : 0,
+        mentionRate: mentionStats.mentionRate,
         status: "complete",
         stageMetrics: cellResult.metrics,
       };
@@ -565,6 +481,8 @@ const chartConfig: ChartConfig = {
 };
 
 export default function VisibilityMatrixPage() {
+  const pathname = usePathname();
+  const isMatrixActive = pathname ? pathname.startsWith("/visibility-matrix") : false;
   const [matrixData, setMatrixData] = useState<Record<string, CellData>>({});
   const [selection, setSelection] = useState<SelectionType>({ type: "all" });
   const [isRunning, setIsRunning] = useState(false);
@@ -576,6 +494,7 @@ export default function VisibilityMatrixPage() {
   const [benchmarkHistory, setBenchmarkHistory] = useState<BenchmarkRun[]>([]);
   const [kpiMetric, setKpiMetric] = useState<"mention" | "sentiment" | "winrate" | "top3">("mention");
   const [kpiRange, setKpiRange] = useState<"day" | "week" | "month">("week");
+  const [weightMode, setWeightMode] = useState<WeightMode>("equal");
   const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
   const [personas, setPersonas] = useState<PersonaConfig[]>(DEFAULT_PERSONAS);
   const [stages, setStages] = useState<{ id: Stage; label: string; description: string }[]>(DEFAULT_STAGES);
@@ -748,93 +667,62 @@ export default function VisibilityMatrixPage() {
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Load matrix config from API
+  // Cache for transformed history runs to avoid re-processing
+  const historyCacheRef = useRef(new Map<string, BenchmarkRun>());
+
+  // Centralized data loading hook - replaces multiple useEffect calls
+  const matrixDataHook = useMatrixData({ active: isMatrixActive });
+
+  // Sync hook data to component state
   useEffect(() => {
-    let cancelled = false;
-
-    const fetchMatrixConfig = async () => {
-      try {
-        const r = await fetch("/api/matrix/active");
-        if (!r.ok || cancelled) return;
-        const config = await r.json();
-        if (cancelled) return;
-
-        // Transform API data to UI format
-        if (config.personas && config.personas.length > 0) {
-          setPersonas(config.personas.map((p: any) => ({
-            id: p.id,
-            label: p.label,
-            description: p.description || "",
-          })));
-        }
-
-        if (config.stages && config.stages.length > 0) {
-          setStages(config.stages.map((s: any) => ({
-            id: s.id,
-            label: s.label,
-            description: s.description || "",
-          })));
-        }
-
-        setMatrixConfigLoading(false);
-      } catch (err) {
-        console.error("[visibility-matrix] Failed to load matrix config:", err);
-        if (cancelled) return;
-        // Fallback to defaults already set
-        setMatrixConfigLoading(false);
-      }
-    };
-
-    fetchMatrixConfig();
-  }, []);
+    if (matrixDataHook.config) {
+      setPersonas(matrixDataHook.config.personas.map(p => ({
+        ...p,
+        description: p.description || "",
+      })));
+      setStages(matrixDataHook.config.stages.map(s => ({
+        ...s,
+        description: s.description || "",
+      })));
+      setMatrixConfigLoading(false);
+    } else if (matrixDataHook.status === "error") {
+      // Unblock config loading on error - let error banner show
+      setMatrixConfigLoading(false);
+    }
+  }, [matrixDataHook.config, matrixDataHook.status]);
 
   useEffect(() => {
-    let cancelled = false;
+    if (matrixDataHook.history.length > 0) {
+      const sortedRawRuns = matrixDataHook.history.slice().sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+      setHistoricalRuns(sortedRawRuns);
 
-    // Fetch intent library with polling for multi-user sync
-    const fetchLibrary = async () => {
-      try {
-        const r = await fetch("/api/intents/library");
-        if (!r.ok || cancelled) return;
-        const library: IntentLibrary = await r.json();
-        if (cancelled) return;
-        setIntentLibrary(library);
-        setLocalQueryBank(buildQueryBankFromIntentLibrary(library));
-      } catch (err) {
-        console.error("Failed to load intent library:", err);
-      }
-    };
-
-    fetchLibrary(); // Initial fetch
-    const interval = setInterval(fetchLibrary, 10000); // Poll every 10s for multi-user sync
-
-    // Fetch enough runs to cover the largest window (30 days) with buffer
-    fetch("/api/benchmark/runs/history?limit=45")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Failed to load history"))))
-      .then((data: { runs: StoredRun[] }) => {
-        if (cancelled) return;
-        // Store raw runs for historical linking
-        const sortedRawRuns = data.runs.slice().sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-        setHistoricalRuns(sortedRawRuns);
-        // Transform to chart format
-        const runs = sortedRawRuns.map(toUiBenchmarkRun);
-        setBenchmarkHistory(runs);
-        setSelectedTimeIndex(Math.max(0, runs.length - 1));
-      })
-      .catch((err) => {
-        console.error("[visibility-matrix] Failed to load history:", err);
-        if (cancelled) return;
-        // Keep empty - no mock data fallback
-        setHistoricalRuns([]);
-        setBenchmarkHistory([]);
-        setSelectedTimeIndex(0);
+      // Use cache to avoid re-transforming runs we've already processed
+      const cache = historyCacheRef.current;
+      const runs = sortedRawRuns.map((run) => {
+        const key = getRunCacheKey(run);
+        const cached = cache.get(key);
+        if (cached) return cached;
+        const transformed = toUiBenchmarkRun(run);
+        cache.set(key, transformed);
+        return transformed;
       });
 
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, []);
+      setBenchmarkHistory(runs);
+      setSelectedTimeIndex(Math.max(0, runs.length - 1));
+    } else if (matrixDataHook.status === "ready") {
+      // Clear stale data when history is empty (handles date changes, fresh state)
+      setHistoricalRuns([]);
+      setBenchmarkHistory([]);
+      setSelectedTimeIndex(0);
+    }
+  }, [matrixDataHook.history, matrixDataHook.status]);
+
+  useEffect(() => {
+    if (matrixDataHook.intentLibrary) {
+      setIntentLibrary(matrixDataHook.intentLibrary);
+      setLocalQueryBank(buildQueryBankFromIntentLibrary(matrixDataHook.intentLibrary));
+    }
+  }, [matrixDataHook.intentLibrary]);
 
   // Track whether user has run their own benchmark this session (don't override with historical)
   const userRanBenchmarkRef = useRef(false);
@@ -1006,29 +894,17 @@ export default function VisibilityMatrixPage() {
       const { run, resultsByCell }: { run: StoredRun; resultsByCell: Record<string, { queries: QueryResult[] }> } =
         await response.json();
 
-      // DEBUG: Log raw API response
-      console.log("[DEBUG] API resultsByCell keys:", Object.keys(resultsByCell));
-      console.log("[DEBUG] Target cell keys:", targetCells.map(t => t.key));
-      console.log("[DEBUG] Sample resultsByCell data:", Object.entries(resultsByCell).map(([k, v]) => ({
-        key: k,
-        queriesCount: v?.queries?.length,
-        firstQueryResponses: v?.queries?.[0]?.responses?.length
-      })));
-
       setMatrixData((prev) => {
         const next = { ...prev };
 
         for (const t of targetCells) {
           const result = resultsByCell[t.key];
-          console.log(`[DEBUG] Cell ${t.key}: result exists=${!!result}, queries=${result?.queries?.length}`);
           if (!result) {
-            console.log(`[DEBUG] Cell ${t.key}: NO RESULT - staying idle`);
             next[t.key] = { ...next[t.key], status: "idle" };
             continue;
           }
 
           const allScores: number[] = [];
-          let mentionCount = 0;
           let totalResponses = 0;
 
           for (const qr of result.queries) {
@@ -1036,14 +912,16 @@ export default function VisibilityMatrixPage() {
               if (!resp.error) {
                 allScores.push(resp.visibility.score);
                 totalResponses++;
-                if (resp.visibility.mentioned) mentionCount++;
               }
             }
           }
 
           const avgScore =
             allScores.length > 0 ? allScores.reduce((a, b) => a + b, 0) / allScores.length : 0;
-          const mentionRate = totalResponses > 0 ? mentionCount / totalResponses : 0;
+          const mentionRate = getExploreMentionStats({
+            stage: t.stage,
+            results: result.queries,
+          }).mentionRate;
 
           // Extract stage-specific metrics from the run object
           // The run uses underscore separator (e.g., "luxury_explore"), UI uses dash
@@ -1051,7 +929,6 @@ export default function VisibilityMatrixPage() {
           const runCell = run.cells[runCellKey];
           const stageMetrics = runCell?.metrics ?? {};
 
-          console.log(`[DEBUG] Cell ${t.key}: Setting results with ${result.queries.length} queries, avgScore=${avgScore}, mentionRate=${mentionRate}`);
           next[t.key] = {
             ...next[t.key],
             results: result.queries,
@@ -1166,8 +1043,8 @@ export default function VisibilityMatrixPage() {
 
   // Background color based on legacy score (kept for hover cards / future use)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const getCellBgColor = (score: number, mentionRate: number): string => {
-    if (mentionRate === 0) return "bg-[#f0d9d9]";
+  const getCellBgColor = (score: number, mentionRate: number | null): string => {
+    if (mentionRate === null || mentionRate === 0) return "bg-[#f0d9d9]";
     if (score >= 0.6) return "bg-[#d4e5d4]";
     if (score >= 0.4) return "bg-[#efe6d9]";
     if (score >= 0.2) return "bg-[#f5e6d3]";
@@ -1193,11 +1070,16 @@ export default function VisibilityMatrixPage() {
 
   const getFilteredCellStats = useCallback((cell: CellData) => {
     if (cell.status !== "complete" || cell.results.length === 0) {
-      return { avgScore: 0, mentionRate: 0, mentionCount: 0, totalResponses: 0 };
+      return {
+        avgScore: 0,
+        mentionRate: null,
+        mentionCount: 0,
+        mentionTotalResponses: 0,
+        totalResponses: 0,
+      };
     }
 
     let totalScore = 0;
-    let mentionCount = 0;
     let totalResponses = 0;
 
     for (const qr of cell.results) {
@@ -1205,15 +1087,20 @@ export default function VisibilityMatrixPage() {
         if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
           totalScore += resp.visibility.score;
           totalResponses++;
-          if (resp.visibility.mentioned) mentionCount++;
         }
       }
     }
 
+    const mentionStats = getExploreMentionStats(
+      { stage: cell.stage, results: cell.results },
+      enabledProviders
+    );
+
     return {
       avgScore: totalResponses > 0 ? totalScore / totalResponses : 0,
-      mentionRate: totalResponses > 0 ? mentionCount / totalResponses : 0,
-      mentionCount,
+      mentionRate: mentionStats.mentionRate,
+      mentionCount: mentionStats.mentionCount,
+      mentionTotalResponses: mentionStats.mentionTotalResponses,
       totalResponses,
     };
   }, [enabledProviders]);
@@ -1225,6 +1112,7 @@ export default function VisibilityMatrixPage() {
     let totalScore = 0;
     let totalMentions = 0;
     let totalResponses = 0;
+    let totalMentionResponses = 0;
     let blindSpots = 0;
 
     for (const cell of cells) {
@@ -1232,11 +1120,12 @@ export default function VisibilityMatrixPage() {
       totalScore += stats.avgScore * stats.totalResponses;
       totalMentions += stats.mentionCount;
       totalResponses += stats.totalResponses;
-      if (stats.mentionRate < 0.5) blindSpots++;
+      totalMentionResponses += stats.mentionTotalResponses;
+      if (stats.mentionRate !== null && stats.mentionRate < 0.5) blindSpots++;
     }
 
     const avgScore = totalResponses > 0 ? totalScore / totalResponses : 0;
-    const avgMentionRate = totalResponses > 0 ? totalMentions / totalResponses : 0;
+    const avgMentionRate = totalMentionResponses > 0 ? totalMentions / totalMentionResponses : 0;
 
     return { avgScore, avgMentionRate, blindSpots, totalCells: cells.length };
   }, [effectiveMatrixData, getFilteredCellStats]);
@@ -1286,11 +1175,11 @@ export default function VisibilityMatrixPage() {
 
   // Provider-level KPIs from current selection
   const modelStats = useMemo(() => {
-    const stats: Record<Provider, { score: number; mentions: number; total: number }> = {
-      openai: { score: 0, mentions: 0, total: 0 },
-      anthropic: { score: 0, mentions: 0, total: 0 },
-      gemini: { score: 0, mentions: 0, total: 0 },
-      xai: { score: 0, mentions: 0, total: 0 },
+    const stats: Record<Provider, { score: number; mentions: number; mentionTotal: number; total: number }> = {
+      openai: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
+      anthropic: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
+      gemini: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
+      xai: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
     };
 
     for (const cell of selectedCellsData) {
@@ -1300,7 +1189,10 @@ export default function VisibilityMatrixPage() {
           if (!resp.error) {
             stats[provider].score += resp.visibility.score;
             stats[provider].total++;
-            if (resp.visibility.mentioned) stats[provider].mentions++;
+            if (cell.stage === "explore") {
+              stats[provider].mentionTotal++;
+              if (resp.visibility.mentioned) stats[provider].mentions++;
+            }
           }
         }
       }
@@ -1309,34 +1201,59 @@ export default function VisibilityMatrixPage() {
     return PROVIDERS.map(p => ({
       ...p,
       avgScore: stats[p.id].total > 0 ? stats[p.id].score / stats[p.id].total : 0,
-      mentionRate: stats[p.id].total > 0 ? stats[p.id].mentions / stats[p.id].total : 0,
+      mentionRate: stats[p.id].mentionTotal > 0 ? stats[p.id].mentions / stats[p.id].mentionTotal : null,
       total: stats[p.id].total,
     }));
   }, [selectedCellsData]);
+
+  const normalizedProviderWeights = useMemo(
+    () => normalizeWeights(DEFAULT_PROVIDER_WEIGHTS),
+    []
+  );
 
   const modelTrendData = useMemo(() => {
     const baseMockDate = new Date(Date.UTC(2026, 0, 1));
 
     // Helper to get metric value based on selected kpiMetric
-    const getValue = (provider: Provider, run: BenchmarkRun): number => {
+    const getValue = (provider: Provider, run: BenchmarkRun): number | null => {
+      let value: number | null = null;
       switch (kpiMetric) {
-        case "mention":
-          return Math.round((run.providerScores[provider]?.mentionRate ?? 0) * 100);
+        case "mention": {
+          const mentionRate = run.providerScores[provider]?.mentionRate;
+          if (mentionRate !== null && mentionRate !== undefined) {
+            value = Math.round(mentionRate * 100);
+          }
+          break;
+        }
         case "sentiment":
           // Convert [-1, 1] to [0, 100]
-          return Math.round(((run.stageData?.sentimentScore ?? 0) + 1) * 50);
+          if (run.stageData?.sentimentScore !== null && run.stageData?.sentimentScore !== undefined) {
+            value = Math.round((run.stageData.sentimentScore + 1) * 50);
+          }
+          break;
         case "winrate":
-          return Math.round((run.stageData?.winRate ?? 0) * 100);
+          if (run.stageData?.winRate !== null && run.stageData?.winRate !== undefined) {
+            value = Math.round(run.stageData.winRate * 100);
+          }
+          break;
         case "top3": {
           const pos = run.stageData?.positionCounts;
-          if (!pos) return 0;
-          const inTop3 = pos["1st"] + pos["2nd"] + pos["3rd"];
-          const total = inTop3 + pos.later + pos.absent;
-          return total > 0 ? Math.round((inTop3 / total) * 100) : 0;
+          if (pos) {
+            const inTop3 = pos["1st"] + pos["2nd"] + pos["3rd"];
+            const total = inTop3 + pos.later + pos.absent;
+            value = total > 0 ? Math.round((inTop3 / total) * 100) : 0;
+          }
+          break;
         }
         default:
-          return 0;
+          value = 0;
       }
+      if (value === null) return null;
+      if (weightMode === "weighted") {
+        const weighted = value * (normalizedProviderWeights[provider] ?? 0);
+        return Math.round(weighted * 10) / 10;
+      }
+      return value;
     };
 
     // Group runs by date and select the latest run per day
@@ -1374,7 +1291,7 @@ export default function VisibilityMatrixPage() {
 
     const windowSize = kpiRange === "day" ? 30 : kpiRange === "week" ? 13 : 12;
     return full.slice(-windowSize);
-  }, [benchmarkHistory, kpiRange, kpiMetric]);
+  }, [benchmarkHistory, kpiRange, kpiMetric, weightMode, normalizedProviderWeights]);
 
   const kpiTickInterval = useMemo(() => {
     if (kpiRange === "day") return 2; // show every 3rd day
@@ -1644,8 +1561,22 @@ export default function VisibilityMatrixPage() {
     return count;
   }, [selection, personas, stages, localQueryBank]);
 
+  const showWeightedArea = weightMode === "weighted";
+
+  // Handle retry from error banner - force re-fetch by reloading page
+  const handleRetryData = () => {
+    window.location.reload();
+  };
+
   return (
-    <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
+    <>
+      {/* Inline error banner - doesn't unmount the page */}
+      <InlineErrorBanner
+        error={matrixDataHook.error}
+        onRetry={handleRetryData}
+      />
+
+      <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}
       <div className="border-b border-[#e3dacb] bg-[var(--panel)]">
         <div className="max-w-6xl mx-auto px-6 py-5 space-y-4">
@@ -1653,9 +1584,20 @@ export default function VisibilityMatrixPage() {
           <div className="flex items-center justify-between">
             <ViewToggle />
             <div className="flex items-center gap-4 text-sm text-[var(--ink)]/60">
-              <span><span className="font-semibold text-[var(--ink)]">{personas.length * stages.length}</span> cells</span>
+              <span>
+                <span className="font-semibold text-[var(--ink)]">{personas.length * stages.length}</span> cells
+              </span>
               <span className="text-[var(--ink)]/30">·</span>
-              <span>Last run <span className="font-medium text-[var(--ink)]">{historicalRuns.length > 0 ? new Date(historicalRuns[historicalRuns.length - 1].timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}</span></span>
+              <span>
+                Last run{" "}
+                {matrixDataHook.status === "loading" && historicalRuns.length === 0 ? (
+                  <Skeleton className="h-4 w-16 inline-block align-middle bg-[#e3dacb]/50" />
+                ) : (
+                  <span className="font-medium text-[var(--ink)]">
+                    {historicalRuns.length > 0 ? new Date(historicalRuns[historicalRuns.length - 1].timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}
+                  </span>
+                )}
+              </span>
             </div>
           </div>
 
@@ -1695,6 +1637,31 @@ export default function VisibilityMatrixPage() {
                 <h2 className="text-sm font-black uppercase tracking-[0.2em] text-black">AI Performance History</h2>
                 <p className="text-[10px] text-black/40 font-medium uppercase tracking-wider mt-1">Cross-model benchmarks over time</p>
               </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Weighting</span>
+                <div className="flex rounded-full border border-[#e3dacb] overflow-hidden bg-white">
+                  <button
+                    onClick={() => setWeightMode("equal")}
+                    className={`px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${
+                      weightMode === "equal"
+                        ? "bg-[#1f3b2c] text-white"
+                        : "text-black/40 hover:text-black/60"
+                    }`}
+                  >
+                    Equal
+                  </button>
+                  <button
+                    onClick={() => setWeightMode("weighted")}
+                    className={`px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${
+                      weightMode === "weighted"
+                        ? "bg-[#1f3b2c] text-white"
+                        : "text-black/40 hover:text-black/60"
+                    }`}
+                  >
+                    Weighted
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Middle Row: Centered Metric Selector */}
@@ -1722,7 +1689,9 @@ export default function VisibilityMatrixPage() {
           </div>
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 h-[160px]">
-              {benchmarkHistory.length === 0 ? (
+              {matrixDataHook.status === "loading" && benchmarkHistory.length === 0 ? (
+                <Skeleton className="h-full w-full bg-[#e3dacb]/30" />
+              ) : benchmarkHistory.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-black/30 border border-dashed border-[#e3dacb] rounded-lg">
                   <svg className="w-10 h-10 mb-3 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -1756,16 +1725,44 @@ export default function VisibilityMatrixPage() {
                       <ReferenceLine x={selectedRunChartIndex} stroke="#1f3b2c" strokeWidth={2} strokeDasharray="4 4" />
                     )}
                     {enabledProviders.has("openai") && (
-                      <Area type="monotone" dataKey="openai" stroke="#1f3b2c" fill="#1f3b2c" fillOpacity={0.15} strokeWidth={2} />
+                      <Area
+                        type="monotone"
+                        dataKey="openai"
+                        stroke="#1f3b2c"
+                        fill={showWeightedArea ? "#1f3b2c" : "none"}
+                        fillOpacity={showWeightedArea ? 0.15 : 0}
+                        strokeWidth={2}
+                      />
                     )}
                     {enabledProviders.has("anthropic") && (
-                      <Area type="monotone" dataKey="anthropic" stroke="#b86f3a" fill="#b86f3a" fillOpacity={0.15} strokeWidth={2} />
+                      <Area
+                        type="monotone"
+                        dataKey="anthropic"
+                        stroke="#b86f3a"
+                        fill={showWeightedArea ? "#b86f3a" : "none"}
+                        fillOpacity={showWeightedArea ? 0.15 : 0}
+                        strokeWidth={2}
+                      />
                     )}
                     {enabledProviders.has("gemini") && (
-                      <Area type="monotone" dataKey="gemini" stroke="#6e7c5b" fill="#6e7c5b" fillOpacity={0.15} strokeWidth={2} />
+                      <Area
+                        type="monotone"
+                        dataKey="gemini"
+                        stroke="#6e7c5b"
+                        fill={showWeightedArea ? "#6e7c5b" : "none"}
+                        fillOpacity={showWeightedArea ? 0.15 : 0}
+                        strokeWidth={2}
+                      />
                     )}
                     {enabledProviders.has("xai") && (
-                      <Area type="monotone" dataKey="xai" stroke="#7c6b7c" fill="#7c6b7c" fillOpacity={0.15} strokeWidth={2} />
+                      <Area
+                        type="monotone"
+                        dataKey="xai"
+                        stroke="#7c6b7c"
+                        fill={showWeightedArea ? "#7c6b7c" : "none"}
+                        fillOpacity={showWeightedArea ? 0.15 : 0}
+                        strokeWidth={2}
+                      />
                     )}
                   </RechartsAreaChart>
                 </ChartContainer>
@@ -1853,7 +1850,21 @@ export default function VisibilityMatrixPage() {
         {/* Matrix Workspace */}
         <div className="mt-8 -mx-6">
           <div className="flex-1">
-            {(() => {
+            {/* Empty State - when ready but no data */}
+            {matrixDataHook.status === "ready" && historicalRuns.length === 0 && Object.values(matrixData).every(cell => cell.results.length === 0) ? (
+              <div className="border border-dashed border-[#e3dacb] bg-white px-8 py-16 text-center mx-6">
+                <div className="max-w-md mx-auto space-y-4">
+                  <div className="w-12 h-12 mx-auto rounded-full bg-[#f6f1e8] flex items-center justify-center">
+                    <svg className="w-6 h-6 text-black/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-black/80">No benchmark data yet</h3>
+                  <p className="text-sm text-black/50">Run a benchmark to populate the visibility matrix with AI response data across personas and journey stages.</p>
+                </div>
+              </div>
+            ) : (
+            (() => {
               // Transform effectiveMatrixData into a format SplitViewEditor can use for the 'summary' mode
               // effectiveMatrixData is either the current run or a selected historical run
               const cellResults: Record<string, Record<string, { discoveryRate: number; sentimentScore: number; topCompetitor?: string; winRate?: number; recommendationRate?: number; responses?: { provider: string; model: string; text: string; query: string; visibility: { score: number; mentioned: boolean; sentiment: string } }[]; citations?: Citation[] }>> = {};
@@ -1962,6 +1973,8 @@ export default function VisibilityMatrixPage() {
                   queryBank={effectiveQueryBank}
                   cellResults={cellResults}
                   brandDomain={BRAND_DOMAIN}
+                  showMissing={Boolean(selectedHistoricalRun)}
+                  loading={matrixDataHook.status === "loading" && Object.keys(effectiveMatrixData).length === 0}
                   onSelectCell={(persona, stage) => {
                     setSelectedCell({ persona, stage });
                     setSelection({ type: "cell", persona, stage });
@@ -2072,7 +2085,8 @@ export default function VisibilityMatrixPage() {
                   }}
                 />
               );
-            })()}
+            })()
+            )}
           </div>
         </div>
       </div>
@@ -2327,12 +2341,6 @@ export default function VisibilityMatrixPage() {
       {selectedCell && (() => {
         const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
         const cellData = effectiveMatrixData[cellKey];
-        console.log(`[DEBUG] InsightModal opening for ${cellKey}:`, {
-          cellExists: !!cellData,
-          status: cellData?.status,
-          resultsLength: cellData?.results?.length,
-          firstResultResponses: cellData?.results?.[0]?.responses?.length
-        });
         return (
         <InsightModal
           open={insightModalOpen}
@@ -2435,6 +2443,7 @@ export default function VisibilityMatrixPage() {
       {/* Global Progress Bar */}
       <GlobalProgressBar externalState={progressState} autoHideDelay={4000} />
     </div>
+    </>
   );
 }
 

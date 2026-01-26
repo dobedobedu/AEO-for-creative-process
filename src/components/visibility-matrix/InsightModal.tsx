@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { MessageSquare, AlertCircle, Send, Loader2, Bot, User, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { computeInsightMetrics, type CompareMetrics, type DecideMetrics } from "@/lib/matrix/insightMetrics";
+import type { ProviderKey } from "@/lib/matrix/weights";
 
 // Types - using string to support dynamic config
 type Persona = string;
@@ -165,103 +167,148 @@ export function InsightModal({
         "How do providers compare?",
     ];
 
+    // Compute metrics using the helper - MUST be before early return to maintain hooks order
+    const metrics = useMemo(() => computeInsightMetrics(stage, results), [stage, results]);
+
     if (!open) return null;
 
-    // Aggregate stats for the metrics section
-    const totalResponses = results.reduce((acc, r) => acc + (r.responses?.length || 0), 0);
-    const mentions = results.flatMap(r => r.responses || []).filter((resp: ResponseObject) => resp.visibility?.mentioned);
-    const reach = totalResponses > 0 ? (mentions.length / totalResponses) * 100 : 0;
+    // Render provider breakdown table - always show all providers
+    const PROVIDER_ORDER: ProviderKey[] = ["openai", "anthropic", "gemini", "xai"];
 
-    // Stage Specific Logic (same as before)
+    const renderProviderBreakdown = () => {
+        return (
+            <div className="mt-6 space-y-3">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-black/40">By Provider</h4>
+                <div className="border border-black/5 bg-white">
+                    {/* Header row */}
+                    <div className="grid grid-cols-[80px_1fr_1fr] gap-2 px-3 py-2 border-b border-black/5 bg-[#faf9f6]">
+                        <span className="text-[10px] font-semibold text-black/50">Provider</span>
+                        {stage === "explore" && (
+                            <>
+                                <span className="text-[10px] font-semibold text-black/50 text-right">Mention</span>
+                                <span className="text-[10px] font-semibold text-black/50 text-right">Top-3</span>
+                            </>
+                        )}
+                        {stage === "consider" && (
+                            <span className="text-[10px] font-semibold text-black/50 text-right col-span-2">Sentiment</span>
+                        )}
+                        {stage === "compare" && (
+                            <span className="text-[10px] font-semibold text-black/50 text-right col-span-2">Win Rate</span>
+                        )}
+                        {stage === "decide" && (
+                            <span className="text-[10px] font-semibold text-black/50 text-right col-span-2">Rec Rate</span>
+                        )}
+                    </div>
+                    {/* Provider rows - always show all providers */}
+                    {PROVIDER_ORDER.map((provider) => {
+                        const providerMetrics = metrics.byProvider[provider] as Record<string, number | null> | undefined;
+                        return (
+                            <div key={provider} className="grid grid-cols-[80px_1fr_1fr] gap-2 px-3 py-2 border-b border-black/5 last:border-b-0 hover:bg-[#faf9f6]/50">
+                                <span className="text-[10px] font-semibold capitalize text-black/70">{provider}</span>
+                                {stage === "explore" && (
+                                    <>
+                                        <span className="text-[10px] text-black/70 text-right">
+                                            {providerMetrics?.mentionRate !== null && providerMetrics?.mentionRate !== undefined ? `${Math.round(providerMetrics.mentionRate * 100)}%` : "N/A"}
+                                        </span>
+                                        <span className="text-[10px] text-black/70 text-right">
+                                            {providerMetrics?.top3Rate !== null && providerMetrics?.top3Rate !== undefined ? `${Math.round(providerMetrics.top3Rate * 100)}%` : "N/A"}
+                                        </span>
+                                    </>
+                                )}
+                                {stage === "consider" && (
+                                    <span className="text-[10px] text-black/70 text-right col-span-2">
+                                        {providerMetrics?.avgSentiment !== null && providerMetrics?.avgSentiment !== undefined ? providerMetrics.avgSentiment.toFixed(2) : "N/A"}
+                                    </span>
+                                )}
+                                {stage === "compare" && (
+                                    <span className="text-[10px] text-black/70 text-right col-span-2">
+                                        {providerMetrics?.winRate !== null && providerMetrics?.winRate !== undefined ? `${Math.round(providerMetrics.winRate * 100)}%` : "N/A"}
+                                    </span>
+                                )}
+                                {stage === "decide" && (
+                                    <span className="text-[10px] text-black/70 text-right col-span-2">
+                                        {providerMetrics?.recommendationRate !== null && providerMetrics?.recommendationRate !== undefined ? `${Math.round(providerMetrics.recommendationRate * 100)}%` : "N/A"}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    };
+
+    // Stage Specific Logic - show N/A when data is unavailable
     const renderExplore = () => {
-        const inTopThree = mentions.filter((m: ResponseObject) => m.visibility?.position === "1st" || m.visibility?.position === "2nd" || m.visibility?.position === "3rd").length;
-        const topThreeRate = mentions.length > 0 ? (inTopThree / mentions.length) * 100 : 0;
+        if (metrics.stage !== "explore") return null;
+        const mentionRate = metrics.overall.mentionRate !== null ? `${Math.round(metrics.overall.mentionRate * 100)}%` : "N/A";
+        const top3Rate = metrics.overall.top3Rate !== null ? `${Math.round(metrics.overall.top3Rate * 100)}%` : "N/A";
 
         return (
             <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[#faf9f6] p-6 border border-black/5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Mention Rate</span>
-                        <p className="text-4xl font-light text-black mt-2">{Math.round(reach)}%</p>
+                        <p className="text-4xl font-light text-black mt-2">{mentionRate}</p>
                     </div>
                     <div className="bg-[#faf9f6] p-6 border border-black/5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Top 3 Ranking</span>
-                        <p className="text-4xl font-light text-black mt-2">{Math.round(topThreeRate)}%</p>
+                        <p className="text-4xl font-light text-black mt-2">{top3Rate}</p>
                     </div>
                 </div>
+                {renderProviderBreakdown()}
             </div>
         );
     };
 
     const renderConsider = () => {
-        // Calculate sentiment breakdown
-        const allResponses = results.flatMap(r => r.responses || []);
-        const sentimentCounts = { positive: 0, neutral: 0, negative: 0 };
-        allResponses.forEach((resp: ResponseObject) => {
-            const sentiment = resp.visibility?.sentiment || "neutral";
-            if (sentiment in sentimentCounts) {
-                sentimentCounts[sentiment as keyof typeof sentimentCounts]++;
-            }
-        });
-        const totalSentimentResponses = allResponses.length;
-        const positiveRate = totalSentimentResponses > 0 ? (sentimentCounts.positive / totalSentimentResponses) * 100 : 0;
-        const neutralRate = totalSentimentResponses > 0 ? (sentimentCounts.neutral / totalSentimentResponses) * 100 : 0;
-        const negativeRate = totalSentimentResponses > 0 ? (sentimentCounts.negative / totalSentimentResponses) * 100 : 0;
+        if (metrics.stage !== "consider") return null;
+        const avgSentiment = metrics.overall.avgSentiment;
+        const sentimentDisplay = avgSentiment !== null ? avgSentiment.toFixed(2) : "N/A";
+        const sentimentLabel = avgSentiment !== null
+            ? (avgSentiment > 0.3 ? "Positive" : avgSentiment < -0.3 ? "Negative" : "Neutral")
+            : "";
 
         return (
             <div className="space-y-6">
                 {/* Sentiment Breakdown */}
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-[#dcf3dc] p-6 border border-black/5">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Positive</span>
-                        <p className="text-4xl font-light text-black mt-2">{Math.round(positiveRate)}%</p>
-                        <p className="text-[10px] text-black/40 mt-1">{sentimentCounts.positive} responses</p>
-                    </div>
-                    <div className="bg-[#faf9f6] p-6 border border-black/5">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Neutral</span>
-                        <p className="text-4xl font-light text-black mt-2">{Math.round(neutralRate)}%</p>
-                        <p className="text-[10px] text-black/40 mt-1">{sentimentCounts.neutral} responses</p>
-                    </div>
-                    <div className="bg-[#fce9e9] p-6 border border-black/5">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Negative</span>
-                        <p className="text-4xl font-light text-black mt-2">{Math.round(negativeRate)}%</p>
-                        <p className="text-[10px] text-black/40 mt-1">{sentimentCounts.negative} responses</p>
-                    </div>
+                <div className="bg-[#faf9f6] p-6 border border-black/5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Avg Sentiment</span>
+                    <p className="text-4xl font-light text-black mt-2">{sentimentDisplay} {sentimentLabel && <span className="text-lg text-black/50">({sentimentLabel})</span>}</p>
                 </div>
+                {renderProviderBreakdown()}
             </div>
         );
     };
 
     const renderCompare = () => {
-        const outcomes = mentions.filter((m: ResponseObject) => m.visibility?.comparisonOutcome === "favorable").length;
-        const winRate = mentions.length > 0 ? (outcomes / mentions.length) * 100 : 0;
+        if (metrics.stage !== "compare") return null;
+        const overall = metrics.overall as CompareMetrics;
+        const winRate = overall.winRate !== null ? `${Math.round(overall.winRate * 100)}%` : "N/A";
 
         return (
             <div className="space-y-6">
                 <div className="bg-[#dcf3dc] p-6 border border-black/5 text-center">
                     <span className="text-[10px] font-black uppercase tracking-widest text-black/40">Head-to-Head Win Rate</span>
-                    <p className="text-5xl font-light text-black tracking-tighter mt-1">{Math.round(winRate)}%</p>
+                    <p className="text-5xl font-light text-black tracking-tighter mt-1">{winRate}</p>
                 </div>
+                {renderProviderBreakdown()}
             </div>
         );
     };
 
     const renderDecide = () => {
-        const weakRecommendations = results.filter(r =>
-            r.responses?.some((resp: ResponseObject) => resp.visibility?.recommendationStrength === "none" || resp.visibility?.recommendationStrength === "weak")
-        );
+        if (metrics.stage !== "decide") return null;
+        const overall = metrics.overall as DecideMetrics;
+        const recRate = overall.recommendationRate !== null ? `${Math.round(overall.recommendationRate * 100)}%` : "N/A";
 
         return (
             <div className="space-y-6">
-                <div className="bg-[#fce9e9] p-6 border border-black/5">
-                    <div className="flex items-center gap-2 mb-1">
-                        <AlertCircle className="w-4 h-4 text-rose-500" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-rose-500">Unaddressed Objections</span>
-                    </div>
-                    <p className="text-xs font-serif text-black/80 leading-relaxed">
-                        The AI is struggling to resolve transactional hurdles for this persona.
-                    </p>
+                <div className="bg-[#faf9f6] p-6 border border-black/5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Recommendation Rate</span>
+                    <p className="text-4xl font-light text-black mt-2">{recRate}</p>
                 </div>
+                {renderProviderBreakdown()}
             </div>
         );
     };
@@ -328,7 +375,7 @@ export function InsightModal({
                             {stage === "compare" && renderCompare()}
                             {stage === "decide" && renderDecide()}
 
-                            {totalResponses === 0 && (
+                            {results.length === 0 && (
                                 <div className="py-24 text-center space-y-4 border border-dashed border-[#e3dacb]">
                                     <AlertCircle className="w-12 h-12 text-black/10 mx-auto" />
                                     <p className="font-serif italic text-black/30 text-lg">Benchmark data unavailable.</p>

@@ -44,9 +44,12 @@ interface SplitViewEditorProps {
     }>>;
     brandDomain?: string;
     onSelectCell: (persona: string, stage: string) => void;
+    showMissing?: boolean;
     // Bulk Actions
     onShowAll?: () => void;
     onGenerateAll?: (mode: ViewMode) => void;
+    // Loading state
+    loading?: boolean;
 }
 
 const STAGE_COLORS: Record<string, string> = {
@@ -65,7 +68,9 @@ export function SplitViewEditor({
     cellResults,
     brandDomain,
     onSelectCell,
+    showMissing = false,
     onGenerateAll,
+    loading = false,
 }: SplitViewEditorProps) {
     // Filter State
     const [roleFilter, setRoleFilter] = useState<string | null>(null);
@@ -77,12 +82,14 @@ export function SplitViewEditor({
         const cells: { persona: Persona, personaLabel: string, stage: Stage, stageLabel: string, intents: IntentNode[] }[] = [];
         personas.forEach(p => {
             stages.forEach(s => {
+                // Defensive access - queryBank might not have all persona/stage combinations
+                const intents = queryBank[p.id]?.[s.id]?.intents ?? [];
                 cells.push({
                     persona: p.id,
                     personaLabel: p.label,
                     stage: s.id,
                     stageLabel: s.label,
-                    intents: queryBank[p.id][s.id].intents,
+                    intents,
                 });
             });
         });
@@ -239,7 +246,8 @@ export function SplitViewEditor({
                         >
                             {filteredCells.map((cell) => {
                                 const cellResult = cellResults?.[cell.persona]?.[cell.stage];
-                                const isMissing = !cellResult;
+                                const hasResponses = (cellResult?.responses?.length || 0) > 0;
+                                const isMissing = showMissing && (!cellResult || !hasResponses);
                                 return (
                                     <GalleryTile
                                         key={`${cell.persona}-${cell.stage}`}
@@ -256,6 +264,7 @@ export function SplitViewEditor({
                                         onClick={() => onSelectCell(cell.persona, cell.stage)}
                                         accentColor={STAGE_COLORS[cell.stage] || "#1f3b2c"}
                                         isMissing={isMissing}
+                                        loading={loading}
                                     />
                                 );
                             })}

@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, Target, Bot, Link2 } from "lucide-react";
 import type { Citation } from "@/lib/parsers/types";
+import { getGalleryTileBgClass, getGalleryTileCardBaseClass, shouldShowGalleryTileFooter } from "@/lib/matrix/galleryTileStyle";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Types - using string to support dynamic config
 type Persona = string;
@@ -44,6 +46,7 @@ interface GalleryTileProps {
     onClick: () => void;
     accentColor?: string;
     isMissing?: boolean; // NEW: indicates no data for this cell (partial run)
+    loading?: boolean;   // Show skeleton placeholders while data loads
 }
 
 export function GalleryTile({
@@ -60,6 +63,7 @@ export function GalleryTile({
     onClick,
     accentColor = "#1f3b2c",
     isMissing = false,
+    loading = false,
 }: GalleryTileProps) {
     const hasContent = intents.length > 0;
     const queryCount = intents.reduce((acc, i) => acc + (i.generatedQueries?.length || 0), 0);
@@ -91,7 +95,9 @@ export function GalleryTile({
         return "bg-[#fce9e9] hover:bg-[#f9dada]"; // Red - weak
     };
 
-    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(results.discoveryRate || 0) : "bg-transparent hover:bg-white/40";
+    const baseBgClass = getGalleryTileBgClass(activeTab);
+    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(results.discoveryRate || 0) : baseBgClass;
+    const cardBaseClass = getGalleryTileCardBaseClass();
 
     return (
         <motion.div
@@ -101,7 +107,7 @@ export function GalleryTile({
             style={{ height: "320px" }}  // Fixed height for consistent rows
             onClick={onClick}
         >
-            <Card className={`h-full border-[#e3dacb] hover:border-black/20 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 shadow-none p-5 flex flex-col ${isMissing ? "bg-black/5" : heatmapClass}`}>
+            <Card className={`${cardBaseClass} ${isMissing ? "bg-black/5" : loading ? "bg-[#faf9f6]" : heatmapClass}`}>
                 {/* Missing Cell State */}
                 {isMissing ? (
                     <div className="h-full flex items-center justify-center">
@@ -110,10 +116,32 @@ export function GalleryTile({
                             <p className="text-[9px] text-black/20 mt-1">for this cell</p>
                         </div>
                     </div>
+                ) : loading ? (
+                    <>
+                        {/* Header: Always visible during loading */}
+                        <div className="flex items-start justify-between min-h-[56px]">
+                            <div className="flex flex-col gap-1">
+                                <span
+                                    className="text-[10px] font-bold uppercase tracking-[0.2em]"
+                                    style={{ color: accentColor }}
+                                >
+                                    {stageLabel}
+                                </span>
+                                <h3 className="text-xl font-light tracking-tight text-black/60">
+                                    {personaLabel}
+                                </h3>
+                            </div>
+                        </div>
+                        {/* Skeleton content area */}
+                        <div className="flex-1 flex flex-col items-center justify-center py-4">
+                            <Skeleton className="h-3 w-20 mb-3 bg-[#e3dacb]/50" />
+                            <Skeleton className="h-10 w-24 bg-[#e3dacb]/50" />
+                        </div>
+                    </>
                 ) : (
                     <>
                 {/* Header: Stage Identifier - Fixed height */}
-                <motion.div 
+                <motion.div
                     layout="position"
                     className="flex items-start justify-between min-h-[56px]"
                 >
@@ -257,22 +285,20 @@ export function GalleryTile({
                 </motion.div>
 
                 {/* Footer: Stats - Fixed height for consistency */}
-                <motion.div 
-                    layout="position"
-                    className={`pt-3 flex items-center justify-between min-h-[40px] ${activeTab === "summary" ? "" : "border-t border-black/5"}`}
-                >
-                    {activeTab !== "summary" && (
-                        <>
-                            <div />
-                            {results?.topCompetitor && (
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[9px] font-bold uppercase text-black/20">Rival</span>
-                                    <span className="text-[10px] font-bold text-black/40 truncate max-w-[80px]">{results.topCompetitor}</span>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </motion.div>
+                {shouldShowGalleryTileFooter(activeTab) && (
+                    <motion.div
+                        layout="position"
+                        className="pt-3 flex items-center justify-between min-h-[40px] border-t border-black/5"
+                    >
+                        <div />
+                        {results?.topCompetitor && (
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] font-bold uppercase text-black/20">Rival</span>
+                                <span className="text-[10px] font-bold text-black/40 truncate max-w-[80px]">{results.topCompetitor}</span>
+                            </div>
+                        )}
+                    </motion.div>
+                )}
                     </>
                 )}
             </Card>

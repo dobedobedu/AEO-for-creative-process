@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback } from "react";
-import { Search, Loader2 } from "lucide-react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { Search } from "lucide-react";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ViewToggle } from "@/components/ui/view-toggle";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Types for mentions history
 interface MentionDay {
@@ -89,33 +91,19 @@ interface KanbanData {
   mentionsHistory?: MentionDay[];
 }
 
-// Generate mock 30-day history for demo (will be replaced by API data)
-// Uses deterministic values to avoid SSR hydration mismatch
-function generateMockHistory(): MentionDay[] {
-  // Deterministic mention counts based on day index (no Math.random)
-  const mentionPattern = [145, 0, 0, 87, 0, 0, 0, 122, 0, 0, 56, 0, 0, 0, 98, 0, 0, 43, 0, 0, 0, 167, 0, 0, 78, 0, 0, 0, 134, 89];
-  const days: MentionDay[] = [];
-  const now = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    days.push({
-      date: date.toISOString().split("T")[0],
-      mentions: mentionPattern[29 - i] || 0,
-    });
-  }
-  return days;
-}
-
 // Mentions Graph Component
 function MentionsGraph({
   data,
   onHover,
-  hoveredIndex
+  hoveredIndex,
+  onSelect,
+  selectedIndex
 }: {
   data: MentionDay[];
   onHover: (index: number | null) => void;
   hoveredIndex: number | null;
+  onSelect?: (runId: string | null, index: number) => void;
+  selectedIndex?: number | null;
 }) {
   if (data.length === 0) {
     return (
@@ -159,24 +147,47 @@ function MentionsGraph({
             ? Math.max(Math.round((day.mentions / maxMentions) * maxDashes), 1)
             : 0;
           const isHovered = hoveredIndex === i;
+          const isSelected = selectedIndex === i;
           const isActive = day.mentions > 0;
+          const hasRunId = !!day.runId;
+
+          // Calculate opacity based on selection state
+          const getOpacity = () => {
+            if (selectedIndex !== null) {
+              return isSelected ? 1 : 0.25;
+            }
+            return isHovered ? 1 : 0.45;
+          };
+
+          // Allow clicking on bars with data, or clicking anywhere if something is selected (to deselect)
+          const isClickable = hasRunId || (selectedIndex !== null && selectedIndex !== undefined);
 
           return (
             <div
               key={day.date}
-              className="flex flex-1 cursor-pointer flex-col-reverse gap-[2px]"
+              className={`flex flex-1 flex-col-reverse gap-[2px] ${
+                isClickable ? "cursor-pointer" : "cursor-default"
+              }`}
               onMouseEnter={() => onHover(i)}
               onMouseLeave={() => onHover(null)}
+              onClick={() => {
+                if (hasRunId) {
+                  onSelect?.(day.runId!, i);
+                } else if (selectedIndex !== null && selectedIndex !== undefined) {
+                  // Clicking on empty bar when something is selected → deselect
+                  onSelect?.(null, selectedIndex);  // Pass same index to trigger toggle
+                }
+              }}
             >
               {/* Baseline dash (always visible) */}
               <div className={`h-[3px] w-full rounded-full ${isActive ? "bg-transparent" : "bg-[var(--ink)]/10"}`} />
-              {/* Stacked dashes */}
+              {/* Stacked dashes - animated opacity */}
               {Array.from({ length: dashCount }).map((_, dashIndex) => (
-                <div
+                <motion.div
                   key={dashIndex}
-                  className={`h-[3px] w-full rounded-full transition-colors duration-150 ${
-                    isHovered ? "bg-[var(--forest)]" : "bg-[var(--forest)]/45"
-                  }`}
+                  className="h-[3px] w-full rounded-full bg-[var(--forest)]"
+                  animate={{ opacity: getOpacity() }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
                 />
               ))}
             </div>
@@ -259,22 +270,46 @@ export default function VisibilityBoard() {
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [data, setData] = useState<KanbanData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [kanbanLoading, setKanbanLoading] = useState(false);  // Separate loading for Kanban only
   const [error, setError] = useState<string | null>(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState<number | null>(null);
   const [mentionsHistory, setMentionsHistory] = useState<MentionDay[]>([]);
-
-  // Generate mock history on client only to avoid SSR hydration issues
-  useEffect(() => {
-    setMentionsHistory(generateMockHistory());
-  }, []);
+  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
+  const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(null);
+  const [initialData, setInitialData] = useState<KanbanData | null>(null);  // Cache initial (latest) run data
+  const initialLoadDone = useRef(false);
 
   const handleBarHover = useCallback((index: number | null) => {
     setHoveredBarIndex(index);
   }, []);
 
-  // Fetch data from API
+  const handleBarSelect = useCallback((runId: string | null, index: number | null) => {
+    // Toggle behavior: if clicking the same bar, deselect
+    if (index === selectedBarIndex) {
+      setSelectedRunId(null);
+      setSelectedBarIndex(null);
+      // Restore cached initial data (latest run)
+      if (initialData) {
+        setData(initialData);
+      }
+    } else {
+      setSelectedRunId(runId);
+      setSelectedBarIndex(index);
+    }
+  }, [selectedBarIndex, initialData]);
+
+  const handleBackToNow = useCallback(() => {
+    setSelectedRunId(null);
+    setSelectedBarIndex(null);
+    // Restore cached initial data (no refetch needed)
+    if (initialData) {
+      setData(initialData);
+    }
+  }, [initialData]);
+
+  // Effect 1: Initial load (latest run + mentionsHistory)
   useEffect(() => {
-    async function fetchData() {
+    async function initialFetch() {
       try {
         setLoading(true);
         setError(null);
@@ -285,14 +320,49 @@ export default function VisibilityBoard() {
         }
         const json = await res.json();
         setData(json);
+        setInitialData(json);  // Cache initial (latest) run data
+        if (json.mentionsHistory) {
+          setMentionsHistory(json.mentionsHistory);
+        }
+        initialLoadDone.current = true;
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
     }
-    fetchData();
+    initialFetch();
   }, []);
+
+  // Effect 2: Refetch only Kanban when specific date selected (skip if null - use initial data)
+  useEffect(() => {
+    if (!initialLoadDone.current) return;  // Wait for initial load
+    if (selectedRunId === null) return;  // Initial data already restored in handleBackToNow
+
+    async function fetchKanban() {
+      setKanbanLoading(true);
+      try {
+        const res = await fetch(`/api/kanban?runId=${selectedRunId}`);
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to fetch data");
+        }
+        const json = await res.json();
+        // Keep mentionsHistory from initial load, only update lanes and run
+        setData(prev => ({
+          ...prev!,
+          lanes: json.lanes,
+          run: json.run,
+          runId: json.runId,
+        }));
+      } catch (err) {
+        console.error("Error fetching run data:", err);
+      } finally {
+        setKanbanLoading(false);
+      }
+    }
+    fetchKanban();
+  }, [selectedRunId]);
 
   // Flatten all items from lanes
   const allItems = useMemo(() => {
@@ -313,17 +383,6 @@ export default function VisibilityBoard() {
     // Filter by search query
     return items.filter((item) => matchesQuery(item, query));
   }, [activeCategory, allItems, query, data]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-[var(--forest)]" />
-          <span className="text-sm text-[var(--ink)]/60">Loading Kanban data...</span>
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -356,9 +415,38 @@ export default function VisibilityBoard() {
           <div className="flex items-center justify-between">
             <ViewToggle />
             <div className="flex items-center gap-4 text-sm text-[var(--ink)]/60">
-              <span><span className="font-semibold text-[var(--ink)]">{allItems.length}</span> entities</span>
-              <span className="text-[var(--ink)]/30">·</span>
-              <span>Last scan <span className="font-medium text-[var(--ink)]">{formatDate(data?.run?.completed_at || data?.run?.created_at)}</span></span>
+              {selectedRunId ? (
+                <>
+                  <span className="text-[var(--ink)]/60">
+                    Viewing: <span className="font-medium text-[var(--ink)]">{formatDate(data?.run?.completed_at || data?.run?.created_at)}</span>
+                  </span>
+                  <button
+                    onClick={handleBackToNow}
+                    className="rounded-full bg-[var(--coral)] px-3 py-1 text-xs font-medium text-white transition hover:bg-[var(--coral)]/90"
+                  >
+                    Back to Now
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>
+                    {loading ? (
+                      <Skeleton className="h-4 w-6 inline-block align-middle bg-[#e3dacb]/50" />
+                    ) : (
+                      <span className="font-semibold text-[var(--ink)]">{allItems.length}</span>
+                    )} entities
+                  </span>
+                  <span className="text-[var(--ink)]/30">·</span>
+                  <span>
+                    Last scan{" "}
+                    {loading ? (
+                      <Skeleton className="h-4 w-20 inline-block align-middle bg-[#e3dacb]/50" />
+                    ) : (
+                      <span className="font-medium text-[var(--ink)]">{formatDate(data?.run?.completed_at || data?.run?.created_at)}</span>
+                    )}
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
@@ -368,11 +456,27 @@ export default function VisibilityBoard() {
           </h1>
 
           {/* Mentions Graph */}
-          <MentionsGraph
-            data={data?.mentionsHistory || mentionsHistory}
-            onHover={handleBarHover}
-            hoveredIndex={hoveredBarIndex}
-          />
+          {loading ? (
+            <div className="rounded-xl bg-[#f0ebe2] p-4">
+              <div className="mb-2 flex items-center justify-between">
+                <Skeleton className="h-3 w-32 bg-[#e3dacb]/50" />
+              </div>
+              <Skeleton className="h-14 w-full bg-[#e3dacb]/40" />
+              <div className="mt-2 flex justify-between">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-2 w-10 bg-[#e3dacb]/30" />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <MentionsGraph
+              data={mentionsHistory}
+              onHover={handleBarHover}
+              hoveredIndex={hoveredBarIndex}
+              onSelect={handleBarSelect}
+              selectedIndex={selectedBarIndex}
+            />
+          )}
 
           {/* Search */}
           <div className="relative max-w-md">
@@ -408,10 +512,13 @@ export default function VisibilityBoard() {
             ))}
           </div>
 
-          <div className={`grid gap-0 rounded-b-2xl ${TAB_TONES[activeCategory].tint} lg:grid-cols-4`}>
+          <div
+            className={`grid gap-0 rounded-b-2xl ${TAB_TONES[activeCategory].tint} lg:grid-cols-4`}
+          >
             {COLUMNS.map((column, columnIndex) => {
               const tone = TONE_STYLES[column.tone];
               const cards = filteredItems.filter((item) => item.status === column.id);
+              const isLoading = loading || kanbanLoading;
               return (
                 <div
                   key={column.id}
@@ -424,29 +531,50 @@ export default function VisibilityBoard() {
                       <h3 className={`text-sm font-semibold ${tone.text}`}>{column.label}</h3>
                       <span className="text-[11px] text-[var(--ink)]/45">{column.description}</span>
                     </div>
-                    <span className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${tone.border} ${tone.bg} ${tone.text}`}>
-                      {cards.length}
-                    </span>
+                    {isLoading ? (
+                      <Skeleton className="h-6 w-8 rounded-full bg-[#e3dacb]/50" />
+                    ) : (
+                      <span className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${tone.border} ${tone.bg} ${tone.text}`}>
+                        {cards.length}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex flex-1 flex-col gap-3">
-                    {cards.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setSelectedItem(item)}
-                        className={`flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] px-4 py-3 text-left shadow-[0_10px_20px_rgba(31,59,44,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(31,59,44,0.12)] ${CARD_BG[item.status] || "bg-white"}`}
-                      >
-                        <span className="text-sm font-semibold text-[#4a4035]">{item.label}</span>
-                        <Badge className="bg-white/60 text-[#5c4d3d] font-medium">
-                          {formatPercent(item.mentionRate)}
-                        </Badge>
-                      </button>
-                    ))}
-                    {cards.length === 0 && (
-                      <div className="flex flex-1 items-center justify-center text-xs text-[var(--ink)]/40">
-                        No entities in this status
-                      </div>
+                    {isLoading ? (
+                      // Skeleton cards while loading
+                      <>
+                        {[1, 2, 3].map((i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-white/60 px-4 py-3"
+                          >
+                            <Skeleton className="h-4 w-24 bg-[#e3dacb]/50" />
+                            <Skeleton className="h-5 w-10 rounded-full bg-[#e3dacb]/50" />
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {cards.map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setSelectedItem(item)}
+                            className={`flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] px-4 py-3 text-left shadow-[0_10px_20px_rgba(31,59,44,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(31,59,44,0.12)] ${CARD_BG[item.status] || "bg-white"}`}
+                          >
+                            <span className="text-sm font-semibold text-[#4a4035]">{item.label}</span>
+                            <Badge className="bg-white/60 text-[#5c4d3d] font-medium">
+                              {formatPercent(item.mentionRate)}
+                            </Badge>
+                          </button>
+                        ))}
+                        {cards.length === 0 && (
+                          <div className="flex flex-1 items-center justify-center text-xs text-[var(--ink)]/40">
+                            No entities in this status
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

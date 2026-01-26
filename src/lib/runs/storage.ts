@@ -144,14 +144,24 @@ export async function loadRecentRuns(limit: number = 30): Promise<BenchmarkRun[]
   const runs: BenchmarkRun[] = [];
 
   for (const row of rows) {
-    try {
-      runs.push(BenchmarkRunSchema.parse(row.result_json));
-    } catch (err) {
-      console.error("[loadRecentRuns] Schema validation failed for run:",
-        row.result_json?.id,
-        err instanceof Error ? err.message : err
-      );
+    const result = BenchmarkRunSchema.safeParse(row.result_json);
+    if (result.success) {
+      runs.push(result.data);
+      continue;
     }
+
+    const issueSummary = result.error.issues
+      .map((issue) => {
+        const path = issue.path.length > 0 ? issue.path.join(".") : "root";
+        return `${path}: ${issue.message}`;
+      })
+      .join(", ");
+
+    console.error(
+      "[loadRecentRuns] Schema validation failed for run:",
+      row.result_json?.id,
+      issueSummary
+    );
   }
 
   return runs;

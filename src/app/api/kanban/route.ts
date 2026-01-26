@@ -103,11 +103,13 @@ export async function GET(request: Request): Promise<NextResponse> {
         );
 
         if (entityData) {
+          // Cap rate at 1.0 (100%) - an entity can be mentioned multiple times per response
+          const cappedRate = Math.min(entityData.mention_rate, 1.0);
           return {
             id: entityData.entity_term_id,
             label: entityData.canonical_name,
-            status: getStatusFromRate(entityData.mention_rate),
-            mentionRate: entityData.mention_rate,
+            status: getStatusFromRate(cappedRate),
+            mentionRate: cappedRate,
             mentionCount: entityData.mention_count,
             totalResponses: entityData.total_responses,
             avgSentiment: entityData.avg_sentiment,
@@ -152,6 +154,54 @@ export async function GET(request: Request): Promise<NextResponse> {
       WHERE id = ${runId}::uuid
     `;
 
+    // Get last 30 days of completed runs for mentionsHistory
+    const recentRuns = await sql`
+      SELECT
+        r.id::text as run_id,
+        r.completed_at,
+        r.created_at,
+        COALESCE((SELECT SUM(mention_count)::int FROM run_entity_summary WHERE run_id = r.id), 0) as mention_count
+      FROM runs r
+      WHERE r.status = 'completed'
+        AND r.completed_at IS NOT NULL
+        AND r.completed_at > NOW() - INTERVAL '30 days'
+      ORDER BY r.completed_at DESC
+      LIMIT 30
+    `;
+
+    // Build mentionsHistory with one entry per day (last 30 days)
+    const mentionsHistory: { date: string; mentions: number; runId?: string }[] = [];
+    const now = new Date();
+    const runsByDate = new Map<string, { runId: string; mentions: number }>();
+
+    // Map runs by date (use latest run per day)
+    for (const run of recentRuns) {
+      const completedAt = run.completed_at instanceof Date
+        ? run.completed_at.toISOString()
+        : String(run.completed_at);
+      const date = completedAt.split("T")[0];
+      if (!runsByDate.has(date)) {
+        runsByDate.set(date, {
+          runId: run.run_id as string,
+          mentions: run.mention_count as number
+        });
+      }
+    }
+
+    // Build 30-day array
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+      const runData = runsByDate.get(dateStr);
+
+      mentionsHistory.push({
+        date: dateStr,
+        mentions: runData?.mentions || 0,
+        runId: runData?.runId,
+      });
+    }
+
     // Cache for 30s, serve stale for 5min while revalidating
     return NextResponse.json(
       {
@@ -159,6 +209,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         run: runMeta[0] || null,
         lanes,
         thresholds: STATUS_THRESHOLDS,
+        mentionsHistory,
       },
       {
         headers: {
