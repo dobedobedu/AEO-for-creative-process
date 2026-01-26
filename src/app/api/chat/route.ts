@@ -46,41 +46,6 @@ export async function POST(req: Request) {
     const shouldUseFileSearch = useFileSearch && !hasCurrentData;
 
     if (shouldUseFileSearch) {
-      // PERSONA-REQUIRED RULE: File Search needs persona context for efficient queries
-      // Without persona context, queries are too broad and may timeout
-      const needsPersonaContext = context.scope === "global" && !context.persona;
-
-      if (needsPersonaContext) {
-        console.log("[Chat API] No persona selected for File Search - returning guidance message");
-        const partId = randomUUID();
-
-        const stream = createUIMessageStream({
-          execute: async ({ writer }) => {
-            writer.write({ type: "text-start", id: partId });
-            writer.write({
-              type: "text-delta",
-              id: partId,
-              delta: `## Select a Persona First
-
-I need specific context to search historical data efficiently.
-
-**How to get insights:**
-1. **Click a cell** in the matrix (e.g., Retiree × Compare) for focused analysis
-2. **Click a row header** to analyze one persona across all stages
-3. **Click a column header** to compare all personas in one stage
-
-Once you select a scope, I can analyze:
-- **Narrative Displacement**: Why competitors win the story
-- **Authority Gap**: Why AI trusts their sources over ours
-- **Content Action**: What to publish or update next`
-            });
-            writer.write({ type: "text-end", id: partId });
-          },
-        });
-
-        return createUIMessageStreamResponse({ stream });
-      }
-
       // Check if FileSearchStore has documents
       const hasDocs = await hasDocuments();
 
