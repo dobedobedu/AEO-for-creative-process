@@ -160,12 +160,50 @@ export function InsightModal({
         setInput("");
     };
 
-    const quickPrompts = [
-        "What patterns do you see?",
-        "Where are we strong?",
-        "Where are we exposed?",
-        "How do providers compare?",
-    ];
+    // Build insight-specific starters based on context
+    const insightStarters = useMemo(() => {
+        // Extract top competitor from results
+        const competitorCounts = new Map<string, number>();
+        for (const r of results) {
+            for (const resp of r.responses || []) {
+                for (const comp of resp.visibility?.competitorsMentioned || []) {
+                    competitorCounts.set(comp, (competitorCounts.get(comp) || 0) + 1);
+                }
+            }
+        }
+        const topCompetitor = [...competitorCounts.entries()]
+            .sort((a, b) => b[1] - a[1])[0]?.[0];
+
+        // Stage-specific prompts
+        const stagePrompts: Record<string, string[]> = {
+            explore: [
+                topCompetitor ? `Why is ${topCompetitor} appearing before us?` : "Why are competitors appearing before us?",
+                "What sources is AI citing instead of us?",
+                "What content would help us get discovered?",
+            ],
+            consider: [
+                "Why is our sentiment lower than competitors?",
+                "What concerns are AI models raising about us?",
+                "What content would improve how we're portrayed?",
+            ],
+            compare: [
+                topCompetitor ? `Why are we losing to ${topCompetitor} in comparisons?` : "Why are we losing head-to-head comparisons?",
+                "What attributes do competitors win on?",
+                "What content would help us win comparisons?",
+            ],
+            decide: [
+                "Why aren't we being recommended?",
+                topCompetitor ? `Why does AI recommend ${topCompetitor} over us?` : "Why does AI prefer competitors?",
+                "What would make AI recommend us more strongly?",
+            ],
+        };
+
+        return stagePrompts[stage] || [
+            "Why are we losing here?",
+            "What sources is AI citing instead of us?",
+            "What content should we create?",
+        ];
+    }, [stage, results]);
 
     // Compute metrics using the helper - MUST be before early return to maintain hooks order
     const metrics = useMemo(() => computeInsightMetrics(stage, results), [stage, results]);
@@ -401,7 +439,7 @@ export function InsightModal({
                         <div className="p-4 border-b border-black/5 bg-white flex justify-between items-center">
                             <h4 className="text-[10px] font-black uppercase tracking-widest text-black/20 flex items-center gap-2">
                                 <MessageSquare className="w-3 h-3" />
-                                Interactive Audit
+                                Insight Chat
                             </h4>
                         </div>
 
@@ -410,15 +448,19 @@ export function InsightModal({
                             {messages.length === 0 ? (
                                 <div className="text-center py-12">
                                     <p className="text-[11px] font-bold uppercase tracking-widest text-black/20 mb-6">
-                                        Ask me about this data
+                                        Get actionable insights
                                     </p>
-                                    <div className="flex flex-wrap gap-2 justify-center">
-                                        {quickPrompts.map((prompt) => (
+                                    <div className="flex flex-col gap-2">
+                                        {insightStarters.map((prompt) => (
                                             <button
                                                 key={prompt}
                                                 type="button"
-                                                onClick={() => setInput(prompt)}
-                                                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-white border border-[#e3dacb] text-black/60 hover:bg-[#efe6d9] hover:text-black transition-colors"
+                                                onClick={() => {
+                                                    setInput(prompt);
+                                                    // Auto-submit for better UX
+                                                    sendMessage({ parts: [{ type: "text", text: prompt }] });
+                                                }}
+                                                className="px-4 py-2.5 text-[11px] font-medium text-left bg-white border border-[#e3dacb] text-black/70 hover:bg-[#efe6d9] hover:text-black hover:border-black/20 transition-colors"
                                             >
                                                 {prompt}
                                             </button>

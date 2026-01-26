@@ -114,19 +114,38 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
     setInput("");
   };
 
-  const quickPrompts = [
-    "What patterns do you see?",
-    "Where are we strong?",
-    "Where are we exposed?",
-    "How do providers compare?",
-  ];
+  // Insight-focused prompts based on scope
+  const quickPrompts = useMemo(() => {
+    // For persona-specific contexts, show insight starters
+    if (context.persona || context.scope === "cell" || context.scope === "row") {
+      return [
+        "Why are we losing here?",
+        "What sources is AI citing instead of us?",
+        "What content should we create?",
+      ];
+    }
+    // For stage-specific contexts
+    if (context.stage || context.scope === "column") {
+      return [
+        "How do personas differ in this stage?",
+        "What patterns do you see?",
+        "Where are we exposed?",
+      ];
+    }
+    // Global fallback
+    return [
+      "What patterns do you see?",
+      "Where are we strong?",
+      "Where are we exposed?",
+    ];
+  }, [context.persona, context.stage, context.scope]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="h-[82vh] w-full max-w-[calc(100%-var(--dialog-gutter))] sm:max-w-[calc(100%-var(--dialog-gutter))] bg-[#fffaf2] border-[#e3dacb] flex flex-col p-0">
         <DialogHeader className="px-6 py-4 border-b border-[#e3dacb] flex-shrink-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-[#1e1b16]">Field Intelligence</DialogTitle>
+            <DialogTitle className="text-[#1e1b16]">Insight Chat</DialogTitle>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="bg-[#efe6d9] border-transparent text-[#1e1b16]/70">
                 {getScopeLabel(context)}
@@ -166,7 +185,7 @@ export function ChatPanel({ open, onOpenChange, context }: ChatPanelProps) {
           {messages.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-[#1e1b16]/50 mb-4">
-                Ask me about your AI visibility data
+                Get actionable insights for this persona
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {quickPrompts.map((prompt) => (

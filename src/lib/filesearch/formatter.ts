@@ -101,6 +101,14 @@ export function formatBenchmarkForUpload(
       ? allResponses.reduce((sum, r) => sum + r.visibility.score, 0) / allResponses.length
       : 0;
 
+  // Extract competitive intelligence for metadata
+  const allCompetitors = new Set<string>();
+  for (const r of allResponses) {
+    for (const comp of r.visibility.competitorsMentioned) {
+      allCompetitors.add(comp);
+    }
+  }
+
   // Build metadata for filtering
   const metadata: CustomMetadata[] = [
     { key: "persona", stringValue: persona },
@@ -112,6 +120,8 @@ export function formatBenchmarkForUpload(
     { key: "total_responses", numericValue: allResponses.length },
     { key: "mention_count", numericValue: mentionedCount },
     { key: "avg_score", numericValue: Math.round(avgScore * 100) },
+    // Competitive intelligence metadata
+    { key: "competitors_mentioned", stringValue: [...allCompetitors].slice(0, 10).join(", ") },
   ];
 
   const displayName = `${persona}_${stage}_${runDate}_${Date.now()}`;
@@ -306,6 +316,37 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
 
     const content = [...header, ...queryBlocks].join("\n");
 
+    // Extract competitive intelligence from cell results
+    const competitors = new Set<string>();
+    const winsOn = new Set<string>();
+    const losesOn = new Set<string>();
+
+    if (cell.results) {
+      for (const result of cell.results) {
+        if (!result.responses) continue;
+        for (const response of Object.values(result.responses)) {
+          const score = response.score as StageExtraction;
+          // Extract competitors from any stage
+          if ("competitors" in score) {
+            for (const comp of score.competitors) competitors.add(comp);
+          }
+          if ("comparedTo" in score) {
+            for (const comp of score.comparedTo) competitors.add(comp);
+          }
+          if ("alternativesOffered" in score) {
+            for (const alt of score.alternativesOffered) competitors.add(alt);
+          }
+          // Extract wins/losses from compare stage
+          if ("winsOn" in score) {
+            for (const attr of score.winsOn) winsOn.add(attr);
+          }
+          if ("losesOn" in score) {
+            for (const attr of score.losesOn) losesOn.add(attr);
+          }
+        }
+      }
+    }
+
     // Build metadata
     const metadata: CustomMetadata[] = [
       { key: "run_id", stringValue: run.id },
@@ -320,6 +361,17 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
       { key: "metrics_config_version", numericValue: run.metricsConfigVersion },
       { key: "query_count", numericValue: cell.queriesUsed.length },
     ];
+
+    // Add competitive intelligence to metadata
+    if (competitors.size > 0) {
+      metadata.push({ key: "competitors_mentioned", stringValue: [...competitors].slice(0, 10).join(", ") });
+    }
+    if (winsOn.size > 0) {
+      metadata.push({ key: "attributes_won", stringValue: [...winsOn].slice(0, 10).join(", ") });
+    }
+    if (losesOn.size > 0) {
+      metadata.push({ key: "attributes_lost", stringValue: [...losesOn].slice(0, 10).join(", ") });
+    }
 
     // Add stage-specific metric to metadata
     if (stage === "explore" && cell.metrics.discoveryRate !== undefined) {

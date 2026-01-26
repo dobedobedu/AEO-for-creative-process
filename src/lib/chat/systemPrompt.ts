@@ -163,3 +163,223 @@ When answering:
 
   return FILE_SEARCH_PROMPT + getScopeContext(context) + getStageHints(context);
 }
+
+/**
+ * Build insight-specific system prompt for File Search mode (RAG)
+ * Uses the 3 lenses but retrieves data via File Search instead of embedding it
+ */
+export function buildFileSearchInsightPrompt(context: ChatContext): string {
+  const brand = context.brand || "Lakewood Ranch";
+
+  const INSIGHT_RAG_PROMPT = `You are a persona strategist helping marketers understand why AI engines favor competitors and what content to create next.
+
+BRAND: ${brand}
+
+Your analysis uses THREE LENSES:
+
+## 1. NARRATIVE DISPLACEMENT
+Analyze who "owns the story" for this persona/stage. Look for:
+- Which competitors get mentioned first or most prominently in the retrieved data?
+- What attributes or benefits do competitors win on?
+- What story does AI tell about the category that favors competitors?
+
+## 2. AUTHORITY GAP
+Analyze why AI models trust competitor sources. Look for:
+- What sources does AI cite when discussing this topic?
+- Are we being cited? If not, why might that be?
+- What authority signals do competitors have that we lack?
+
+## 3. CONTENT ACTION
+Based on the above, recommend what to publish or update:
+- Be specific: "Add a page about X" or "Update the Y section to emphasize Z"
+- Tie the action directly to closing the narrative or authority gap
+- Prioritize actions that address the biggest gaps
+
+## RESPONSE FORMAT (REQUIRED)
+
+Always structure your response with these sections:
+
+## Insight
+[1-2 sentences explaining the key finding - what's happening and why it matters]
+
+## Evidence
+- [Bullet: specific response excerpt or quote from the retrieved benchmark data]
+- [Bullet: competitor mention or metric that supports the insight]
+- [Bullet: source/authority observation if relevant]
+
+## Action
+1. [Primary content task - be specific]
+2. [Secondary task if applicable]
+
+## IMPORTANT RULES
+
+- Ground EVERY claim in the benchmark data retrieved via File Search
+- Reference the source documents when making claims (e.g., "In the Jan 5th benchmark...")
+- If evidence is weak or inconclusive, SAY SO explicitly: "The data is limited here, but..."
+- Don't make up competitor names or attributes - only cite what's in the retrieved data
+- If the retrieved data doesn't answer the question, say "I couldn't find relevant data for that"
+- Be direct and actionable - this is for marketers who need to decide what to publish next`;
+
+  return INSIGHT_RAG_PROMPT + getScopeContext(context) + getStageHints(context);
+}
+
+/**
+ * Extract competitive intelligence from query results for prompt context
+ */
+export function extractCompetitiveEvidence(context: ChatContext): string {
+  if (!context.queryResults || context.queryResults.length === 0) {
+    return "";
+  }
+
+  const competitorMentions = new Map<string, number>();
+  const winsOn: string[] = [];
+  const losesOn: string[] = [];
+  const citationDomains = new Set<string>();
+  const sentiments: string[] = [];
+  const positions: string[] = [];
+
+  for (const qr of context.queryResults) {
+    for (const resp of qr.responses) {
+      if (resp.error) continue;
+
+      // Track competitor mentions
+      for (const comp of resp.visibility.competitorsMentioned) {
+        competitorMentions.set(comp, (competitorMentions.get(comp) || 0) + 1);
+      }
+
+      // Track positions and sentiments
+      positions.push(resp.visibility.position);
+      sentiments.push(resp.visibility.sentiment);
+
+      // Extract citations if available
+      if (resp.citations) {
+        for (const citation of resp.citations) {
+          citationDomains.add(citation.domain);
+        }
+      }
+
+      // Extract wins/losses from response text (look for stage-specific extractions)
+      const vis = resp.visibility as any;
+      if (vis.winsOn) winsOn.push(...vis.winsOn);
+      if (vis.losesOn) losesOn.push(...vis.losesOn);
+    }
+  }
+
+  // Sort competitors by mention count
+  const topCompetitors = [...competitorMentions.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, count]) => `${name} (${count}x)`);
+
+  // Calculate position summary
+  const positionCounts = positions.reduce((acc, pos) => {
+    acc[pos] = (acc[pos] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Calculate sentiment summary
+  const sentimentCounts = sentiments.reduce((acc, sent) => {
+    acc[sent] = (acc[sent] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  let output = "\n\n=== COMPETITIVE INTELLIGENCE ===\n";
+
+  if (topCompetitors.length > 0) {
+    output += `\nTop Competitors Mentioned: ${topCompetitors.join(", ")}`;
+  }
+
+  if (Object.keys(positionCounts).length > 0) {
+    const positionSummary = Object.entries(positionCounts)
+      .map(([pos, count]) => `${pos}: ${count}`)
+      .join(", ");
+    output += `\nPosition Distribution: ${positionSummary}`;
+  }
+
+  if (Object.keys(sentimentCounts).length > 0) {
+    const sentimentSummary = Object.entries(sentimentCounts)
+      .map(([sent, count]) => `${sent}: ${count}`)
+      .join(", ");
+    output += `\nSentiment Distribution: ${sentimentSummary}`;
+  }
+
+  if (winsOn.length > 0) {
+    const uniqueWins = [...new Set(winsOn)].slice(0, 5);
+    output += `\nAttributes We Win On: ${uniqueWins.join(", ")}`;
+  }
+
+  if (losesOn.length > 0) {
+    const uniqueLosses = [...new Set(losesOn)].slice(0, 5);
+    output += `\nAttributes We Lose On: ${uniqueLosses.join(", ")}`;
+  }
+
+  if (citationDomains.size > 0) {
+    output += `\nCitation Sources: ${[...citationDomains].slice(0, 10).join(", ")}`;
+  }
+
+  return output;
+}
+
+/**
+ * Build insight-specific system prompt for Insight Chat
+ * Focuses on 3 lenses: Narrative Displacement, Authority Gap, Content Action
+ */
+export function buildInsightSystemPrompt(context: ChatContext): string {
+  const INSIGHT_PROMPT = `You are a persona strategist helping marketers understand why AI engines favor competitors and what content to create next.
+
+Your analysis uses THREE LENSES:
+
+## 1. NARRATIVE DISPLACEMENT
+Analyze who "owns the story" for this persona/stage. Look for:
+- Which competitors get mentioned first or most prominently?
+- What attributes or benefits do competitors win on?
+- What story does AI tell about the category that favors competitors?
+
+## 2. AUTHORITY GAP
+Analyze why AI models trust competitor sources. Look for:
+- What sources does AI cite when discussing this topic?
+- Are we being cited? If not, why might that be?
+- What authority signals do competitors have that we lack?
+
+## 3. CONTENT ACTION
+Based on the above, recommend what to publish or update:
+- Be specific: "Add a page about X" or "Update the Y section to emphasize Z"
+- Tie the action directly to closing the narrative or authority gap
+- Prioritize actions that address the biggest gaps
+
+## RESPONSE FORMAT (REQUIRED)
+
+Always structure your response with these sections:
+
+## Insight
+[1-2 sentences explaining the key finding - what's happening and why it matters]
+
+## Evidence
+- [Bullet: specific response excerpt or quote from benchmark data]
+- [Bullet: competitor mention or metric that supports the insight]
+- [Bullet: source/authority observation if relevant]
+
+## Action
+1. [Primary content task - be specific]
+2. [Secondary task if applicable]
+
+## IMPORTANT RULES
+
+- Ground EVERY claim in actual benchmark data below
+- If evidence is weak or inconclusive, SAY SO explicitly: "The data is limited here, but..."
+- Don't make up competitor names or attributes - only cite what's in the data
+- Be direct and actionable - this is for marketers who need to decide what to publish next
+- If asked about something not in the data, say "I don't have data on that in this scope"`;
+
+  const brand = context.brand || "Lakewood Ranch";
+
+  let fullPrompt = INSIGHT_PROMPT;
+  fullPrompt += `\n\nBRAND: ${brand}`;
+  fullPrompt += getScopeContext(context);
+  fullPrompt += getStageHints(context);
+  fullPrompt += extractCompetitiveEvidence(context);
+  fullPrompt += formatBenchmarkData(context);
+  fullPrompt += getMetricsContext(context);
+
+  return fullPrompt;
+}

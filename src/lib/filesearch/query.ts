@@ -19,18 +19,17 @@ export interface Citation {
 
 /**
  * Build metadata filter from chat context
- * Only filters by brand (always available), persona/stage are optional scoping
+ * Filters by brand and persona/stage for scoping (no fixed time window)
  */
 function buildMetadataFilter(context: ChatContext): string | undefined {
   const filters: string[] = [];
 
-  // Only filter by brand - always included if set
-  // persona/stage are useful for scoping but shouldn't block results
+  // Filter by brand if set
   if (context.brand) {
     filters.push(`brand="${context.brand}"`);
   }
 
-  // Only add persona/stage filters for specific cell/row/column scopes
+  // Add persona/stage filters for specific cell/row/column scopes
   if (context.scope === "cell" && context.persona && context.stage) {
     filters.push(`persona="${context.persona}"`);
     filters.push(`stage="${context.stage}"`);

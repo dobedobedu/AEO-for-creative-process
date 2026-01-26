@@ -1,12 +1,15 @@
 import { streamText, convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, type UIMessage } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { buildSystemPrompt, buildFileSearchSystemPrompt } from "@/lib/chat/systemPrompt";
+import { buildSystemPrompt, buildFileSearchSystemPrompt, buildInsightSystemPrompt, buildFileSearchInsightPrompt } from "@/lib/chat/systemPrompt";
 import type { ChatContext } from "@/lib/chat/types";
 import { streamQueryWithFileSearch, hasDocuments } from "@/lib/filesearch";
 import { randomUUID } from "crypto";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+// Timeout for File Search streaming (50s with 10s buffer before Vercel's 60s limit)
+const FILE_SEARCH_TIMEOUT_MS = 50000;
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -43,12 +46,45 @@ export async function POST(req: Request) {
     const shouldUseFileSearch = useFileSearch && !hasCurrentData;
 
     if (shouldUseFileSearch) {
+      // PERSONA-REQUIRED RULE: File Search needs persona context for efficient queries
+      // Without persona context, queries are too broad and may timeout
+      const needsPersonaContext = context.scope === "global" && !context.persona;
+
+      if (needsPersonaContext) {
+        console.log("[Chat API] No persona selected for File Search - returning guidance message");
+        const partId = randomUUID();
+
+        const stream = createUIMessageStream({
+          execute: async ({ writer }) => {
+            writer.write({ type: "text-start", id: partId });
+            writer.write({
+              type: "text-delta",
+              id: partId,
+              delta: `## Select a Persona First
+
+I need specific context to search historical data efficiently.
+
+**How to get insights:**
+1. **Click a cell** in the matrix (e.g., Retiree × Compare) for focused analysis
+2. **Click a row header** to analyze one persona across all stages
+3. **Click a column header** to compare all personas in one stage
+
+Once you select a scope, I can analyze:
+- **Narrative Displacement**: Why competitors win the story
+- **Authority Gap**: Why AI trusts their sources over ours
+- **Content Action**: What to publish or update next`
+            });
+            writer.write({ type: "text-end", id: partId });
+          },
+        });
+
+        return createUIMessageStreamResponse({ stream });
+      }
+
       // Check if FileSearchStore has documents
       const hasDocs = await hasDocuments();
-      
-      if (hasDocs) {
-        console.log("[Chat API] Using File Search mode (streaming)");
 
+      if (hasDocs) {
         // Get the last user message
         const lastMessage = messages[messages.length - 1];
         const userText = lastMessage?.parts
@@ -56,7 +92,12 @@ export async function POST(req: Request) {
           .map((p) => p.text)
           .join(" ") ?? "";
 
-        const systemPrompt = buildFileSearchSystemPrompt(context);
+        // Use insight prompt for persona-scoped queries, basic prompt for global
+        const hasPersonaContext = context.persona || context.scope === "cell" || context.scope === "row";
+        console.log("[Chat API] Using File Search mode (streaming)", { hasPersonaContext });
+        const systemPrompt = hasPersonaContext
+          ? buildFileSearchInsightPrompt(context)
+          : buildFileSearchSystemPrompt(context);
         const partId = randomUUID();
 
         // Stream the File Search response using AI SDK UIMessage format
@@ -65,9 +106,31 @@ export async function POST(req: Request) {
             // Start the text part
             writer.write({ type: "text-start", id: partId });
 
-            // Stream text deltas
-            for await (const chunk of streamQueryWithFileSearch(userText, context, systemPrompt)) {
-              writer.write({ type: "text-delta", id: partId, delta: chunk });
+            // Use Promise.race for deterministic timeout that handles stalled streams
+            const timeoutPromise = new Promise<never>((_, reject) => {
+              setTimeout(() => reject(new Error("TIMEOUT")), FILE_SEARCH_TIMEOUT_MS);
+            });
+
+            try {
+              // Wrap the async iterator consumption in a promise
+              const streamPromise = (async () => {
+                for await (const chunk of streamQueryWithFileSearch(userText, context, systemPrompt)) {
+                  writer.write({ type: "text-delta", id: partId, delta: chunk });
+                }
+              })();
+
+              // Race between stream completion and timeout
+              await Promise.race([streamPromise, timeoutPromise]);
+            } catch (err) {
+              const isTimeout = err instanceof Error && err.message === "TIMEOUT";
+              console.error("[Chat API] File Search streaming error:", isTimeout ? "Timeout" : err);
+              writer.write({
+                type: "text-delta",
+                id: partId,
+                delta: isTimeout
+                  ? "\n\n---\n\n*The search took too long. Try clicking a specific cell or row first to narrow your query scope.*"
+                  : "\n\n---\n\n*An error occurred. Try selecting a specific cell or row to narrow the search scope.*"
+              });
             }
 
             // Mark text as done
@@ -82,8 +145,12 @@ export async function POST(req: Request) {
     }
 
     // Default: Context injection mode (current session data)
-    console.log("[Chat API] Using context injection mode");
-    const systemPrompt = buildSystemPrompt(context);
+    // Use insight prompt when we have persona context for actionable analysis
+    const hasPersonaContext = context.persona || context.scope === "cell" || context.scope === "row";
+    console.log("[Chat API] Using context injection mode", { hasPersonaContext });
+    const systemPrompt = hasPersonaContext
+      ? buildInsightSystemPrompt(context)
+      : buildSystemPrompt(context);
 
     // Convert UIMessage format to ModelMessage format for streamText
     const modelMessages = await convertToModelMessages(messages);
