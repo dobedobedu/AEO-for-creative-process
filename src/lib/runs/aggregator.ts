@@ -736,8 +736,8 @@ export async function computeEntitySummary(runId: string): Promise<void> {
         ELSE 0
       END) as avg_sentiment,
       jsonb_object_agg(
-        provider,
-        provider_count
+        prov.provider,
+        prov.provider_count
       ) as by_provider
     FROM run_entity_mentions m
     JOIN matrix_entity_terms t ON m.entity_term_id = t.id
