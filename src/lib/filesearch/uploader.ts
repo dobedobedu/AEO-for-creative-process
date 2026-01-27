@@ -37,10 +37,12 @@ async function uploadFormattedBenchmark(
         displayName: formatted.displayName,
         mimeType: "text/markdown",
         customMetadata: formatted.metadata,
+        // Smaller chunks = fewer tokens retrieved per semantic match = faster responses
+        // Recommended: 200 tokens (not default ~2000) per Gemini File Search best practices
         chunkingConfig: {
           whiteSpaceConfig: {
-            maxTokensPerChunk: 500,
-            maxOverlapTokens: 50,
+            maxTokensPerChunk: 200,
+            maxOverlapTokens: 20,
           },
         },
       },

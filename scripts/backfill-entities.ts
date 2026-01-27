@@ -3,6 +3,16 @@
  *
  * Run with: npx tsx scripts/backfill-entities.ts
  *
+ * Options:
+ *   --force              Force re-extraction even if mentions already exist (deletes existing data first)
+ *   --run-id=<uuid>      Process only the specified run ID
+ *   --summary-only       Only recompute summaries (skip mention extraction)
+ *
+ * Examples:
+ *   npx tsx scripts/backfill-entities.ts                                    # Process all runs without existing mentions
+ *   npx tsx scripts/backfill-entities.ts --force --run-id=20260126-...      # Force re-extract specific run
+ *   npx tsx scripts/backfill-entities.ts --summary-only --run-id=20260126-... # Recompute summary for specific run
+ *
  * This script processes historical benchmark runs to extract entity mentions
  * from LLM responses and populate the run_entity_mentions and run_entity_summary tables.
  *
@@ -238,21 +248,46 @@ async function computeSummary(runId: string): Promise<void> {
 }
 
 async function main() {
+  // Parse CLI arguments
+  const args = process.argv.slice(2);
+  const forceReprocess = args.includes("--force");
+  const summaryOnly = args.includes("--summary-only");
+  const targetRunId = args.find((a) => a.startsWith("--run-id="))?.split("=")[1];
+
   console.log("Starting entity backfill...\n");
+  if (forceReprocess) console.log("  Mode: FORCE (will delete existing data)\n");
+  if (summaryOnly) console.log("  Mode: SUMMARY-ONLY (skip mention extraction)\n");
+  if (targetRunId) console.log(`  Target run: ${targetRunId}\n`);
 
   // Load entity registry
   const registry = await loadEntityRegistry(sql);
   console.log(`Loaded ${registry.length} entity terms from registry\n`);
 
-  // Get all completed runs with result_json
-  const runs = await sql`
-    SELECT id::text, result_json
-    FROM runs
-    WHERE status = 'completed'
-      AND result_json IS NOT NULL
-      AND result_json->'cells' IS NOT NULL
-    ORDER BY created_at DESC
-  `;
+  // Build query for runs
+  let runs;
+  if (targetRunId) {
+    runs = await sql`
+      SELECT id::text, result_json
+      FROM runs
+      WHERE id = ${targetRunId}::uuid
+        AND status = 'completed'
+        AND result_json IS NOT NULL
+        AND result_json->'cells' IS NOT NULL
+    `;
+    if (runs.length === 0) {
+      console.error(`Run ${targetRunId} not found or not completed`);
+      process.exit(1);
+    }
+  } else {
+    runs = await sql`
+      SELECT id::text, result_json
+      FROM runs
+      WHERE status = 'completed'
+        AND result_json IS NOT NULL
+        AND result_json->'cells' IS NOT NULL
+      ORDER BY created_at DESC
+    `;
+  }
 
   console.log(`Found ${runs.length} completed runs to process\n`);
 
@@ -268,8 +303,29 @@ async function main() {
       SELECT COUNT(*)::int as count FROM run_entity_mentions
       WHERE run_id = ${run.id}::uuid
     `;
-    if (existing[0]?.count > 0) {
+
+    if (existing[0]?.count > 0 && !forceReprocess && !summaryOnly) {
       console.log(`  Already processed (${existing[0].count} mentions), skipping...`);
+      continue;
+    }
+
+    // Handle --force: delete existing data before re-extraction
+    if (forceReprocess && existing[0]?.count > 0) {
+      console.log(`  Deleting ${existing[0].count} existing mentions...`);
+      await sql`DELETE FROM run_entity_mentions WHERE run_id = ${run.id}::uuid`;
+      await sql`DELETE FROM run_entity_summary WHERE run_id = ${run.id}::uuid`;
+    }
+
+    // Handle --summary-only: skip mention extraction, just recompute summary
+    if (summaryOnly) {
+      if (existing[0]?.count > 0) {
+        console.log(`  Recomputing summary from ${existing[0].count} existing mentions...`);
+        await sql`DELETE FROM run_entity_summary WHERE run_id = ${run.id}::uuid`;
+        await computeSummary(run.id);
+        console.log(`  Summary recomputed`);
+      } else {
+        console.log(`  No mentions to summarize, skipping...`);
+      }
       continue;
     }
 
