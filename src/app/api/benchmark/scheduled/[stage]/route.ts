@@ -56,7 +56,7 @@ export async function GET(
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     console.error(`[cron/${stageParam}] Unauthorized - invalid or missing CRON_SECRET`);
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
