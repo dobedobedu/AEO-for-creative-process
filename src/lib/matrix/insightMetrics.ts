@@ -9,6 +9,7 @@ type Response = {
     sentiment?: "positive" | "neutral" | "negative";
     comparisonOutcome?: "favorable" | "unfavorable" | "neutral" | "none";
     recommendationStrength?: "strong" | "moderate" | "weak" | "none";
+    recommended?: boolean;
   };
 };
 
@@ -54,7 +55,7 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
 
     const overall: ExploreMetrics = {
       mentionRate: total > 0 ? mentioned / total : null,
-      top3Rate: total > 0 ? top3 / total : null,
+      top3Rate: mentioned > 0 ? top3 / mentioned : null,
     };
 
     const per: Partial<Record<ProviderKey, ExploreMetrics>> = {};
@@ -64,7 +65,7 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
       const top = arr.filter((r) => ["1st", "2nd", "3rd"].includes(r.visibility?.position || "")).length;
       per[p] = {
         mentionRate: t > 0 ? m / t : null,
-        top3Rate: t > 0 ? top / t : null,
+        top3Rate: m > 0 ? top / m : null,
       };
     }
 
@@ -72,8 +73,10 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
   }
 
   if (stage === "consider") {
-    const total = validResponses.length;
-    const sum = validResponses.reduce(
+    // Only consider responses where brand was mentioned
+    const mentioned = validResponses.filter((r) => r.visibility?.mentioned);
+    const total = mentioned.length;
+    const sum = mentioned.reduce(
       (acc, r) => acc + sentimentToScore(r.visibility?.sentiment),
       0
     );
@@ -84,8 +87,10 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
 
     const per: Partial<Record<ProviderKey, ConsiderMetrics>> = {};
     for (const [p, arr] of Object.entries(byProvider) as [ProviderKey, Response[]][]) {
-      const t = arr.length;
-      const s = arr.reduce(
+      // Only consider mentioned responses per provider
+      const mentionedArr = arr.filter((r) => r.visibility?.mentioned);
+      const t = mentionedArr.length;
+      const s = mentionedArr.reduce(
         (acc, r) => acc + sentimentToScore(r.visibility?.sentiment),
         0
       );
@@ -104,9 +109,13 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
     const wins = compared.filter(
       (r) => r.visibility?.comparisonOutcome === "favorable"
     ).length;
+    const ties = compared.filter(
+      (r) => r.visibility?.comparisonOutcome === "neutral"
+    ).length;
 
     const overall: CompareMetrics = {
-      winRate: total > 0 ? wins / total : null,
+      // Ties count as 0.5 wins
+      winRate: total > 0 ? (wins + 0.5 * ties) / total : null,
     };
 
     const per: Partial<Record<ProviderKey, CompareMetrics>> = {};
@@ -117,7 +126,9 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
       );
       const t = providerCompared.length;
       const w = providerCompared.filter((r) => r.visibility?.comparisonOutcome === "favorable").length;
-      per[p] = { winRate: t > 0 ? w / t : null };
+      const ti = providerCompared.filter((r) => r.visibility?.comparisonOutcome === "neutral").length;
+      // Ties count as 0.5 wins
+      per[p] = { winRate: t > 0 ? (w + 0.5 * ti) / t : null };
     }
 
     return { stage: "compare", overall, byProvider: per };
@@ -126,7 +137,7 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
   // Decide stage
   const total = validResponses.length;
   const recommended = validResponses.filter(
-    (r) => (r.visibility?.recommendationStrength || "none") !== "none"
+    (r) => r.visibility?.recommended === true
   ).length;
 
   const overall: DecideMetrics = {
@@ -137,7 +148,7 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
   for (const [p, arr] of Object.entries(byProvider) as [ProviderKey, Response[]][]) {
     const t = arr.length;
     const rec = arr.filter(
-      (r) => (r.visibility?.recommendationStrength || "none") !== "none"
+      (r) => r.visibility?.recommended === true
     ).length;
     per[p] = { recommendationRate: t > 0 ? rec / t : null };
   }

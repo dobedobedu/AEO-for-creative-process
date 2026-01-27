@@ -74,9 +74,7 @@ export function GalleryTile({
             case "explore":
                 return { label: "Discovery", value: `${Math.round((results.discoveryRate || 0) * 100)}%` };
             case "consider":
-                const s = results.sentimentScore;
-                const sentimentLabel = s > 0.3 ? "Positive" : s < -0.3 ? "Negative" : "Neutral";
-                return { label: "Sentiment", value: `${s.toFixed(1)} (${sentimentLabel})` };
+                return { label: "Sentiment", value: results.sentimentScore.toFixed(1) };
             case "compare":
                 return { label: "Win Rate", value: `${Math.round((results.winRate || 0) * 100)}%` };
             case "decide":
@@ -95,8 +93,20 @@ export function GalleryTile({
         return "bg-[#fce9e9] hover:bg-[#f9dada]"; // Red - weak
     };
 
+    // Get the appropriate metric for this stage (0-1 scale)
+    const getStageScore = () => {
+        if (!results) return 0;
+        switch (stage) {
+            case "explore": return results.discoveryRate || 0;
+            case "consider": return (results.sentimentScore + 1) / 2; // Normalize -1 to +1 → 0 to 1
+            case "compare": return results.winRate || 0;
+            case "decide": return results.recommendationRate || 0;
+            default: return 0;
+        }
+    };
+
     const baseBgClass = getGalleryTileBgClass(activeTab);
-    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(results.discoveryRate || 0) : baseBgClass;
+    const heatmapClass = activeTab === "summary" && results ? getHeatmapBg(getStageScore()) : baseBgClass;
     const cardBaseClass = getGalleryTileCardBaseClass();
 
     return (

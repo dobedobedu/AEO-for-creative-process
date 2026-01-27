@@ -21,6 +21,7 @@ interface QueryResult {
       competitorsMentioned: string[];
       comparisonOutcome?: string;
       recommendationStrength?: string;
+      recommended?: boolean;
     };
     latencyMs: number;
     error?: string;
@@ -104,33 +105,38 @@ export function StageMetricsSummary({ stage, results }: StageMetricsSummaryProps
       }
 
       case "consider": {
+        // Only consider responses where brand was mentioned
+        const mentionedResponses = allResponses.filter(r => r.visibility?.mentioned);
+        const mentionedCount = mentionedResponses.length;
+
         // Sentiment Score: average of -1 (negative), 0 (neutral), +1 (positive)
-        const sentimentValues: number[] = allResponses.map(r => {
+        const sentimentValues: number[] = mentionedResponses.map(r => {
           const s = r.visibility?.sentiment;
           return s === "positive" ? 1 : s === "negative" ? -1 : 0;
         });
-        const avgSentiment = sentimentValues.reduce((a, b) => a + b, 0) / sentimentValues.length;
+        const avgSentiment = mentionedCount > 0 ? sentimentValues.reduce((a, b) => a + b, 0) / mentionedCount : 0;
 
-        // Count positive and negative responses
-        const positiveCount = allResponses.filter(r => r.visibility?.sentiment === "positive").length;
-        const negativeCount = allResponses.filter(r => r.visibility?.sentiment === "negative").length;
+        // Count positive and negative responses (from mentioned only)
+        const positiveCount = mentionedResponses.filter(r => r.visibility?.sentiment === "positive").length;
+        const negativeCount = mentionedResponses.filter(r => r.visibility?.sentiment === "negative").length;
 
         return {
           type: "consider" as const,
           sentimentScore: avgSentiment,
           positiveCount,
           negativeCount,
-          totalResponses,
+          totalResponses: mentionedCount,
         };
       }
 
       case "compare": {
-        // Win Rate: % favorable outcomes
+        // Win Rate: % favorable outcomes (ties count as 0.5 wins)
         const comparisons = allResponses.filter(r =>
           r.visibility?.comparisonOutcome && r.visibility.comparisonOutcome !== "none"
         );
         const winCount = comparisons.filter(r => r.visibility?.comparisonOutcome === "favorable").length;
-        const winRate = comparisons.length > 0 ? (winCount / comparisons.length) * 100 : 0;
+        const tieCount = comparisons.filter(r => r.visibility?.comparisonOutcome === "neutral").length;
+        const winRate = comparisons.length > 0 ? ((winCount + 0.5 * tieCount) / comparisons.length) * 100 : 0;
 
         // Top competitors mentioned
         const competitorCounts: Record<string, number> = {};
@@ -153,15 +159,13 @@ export function StageMetricsSummary({ stage, results }: StageMetricsSummaryProps
       }
 
       case "decide": {
-        // Recommendation Rate: % with recommendation strength != none
+        // Recommendation Rate: % where brand was recommended (using boolean)
         const recommendations = allResponses.filter(r =>
-          r.visibility?.recommendationStrength &&
-          r.visibility.recommendationStrength !== "none" &&
-          r.visibility.recommendationStrength !== "not_mentioned"
+          r.visibility?.recommended === true
         );
-        const recRate = (recommendations.length / totalResponses) * 100;
+        const recRate = totalResponses > 0 ? (recommendations.length / totalResponses) * 100 : 0;
 
-        // Strong recommendation count
+        // Strong recommendation count (based on strength for granularity)
         const strongRecs = recommendations.filter(r =>
           r.visibility?.recommendationStrength === "strong" ||
           r.visibility?.recommendationStrength === "strongly_recommended"
@@ -234,10 +238,7 @@ export function StageMetricsSummary({ stage, results }: StageMetricsSummaryProps
             <MetricCard
               label="Sentiment"
               value={metrics.sentimentScore.toFixed(2)}
-              subValue={
-                metrics.sentimentScore > 0.3 ? "Positive" :
-                metrics.sentimentScore < -0.3 ? "Negative" : "Neutral"
-              }
+              subValue="Average sentiment score (-1 to +1)"
               color={
                 metrics.sentimentScore > 0.3 ? "green" :
                 metrics.sentimentScore < -0.3 ? "red" : "tan"

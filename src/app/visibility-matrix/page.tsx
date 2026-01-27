@@ -93,6 +93,7 @@ interface QueryResult {
       competitorsMentioned: string[];
       comparisonOutcome?: "favorable" | "unfavorable" | "neutral" | "none";
       recommendationStrength?: "strong" | "moderate" | "weak" | "none";
+      recommended?: boolean;
     };
     latencyMs: number;
     error?: string;
@@ -421,6 +422,9 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
             sourceType: c.sourceType,
           })) ?? [];
 
+          // Determine recommended (for Decide stage)
+          const recommended = "recommended" in extraction ? extraction.recommended === true : false;
+
           responses.push({
             provider: provider as Provider,
             model: resp.model,
@@ -435,6 +439,7 @@ function storedRunToMatrixData(run: StoredRun, personas: PersonaConfig[], stages
               competitorsMentioned: extractionCompetitors(extraction),
               comparisonOutcome,
               recommendationStrength,
+              recommended,
             },
             latencyMs: 0,
           });
@@ -788,6 +793,7 @@ export default function VisibilityMatrixPage() {
           competitorsMentioned: r.visibility.competitorsMentioned,
           recommendationStrength: (r.visibility.recommendationStrength || "none") as "strong" | "moderate" | "weak" | "none",
           comparisonOutcome: (r.visibility.comparisonOutcome || "none") as "favorable" | "unfavorable" | "neutral" | "none",
+          recommended: r.visibility.recommended,
         },
         error: r.error,
       })),

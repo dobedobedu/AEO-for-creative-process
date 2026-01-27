@@ -17,7 +17,7 @@ describe("computeInsightMetrics", () => {
     const metrics = computeInsightMetrics("explore", results);
     expect(metrics.stage).toBe("explore");
     expect(metrics.overall.mentionRate).toBeCloseTo(0.5); // 1/2 valid
-    expect(metrics.overall.top3Rate).toBeCloseTo(0.5); // 1/2 valid
+    expect(metrics.overall.top3Rate).toBeCloseTo(1); // 1/1 mentioned (top3 / mentioned)
     expect(metrics.byProvider.openai?.mentionRate).toBe(1);
     expect(metrics.byProvider.gemini?.mentionRate).toBe(0);
     expect(metrics.byProvider.anthropic).toBeUndefined(); // all errored
@@ -40,14 +40,14 @@ describe("computeInsightMetrics", () => {
     expect(metrics.overall.top3Rate).toBeCloseTo(0.75); // 3/4 in top 3
   });
 
-  it("computes Consider overall + per-provider sentiment scores", () => {
+  it("computes Consider overall + per-provider sentiment scores (mentioned only)", () => {
     const results = [
       {
         query: "q1",
         responses: [
-          { provider: "openai", visibility: { sentiment: "positive" } },
-          { provider: "gemini", visibility: { sentiment: "neutral" } },
-          { provider: "anthropic", visibility: { sentiment: "negative" } },
+          { provider: "openai", visibility: { mentioned: true, sentiment: "positive" } },
+          { provider: "gemini", visibility: { mentioned: true, sentiment: "neutral" } },
+          { provider: "anthropic", visibility: { mentioned: true, sentiment: "negative" } },
         ],
       },
     ];
@@ -59,7 +59,7 @@ describe("computeInsightMetrics", () => {
     expect(metrics.byProvider.anthropic?.avgSentiment).toBe(-1);
   });
 
-  it("computes Compare overall + per-provider win rates", () => {
+  it("computes Compare overall + per-provider win rates (ties = 0.5)", () => {
     const results = [
       {
         query: "q1",
@@ -73,19 +73,21 @@ describe("computeInsightMetrics", () => {
 
     const metrics = computeInsightMetrics("compare", results);
     expect(metrics.stage).toBe("compare");
-    expect(metrics.overall.winRate).toBeCloseTo(1 / 3);
+    // (1 win + 0.5 tie) / 3 = 0.5
+    expect(metrics.overall.winRate).toBeCloseTo(0.5);
     expect(metrics.byProvider.openai?.winRate).toBe(1);
     expect(metrics.byProvider.gemini?.winRate).toBe(0);
+    expect(metrics.byProvider.anthropic?.winRate).toBe(0.5); // tie = 0.5
   });
 
-  it("computes Decide overall + per-provider recommendation rates", () => {
+  it("computes Decide overall + per-provider recommendation rates (uses recommended boolean)", () => {
     const results = [
       {
         query: "q1",
         responses: [
-          { provider: "openai", visibility: { recommendationStrength: "strong" } },
-          { provider: "gemini", visibility: { recommendationStrength: "moderate" } },
-          { provider: "anthropic", visibility: { recommendationStrength: "none" } },
+          { provider: "openai", visibility: { recommended: true } },
+          { provider: "gemini", visibility: { recommended: true } },
+          { provider: "anthropic", visibility: { recommended: false } },
         ],
       },
     ];

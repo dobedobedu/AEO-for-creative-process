@@ -13,6 +13,7 @@ export interface VisibilityData {
   competitorsMentioned: string[];
   recommendationStrength: "strong" | "moderate" | "weak" | "none";
   comparisonOutcome: "favorable" | "unfavorable" | "neutral" | "none";
+  recommended?: boolean;
 }
 
 export interface CitationData {

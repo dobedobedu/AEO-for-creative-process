@@ -27,6 +27,7 @@ interface ResponseObject {
         competitorsMentioned: string[];
         comparisonOutcome?: string;
         recommendationStrength?: string;
+        recommended?: boolean;
     };
 }
 
