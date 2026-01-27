@@ -729,7 +729,7 @@ export async function computeEntitySummary(runId: string): Promise<void> {
     SELECT
       entity_term_id,
       t.category_id,
-      COUNT(*) as mention_count,
+      COUNT(DISTINCT (m.persona, m.stage_id, m.provider, m.query_index)) as mention_count,
       AVG(CASE
         WHEN sentiment = 'positive' THEN 1
         WHEN sentiment = 'negative' THEN -1
@@ -742,7 +742,7 @@ export async function computeEntitySummary(runId: string): Promise<void> {
     FROM run_entity_mentions m
     JOIN matrix_entity_terms t ON m.entity_term_id = t.id
     JOIN LATERAL (
-      SELECT provider, COUNT(*) as provider_count
+      SELECT provider, COUNT(DISTINCT (persona, stage_id, query_index)) as provider_count
       FROM run_entity_mentions
       WHERE run_id = m.run_id AND entity_term_id = m.entity_term_id
       GROUP BY provider

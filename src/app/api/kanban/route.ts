@@ -40,23 +40,50 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
-    // If no runId provided, get latest completed run
+    // If no runId provided, prefer latest run that has Kanban data (partial OK),
+    // then fall back to latest run with cells, then latest completed run.
     if (!runId) {
-      const latest = await sql`
-        SELECT id::text FROM runs
-        WHERE status = 'completed'
-        ORDER BY completed_at DESC NULLS LAST, created_at DESC
+      const latestWithSummary = await sql`
+        SELECT r.id::text FROM runs r
+        WHERE EXISTS (
+          SELECT 1 FROM run_entity_summary s WHERE s.run_id = r.id
+        )
+        ORDER BY COALESCE(r.completed_at, r.created_at) DESC
         LIMIT 1
       `;
 
-      if (latest.length === 0) {
-        return NextResponse.json(
-          { error: "No completed runs found" },
-          { status: 404 }
-        );
-      }
+      if (latestWithSummary.length > 0) {
+        runId = latestWithSummary[0].id;
+      } else {
+        const latestWithCells = await sql`
+          SELECT id::text FROM runs
+          WHERE result_json IS NOT NULL
+            AND jsonb_typeof(result_json->'cells') = 'object'
+            AND jsonb_object_length(result_json->'cells') > 0
+          ORDER BY created_at DESC
+          LIMIT 1
+        `;
 
-      runId = latest[0].id;
+        if (latestWithCells.length > 0) {
+          runId = latestWithCells[0].id;
+        } else {
+          const latest = await sql`
+            SELECT id::text FROM runs
+            WHERE status = 'completed'
+            ORDER BY completed_at DESC NULLS LAST, created_at DESC
+            LIMIT 1
+          `;
+
+          if (latest.length === 0) {
+            return NextResponse.json(
+              { error: "No completed runs found" },
+              { status: 404 }
+            );
+          }
+
+          runId = latest[0].id;
+        }
+      }
     }
 
     // Get entity summary grouped by category
