@@ -4,8 +4,9 @@ import type { XaiResponse } from "@/lib/providers/xai";
 import { extractDomain } from "@/lib/parsers/utils";
 
 function parseXaiResponse(response: XaiResponse): { text: string; citations: Citation[] } {
-  const message = response.choices?.[0]?.message as { content?: string } | undefined;
-  const text = typeof message?.content === "string" ? message.content : "";
+  // Agent Tools API returns output blocks with type and content
+  const textBlocks = response.output?.filter(b => b.type === "text") ?? [];
+  const text = textBlocks.map(b => b.content ?? "").join("\n").trim();
 
   const citations: Citation[] = [];
   if (Array.isArray(response.citations)) {

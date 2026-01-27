@@ -431,7 +431,9 @@ function extractAnthropicText(response: { content?: Array<Record<string, unknown
   return parts.join("\n").trim();
 }
 
-function extractXaiText(response: { choices?: Array<Record<string, unknown>> }): string {
-  const message = response.choices?.[0]?.message as { content?: string } | undefined;
-  return typeof message?.content === "string" ? message.content : "";
+// Agent Tools API returns output blocks with type and content
+// See: https://docs.x.ai/docs/guides/tools/search-tools
+function extractXaiText(response: { output?: Array<{ type: string; content?: string }> }): string {
+  const textBlocks = response.output?.filter(b => b.type === "text") ?? [];
+  return textBlocks.map(b => b.content ?? "").join("\n").trim();
 }
