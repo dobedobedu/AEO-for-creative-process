@@ -2,20 +2,24 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
+      "path": "/api/benchmark/batch-submit",
+      "schedule": "0 9 * * *"
+    },
+    {
       "path": "/api/benchmark/scheduled/explore",
-      "schedule": "0 2 * * *"
+      "schedule": "0 10 * * *"
     },
     {
       "path": "/api/benchmark/scheduled/consider",
-      "schedule": "5 2 * * *"
+      "schedule": "10 10 * * *"
     },
     {
       "path": "/api/benchmark/scheduled/compare",
-      "schedule": "10 2 * * *"
+      "schedule": "20 10 * * *"
     },
     {
       "path": "/api/benchmark/scheduled/decide",
-      "schedule": "15 2 * * *"
+      "schedule": "30 10 * * *"
     }
   ]
 }

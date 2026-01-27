@@ -6,6 +6,12 @@
  *
  * Each stage processes 4 personas for that stage only.
  * All stages for the same day write to the same run ID.
+ *
+ * Batch Processing (v2):
+ * - Checks for pre-submitted batch jobs from batch-submit cron
+ * - Uses batch results for Anthropic/Gemini when available
+ * - Falls back to sync calls for missing results (capped)
+ * - OpenAI/xAI always use sync calls (no batch API support)
  */
 
 import { runBenchmark } from "@/lib/benchmark";
@@ -38,6 +44,16 @@ import {
   getCellKey,
   emptyExtraction,
 } from "@/lib/runs/utils";
+import {
+  getBatchJob,
+  updateBatchJobStatus,
+  parseBatchCustomId,
+  type BatchJob,
+} from "@/lib/providers/batch";
+import {
+  getAnthropicBatchStatus,
+  getAnthropicBatchResults,
+} from "@/lib/providers/anthropic";
 
 // Each stage should complete in ~90s with parallelized providers
 // Set to 300s (5 min) for safety margin
@@ -86,6 +102,10 @@ export async function GET(
     // Use config personas instead of hardcoded ALL_PERSONAS
     const activePersonas = getActivePersonaIds(cfg);
 
+    // Get consistent run ID for today (all stages write to same run)
+    const runId = getTodayRunId();
+    console.log(`[cron/${stage}] Using run ID: ${runId}`);
+
     const intentLibrary = await loadIntentLibrary();
     console.log(`[cron/${stage}] Loaded ${intentLibrary.intents.length} intents from library`);
 
@@ -93,9 +113,74 @@ export async function GET(
     const runCells: Record<string, CellResult> = {};
     const errors: Array<{ persona: string; stage: string; error: string }> = [];
 
-    // Get consistent run ID for today (all stages write to same run)
-    const runId = getTodayRunId();
-    console.log(`[cron/${stage}] Using run ID: ${runId}`);
+    // Check for batch results from batch-submit cron
+    const batchResults = new Map<string, { text: string; citations: string[]; raw: unknown }>();
+    let batchStats = { anthropic: { available: 0, total: 0 }, gemini: { available: 0, total: 0 } };
+
+    try {
+      const [anthropicBatchJob, geminiBatchJob] = await Promise.all([
+        getBatchJob(runId, "anthropic", "search"),
+        getBatchJob(runId, "gemini", "search"),
+      ]);
+
+      // Process Anthropic batch results
+      if (anthropicBatchJob) {
+        console.log(`[cron/${stage}] Found Anthropic batch job: ${anthropicBatchJob.batchId} (status: ${anthropicBatchJob.status})`);
+        batchStats.anthropic.total = anthropicBatchJob.requestCount ?? 0;
+
+        if (anthropicBatchJob.status === "pending" || anthropicBatchJob.status === "in_progress") {
+          // Check current status
+          const status = await getAnthropicBatchStatus(anthropicBatchJob.batchId);
+          console.log(`[cron/${stage}] Anthropic batch status: ${status.status} (${status.counts.succeeded}/${status.counts.processing + status.counts.succeeded} succeeded)`);
+
+          if (status.status === "completed") {
+            await updateBatchJobStatus(anthropicBatchJob.id, "completed", { outputFileId: status.resultsUrl ?? undefined });
+            anthropicBatchJob.status = "completed";
+          } else if (status.status === "failed" || status.status === "expired") {
+            await updateBatchJobStatus(anthropicBatchJob.id, status.status);
+            anthropicBatchJob.status = status.status;
+          }
+        }
+
+        if (anthropicBatchJob.status === "completed") {
+          // Download and parse results
+          const results = await getAnthropicBatchResults(anthropicBatchJob.batchId);
+          console.log(`[cron/${stage}] Downloaded ${results.length} Anthropic batch results`);
+
+          for (const result of results) {
+            if (result.success && result.text) {
+              // Parse customId to get the key format we use in runner
+              const parsed = parseBatchCustomId(result.customId);
+              if (parsed && parsed.stage === stage) {
+                // Store with a key that matches how runner looks it up
+                const key = `anthropic_${parsed.intentIdPrefix}_${parsed.queryIndex}`;
+                batchResults.set(key, {
+                  text: result.text,
+                  citations: result.citations ?? [],
+                  raw: result.raw,
+                });
+                batchStats.anthropic.available++;
+              }
+            }
+          }
+        }
+      }
+
+      // Process Gemini batch results (already synchronous, results stored in DB or cached)
+      if (geminiBatchJob) {
+        console.log(`[cron/${stage}] Found Gemini batch job: ${geminiBatchJob.batchId} (status: ${geminiBatchJob.status})`);
+        batchStats.gemini.total = geminiBatchJob.requestCount ?? 0;
+
+        // Gemini batchGenerateContent is synchronous, so if the job exists and succeeded,
+        // we need to re-run the batch (results aren't persisted separately)
+        // For now, we'll let the sync fallback handle Gemini
+        // Future: Store Gemini batch results in a separate table
+      }
+
+      console.log(`[cron/${stage}] Batch results: Anthropic ${batchStats.anthropic.available}/${batchStats.anthropic.total}, Gemini ${batchStats.gemini.available}/${batchStats.gemini.total}`);
+    } catch (batchErr) {
+      console.error(`[cron/${stage}] Batch result fetch failed (will use sync):`, batchErr instanceof Error ? batchErr.message : batchErr);
+    }
 
     // Metadata for saving cells
     const runMetadata = {
@@ -156,6 +241,9 @@ export async function GET(
           brandAliases: DEFAULT_ALIASES,
           providers: DEFAULT_PROVIDERS,
           concurrency: 4, // Increased from 2 to 4 for more throughput
+          triggerMode: "cron",
+          runId,
+          batchResults: batchResults.size > 0 ? batchResults : undefined,
         });
 
         // Calculate stage-specific metrics

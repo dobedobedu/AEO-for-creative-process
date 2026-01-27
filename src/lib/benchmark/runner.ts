@@ -35,6 +35,13 @@ export interface ProviderConfig {
   model: string;
 }
 
+/**
+ * Trigger mode determines how provider calls are made:
+ * - 'ui': Always use synchronous API calls (immediate feedback)
+ * - 'cron': Use batch results when available, fallback to sync
+ */
+export type TriggerMode = "ui" | "cron";
+
 export interface BenchmarkConfig {
   stage: string; // Custom stage ID (supports dynamic config)
   coreStage?: "explore" | "consider" | "compare" | "decide"; // For scoring - defaults to stage if it's a core stage
@@ -47,6 +54,20 @@ export interface BenchmarkConfig {
   brandAliases?: string[];
   providers: ProviderConfig[];
   concurrency?: number;
+  /**
+   * Trigger mode for batch processing optimization
+   * - 'ui': Always use synchronous API calls (default, for immediate user feedback)
+   * - 'cron': Use batch results when available for Anthropic/Gemini
+   */
+  triggerMode?: TriggerMode;
+  /**
+   * Run ID for batch result lookup (required for cron mode)
+   */
+  runId?: string;
+  /**
+   * Pre-fetched batch results keyed by customId (for cron mode)
+   */
+  batchResults?: Map<string, { text: string; citations: string[]; raw: unknown }>;
 }
 
 export interface ProviderResponse {
@@ -214,7 +235,17 @@ function extractDomainFromUrl(url: string): string {
 }
 
 export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
-  const { stage, coreStage, intents, brand, brandAliases = [], providers, concurrency = 2 } = config;
+  const {
+    stage,
+    coreStage,
+    intents,
+    brand,
+    brandAliases = [],
+    providers,
+    concurrency = 2,
+    triggerMode = "ui",
+    batchResults,
+  } = config;
   const startTime = Date.now();
 
   // Determine scoring stage: use explicit coreStage, or stage if it's a valid core stage
@@ -242,15 +273,42 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
 
   for (const chunk of chunks) {
     const chunkResults = await Promise.all(
-      chunk.map(async ({ query, intentId }) => {
+      chunk.map(async ({ query, intentId }, queryIdx) => {
         // Run all providers in PARALLEL for this query (10s instead of 40s)
         const responses = await Promise.all(
           providers.map(async (providerConfig) => {
-            const response = await runSingleQuery({
-              query,
-              provider: providerConfig.provider,
-              model: providerConfig.model,
-            });
+            let response: ProviderResponse;
+
+            // Check for batch results in cron mode for Anthropic/Gemini
+            const isBatchProvider = providerConfig.provider === "anthropic" || providerConfig.provider === "gemini";
+            const batchKey = `${providerConfig.provider}_${intentId}_${queryIdx}`;
+            const batchResult = triggerMode === "cron" && isBatchProvider && batchResults?.get(batchKey);
+
+            if (batchResult) {
+              // Use pre-fetched batch result
+              const citations: Citation[] = (batchResult.citations ?? []).map((url: string) => ({
+                url,
+                domain: extractDomainFromUrl(url),
+                sourceType: "url_citation" as const,
+              }));
+
+              response = {
+                provider: providerConfig.provider,
+                model: providerConfig.model,
+                text: batchResult.text,
+                citations,
+                visibility: DEFAULT_VISIBILITY_SCORE,
+                latencyMs: 0, // Instant from batch
+                raw: batchResult.raw,
+              };
+            } else {
+              // Use synchronous API call
+              response = await runSingleQuery({
+                query,
+                provider: providerConfig.provider,
+                model: providerConfig.model,
+              });
+            }
 
             if (!response.error) {
               const extraction = await extractStageMetrics({
