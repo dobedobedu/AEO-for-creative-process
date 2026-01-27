@@ -428,9 +428,9 @@ function reconstructCells(queries: ExtractedQuery[]): Record<string, CellResult>
 function getModelForProvider(provider: string): string {
   const models: Record<string, string> = {
     openai: "gpt-5.2",
-    anthropic: "claude-haiku-4.5",
-    gemini: "gemini-3-flash",
-    xai: "grok-4",
+    anthropic: "claude-haiku-4-5",
+    gemini: "gemini-3-flash-preview",
+    xai: "grok-4-1-fast-reasoning",
   };
   return models[provider] || provider;
 }

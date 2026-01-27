@@ -31,7 +31,7 @@ export function getDefaultSearchModels(): SearchModelConfig[] {
   const anthropicModel = envValue("ANTHROPIC_MODEL") ?? "claude-haiku-4-5";
   if (anthropicModel) models.push({ provider: "anthropic", model: anthropicModel });
 
-  const xaiModel = envValue("XAI_MODEL") ?? "grok-4-latest";
+  const xaiModel = envValue("XAI_MODEL") ?? "grok-4-1-fast-reasoning";
   if (xaiModel) models.push({ provider: "xai", model: xaiModel });
 
   return models;

@@ -73,7 +73,7 @@ export const DEFAULT_PROVIDERS: Array<{ provider: Provider; model: string }> = [
     { provider: "openai", model: "gpt-5.2" },
     { provider: "anthropic", model: "claude-haiku-4-5" },
     { provider: "gemini", model: "gemini-3-flash-preview" },
-    { provider: "xai", model: "grok-4-latest" },
+    { provider: "xai", model: "grok-4-1-fast-reasoning" },
 ];
 
 /**

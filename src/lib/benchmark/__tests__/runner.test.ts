@@ -57,11 +57,11 @@ describe("runSingleQuery", () => {
     const result = await runSingleQuery({
       query: "best florida communities",
       provider: "openai",
-      model: "gpt-4o-search-preview",
+      model: "gpt-5.2",
     });
 
     expect(callOpenAIWebSearch).toHaveBeenCalledWith({
-      model: "gpt-4o-search-preview",
+      model: "gpt-5.2",
       query: "best florida communities",
     });
     expect(result.provider).toBe("openai");
@@ -79,7 +79,7 @@ describe("runSingleQuery", () => {
     const result = await runSingleQuery({
       query: "florida retirement communities",
       provider: "anthropic",
-      model: "claude-sonnet-4-20250514",
+      model: "claude-haiku-4-5",
     });
 
     expect(callAnthropicWebSearch).toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe("runSingleQuery", () => {
     const result = await runSingleQuery({
       query: "best schools florida",
       provider: "xai",
-      model: "grok-3",
+      model: "grok-4-1-fast-reasoning",
     });
 
     expect(callXaiSearch).toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe("runSingleQuery", () => {
     const result = await runSingleQuery({
       query: "test query",
       provider: "openai",
-      model: "gpt-4o",
+      model: "gpt-5.2",
     });
 
     expect(result.error).toBe("API rate limit");
@@ -143,10 +143,10 @@ describe("runBenchmark", () => {
       intents: [{ id: "intent-1", queries: ["test query 1"] }],
       brand: "Lakewood Ranch",
       providers: [
-        { provider: "openai", model: "gpt-4o" },
-        { provider: "anthropic", model: "claude-sonnet-4-20250514" },
-        { provider: "gemini", model: "gemini-2.0-flash" },
-        { provider: "xai", model: "grok-3" },
+        { provider: "openai", model: "gpt-5.2" },
+        { provider: "anthropic", model: "claude-haiku-4-5" },
+        { provider: "gemini", model: "gemini-3-flash-preview" },
+        { provider: "xai", model: "grok-4-1-fast-reasoning" },
       ],
     };
 
@@ -183,8 +183,8 @@ describe("runBenchmark", () => {
       intents: [{ id: "intent-1", queries: ["best retirement community"] }],
       brand: "Lakewood Ranch",
       providers: [
-        { provider: "openai", model: "gpt-4o" },
-        { provider: "anthropic", model: "claude-sonnet-4-20250514" },
+        { provider: "openai", model: "gpt-5.2" },
+        { provider: "anthropic", model: "claude-haiku-4-5" },
       ],
     };
 
@@ -237,7 +237,7 @@ describe("runBenchmark", () => {
       stage: "explore",
       intents: [{ id: "intent-1", queries: ["q1", "q2", "q3", "q4"] }],
       brand: "Test",
-      providers: [{ provider: "openai", model: "gpt-4o" }],
+      providers: [{ provider: "openai", model: "gpt-5.2" }],
       concurrency: 2,
     };
 

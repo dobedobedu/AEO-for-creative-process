@@ -26,10 +26,10 @@ async function main() {
       brand,
       brandAliases: ["LWR"],
       providers: [
-        { provider: "openai", model: "gpt-4o" },
-        { provider: "anthropic", model: "claude-sonnet-4-20250514" },
-        { provider: "gemini", model: "gemini-2.0-flash" },
-        { provider: "xai", model: "grok-3" },
+        { provider: "openai", model: "gpt-5.2" },
+        { provider: "anthropic", model: "claude-haiku-4-5" },
+        { provider: "gemini", model: "gemini-3-flash-preview" },
+        { provider: "xai", model: "grok-4-1-fast-reasoning" },
       ],
       concurrency: 2,
     });
