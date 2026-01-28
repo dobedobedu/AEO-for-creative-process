@@ -102,7 +102,7 @@ export async function createIntent(
  */
 export async function updateIntent(
   intentId: string,
-  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries">>,
+  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries" | "generatedQueriesAt">>,
   actorUserId?: string
 ): Promise<IntentLibrary> {
   const existing = await fetchIntentById(intentId);
@@ -152,8 +152,10 @@ export async function updateIntent(
     });
   }
 
-  // No changes to persist
-  if (changes.length === 0) {
+  // generatedQueriesAt is meta; update without history entry
+
+  // No changes to persist (but still might have generatedQueriesAt)
+  if (changes.length === 0 && updates.generatedQueriesAt === undefined) {
     return loadIntentLibrary();
   }
 

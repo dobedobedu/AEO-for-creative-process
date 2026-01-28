@@ -74,11 +74,12 @@ export async function createBatchJob(params: {
   batchId: string;
   requestCount: number;
   inputFileId?: string;
+  metadata?: Record<string, unknown>;
 }): Promise<BatchJob> {
   await ensureReady();
 
   const rows = await sql`
-    INSERT INTO batch_jobs (run_id, provider, batch_type, batch_id, status, request_count, input_file_id)
+    INSERT INTO batch_jobs (run_id, provider, batch_type, batch_id, status, request_count, input_file_id, metadata)
     VALUES (
       ${params.runId}::text::uuid,
       ${params.provider},
@@ -86,7 +87,8 @@ export async function createBatchJob(params: {
       ${params.batchId},
       'pending',
       ${params.requestCount},
-      ${params.inputFileId ?? null}
+      ${params.inputFileId ?? null},
+      ${params.metadata ? JSON.stringify(params.metadata) : null}::jsonb
     )
     RETURNING
       id::text as id,
@@ -285,4 +287,20 @@ export async function cleanupOldBatchJobs(): Promise<number> {
   `;
 
   return result.length;
+}
+
+/**
+ * Get batch job metadata (for intentId mapping retrieval)
+ */
+export async function getBatchJobMetadata(
+  jobId: string
+): Promise<Record<string, unknown> | null> {
+  await ensureReady();
+
+  const rows = await sql`
+    SELECT metadata FROM batch_jobs WHERE id = ${jobId}::text::uuid
+  `;
+
+  if (rows.length === 0 || !rows[0].metadata) return null;
+  return rows[0].metadata as Record<string, unknown>;
 }
