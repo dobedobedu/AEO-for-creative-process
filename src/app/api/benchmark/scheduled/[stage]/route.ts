@@ -109,6 +109,35 @@ export async function GET(
     const intentLibrary = await loadIntentLibrary();
     console.log(`[cron/${stage}] Loaded ${intentLibrary.intents.length} intents from library`);
 
+    // Guard: queries must be regenerated today before cron runs
+    // If any active intent for this stage/persona lacks fresh queries, abort early.
+    const REQUIRED_QUERY_COUNT = 3;
+    const todayUtc = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+    const staleIntents = intentLibrary.intents.filter((intent) => {
+      if (!intent.active) return false;
+      if (intent.stage !== stage) return false;
+      if (!activePersonas.includes(intent.persona)) return false;
+
+      const hasEnough = (intent.generatedQueries?.length ?? 0) >= REQUIRED_QUERY_COUNT;
+      const isFresh = intent.generatedQueriesAt?.slice(0, 10) === todayUtc;
+
+      return !hasEnough || !isFresh;
+    });
+
+    if (staleIntents.length > 0) {
+      console.error(
+        `[cron/${stage}] Aborting: ${staleIntents.length} intents missing fresh queries for ${todayUtc}`
+      );
+      return Response.json(
+        {
+          error: "Queries not refreshed for today",
+          date: todayUtc,
+          staleIntentIds: staleIntents.map((i) => i.id),
+        },
+        { status: 409 }
+      );
+    }
+
     const metricsConfig = loadMetricsConfig();
     const runCells: Record<string, CellResult> = {};
     const errors: Array<{ persona: string; stage: string; error: string }> = [];
