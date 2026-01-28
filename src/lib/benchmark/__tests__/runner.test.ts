@@ -90,7 +90,7 @@ describe("runSingleQuery", () => {
   it("calls xAI provider and returns structured response", async () => {
     const mockResponse = {
       id: "xai_123",
-      choices: [{ message: { content: "Nocatee has great schools." } }],
+      output: [{ type: "text", content: "Nocatee has great schools." }],
     };
     vi.mocked(callXaiSearch).mockResolvedValue(mockResponse);
 
@@ -135,7 +135,7 @@ describe("runBenchmark", () => {
       candidates: [{ content: { parts: [{ text: "Gemini response" }] } }],
     });
     vi.mocked(callXaiSearch).mockResolvedValue({
-      choices: [{ message: { content: "xAI response" } }],
+      output: [{ type: "text", content: "xAI response" }],
     });
 
     const config: BenchmarkConfig = {
