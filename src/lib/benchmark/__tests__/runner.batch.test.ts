@@ -156,4 +156,45 @@ describe("runBenchmark batch behavior (Anthropic)", () => {
     expect(callAnthropicWebSearch).toHaveBeenCalled();
     expect(response.text).toBe("sync response");
   });
+
+  it("uses per-intent queryIndex for batch key", async () => {
+    vi.mocked(callAnthropicWebSearch).mockResolvedValue({
+      content: [{ type: "text", text: "sync response" }],
+    });
+
+    vi.mocked(extractStageMetrics).mockResolvedValue({
+      success: true,
+      extraction: {
+        mentioned: false,
+        responseRelevant: true,
+        entitiesMentioned: [],
+        inTopThree: false,
+        totalOptionsListed: 0,
+        competitors: [],
+        howDescribed: "not mentioned",
+      },
+    });
+
+    const batchResults = new Map([
+      ["anthropic_intent-1_0", makeBatchResult("batch response 0")],
+      ["anthropic_intent-1_1", makeBatchResult("batch response 1")],
+    ]);
+
+    const config: BenchmarkConfig = {
+      stage: "explore",
+      intents: [{ id: "intent-1", queries: ["q1", "q2"] }],
+      brand: "Lakewood Ranch",
+      providers: [{ provider: "anthropic", model: "claude-haiku-4-5" }],
+      concurrency: 1,
+      triggerMode: "cron",
+      batchResults,
+    };
+
+    const results = await runBenchmark(config);
+
+    const first = results.queries[0].responses[0];
+    const second = results.queries[1].responses[0];
+    expect(first.text).toBe("batch response 0");
+    expect(second.text).toBe("batch response 1");
+  });
 });

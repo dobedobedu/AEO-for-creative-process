@@ -258,12 +258,13 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
   const scoreSums: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
   const responseCounts: Record<Provider, number> = { openai: 0, anthropic: 0, gemini: 0, xai: 0 };
 
-  // Flatten queries with intent metadata
-  const flatQueries: { query: string; intentId: string }[] = [];
+  // Flatten queries with intent metadata AND per-intent query index
+  const flatQueries: { query: string; intentId: string; queryIndex: number }[] = [];
   for (const intent of intents) {
-    for (const q of intent.queries) {
+    for (let i = 0; i < intent.queries.length; i++) {
+      const q = intent.queries[i];
       if (q.trim()) {
-        flatQueries.push({ query: q, intentId: intent.id });
+        flatQueries.push({ query: q, intentId: intent.id, queryIndex: i });
       }
     }
   }
@@ -273,7 +274,7 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
 
   for (const chunk of chunks) {
     const chunkResults = await Promise.all(
-      chunk.map(async ({ query, intentId }, queryIdx) => {
+      chunk.map(async ({ query, intentId, queryIndex }) => {
         // Run all providers in PARALLEL for this query (10s instead of 40s)
         const responses = await Promise.all(
           providers.map(async (providerConfig) => {
@@ -281,7 +282,7 @@ export async function runBenchmark(config: BenchmarkConfig): Promise<BenchmarkRe
 
             // Check for batch results in cron mode for Anthropic/Gemini
             const isBatchProvider = providerConfig.provider === "anthropic" || providerConfig.provider === "gemini";
-            const batchKey = `${providerConfig.provider}_${intentId}_${queryIdx}`;
+            const batchKey = `${providerConfig.provider}_${intentId}_${queryIndex}`;
             const batchResult = triggerMode === "cron" && isBatchProvider && batchResults?.get(batchKey);
 
             if (batchResult) {
