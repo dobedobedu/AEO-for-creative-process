@@ -17,6 +17,7 @@ interface IntentRow {
   role: string;
   query_style: number;
   generated_queries: string[] | null;
+  generated_queries_at: Date | null;
   active: boolean;
   created_at: Date;
   created_by: string | null;
@@ -73,6 +74,7 @@ export async function ensureIntentSchema(): Promise<void> {
       role TEXT DEFAULT 'cpo',
       query_style FLOAT DEFAULT 0.75,
       generated_queries JSONB,
+      generated_queries_at TIMESTAMP WITH TIME ZONE NULL,
       active BOOLEAN DEFAULT true,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
       created_by UUID NULL,
@@ -231,7 +233,7 @@ export async function insertIntent(intent: Intent, createdBy?: string): Promise<
  */
 export async function updateIntentInDb(
   intentId: string,
-  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries" | "active">>,
+  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries" | "generatedQueriesAt" | "active">>,
   updatedBy?: string
 ): Promise<void> {
   await ensureIntentSchema();
@@ -249,6 +251,9 @@ export async function updateIntentInDb(
   }
   if (updates.generatedQueries !== undefined) {
     await sql`UPDATE intents SET generated_queries = ${sql.json(updates.generatedQueries)}, updated_by = ${updatedBy ?? null} WHERE id = ${intentId};`;
+  }
+  if (updates.generatedQueriesAt !== undefined) {
+    await sql`UPDATE intents SET generated_queries_at = ${updates.generatedQueriesAt}::timestamptz, updated_by = ${updatedBy ?? null} WHERE id = ${intentId};`;
   }
   if (updates.active !== undefined) {
     await sql`UPDATE intents SET active = ${updates.active}, updated_by = ${updatedBy ?? null} WHERE id = ${intentId};`;
@@ -356,6 +361,7 @@ function rowToIntent(row: IntentRow): Intent {
     role: row.role as "cpo" | "family_unit",
     queryStyle: row.query_style,
     generatedQueries: parseJsonArray(row.generated_queries as string[] | string | null),
+    generatedQueriesAt: row.generated_queries_at?.toISOString(),
     createdAt: row.created_at.toISOString(),
     active: row.active,
   };
@@ -426,7 +432,7 @@ export async function atomicCreateIntent(
  */
 export async function atomicUpdateIntent(
   intentId: string,
-  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries" | "active">>,
+  updates: Partial<Pick<Intent, "text" | "role" | "queryStyle" | "generatedQueries" | "generatedQueriesAt" | "active">>,
   changes: IntentChange[],
   actorUserId?: string
 ): Promise<number> {
@@ -448,6 +454,9 @@ export async function atomicUpdateIntent(
     }
     if (updates.generatedQueries !== undefined) {
       await tx`UPDATE intents SET generated_queries = ${tx.json(updates.generatedQueries)}, updated_by = ${actorUserId ?? null} WHERE id = ${intentId};`;
+    }
+    if (updates.generatedQueriesAt !== undefined) {
+      await tx`UPDATE intents SET generated_queries_at = ${updates.generatedQueriesAt}::timestamptz, updated_by = ${actorUserId ?? null} WHERE id = ${intentId};`;
     }
     if (updates.active !== undefined) {
       await tx`UPDATE intents SET active = ${updates.active}, updated_by = ${actorUserId ?? null} WHERE id = ${intentId};`;

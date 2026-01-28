@@ -239,6 +239,18 @@ describe("Intent Library (Database)", () => {
       expect(updates.generatedQueries).toEqual(queries);
     });
 
+    it("updates generatedQueriesAt without history entry", async () => {
+      const timestamp = "2026-01-28T00:00:00.000Z";
+      await updateIntent(sampleIntent.id, {
+        generatedQueriesAt: timestamp,
+      });
+
+      expect(mockedAtomicUpdateIntent).toHaveBeenCalledTimes(1);
+      const [, updates, changes] = mockedAtomicUpdateIntent.mock.calls[0];
+      expect(updates.generatedQueriesAt).toBe(timestamp);
+      expect(changes).toHaveLength(0);
+    });
+
     it("uses atomic operation for updates", async () => {
       await updateIntent(sampleIntent.id, {
         text: "New text",

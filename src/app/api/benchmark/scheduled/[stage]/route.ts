@@ -15,7 +15,7 @@
  */
 
 import { runBenchmark } from "@/lib/benchmark";
-import { loadIntentLibrary, updateIntent } from "@/lib/intents/library";
+import { loadIntentLibrary } from "@/lib/intents/library";
 import { loadMetricsConfig } from "@/lib/metrics/config";
 import { upsertRunCells, upsertSingleCell, getTodayRunId } from "@/lib/runs/storage";
 import type { CellResult } from "@/lib/runs/types";
@@ -35,7 +35,6 @@ import {
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
 import { getActiveMatrixConfigCached, getActivePersonaIds, getCoreStageMapping } from "@/lib/matrix/runtime";
 import type { Persona, Stage } from "@/lib/intents/types";
-import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
 import { saveRunAggregates, refreshRunMetadata } from "@/lib/runs/aggregator";
 import {
   DEFAULT_PROVIDERS,
@@ -48,6 +47,7 @@ import {
   getBatchJob,
   updateBatchJobStatus,
   parseBatchCustomId,
+  getBatchJobMetadata,
   type BatchJob,
 } from "@/lib/providers/batch";
 import {
@@ -144,13 +144,10 @@ export async function GET(
 
     // Check for batch results from batch-submit cron
     const batchResults = new Map<string, { text: string; citations: string[]; raw: unknown }>();
-    let batchStats = { anthropic: { available: 0, total: 0 }, gemini: { available: 0, total: 0 } };
+    let batchStats = { anthropic: { available: 0, total: 0 } };
 
     try {
-      const [anthropicBatchJob, geminiBatchJob] = await Promise.all([
-        getBatchJob(runId, "anthropic", "search"),
-        getBatchJob(runId, "gemini", "search"),
-      ]);
+      const anthropicBatchJob = await getBatchJob(runId, "anthropic", "search");
 
       // Process Anthropic batch results
       if (anthropicBatchJob) {
@@ -172,6 +169,9 @@ export async function GET(
         }
 
         if (anthropicBatchJob.status === "completed") {
+          const metadata = await getBatchJobMetadata(anthropicBatchJob.id);
+          const intentIdMap = (metadata?.intentIdMap as Record<string, string>) ?? {};
+
           // Download and parse results
           const results = await getAnthropicBatchResults(anthropicBatchJob.batchId);
           console.log(`[cron/${stage}] Downloaded ${results.length} Anthropic batch results`);
@@ -181,32 +181,26 @@ export async function GET(
               // Parse customId to get the key format we use in runner
               const parsed = parseBatchCustomId(result.customId);
               if (parsed && parsed.stage === stage) {
-                // Store with a key that matches how runner looks it up
-                const key = `anthropic_${parsed.intentIdPrefix}_${parsed.queryIndex}`;
-                batchResults.set(key, {
-                  text: result.text,
-                  citations: result.citations ?? [],
-                  raw: result.raw,
-                });
-                batchStats.anthropic.available++;
+                const fullIntentId = intentIdMap[result.customId];
+                if (fullIntentId) {
+                  // Store with a key that matches how runner looks it up
+                  const key = `anthropic_${fullIntentId}_${parsed.queryIndex}`;
+                  batchResults.set(key, {
+                    text: result.text,
+                    citations: result.citations ?? [],
+                    raw: result.raw,
+                  });
+                  batchStats.anthropic.available++;
+                } else {
+                  console.warn(`[cron/${stage}] Missing intentId mapping for customId: ${result.customId}`);
+                }
               }
             }
           }
         }
       }
 
-      // Process Gemini batch results (already synchronous, results stored in DB or cached)
-      if (geminiBatchJob) {
-        console.log(`[cron/${stage}] Found Gemini batch job: ${geminiBatchJob.batchId} (status: ${geminiBatchJob.status})`);
-        batchStats.gemini.total = geminiBatchJob.requestCount ?? 0;
-
-        // Gemini batchGenerateContent is synchronous, so if the job exists and succeeded,
-        // we need to re-run the batch (results aren't persisted separately)
-        // For now, we'll let the sync fallback handle Gemini
-        // Future: Store Gemini batch results in a separate table
-      }
-
-      console.log(`[cron/${stage}] Batch results: Anthropic ${batchStats.anthropic.available}/${batchStats.anthropic.total}, Gemini ${batchStats.gemini.available}/${batchStats.gemini.total}`);
+      console.log(`[cron/${stage}] Batch results: Anthropic ${batchStats.anthropic.available}/${batchStats.anthropic.total}`);
     } catch (batchErr) {
       console.error(`[cron/${stage}] Batch result fetch failed (will use sync):`, batchErr instanceof Error ? batchErr.message : batchErr);
     }
@@ -237,30 +231,12 @@ export async function GET(
           return null; // Skip this persona
         }
 
-        // Generate queries via DeepSeek for each intent (3 queries)
-        const intentsToRun = await Promise.all(
-          activeIntents.map(async (intent) => {
-            const generated = await generateQueriesFromIntent({
-              persona,
-              stage,
-              coreStage, // Pass core stage for prompt context
-              intent: intent.text,
-              role: intent.role,
-              queryStyle: intent.queryStyle,
-              count: 3,
-            });
-
-            // Save generated queries to intent library
-            await updateIntent(intent.id, {
-              generatedQueries: generated.queries,
-            });
-
-            return {
-              id: intent.id,
-              queries: generated.queries,
-            };
-          })
-        );
+        // Use cached queries from batch-submit (cron must not regenerate)
+        const QUERY_COUNT = 3;
+        const intentsToRun = activeIntents.map((intent) => ({
+          id: intent.id,
+          queries: (intent.generatedQueries ?? []).slice(0, QUERY_COUNT),
+        }));
 
         const benchmarkResult = await runBenchmark({
           stage,

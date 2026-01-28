@@ -27,7 +27,6 @@ import {
   type BatchRequest,
 } from "@/lib/providers/batch";
 import { submitAnthropicBatch } from "@/lib/providers/anthropic";
-import { submitGeminiBatch } from "@/lib/providers/gemini";
 import { DEFAULT_PROVIDERS, DEFAULT_BRAND, DEFAULT_ALIASES } from "@/lib/runs/utils";
 
 // Batch submission should be fast - 60 seconds max
@@ -103,9 +102,10 @@ export async function GET(req: Request) {
             queryStyle: intent.queryStyle,
             count: 3,
           }).then(async (generated) => {
-            // Save generated queries to intent library
+            // Save generated queries with timestamp to intent library
             await updateIntent(intent.id, {
               generatedQueries: generated.queries,
+              generatedQueriesAt: new Date().toISOString(),
             });
 
             // Add to all queries
@@ -139,111 +139,53 @@ export async function GET(req: Request) {
       });
     }
 
-    // 4. Build batch requests for each provider
+    // 4. Build batch requests (Anthropic only)
     const anthropicModel = DEFAULT_PROVIDERS.find((p) => p.provider === "anthropic")?.model ?? "claude-haiku-4-5";
-    const geminiModel = DEFAULT_PROVIDERS.find((p) => p.provider === "gemini")?.model ?? "gemini-3-flash-preview";
+    // Build intentId mapping: customId → full intentId
+    const intentIdMap: Record<string, string> = {};
 
-    const anthropicRequests: BatchRequest[] = allQueries.map((q) => ({
-      customId: generateBatchCustomId({
+    const anthropicRequests: BatchRequest[] = allQueries.map((q) => {
+      const customId = generateBatchCustomId({
         persona: q.persona,
         stage: q.stage,
         intentId: q.intentId,
         provider: "anthropic",
         queryIndex: q.queryIndex,
-      }),
-      query: q.query,
-      model: anthropicModel,
-      persona: q.persona,
-      stage: q.stage,
-      intentId: q.intentId,
-    }));
-
-    const geminiRequests: BatchRequest[] = allQueries.map((q) => ({
-      customId: generateBatchCustomId({
+      });
+      intentIdMap[customId] = q.intentId;
+      return {
+        customId,
+        query: q.query,
+        model: anthropicModel,
         persona: q.persona,
         stage: q.stage,
         intentId: q.intentId,
-        provider: "gemini",
-        queryIndex: q.queryIndex,
-      }),
-      query: q.query,
-      model: geminiModel,
-      persona: q.persona,
-      stage: q.stage,
-      intentId: q.intentId,
-    }));
+      };
+    });
 
-    // 5. Submit batches in parallel
-    const [anthropicResult, geminiResult] = await Promise.allSettled([
-      submitAnthropicBatch(anthropicRequests),
-      submitGeminiBatch(geminiRequests),
-    ]);
+    // 5. Submit Anthropic batch
+    const anthropicResult = await submitAnthropicBatch(anthropicRequests);
 
     const results: {
       anthropic?: { batchId: string; requestCount: number };
-      gemini?: { batchName: string; requestCount: number; immediateResults?: boolean };
     } = {};
     const errors: Array<{ provider: string; error: string }> = [];
 
     // 6. Store batch jobs in database
-    if (anthropicResult.status === "fulfilled") {
-      results.anthropic = anthropicResult.value;
+    results.anthropic = anthropicResult;
 
-      await createBatchJob({
-        runId,
-        provider: "anthropic",
-        batchType: "search",
-        batchId: anthropicResult.value.batchId,
-        requestCount: anthropicResult.value.requestCount,
-      });
+    await createBatchJob({
+      runId,
+      provider: "anthropic",
+      batchType: "search",
+      batchId: anthropicResult.batchId,
+      requestCount: anthropicResult.requestCount,
+      metadata: { intentIdMap },
+    });
 
-      console.log(
-        `[batch-submit] Anthropic batch submitted: ${anthropicResult.value.batchId} (${anthropicResult.value.requestCount} requests)`
-      );
-    } else {
-      errors.push({
-        provider: "anthropic",
-        error: anthropicResult.reason?.message ?? "Unknown error",
-      });
-      console.error("[batch-submit] Anthropic batch failed:", anthropicResult.reason);
-    }
-
-    if (geminiResult.status === "fulfilled") {
-      results.gemini = {
-        batchName: geminiResult.value.batchName,
-        requestCount: geminiResult.value.requestCount,
-        immediateResults: !!geminiResult.value.responses?.length,
-      };
-
-      // Gemini's batchGenerateContent is synchronous, so we store the results immediately
-      // Store as JSON in a separate table or cache for later retrieval
-      await createBatchJob({
-        runId,
-        provider: "gemini",
-        batchType: "search",
-        batchId: geminiResult.value.batchName,
-        requestCount: geminiResult.value.requestCount,
-      });
-
-      // If we got immediate results, store them (Gemini batch is synchronous)
-      if (geminiResult.value.responses?.length) {
-        // Store results in a temporary cache or database field
-        // For now, we'll handle this in the scheduled cron by re-fetching
-        console.log(
-          `[batch-submit] Gemini batch completed synchronously: ${geminiResult.value.batchName} (${geminiResult.value.responses.length} results)`
-        );
-      }
-
-      console.log(
-        `[batch-submit] Gemini batch submitted: ${geminiResult.value.batchName} (${geminiResult.value.requestCount} requests)`
-      );
-    } else {
-      errors.push({
-        provider: "gemini",
-        error: geminiResult.reason?.message ?? "Unknown error",
-      });
-      console.error("[batch-submit] Gemini batch failed:", geminiResult.reason);
-    }
+    console.log(
+      `[batch-submit] Anthropic batch submitted: ${anthropicResult.batchId} (${anthropicResult.requestCount} requests)`
+    );
 
     const executionTimeMs = Date.now() - startTime;
     console.log(
