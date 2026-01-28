@@ -724,33 +724,58 @@ export async function computeEntitySummary(runId: string): Promise<void> {
     return;
   }
 
-  // Aggregate mentions by entity
-  const aggregated = await sql`
+  // Aggregate mentions by entity (two separate queries to avoid LATERAL join multiplication bug)
+  const entityCounts = await sql`
     SELECT
-      entity_term_id,
+      m.entity_term_id,
       t.category_id,
       COUNT(DISTINCT (m.persona, m.stage_id, m.provider, m.query_index)) as mention_count,
       AVG(CASE
-        WHEN sentiment = 'positive' THEN 1
-        WHEN sentiment = 'negative' THEN -1
+        WHEN m.sentiment = 'positive' THEN 1
+        WHEN m.sentiment = 'negative' THEN -1
         ELSE 0
-      END) as avg_sentiment,
-      jsonb_object_agg(
-        prov.provider,
-        prov.provider_count
-      ) as by_provider
+      END) as avg_sentiment
     FROM run_entity_mentions m
     JOIN matrix_entity_terms t ON m.entity_term_id = t.id
-    JOIN LATERAL (
-      SELECT provider, COUNT(DISTINCT (persona, stage_id, query_index)) as provider_count
-      FROM run_entity_mentions
-      WHERE run_id = m.run_id AND entity_term_id = m.entity_term_id
-      GROUP BY provider
-    ) prov ON true
     WHERE m.run_id = ${runId}::uuid
       AND m.entity_term_id IS NOT NULL
-    GROUP BY entity_term_id, t.category_id
+    GROUP BY m.entity_term_id, t.category_id
   `;
+
+  // Get provider counts separately to avoid cross-product multiplication
+  const providerCounts = await sql`
+    SELECT
+      entity_term_id,
+      jsonb_object_agg(provider, provider_count) as by_provider
+    FROM (
+      SELECT
+        entity_term_id,
+        provider,
+        COUNT(DISTINCT (persona, stage_id, query_index)) as provider_count
+      FROM run_entity_mentions
+      WHERE run_id = ${runId}::uuid
+        AND entity_term_id IS NOT NULL
+      GROUP BY entity_term_id, provider
+    ) sub
+    GROUP BY entity_term_id
+  `;
+
+  // Merge provider counts into entity counts
+  const providerMap = new Map(
+    providerCounts.map((p: { entity_term_id: string; by_provider: Record<string, number> }) =>
+      [p.entity_term_id, p.by_provider]
+    )
+  );
+
+  const aggregated = entityCounts.map((e: {
+    entity_term_id: string;
+    category_id: string;
+    mention_count: number;
+    avg_sentiment: number
+  }) => ({
+    ...e,
+    by_provider: providerMap.get(e.entity_term_id) || {},
+  }));
 
   // Insert/update summary rows
   for (const row of aggregated) {
