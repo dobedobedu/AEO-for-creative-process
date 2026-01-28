@@ -45,6 +45,9 @@ data/runs/run-id-map.json
 # local supabase
 supabase/
 
+# local worktrees
+.worktrees/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
