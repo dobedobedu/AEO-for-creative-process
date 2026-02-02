@@ -66,6 +66,11 @@ import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import type { Citation } from "@/lib/parsers/types";
 import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
+import {
+  DEFAULT_PROVIDER_MODELS,
+  buildProviderModelMap,
+  type SearchModelConfig,
+} from "@/lib/models/providerModels";
 
 // Types - using string type to support dynamic config
 type Persona = string;
@@ -243,13 +248,6 @@ function storedRunToQueryBank(run: StoredRun): QueryBank {
 const BRAND = "Lakewood Ranch";
 const BRAND_ALIASES = ["LWR", "Lakewood"];
 const BRAND_DOMAIN = "lakewoodranch.com";
-
-const PROVIDER_MODELS: Record<Provider, string> = {
-  openai: "gpt-5.2",
-  anthropic: "claude-haiku-4-5",
-  gemini: "gemini-3-flash-preview",
-  xai: "grok-4-latest",
-};
 
 // Helper functions for label lookup with fallback for historical compatibility
 function getPersonaLabel(id: Persona, personas: PersonaConfig[]): string {
@@ -495,6 +493,9 @@ export default function VisibilityMatrixPage() {
   const [enabledProviders, setEnabledProviders] = useState<Set<Provider>>(
     new Set(["openai", "anthropic", "gemini", "xai"])
   );
+  const [providerModels, setProviderModels] = useState<Record<Provider, string>>(
+    DEFAULT_PROVIDER_MODELS
+  );
   const [deepDiveOpen, setDeepDiveOpen] = useState(false);
   const [benchmarkHistory, setBenchmarkHistory] = useState<BenchmarkRun[]>([]);
   const [kpiMetric, setKpiMetric] = useState<"mention" | "sentiment" | "winrate" | "top3">("mention");
@@ -518,6 +519,29 @@ export default function VisibilityMatrixPage() {
   const [insightModalOpen, setInsightModalOpen] = useState(false);
   const [answersPanelOpen, setAnswersPanelOpen] = useState(false);
   const [timeMachineOpen, setTimeMachineOpen] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadProviderModels = async () => {
+      try {
+        const response = await fetch("/api/models/search");
+        if (!response.ok) return;
+        const data = (await response.json()) as { models?: SearchModelConfig[] };
+        if (!data?.models || cancelled) return;
+        const modelMap = buildProviderModelMap(data.models, DEFAULT_PROVIDER_MODELS);
+        if (!cancelled) setProviderModels(modelMap);
+      } catch {
+        // Keep defaults if the model config fetch fails.
+      }
+    };
+
+    void loadProviderModels();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Historical run linking state
   const [historicalRuns, setHistoricalRuns] = useState<StoredRun[]>([]);
@@ -875,7 +899,7 @@ export default function VisibilityMatrixPage() {
 
     const providers = Array.from(enabledProviders).map((p) => ({
       provider: p,
-      model: PROVIDER_MODELS[p],
+      model: providerModels[p],
     }));
 
     try {

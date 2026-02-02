@@ -5,6 +5,8 @@
 import type { Persona, Stage } from "@/lib/intents/types";
 import type { Provider, CellResult, RunSummary } from "@/lib/runs/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
+import { buildProviderModelMap, DEFAULT_PROVIDER_MODELS } from "@/lib/models/providerModels";
+import { getDefaultSearchModels } from "@/lib/models/searchModels";
 
 /**
  * Parse a cell key back into persona and stage
@@ -69,12 +71,14 @@ export function getCellKey(persona: string, stage: string): string {
 /**
  * Default provider configuration
  */
-export const DEFAULT_PROVIDERS: Array<{ provider: Provider; model: string }> = [
-    { provider: "openai", model: "gpt-5.2" },
-    { provider: "anthropic", model: "claude-haiku-4-5" },
-    { provider: "gemini", model: "gemini-3-flash-preview" },
-    { provider: "xai", model: "grok-4-1-fast-reasoning" },
-];
+const DEFAULT_PROVIDER_MODEL_MAP = buildProviderModelMap(
+    getDefaultSearchModels(),
+    DEFAULT_PROVIDER_MODELS
+);
+
+export const DEFAULT_PROVIDERS: Array<{ provider: Provider; model: string }> = (
+    Object.entries(DEFAULT_PROVIDER_MODEL_MAP) as Array<[Provider, string]>
+).map(([provider, model]) => ({ provider, model }));
 
 /**
  * @deprecated Use getActivePersonaIds() from @/lib/matrix/runtime instead
