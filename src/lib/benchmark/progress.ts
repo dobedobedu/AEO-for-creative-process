@@ -267,7 +267,7 @@ export async function cleanupOldProgress(): Promise<number> {
     WHERE updated_at < NOW() - INTERVAL '24 hours'
       AND status IN ('complete', 'error')
     RETURNING run_id;
-  `;
+  ` as Array<{ run_id: string }>;
 
   return result.length;
 }

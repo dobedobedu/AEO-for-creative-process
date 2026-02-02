@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     FROM runs
     WHERE id = ${data.runId}
     LIMIT 1;
-  `;
+  ` as Array<{ id: string; config_json: Record<string, unknown> | null }>;
   const run = runRows[0];
   if (!run) {
     return Response.json({ error: "Run not found" }, { status: 404 });
@@ -115,9 +115,14 @@ export async function POST(req: Request) {
     queryMap.set(q.id, q.query_text);
   }
 
-  const persona = run.config_json?.personaText ?? "Unknown persona";
-  const stage = run.config_json?.triggerStage ?? "unknown";
-  const triggers = Array.isArray(run.config_json?.triggers) ? run.config_json.triggers : [];
+  const config = (run.config_json ?? {}) as {
+    personaText?: string;
+    triggerStage?: string;
+    triggers?: string[];
+  };
+  const persona = config.personaText ?? "Unknown persona";
+  const stage = config.triggerStage ?? "unknown";
+  const triggers = Array.isArray(config.triggers) ? config.triggers : [];
 
   const analysisInput = buildAnalysisInput({
     persona,

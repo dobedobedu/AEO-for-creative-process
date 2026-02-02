@@ -116,7 +116,9 @@ function sqlFn(stringsOrValues: TemplateStringsArray | unknown[], ...values: unk
   return withRetry(executeTransaction);
 };
 
-export const sql = sqlFn as typeof sqlFn & {
+type SqlTag = (stringsOrValues: TemplateStringsArray | unknown[], ...values: unknown[]) => Promise<any[]>;
+
+export const sql = sqlFn as SqlTag & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   array: <T>(arr: readonly T[], oid?: number) => any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

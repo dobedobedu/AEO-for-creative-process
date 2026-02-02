@@ -180,8 +180,8 @@ async function computeSummary(runId: string): Promise<void> {
     SELECT COALESCE(SUM(responses_count), 0)::int as total
     FROM run_metrics
     WHERE run_id = ${runId}::uuid
-  `;
-  const totalResponses = totalResp[0]?.total || 0;
+  ` as Array<{ total: number | string }>;
+  const totalResponses = Number(totalResp[0]?.total ?? 0);
 
   if (totalResponses === 0) {
     console.log(`  No mentions to aggregate for run ${runId}`);
@@ -214,11 +214,19 @@ async function computeSummary(runId: string): Promise<void> {
     WHERE m.run_id = ${runId}::uuid
       AND m.entity_term_id IS NOT NULL
     GROUP BY m.entity_term_id, t.category_id
-  `;
+  ` as Array<{
+    entity_term_id: string;
+    category_id: string;
+    mention_count: number | string;
+    avg_sentiment: number | string | null;
+    by_provider: Record<string, number> | null;
+  }>;
 
   // Insert/update summary rows
   for (const row of aggregated) {
-    const mentionRate = row.mention_count / totalResponses;
+    const mentionCount = Number(row.mention_count ?? 0);
+    const avgSentiment = row.avg_sentiment === null ? null : Number(row.avg_sentiment);
+    const mentionRate = totalResponses > 0 ? mentionCount / totalResponses : 0;
 
     await sql`
       INSERT INTO run_entity_summary (
@@ -231,10 +239,10 @@ async function computeSummary(runId: string): Promise<void> {
         ${row.entity_term_id}::uuid,
         ${row.category_id},
         ${totalResponses},
-        ${row.mention_count},
+        ${mentionCount},
         ${mentionRate},
-        ${row.avg_sentiment},
-        ${sql.json(row.by_provider || {})}
+        ${avgSentiment},
+        ${sql.json(row.by_provider ?? {})}
       )
       ON CONFLICT (run_id, entity_term_id) DO UPDATE SET
         total_responses = EXCLUDED.total_responses,
@@ -264,29 +272,29 @@ async function main() {
   console.log(`Loaded ${registry.length} entity terms from registry\n`);
 
   // Build query for runs
-  let runs;
+  let runs: HistoricalRun[];
   if (targetRunId) {
-    runs = await sql`
+    runs = (await sql`
       SELECT id::text, result_json
       FROM runs
       WHERE id = ${targetRunId}::uuid
         AND status = 'completed'
         AND result_json IS NOT NULL
         AND result_json->'cells' IS NOT NULL
-    `;
+    `) as HistoricalRun[];
     if (runs.length === 0) {
       console.error(`Run ${targetRunId} not found or not completed`);
       process.exit(1);
     }
   } else {
-    runs = await sql`
+    runs = (await sql`
       SELECT id::text, result_json
       FROM runs
       WHERE status = 'completed'
         AND result_json IS NOT NULL
         AND result_json->'cells' IS NOT NULL
       ORDER BY created_at DESC
-    `;
+    `) as HistoricalRun[];
   }
 
   console.log(`Found ${runs.length} completed runs to process\n`);
@@ -295,31 +303,32 @@ async function main() {
   let totalErrors = 0;
 
   for (let i = 0; i < runs.length; i++) {
-    const run = runs[i] as unknown as HistoricalRun;
+    const run = runs[i];
     console.log(`Processing run ${i + 1}/${runs.length}: ${run.id}`);
 
     // Check if already processed
     const existing = await sql`
       SELECT COUNT(*)::int as count FROM run_entity_mentions
       WHERE run_id = ${run.id}::uuid
-    `;
+    ` as Array<{ count: number | string }>;
+    const existingCount = Number(existing[0]?.count ?? 0);
 
-    if (existing[0]?.count > 0 && !forceReprocess && !summaryOnly) {
-      console.log(`  Already processed (${existing[0].count} mentions), skipping...`);
+    if (existingCount > 0 && !forceReprocess && !summaryOnly) {
+      console.log(`  Already processed (${existingCount} mentions), skipping...`);
       continue;
     }
 
     // Handle --force: delete existing data before re-extraction
-    if (forceReprocess && existing[0]?.count > 0) {
-      console.log(`  Deleting ${existing[0].count} existing mentions...`);
+    if (forceReprocess && existingCount > 0) {
+      console.log(`  Deleting ${existingCount} existing mentions...`);
       await sql`DELETE FROM run_entity_mentions WHERE run_id = ${run.id}::uuid`;
       await sql`DELETE FROM run_entity_summary WHERE run_id = ${run.id}::uuid`;
     }
 
     // Handle --summary-only: skip mention extraction, just recompute summary
     if (summaryOnly) {
-      if (existing[0]?.count > 0) {
-        console.log(`  Recomputing summary from ${existing[0].count} existing mentions...`);
+      if (existingCount > 0) {
+        console.log(`  Recomputing summary from ${existingCount} existing mentions...`);
         await sql`DELETE FROM run_entity_summary WHERE run_id = ${run.id}::uuid`;
         await computeSummary(run.id);
         console.log(`  Summary recomputed`);

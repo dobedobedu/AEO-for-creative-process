@@ -11,7 +11,7 @@ const CACHE_TTL_MS = 30_000;
 export async function getAppSetting<T>(key: string): Promise<T | null> {
   const rows = await sql`
     SELECT value FROM app_settings WHERE key = ${key} LIMIT 1;
-  `;
+  ` as Array<{ value: unknown }>;
 
   if (rows.length === 0) return null;
   return rows[0].value as T;

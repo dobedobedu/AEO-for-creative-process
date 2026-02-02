@@ -13,23 +13,27 @@ if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY && process.env.GEMINI_API_KEY) {
   process.env.GOOGLE_GENERATIVE_AI_API_KEY = process.env.GEMINI_API_KEY;
 }
 
-import { callXaiSearch, parseXaiResponse } from "../src/lib/providers/xai";
+import { callXaiSearch, type XaiSearchMode } from "../src/lib/providers/xai";
+import { parseXaiResponse } from "../src/lib/ingest/xaiIngest";
 import { extractStageMetrics, calculateExploreMetrics, calculateConsiderMetrics, calculateCompareMetrics, calculateDecideMetrics } from "../src/lib/scoring/extractor";
 import { emptyExtraction, parseCellKey, calculateRunSummary, DEFAULT_ALIASES, DEFAULT_BRAND } from "../src/lib/runs/utils";
 import { getRunsForDateRange, saveRun } from "../src/lib/runs/storage";
 import { saveRunAggregates } from "../src/lib/runs/aggregator";
 import { extractDomain } from "../src/lib/parsers/utils";
+import type { Citation } from "../src/lib/parsers/types";
 import type { BenchmarkRun, CellResult } from "../src/lib/runs/types";
 import type { StageExtraction } from "../src/lib/scoring/schemas";
 
 const DEFAULT_XAI_MODEL = "grok-4-1-fast-reasoning";
+const DEFAULT_XAI_SEARCH_MODE: XaiSearchMode =
+  process.env.XAI_SEARCH_MODE === "web_search" ? "web_search" : "x_search";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function callXaiWithRetry(
-  params: { model: string; query: string },
+  params: { model: string; query: string; searchMode: XaiSearchMode },
   attempts = 3
 ) {
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
@@ -62,11 +66,11 @@ function normalizeDate(input: string | undefined, fallback: string): string {
   return input;
 }
 
-function toStoredCitations(urls: string[]) {
-  return urls.map((url) => ({
-    url,
-    domain: extractDomain(url),
-    sourceType: "url_citation" as const,
+function toStoredCitations(citations: Citation[]) {
+  return citations.map((citation) => ({
+    url: citation.url,
+    domain: citation.domain || extractDomain(citation.url),
+    sourceType: citation.sourceType ?? ("url_citation" as const),
   }));
 }
 
@@ -127,7 +131,7 @@ async function backfillRun(run: BenchmarkRun, apply: boolean, limit: number | nu
       const model = xaiResponse.model || process.env.XAI_MODEL || DEFAULT_XAI_MODEL;
       const query = qr.query;
 
-      const raw = await callXaiWithRetry({ model, query });
+      const raw = await callXaiWithRetry({ model, query, searchMode: DEFAULT_XAI_SEARCH_MODE });
       if (!raw) {
         console.warn(`[backfill] Giving up on xAI response for query: ${query}`);
         continue;

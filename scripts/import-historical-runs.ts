@@ -67,7 +67,7 @@ async function importLocalJsonRuns(): Promise<{ imported: number; skipped: numbe
       }
 
       // Check if run already exists
-      const existing = await sql`SELECT id FROM runs WHERE id = ${run.id}::uuid`;
+      const existing = await sql`SELECT id FROM runs WHERE id = ${run.id}::uuid` as Array<{ id: string }>;
       if (existing.length > 0) {
         console.log(`  ⏭️  Skipping ${file} - already exists`);
         skipped++;
@@ -258,7 +258,7 @@ async function importGeminiLogs(filePath: string): Promise<{ runsCreated: number
     SELECT DISTINCT DATE(completed_at) as run_date
     FROM runs
     WHERE result_json IS NOT NULL
-  `;
+  ` as Array<{ run_date: string }>;
   const existingDates = new Set(existingRuns.map((r: { run_date: string }) => r.run_date));
 
   let runsCreated = 0;
@@ -295,7 +295,7 @@ async function importGeminiLogs(filePath: string): Promise<{ runsCreated: number
     run.summary = calculateRunSummary(run);
 
     // Check if this run ID already exists
-    const existing = await sql`SELECT id FROM runs WHERE id = ${runId}::uuid`;
+    const existing = await sql`SELECT id FROM runs WHERE id = ${runId}::uuid` as Array<{ id: string }>;
     if (existing.length > 0) {
       console.log(`  ⏭️  Skipping ${date} - run already imported`);
       continue;
@@ -557,8 +557,8 @@ async function main() {
   console.log("✅ Import complete!");
 
   // Show what's now in the database
-  const runCount = await sql`SELECT COUNT(*) as count FROM runs WHERE result_json IS NOT NULL`;
-  console.log(`\n📈 Total runs in database: ${runCount[0].count}`);
+  const runCount = await sql`SELECT COUNT(*) as count FROM runs WHERE result_json IS NOT NULL` as Array<{ count: number | string }>;
+  console.log(`\n📈 Total runs in database: ${Number(runCount[0]?.count ?? 0)}`);
 
   await sql.end();
 }

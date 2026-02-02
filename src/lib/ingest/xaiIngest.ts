@@ -3,7 +3,7 @@ import type { Citation } from "@/lib/parsers/types";
 import type { XaiResponse } from "@/lib/providers/xai";
 import { extractDomain } from "@/lib/parsers/utils";
 
-function parseXaiResponse(response: XaiResponse): { text: string; citations: Citation[] } {
+export function parseXaiResponse(response: XaiResponse): { text: string; citations: Citation[] } {
   // Agent Tools API returns output blocks with type and content
   const textBlocks = response.output?.filter(b => b.type === "text") ?? [];
   const text = textBlocks.map(b => b.content ?? "").join("\n").trim();

@@ -7,7 +7,7 @@ import type { Stage } from "@/lib/intents/types";
 import { extractStageMetrics, recommendationStrengthToScore } from "@/lib/scoring/extractor";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import { getCachedResponse, setCachedResponse } from "@/lib/cache";
-import { getSearchMode } from "@/lib/appSettings";
+import { getSearchMode, type SearchMode } from "@/lib/appSettings";
 import { parseOpenAIResponse } from "@/lib/parsers/openaiCitations";
 import { parseGeminiResponse } from "@/lib/parsers/geminiCitations";
 import type { Citation } from "@/lib/parsers/types";
@@ -109,7 +109,7 @@ export async function runSingleQuery(params: {
   skipCache?: boolean;
 }): Promise<ProviderResponse> {
   const { query, provider, model, skipCache = false } = params;
-  let searchMode: string | undefined;
+  let searchMode: SearchMode | undefined;
   const start = Date.now();
 
   // Check cache first (unless explicitly skipped)

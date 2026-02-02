@@ -491,7 +491,8 @@ export async function getRunMetrics(
   return rows.map((row: any) => ({
     run_id: row.run_id,
     persona: row.persona,
-    stage: row.stage,
+    stage_id: row.stage_id ?? row.core_stage ?? row.stage,
+    core_stage: row.core_stage ?? row.stage,
     provider: row.provider,
     responses_count: row.responses_count,
     mentions_count: row.mentions_count,

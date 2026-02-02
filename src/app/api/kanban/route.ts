@@ -50,7 +50,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         )
         ORDER BY COALESCE(r.completed_at, r.created_at) DESC
         LIMIT 1
-      `;
+      ` as Array<{ id: string }>;
 
       if (latestWithSummary.length > 0) {
         runId = latestWithSummary[0].id;
@@ -62,7 +62,7 @@ export async function GET(request: Request): Promise<NextResponse> {
             AND jsonb_object_length(result_json->'cells') > 0
           ORDER BY created_at DESC
           LIMIT 1
-        `;
+        ` as Array<{ id: string }>;
 
         if (latestWithCells.length > 0) {
           runId = latestWithCells[0].id;
@@ -72,7 +72,7 @@ export async function GET(request: Request): Promise<NextResponse> {
             WHERE status = 'completed'
             ORDER BY completed_at DESC NULLS LAST, created_at DESC
             LIMIT 1
-          `;
+          ` as Array<{ id: string }>;
 
           if (latest.length === 0) {
             return NextResponse.json(
@@ -94,7 +94,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       SELECT id, label, description, display_order
       FROM matrix_entity_categories
       ORDER BY display_order
-    `;
+    ` as Array<{ id: string; label: string; description: string | null; display_order: number }>;
 
     // Get all entity terms for items without mentions
     const allTerms = await sql`
@@ -107,10 +107,10 @@ export async function GET(request: Request): Promise<NextResponse> {
       JOIN matrix_entity_categories c ON t.category_id = c.id
       WHERE t.active = true
       ORDER BY c.display_order, t.display_order
-    `;
+    ` as Array<{ entity_term_id: string; canonical_name: string; category_id: string; category_label: string }>;
 
     // Build complete lane structure
-    const lanes = categories.map((cat: any) => {
+    const lanes = categories.map((cat) => {
       const categoryEntities = byCategory[cat.id] || [];
 
       // Create a set of entity IDs that have mentions
@@ -119,14 +119,12 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
 
       // Get all terms for this category
-      const categoryTerms = allTerms.filter(
-        (t: any) => t.category_id === cat.id
-      );
+      const categoryTerms = allTerms.filter((t) => t.category_id === cat.id);
 
       // Build items array: entities with mentions + entities without
-      const items = categoryTerms.map((term: any) => {
+      const items = categoryTerms.map((term) => {
         const entityData = categoryEntities.find(
-          (e: any) => e.entity_term_id === term.entity_term_id
+          (e: { entity_term_id: string }) => e.entity_term_id === term.entity_term_id
         );
 
         if (entityData) {
@@ -179,7 +177,14 @@ export async function GET(request: Request): Promise<NextResponse> {
         (result_json->>'timestamp') as timestamp
       FROM runs
       WHERE id = ${runId}::uuid
-    `;
+    ` as Array<{
+      id: string;
+      status: string;
+      completed_at: Date | string | null;
+      created_at: Date | string | null;
+      brand: string | null;
+      timestamp: string | null;
+    }>;
 
     // Get last 30 days of completed runs for mentionsHistory
     const recentRuns = await sql`
@@ -194,7 +199,12 @@ export async function GET(request: Request): Promise<NextResponse> {
         AND r.completed_at > NOW() - INTERVAL '30 days'
       ORDER BY r.completed_at DESC
       LIMIT 30
-    `;
+    ` as Array<{
+      run_id: string;
+      completed_at: Date | string;
+      created_at: Date | string | null;
+      mention_count: number | string;
+    }>;
 
     // Build mentionsHistory with one entry per day (last 30 days)
     const mentionsHistory: { date: string; mentions: number; runId?: string }[] = [];
@@ -209,8 +219,8 @@ export async function GET(request: Request): Promise<NextResponse> {
       const date = completedAt.split("T")[0];
       if (!runsByDate.has(date)) {
         runsByDate.set(date, {
-          runId: run.run_id as string,
-          mentions: run.mention_count as number
+          runId: run.run_id,
+          mentions: Number(run.mention_count ?? 0),
         });
       }
     }

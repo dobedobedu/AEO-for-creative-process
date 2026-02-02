@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   const payload = await req.json();
   const data = RequestSchema.parse(payload);
 
-  const run = await sql`SELECT id FROM runs WHERE id = ${data.runId} LIMIT 1`;
+  const run = await sql`SELECT id FROM runs WHERE id = ${data.runId} LIMIT 1` as Array<{ id: string }>;
   if (run.length === 0) {
     return Response.json({ error: "Run not found" }, { status: 404 });
   }

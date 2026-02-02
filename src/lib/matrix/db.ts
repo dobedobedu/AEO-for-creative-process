@@ -5,7 +5,7 @@ import type { MatrixConfig, MatrixPersona, MatrixStage, MatrixConfigVersion } fr
 export async function getActiveMatrixConfig(): Promise<MatrixConfig | null> {
   const result = await sql`
     SELECT * FROM get_active_matrix_config()
-  `;
+  ` as Array<{ personas?: MatrixPersona[]; stages?: MatrixStage[] }>;
 
   if (result.length === 0) {
     return null;
@@ -225,7 +225,7 @@ export async function saveDraftVersion(
       ${userId || null}::uuid
     )
     RETURNING id
-  `;
+  ` as Array<{ id: string }>;
 
   return result[0].id;
 }
@@ -313,7 +313,7 @@ export async function publishConfig(
     WHERE status = 'published'
     ORDER BY published_at DESC
     LIMIT 1
-  `;
+  ` as Array<{ id: string }>;
 
   return result[0]?.id || "";
 }

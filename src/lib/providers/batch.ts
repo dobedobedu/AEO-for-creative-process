@@ -103,7 +103,7 @@ export async function createBatchJob(params: {
       error_message as "errorMessage",
       created_at as "createdAt",
       completed_at as "completedAt"
-  `;
+  ` as unknown[];
 
   return BatchJobSchema.parse(rows[0]);
 }
@@ -137,7 +137,7 @@ export async function getBatchJob(
       AND provider = ${provider}
       AND batch_type = ${batchType}
     LIMIT 1
-  `;
+  ` as unknown[];
 
   if (rows.length === 0) return null;
   return BatchJobSchema.parse(rows[0]);
@@ -166,7 +166,7 @@ export async function getBatchJobsForRun(runId: string): Promise<BatchJob[]> {
     FROM batch_jobs
     WHERE run_id = ${runId}::text::uuid
     ORDER BY created_at ASC
-  `;
+  ` as unknown[];
 
   return rows.map((row: unknown) => BatchJobSchema.parse(row));
 }
@@ -277,7 +277,7 @@ export async function getPendingBatchJobs(
     WHERE status IN ('pending', 'in_progress')
     ${providerFilter}
     ORDER BY created_at ASC
-  `;
+  ` as unknown[];
 
   return rows.map((row: unknown) => BatchJobSchema.parse(row));
 }
@@ -292,7 +292,7 @@ export async function cleanupOldBatchJobs(): Promise<number> {
     DELETE FROM batch_jobs
     WHERE created_at < NOW() - INTERVAL '7 days'
     RETURNING id
-  `;
+  ` as unknown[];
 
   return result.length;
 }
@@ -307,8 +307,8 @@ export async function getBatchJobMetadata(
 
   const rows = await sql`
     SELECT metadata FROM batch_jobs WHERE id = ${jobId}::text::uuid
-  `;
+  ` as Array<{ metadata?: Record<string, unknown> | null }>;
 
   if (rows.length === 0 || !rows[0].metadata) return null;
-  return rows[0].metadata as Record<string, unknown>;
+  return rows[0].metadata;
 }

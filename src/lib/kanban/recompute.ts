@@ -1,7 +1,7 @@
 import { sql } from "@/lib/db";
 import { computeEntitySummary } from "@/lib/runs/aggregator";
 
-type SqlClient = (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown[]>;
+type SqlClient = (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown>;
 
 type RecomputeDeps = {
   sqlClient?: SqlClient;
@@ -16,7 +16,7 @@ export async function resolveKanbanRunId(sqlClient: SqlClient): Promise<string |
     )
     ORDER BY COALESCE(r.completed_at, r.created_at) DESC
     LIMIT 1
-  `;
+  ` as Array<{ id: string }>;
 
   if (latestWithSummary.length > 0) {
     return (latestWithSummary[0] as { id: string }).id;
@@ -29,7 +29,7 @@ export async function resolveKanbanRunId(sqlClient: SqlClient): Promise<string |
       AND jsonb_object_length(result_json->'cells') > 0
     ORDER BY created_at DESC
     LIMIT 1
-  `;
+  ` as Array<{ id: string }>;
 
   if (latestWithCells.length > 0) {
     return (latestWithCells[0] as { id: string }).id;
@@ -40,7 +40,7 @@ export async function resolveKanbanRunId(sqlClient: SqlClient): Promise<string |
     WHERE status = 'completed'
     ORDER BY completed_at DESC NULLS LAST, created_at DESC
     LIMIT 1
-  `;
+  ` as Array<{ id: string }>;
 
   if (latestCompleted.length > 0) {
     return (latestCompleted[0] as { id: string }).id;
