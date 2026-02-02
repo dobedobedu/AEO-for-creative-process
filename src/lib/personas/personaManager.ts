@@ -54,8 +54,20 @@ export const DEFAULT_PERSONAS: Persona[] = [
 /**
  * Generate a unique persona ID
  */
+let lastPersonaIdTimestamp = 0;
+let lastPersonaIdCounter = 0;
+
 export function generatePersonaId(): string {
-  return `persona-${Date.now()}`;
+  const now = Date.now();
+  if (now === lastPersonaIdTimestamp) {
+    lastPersonaIdCounter += 1;
+  } else {
+    lastPersonaIdTimestamp = now;
+    lastPersonaIdCounter = 0;
+  }
+
+  const suffix = lastPersonaIdCounter > 0 ? `-${lastPersonaIdCounter}` : "";
+  return `persona-${now}${suffix}`;
 }
 
 /**

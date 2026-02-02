@@ -45,12 +45,16 @@ describe("Persona Manager", () => {
   });
 
   describe("generatePersonaId", () => {
-    it("should generate unique IDs when called with delay", async () => {
+    it("should generate unique IDs even when called in same millisecond", () => {
+      const spy = vi.spyOn(Date, "now");
+      spy.mockReturnValue(1700000000000);
+
       const id1 = generatePersonaId();
-      // Wait 1ms to ensure Date.now() returns different value
-      await new Promise((resolve) => setTimeout(resolve, 1));
       const id2 = generatePersonaId();
+
       expect(id1).not.toBe(id2);
+
+      spy.mockRestore();
     });
 
     it("should generate IDs with persona- prefix", () => {
