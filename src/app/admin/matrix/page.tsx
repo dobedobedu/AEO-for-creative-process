@@ -17,6 +17,9 @@ export default function AdminMatrixStudioPage() {
   const [publishing, setPublishing] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [searchMode, setSearchMode] = useState<"x_search" | "web_search">("x_search");
+  const [loadingMode, setLoadingMode] = useState(true);
+  const [savingMode, setSavingMode] = useState(false);
 
   // Load configuration
   const loadConfig = async () => {
@@ -39,7 +42,25 @@ export default function AdminMatrixStudioPage() {
 
   useEffect(() => {
     loadConfig();
+    loadSearchMode();
   }, []);
+
+  const loadSearchMode = async () => {
+    setLoadingMode(true);
+    try {
+      const response = await fetch("/api/app-settings");
+      if (!response.ok) throw new Error("Failed to load search mode");
+
+      const data = await response.json();
+      if (data?.searchMode === "x_search" || data?.searchMode === "web_search") {
+        setSearchMode(data.searchMode);
+      }
+    } catch (error) {
+      console.error("Error loading search mode:", error);
+    } finally {
+      setLoadingMode(false);
+    }
+  };
 
   // Check for changes
   useEffect(() => {
@@ -177,6 +198,29 @@ export default function AdminMatrixStudioPage() {
     }
   };
 
+  const handleSearchModeChange = async (nextMode: "x_search" | "web_search") => {
+    if (savingMode || loadingMode || nextMode === searchMode) return;
+
+    const previous = searchMode;
+    setSearchMode(nextMode);
+    setSavingMode(true);
+
+    try {
+      const response = await fetch("/api/app-settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ searchMode: nextMode }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update search mode");
+    } catch (error) {
+      console.error("Error saving search mode:", error);
+      setSearchMode(previous);
+    } finally {
+      setSavingMode(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -246,6 +290,33 @@ export default function AdminMatrixStudioPage() {
 
       {/* Main Content */}
       <main className="max-w-[1800px] mx-auto px-6 py-8">
+        <div className="mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">xAI Search Mode</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant={searchMode === "x_search" ? "default" : "outline"}
+                  disabled={loadingMode || savingMode}
+                  onClick={() => handleSearchModeChange("x_search")}
+                >
+                  X Search
+                </Button>
+                <Button
+                  variant={searchMode === "web_search" ? "default" : "outline"}
+                  disabled={loadingMode || savingMode}
+                  onClick={() => handleSearchModeChange("web_search")}
+                >
+                  Web Search
+                </Button>
+                {savingMode && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                <span className="text-sm text-gray-500">Applies to new runs only.</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Personas Column */}
           <div className="lg:col-span-1">
