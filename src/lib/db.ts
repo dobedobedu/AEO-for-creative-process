@@ -149,6 +149,14 @@ export async function ensureSchema(): Promise<void> {
       ALTER TABLE runs
       ADD COLUMN IF NOT EXISTS result_json JSONB;
     `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS app_settings (
+        key TEXT PRIMARY KEY,
+        value JSONB NOT NULL,
+        updated_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_by UUID
+      );
+    `;
   } catch (e) {
     // Column may already exist or table doesn't exist yet
     console.warn("Schema migration warning:", e);
