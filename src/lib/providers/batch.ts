@@ -201,7 +201,7 @@ export async function updateBatchJobStatus(
 
 /**
  * Generate a unique custom ID for a batch request
- * Format: {persona}_{stage}_{intentId}_{provider}_{queryHash}
+ * Format: {persona}_{stage}_{intentHash}_{provider}_{queryIndex}
  */
 export function generateBatchCustomId(params: {
   persona: string;
@@ -211,8 +211,8 @@ export function generateBatchCustomId(params: {
   queryIndex: number;
 }): string {
   const { persona, stage, intentId, provider, queryIndex } = params;
-  // Keep it short but unique
-  return `${persona}_${stage}_${intentId.slice(0, 8)}_${provider}_${queryIndex}`;
+  const intentHash = hashIntentId(intentId);
+  return `${persona}_${stage}_${intentHash}_${provider}_${queryIndex}`;
 }
 
 /**
@@ -239,6 +239,14 @@ export function parseBatchCustomId(customId: string): {
   if (isNaN(queryIndex)) return null;
 
   return { persona, stage, intentIdPrefix, provider, queryIndex };
+}
+
+function hashIntentId(intentId: string): string {
+  let hash = 0;
+  for (let i = 0; i < intentId.length; i += 1) {
+    hash = (hash * 31 + intentId.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(36).padStart(8, "0").slice(0, 8);
 }
 
 /**
