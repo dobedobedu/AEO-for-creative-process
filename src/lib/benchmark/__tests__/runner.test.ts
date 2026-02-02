@@ -31,10 +31,15 @@ vi.mock("@/lib/providers/xai", () => ({
   callXaiSearch: vi.fn(),
 }));
 
+vi.mock("@/lib/appSettings", () => ({
+  getSearchMode: vi.fn().mockResolvedValue("x_search"),
+}));
+
 import { callOpenAIWebSearch } from "@/lib/providers/openai";
 import { callAnthropicWebSearch } from "@/lib/providers/anthropic";
 import { callGeminiWebSearch } from "@/lib/providers/gemini";
 import { callXaiSearch } from "@/lib/providers/xai";
+import { getSearchMode } from "@/lib/appSettings";
 import { extractStageMetrics } from "@/lib/scoring/extractor";
 
 describe("runSingleQuery", () => {
@@ -100,7 +105,12 @@ describe("runSingleQuery", () => {
       model: "grok-4-1-fast-reasoning",
     });
 
-    expect(callXaiSearch).toHaveBeenCalled();
+    expect(getSearchMode).toHaveBeenCalled();
+    expect(callXaiSearch).toHaveBeenCalledWith({
+      model: "grok-4-1-fast-reasoning",
+      query: "best schools florida",
+      searchMode: "x_search",
+    });
     expect(result.provider).toBe("xai");
     expect(result.text).toContain("Nocatee");
   });

@@ -33,8 +33,8 @@ const CACHE_FILE = join(CACHE_DIR, "response-cache.json");
 /**
  * Generate a unique cache key for a query + provider + model combination
  */
-export function getCacheKey(query: string, provider: string, model: string): string {
-    const input = `${provider}:${model}:${query}`;
+export function getCacheKey(query: string, provider: string, model: string, context?: string): string {
+    const input = context ? `${provider}:${model}:${query}:${context}` : `${provider}:${model}:${query}`;
     return createHash("sha256").update(input).digest("hex").slice(0, 16);
 }
 
@@ -44,9 +44,10 @@ export function getCacheKey(query: string, provider: string, model: string): str
 export function getCachedResponse(
     query: string,
     provider: string,
-    model: string
+    model: string,
+    context?: string
 ): CachedResponse | null {
-    const key = getCacheKey(query, provider, model);
+    const key = getCacheKey(query, provider, model, context);
     const cached = memoryCache.get(key);
 
     if (!cached) {
@@ -69,9 +70,10 @@ export function setCachedResponse(
     query: string,
     provider: string,
     model: string,
-    response: Omit<CachedResponse, "query" | "provider" | "model" | "timestamp">
+    response: Omit<CachedResponse, "query" | "provider" | "model" | "timestamp">,
+    context?: string
 ): void {
-    const key = getCacheKey(query, provider, model);
+    const key = getCacheKey(query, provider, model, context);
     const entry: CachedResponse = {
         query,
         provider,

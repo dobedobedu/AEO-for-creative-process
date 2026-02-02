@@ -48,7 +48,8 @@ export function formatBenchmarkForUpload(
   results: BenchmarkResult,
   persona: string,
   stage: string,
-  brand: string = "Lakewood Ranch"
+  brand: string = "Lakewood Ranch",
+  searchMode?: string
 ): FormattedBenchmark {
   const runDate = new Date().toISOString().split("T")[0];
   const timestamp = new Date().toISOString();
@@ -124,6 +125,10 @@ export function formatBenchmarkForUpload(
     { key: "competitors_mentioned", stringValue: [...allCompetitors].slice(0, 10).join(", ") },
   ];
 
+  if (searchMode) {
+    metadata.push({ key: "search_mode", stringValue: searchMode });
+  }
+
   const displayName = `${persona}_${stage}_${runDate}_${Date.now()}`;
 
   return { content, metadata, displayName };
@@ -136,7 +141,8 @@ export function formatQueryResult(
   queryResult: QueryResult,
   persona: string,
   stage: string,
-  brand: string = "Lakewood Ranch"
+  brand: string = "Lakewood Ranch",
+  searchMode?: string
 ): FormattedBenchmark {
   const runDate = new Date().toISOString().split("T")[0];
   const timestamp = new Date().toISOString();
@@ -178,6 +184,10 @@ export function formatQueryResult(
     { key: "mention_count", numericValue: mentionedCount },
     { key: "avg_score", numericValue: Math.round(avgScore * 100) },
   ];
+
+  if (searchMode) {
+    metadata.push({ key: "search_mode", stringValue: searchMode });
+  }
 
   const querySlug = queryResult.query.slice(0, 30).replace(/[^a-z0-9]/gi, "_");
   const displayName = `${persona}_${stage}_${querySlug}_${Date.now()}`;
@@ -250,7 +260,7 @@ function formatStageExtraction(stage: Stage, extraction: StageExtraction): strin
  * Format a full benchmark run for FileSearchStore
  * Uses the new Intent Library + Stage-Aware Scoring format
  */
-export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
+export function formatRunForUpload(run: BenchmarkRun, searchMode?: string): FormattedBenchmark[] {
   const documents: FormattedBenchmark[] = [];
   const runDate = run.timestamp.split("T")[0];
 
@@ -362,6 +372,10 @@ export function formatRunForUpload(run: BenchmarkRun): FormattedBenchmark[] {
       { key: "query_count", numericValue: cell.queriesUsed.length },
     ];
 
+    if (searchMode) {
+      metadata.push({ key: "search_mode", stringValue: searchMode });
+    }
+
     // Add competitive intelligence to metadata
     if (competitors.size > 0) {
       metadata.push({ key: "competitors_mentioned", stringValue: [...competitors].slice(0, 10).join(", ") });
@@ -406,7 +420,8 @@ export function formatCellForUpload(
   persona: string,
   stage: Stage,
   intentLibraryVersion: number,
-  metricsConfigVersion: number
+  metricsConfigVersion: number,
+  searchMode?: string
 ): FormattedBenchmark {
   const header = [
     `# Benchmark Result: ${persona} × ${stage}`,
@@ -454,6 +469,10 @@ export function formatCellForUpload(
     { key: "intent_library_version", numericValue: intentLibraryVersion },
     { key: "metrics_config_version", numericValue: metricsConfigVersion },
   ];
+
+  if (searchMode) {
+    metadata.push({ key: "search_mode", stringValue: searchMode });
+  }
 
   const displayName = `${runId}_${persona}_${stage}_${Date.now()}`;
 

@@ -7,6 +7,7 @@ import { ingestOpenAIResponse } from "@/lib/ingest/openaiIngest";
 import { ingestGeminiResponse } from "@/lib/ingest/geminiIngest";
 import { ingestAnthropicResponse } from "@/lib/ingest/anthropicIngest";
 import { ingestXaiResponse } from "@/lib/ingest/xaiIngest";
+import { getSearchMode } from "@/lib/appSettings";
 
 const RequestSchema = z.object({
   runId: z.string().uuid(),
@@ -79,6 +80,7 @@ export async function POST(req: Request) {
   const response = await callXaiSearch({
     model: data.model,
     query: finalQuery,
+    searchMode: await getSearchMode(),
   });
 
   const responseId = await ingestXaiResponse({

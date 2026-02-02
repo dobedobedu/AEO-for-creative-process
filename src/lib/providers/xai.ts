@@ -16,16 +16,21 @@ const XaiResponseSchema = z.object({
 
 export type XaiResponse = z.infer<typeof XaiResponseSchema>;
 
+export type XaiSearchMode = "x_search" | "web_search";
+
 export async function callXaiSearch(params: {
   model: string;
   query: string;
+  searchMode: XaiSearchMode;
 }): Promise<XaiResponse> {
   const apiKey = process.env.XAI_API_KEY;
   if (!apiKey) {
     throw new Error("XAI_API_KEY is not set");
   }
 
-  // Agent Tools API - /v1/responses endpoint with web_search tool
+  const toolType = params.searchMode === "x_search" ? "x_search" : "web_search";
+
+  // Agent Tools API - /v1/responses endpoint with search tools
   // Replaces deprecated search_parameters on /v1/chat/completions (deprecated Jan 12, 2026)
   const response = await fetch("https://api.x.ai/v1/responses", {
     method: "POST",
@@ -38,7 +43,7 @@ export async function callXaiSearch(params: {
       input: [
         { role: "user", content: params.query },
       ],
-      tools: [{ type: "web_search" }],
+      tools: [{ type: toolType }],
       include: ["inline_citations"],
       temperature: 0.2,
       max_output_tokens: 512,

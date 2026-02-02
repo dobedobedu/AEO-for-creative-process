@@ -7,6 +7,7 @@ import type { Stage } from "@/lib/intents/types";
 import { extractStageMetrics, recommendationStrengthToScore } from "@/lib/scoring/extractor";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import { getCachedResponse, setCachedResponse } from "@/lib/cache";
+import { getSearchMode } from "@/lib/appSettings";
 import { parseOpenAIResponse } from "@/lib/parsers/openaiCitations";
 import { parseGeminiResponse } from "@/lib/parsers/geminiCitations";
 import type { Citation } from "@/lib/parsers/types";
@@ -108,11 +109,17 @@ export async function runSingleQuery(params: {
   skipCache?: boolean;
 }): Promise<ProviderResponse> {
   const { query, provider, model, skipCache = false } = params;
+  let searchMode: string | undefined;
   const start = Date.now();
 
   // Check cache first (unless explicitly skipped)
+  let cacheContext: string | undefined;
   if (!skipCache) {
-    const cached = getCachedResponse(query, provider, model);
+    if (provider === "xai") {
+      searchMode = await getSearchMode();
+      cacheContext = `searchMode:${searchMode}`;
+    }
+    const cached = getCachedResponse(query, provider, model, cacheContext);
     if (cached) {
       // Reconstruct citations from cached data (they may be stored as strings or full Citation objects)
       const cachedCitations: Citation[] = Array.isArray(cached.citations)
@@ -170,7 +177,10 @@ export async function runSingleQuery(params: {
         break;
       }
       case "xai": {
-        const response = await callXaiSearch({ model, query });
+        if (!searchMode) {
+          searchMode = await getSearchMode();
+        }
+        const response = await callXaiSearch({ model, query, searchMode });
         raw = response;
         text = extractXaiText(response);
         // xAI returns citations as string URLs, convert to Citation objects
@@ -185,7 +195,12 @@ export async function runSingleQuery(params: {
     }
 
     // Store in cache for future deduplication
-    setCachedResponse(query, provider, model, { text, citations, raw });
+    if (provider === "xai") {
+      const finalMode = searchMode ?? (await getSearchMode());
+      cacheContext = `searchMode:${finalMode}`;
+    }
+
+    setCachedResponse(query, provider, model, { text, citations, raw }, cacheContext);
 
     return {
       provider,

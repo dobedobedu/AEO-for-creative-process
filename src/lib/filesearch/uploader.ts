@@ -7,6 +7,7 @@ import { getStoreName } from "./store";
 import { formatBenchmarkForUpload, formatRunForUpload, type FormattedBenchmark } from "./formatter";
 import type { BenchmarkResult } from "@/lib/benchmark/runner";
 import type { BenchmarkRun } from "@/lib/runs/types";
+import { getSearchMode } from "@/lib/appSettings";
 
 export interface UploadResult {
   success: boolean;
@@ -107,7 +108,8 @@ export async function uploadBenchmarkResults(
   stage: string,
   brand: string = "Lakewood Ranch"
 ): Promise<UploadResult> {
-  const formatted = formatBenchmarkForUpload(results, persona, stage, brand);
+  const searchMode = await getSearchMode();
+  const formatted = formatBenchmarkForUpload(results, persona, stage, brand, searchMode);
   return uploadFormattedBenchmark(formatted);
 }
 
@@ -146,7 +148,8 @@ export function uploadBenchmarkResultsAsync(
  * This creates one document per cell for better retrieval.
  */
 export async function uploadRun(run: BenchmarkRun): Promise<UploadResult[]> {
-  const formattedDocs = formatRunForUpload(run);
+  const searchMode = await getSearchMode();
+  const formattedDocs = formatRunForUpload(run, searchMode);
   const results: UploadResult[] = [];
 
   for (const doc of formattedDocs) {

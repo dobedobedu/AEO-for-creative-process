@@ -39,6 +39,7 @@ describe("responseCache", () => {
             const key2 = getCacheKey("test query", "openai", "gpt-5-mini");
             expect(key1).not.toBe(key2);
         });
+
     });
 
     describe("getCachedResponse / setCachedResponse", () => {

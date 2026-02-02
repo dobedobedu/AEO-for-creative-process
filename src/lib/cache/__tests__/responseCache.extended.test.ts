@@ -86,6 +86,12 @@ describe("responseCache - Extended", () => {
             const key2 = getCacheKey("test  query", "openai", "gpt-5");
             expect(key1).not.toBe(key2);
         });
+
+        it("includes context in cache keys when provided", () => {
+            const key1 = getCacheKey("test query", "xai", "grok-4", "searchMode:x_search");
+            const key2 = getCacheKey("test query", "xai", "grok-4", "searchMode:web_search");
+            expect(key1).not.toBe(key2);
+        });
     });
 
     describe("overwriting entries", () => {
