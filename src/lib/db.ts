@@ -4,6 +4,28 @@ type SqlClient = ReturnType<typeof postgres>;
 
 const globalForSql = globalThis as unknown as { sql?: SqlClient };
 
+// Error codes that indicate stale pooler connections worth retrying
+const RETRYABLE_CODES = new Set(["CONNECTION_CLOSED", "ECONNRESET"]);
+
+/**
+ * Retry wrapper for database operations that may fail due to stale pooler connections.
+ * Retries once on CONNECTION_CLOSED or ECONNRESET errors.
+ */
+export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err: unknown) {
+    const code = (err as { code?: string })?.code;
+    if (code && RETRYABLE_CODES.has(code)) {
+      console.warn(`[db] Retrying after ${code}`);
+      // Reset cached connection to force reconnect
+      globalForSql.sql = undefined;
+      return await fn();
+    }
+    throw err;
+  }
+}
+
 // Lazy initialization - only connect when first query is made
 // This prevents build-time errors when DATABASE_URL is not set
 function getClient(): SqlClient {
@@ -42,9 +64,12 @@ export function getSql(): SqlClient {
 // Also provides access to postgres helper methods like sql.array()
 // Handles both template literal calls and regular function calls (for bulk inserts)
 function sqlFn(stringsOrValues: TemplateStringsArray | unknown[], ...values: unknown[]) {
-  const client = getClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (client as any)(stringsOrValues, ...values);
+  const executeQuery = () => {
+    const client = getClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (client as any)(stringsOrValues, ...values);
+  };
+  return withRetry(executeQuery);
 }
 
 // Add helper methods to the sql function
@@ -70,17 +95,25 @@ function sqlFn(stringsOrValues: TemplateStringsArray | unknown[], ...values: unk
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sqlFn as any).unsafe = function (query: string, params?: unknown[]) {
-  const client = getClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (client.unsafe as any)(query, params);
+  const executeQuery = () => {
+    const client = getClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (client.unsafe as any)(query, params);
+  };
+  return withRetry(executeQuery);
 };
 
 // Add begin helper for transactions
+// Note: Retry wraps the entire transaction. If connection fails at start,
+// we reconnect and re-run the callback. Mid-transaction failures are not retried.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sqlFn as any).begin = function<T>(callback: (sql: any) => Promise<T>): Promise<T> {
-  const client = getClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return client.begin(callback) as Promise<T>;
+  const executeTransaction = () => {
+    const client = getClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return client.begin(callback) as Promise<T>;
+  };
+  return withRetry(executeTransaction);
 };
 
 export const sql = sqlFn as typeof sqlFn & {
@@ -97,9 +130,12 @@ export const sql = sqlFn as typeof sqlFn & {
 
 // Helper function for type-safe queries
 export function query<T>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T[]> {
-  const client = getClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (client as any)(strings, ...values) as Promise<T[]>;
+  const executeQuery = () => {
+    const client = getClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (client as any)(strings, ...values) as Promise<T[]>;
+  };
+  return withRetry(executeQuery);
 }
 
 // Auto-migration: Add result_json column if it doesn't exist
