@@ -30,7 +30,8 @@ function getStatusFromRate(rate: number): string {
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
-    let runId = searchParams.get("runId");
+    const requestedRunId = searchParams.get("runId");
+    let runId = requestedRunId;
 
     // Validate runId format if provided
     if (runId && !UUID_REGEX.test(runId)) {
@@ -58,8 +59,9 @@ export async function GET(request: Request): Promise<NextResponse> {
         const latestWithCells = await sql`
           SELECT id::text FROM runs
           WHERE result_json IS NOT NULL
+            AND result_json ? 'cells'
             AND jsonb_typeof(result_json->'cells') = 'object'
-            AND jsonb_object_length(result_json->'cells') > 0
+            AND result_json->'cells' <> '{}'::jsonb
           ORDER BY created_at DESC
           LIMIT 1
         ` as Array<{ id: string }>;
@@ -186,57 +188,62 @@ export async function GET(request: Request): Promise<NextResponse> {
       timestamp: string | null;
     }>;
 
-    // Get last 30 days of completed runs for mentionsHistory
-    const recentRuns = await sql`
-      SELECT
-        r.id::text as run_id,
-        r.completed_at,
-        r.created_at,
-        COALESCE((SELECT SUM(mention_count)::int FROM run_entity_summary WHERE run_id = r.id), 0) as mention_count
-      FROM runs r
-      WHERE r.status = 'completed'
-        AND r.completed_at IS NOT NULL
-        AND r.completed_at > NOW() - INTERVAL '30 days'
-      ORDER BY r.completed_at DESC
-      LIMIT 30
-    ` as Array<{
-      run_id: string;
-      completed_at: Date | string;
-      created_at: Date | string | null;
-      mention_count: number | string;
-    }>;
+    const includeHistory = !requestedRunId;
+    const recentRuns = includeHistory
+      ? ((await sql`
+          SELECT
+            r.id::text as run_id,
+            r.completed_at,
+            r.created_at,
+            COALESCE((SELECT SUM(mention_count)::int FROM run_entity_summary WHERE run_id = r.id), 0) as mention_count
+          FROM runs r
+          WHERE r.status = 'completed'
+            AND r.completed_at IS NOT NULL
+            AND r.completed_at > NOW() - INTERVAL '30 days'
+          ORDER BY r.completed_at DESC
+          LIMIT 30
+        `) as Array<{
+          run_id: string;
+          completed_at: Date | string;
+          created_at: Date | string | null;
+          mention_count: number | string;
+        }>)
+      : [];
 
-    // Build mentionsHistory with one entry per day (last 30 days)
-    const mentionsHistory: { date: string; mentions: number; runId?: string }[] = [];
-    const now = new Date();
-    const runsByDate = new Map<string, { runId: string; mentions: number }>();
+    let mentionsHistory: { date: string; mentions: number; runId?: string }[] | undefined;
+    if (includeHistory) {
+      // Build mentionsHistory with one entry per day (last 30 days)
+      mentionsHistory = [];
+      const now = new Date();
+      const runsByDate = new Map<string, { runId: string; mentions: number }>();
 
-    // Map runs by date (use latest run per day)
-    for (const run of recentRuns) {
-      const completedAt = run.completed_at instanceof Date
-        ? run.completed_at.toISOString()
-        : String(run.completed_at);
-      const date = completedAt.split("T")[0];
-      if (!runsByDate.has(date)) {
-        runsByDate.set(date, {
-          runId: run.run_id,
-          mentions: Number(run.mention_count ?? 0),
+      // Map runs by date (use latest run per day)
+      for (const run of recentRuns) {
+        const completedAt = run.completed_at instanceof Date
+          ? run.completed_at.toISOString()
+          : String(run.completed_at);
+        const date = completedAt.split("T")[0];
+        if (!runsByDate.has(date)) {
+          runsByDate.set(date, {
+            runId: run.run_id,
+            mentions: Number(run.mention_count ?? 0),
+          });
+        }
+      }
+
+      // Build 30-day array
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        const runData = runsByDate.get(dateStr);
+
+        mentionsHistory.push({
+          date: dateStr,
+          mentions: runData?.mentions || 0,
+          runId: runData?.runId,
         });
       }
-    }
-
-    // Build 30-day array
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(now);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split("T")[0];
-      const runData = runsByDate.get(dateStr);
-
-      mentionsHistory.push({
-        date: dateStr,
-        mentions: runData?.mentions || 0,
-        runId: runData?.runId,
-      });
     }
 
     // Cache for 30s, serve stale for 5min while revalidating
@@ -246,7 +253,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         run: runMeta[0] || null,
         lanes,
         thresholds: STATUS_THRESHOLDS,
-        mentionsHistory,
+        ...(mentionsHistory ? { mentionsHistory } : {}),
       },
       {
         headers: {

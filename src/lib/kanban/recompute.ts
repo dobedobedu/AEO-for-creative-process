@@ -25,8 +25,9 @@ export async function resolveKanbanRunId(sqlClient: SqlClient): Promise<string |
   const latestWithCells = await sqlClient`
     SELECT id::text FROM runs
     WHERE result_json IS NOT NULL
+      AND result_json ? 'cells'
       AND jsonb_typeof(result_json->'cells') = 'object'
-      AND jsonb_object_length(result_json->'cells') > 0
+      AND result_json->'cells' <> '{}'::jsonb
     ORDER BY created_at DESC
     LIMIT 1
   ` as Array<{ id: string }>;
