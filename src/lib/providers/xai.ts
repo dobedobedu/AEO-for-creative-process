@@ -2,10 +2,29 @@ import { z } from "zod";
 
 // Agent Tools API response schema (replaces deprecated Live Search API)
 // See: https://docs.x.ai/docs/guides/tools/search-tools
+
+// Content item within a message block (new Responses API format)
+const XaiContentItemSchema = z.object({
+  type: z.string(),
+  text: z.string().optional(),
+  annotations: z.array(z.object({
+    type: z.string(),
+    url: z.string().optional(),
+    title: z.string().optional(),
+    start_index: z.number().optional(),
+    end_index: z.number().optional(),
+  })).optional(),
+});
+
+// Output block — can be message, web_search_call, text, etc.
 const XaiOutputBlockSchema = z.object({
   type: z.string(),
-  content: z.string().optional(),
-});
+  // Old format: content as string; New format: content as array of items
+  content: z.union([z.string(), z.array(XaiContentItemSchema)]).optional(),
+  text: z.string().optional(),
+  role: z.string().optional(),
+  status: z.string().optional(),
+}).passthrough();
 
 const XaiResponseSchema = z.object({
   id: z.string().optional(),
@@ -15,6 +34,7 @@ const XaiResponseSchema = z.object({
 });
 
 export type XaiResponse = z.infer<typeof XaiResponseSchema>;
+export type XaiContentItem = z.infer<typeof XaiContentItemSchema>;
 
 export type XaiSearchMode = "x_search" | "web_search";
 
@@ -56,5 +76,8 @@ export async function callXaiSearch(params: {
   }
 
   const json = await response.json();
+  console.log("[xai] Raw response keys:", Object.keys(json));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  console.log("[xai] Output block types:", json.output?.map((b: any) => b.type));
   return XaiResponseSchema.parse(json);
 }

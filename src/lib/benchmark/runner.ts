@@ -1,7 +1,7 @@
 import { callOpenAIWebSearch } from "@/lib/providers/openai";
 import { callAnthropicWebSearch } from "@/lib/providers/anthropic";
 import { callGeminiWebSearch } from "@/lib/providers/gemini";
-import { callXaiSearch } from "@/lib/providers/xai";
+import { callXaiSearch, type XaiResponse } from "@/lib/providers/xai";
 import type { VisibilityScore } from "./scoring";
 import { extractStageMetrics, recommendationStrengthToScore } from "@/lib/scoring/extractor";
 import type { StageExtraction } from "@/lib/scoring/schemas";
@@ -182,9 +182,27 @@ export async function runSingleQuery(params: {
         const response = await callXaiSearch({ model, query, searchMode });
         raw = response;
         text = extractXaiText(response);
-        // xAI returns citations as string URLs, convert to Citation objects
-        const urlCitations = response.citations ?? [];
-        citations = urlCitations.map((url: string) => ({
+
+        // Extract citations: try top-level first, then annotations in content
+        const topLevelCitations = response.citations ?? [];
+        const annotationCitations: string[] = [];
+        for (const block of response.output ?? []) {
+          if (block.type === "message" && Array.isArray(block.content)) {
+            for (const item of block.content) {
+              if (typeof item === "object" && item.annotations) {
+                for (const ann of item.annotations) {
+                  if (ann.type === "url_citation" && ann.url) {
+                    annotationCitations.push(ann.url);
+                  }
+                }
+              }
+            }
+          }
+        }
+        const allCitationUrls = topLevelCitations.length > 0
+          ? topLevelCitations
+          : annotationCitations;
+        citations = allCitationUrls.map((url: string) => ({
           url,
           domain: extractDomainFromUrl(url),
           sourceType: "url_citation" as const,
@@ -504,9 +522,26 @@ function extractAnthropicText(response: { content?: Array<Record<string, unknown
   return parts.join("\n").trim();
 }
 
-// Agent Tools API returns output blocks with type and content
-// See: https://docs.x.ai/docs/guides/tools/search-tools
-function extractXaiText(response: { output?: Array<{ type: string; content?: string }> }): string {
-  const textBlocks = response.output?.filter(b => b.type === "text") ?? [];
-  return textBlocks.map(b => b.content ?? "").join("\n").trim();
+// Agent Tools API returns output blocks — handles both old and new formats
+// Old: type "text" with content as string
+// New: type "message" with content as array of { type: "output_text", text: "..." }
+function extractXaiText(response: XaiResponse): string {
+  if (!response.output) return "";
+
+  const parts: string[] = [];
+  for (const block of response.output) {
+    // New format: type "message" with content array
+    if (block.type === "message" && Array.isArray(block.content)) {
+      for (const item of block.content) {
+        if (typeof item === "object" && item.type === "output_text" && item.text) {
+          parts.push(item.text);
+        }
+      }
+    }
+    // Old format: type "text" with content as string
+    if (block.type === "text" && typeof block.content === "string") {
+      parts.push(block.content);
+    }
+  }
+  return parts.join("\n").trim();
 }
