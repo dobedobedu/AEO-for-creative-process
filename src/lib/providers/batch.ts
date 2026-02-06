@@ -49,8 +49,8 @@ export const BatchJobSchema = z.object({
   inputFileId: z.string().nullable(),
   outputFileId: z.string().nullable(),
   errorMessage: z.string().nullable(),
-  createdAt: z.string().datetime(),
-  completedAt: z.string().datetime().nullable(),
+  createdAt: z.union([z.string().datetime(), z.date()]).transform((v) => (v instanceof Date ? v.toISOString() : v)),
+  completedAt: z.union([z.string().datetime(), z.date(), z.null()]).transform((v) => (v instanceof Date ? v.toISOString() : v)),
 });
 
 export type BatchJob = z.infer<typeof BatchJobSchema>;
