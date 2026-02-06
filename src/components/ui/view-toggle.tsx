@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type View = "matrix" | "kanban";
 
@@ -35,19 +35,63 @@ export function ViewToggle({ className = "" }: ViewToggleProps) {
     fetch("/api/kanban").catch(() => {});
   }, []);
 
-  const handleMouseEnter = useCallback((view: View) => {
-    // Small delay to avoid prefetching on accidental hover
-    prefetchTimeoutRef.current = setTimeout(() => {
+  const prefetchView = useCallback(
+    (view: View) => {
       if (view === "matrix") prefetchMatrix();
       else prefetchKanban();
+    },
+    [prefetchMatrix, prefetchKanban]
+  );
+
+  const handleMouseEnter = useCallback((view: View) => {
+    if (prefetchTimeoutRef.current) {
+      clearTimeout(prefetchTimeoutRef.current);
+    }
+
+    // Small delay to avoid prefetching on accidental hover
+    prefetchTimeoutRef.current = setTimeout(() => {
+      prefetchView(view);
     }, 100);
-  }, [prefetchMatrix, prefetchKanban]);
+  }, [prefetchView]);
 
   const handleMouseLeave = useCallback(() => {
     if (prefetchTimeoutRef.current) {
       clearTimeout(prefetchTimeoutRef.current);
       prefetchTimeoutRef.current = null;
     }
+  }, []);
+
+  useEffect(() => {
+    const target: View = activeView === "matrix" ? "kanban" : "matrix";
+    if (typeof window === "undefined") return;
+    const requestIdle =
+      typeof window.requestIdleCallback === "function"
+        ? window.requestIdleCallback.bind(window)
+        : undefined;
+    const cancelIdle =
+      typeof window.cancelIdleCallback === "function"
+        ? window.cancelIdleCallback.bind(window)
+        : undefined;
+
+    let idleId: number | null = null;
+    if (requestIdle) {
+      idleId = requestIdle(() => prefetchView(target));
+    } else {
+      idleId = window.setTimeout(() => prefetchView(target), 1200);
+    }
+
+    return () => {
+      if (idleId === null) return;
+      if (cancelIdle) cancelIdle(idleId);
+      else window.clearTimeout(idleId);
+    };
+  }, [activeView, prefetchView]);
+
+  useEffect(() => {
+    return () => {
+      if (!prefetchTimeoutRef.current) return;
+      clearTimeout(prefetchTimeoutRef.current);
+    };
   }, []);
 
   return (
@@ -59,6 +103,8 @@ export function ViewToggle({ className = "" }: ViewToggleProps) {
         prefetch={true}
         onMouseEnter={() => handleMouseEnter("matrix")}
         onMouseLeave={handleMouseLeave}
+        onPointerDown={() => prefetchView("matrix")}
+        onFocus={() => prefetchView("matrix")}
         className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
           activeView === "matrix"
             ? "bg-[var(--forest)] text-white shadow-sm"
@@ -77,6 +123,8 @@ export function ViewToggle({ className = "" }: ViewToggleProps) {
         prefetch={true}
         onMouseEnter={() => handleMouseEnter("kanban")}
         onMouseLeave={handleMouseLeave}
+        onPointerDown={() => prefetchView("kanban")}
+        onFocus={() => prefetchView("kanban")}
         className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
           activeView === "kanban"
             ? "bg-[var(--forest)] text-white shadow-sm"

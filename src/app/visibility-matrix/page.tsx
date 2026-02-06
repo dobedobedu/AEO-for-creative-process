@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback, Fragment, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { usePathname } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,47 +11,46 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Slider } from "@/components/ui/slider";
 import {
   Eye,
   EyeOff,
-  ChevronRight,
-  Pencil,
-  Check,
   MessageSquare,
   X,
   Clock,
-  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
-import { ChatPanel } from "@/components/chat-panel";
-import { MatrixCell } from "@/components/visibility-matrix/MatrixCell";
 import { SplitViewEditor } from "@/components/visibility-matrix/SplitViewEditor";
 import { IntentEditorModal } from "@/components/visibility-matrix/IntentEditorModal";
-import { InsightModal } from "@/components/visibility-matrix/InsightModal";
 import { InlineErrorBanner } from "@/components/visibility-matrix/InlineErrorBanner";
-import { AnswersPanel } from "@/components/visibility-matrix/AnswersPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StickyActionBar } from "@/components/visibility-matrix/StickyActionBar";
-import { TimeMachinePanel } from "@/components/visibility-matrix/TimeMachinePanel";
+import dynamic from "next/dynamic";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { GlobalProgressBar, useGlobalProgress } from "@/components/global-progress-bar";
 import type { ChatContext } from "@/lib/chat/types";
 import { useMatrixData } from "@/lib/matrix/data/useMatrixData";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
-import {
-  AreaChart as RechartsAreaChart,
-  Area,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  ReferenceLine,
-} from "recharts";
+import { type ChartConfig } from "@/components/ui/chart";
+
+const InsightModal = dynamic(
+  () => import("@/components/visibility-matrix/InsightModal").then((mod) => mod.InsightModal),
+  { ssr: false }
+);
+const AnswersPanel = dynamic(
+  () => import("@/components/visibility-matrix/AnswersPanel").then((mod) => mod.AnswersPanel),
+  { ssr: false }
+);
+const TimeMachinePanel = dynamic(
+  () => import("@/components/visibility-matrix/TimeMachinePanel").then((mod) => mod.TimeMachinePanel),
+  { ssr: false }
+);
+const ChatPanel = dynamic(
+  () => import("@/components/chat-panel").then((mod) => mod.ChatPanel),
+  { ssr: false }
+);
+const MatrixTrendChart = dynamic(
+  () => import("@/components/visibility-matrix/MatrixTrendChart").then((mod) => mod.MatrixTrendChart),
+  { ssr: false }
+);
 
 import {
   DEFAULT_PROVIDER_WEIGHTS,
@@ -248,15 +245,6 @@ function storedRunToQueryBank(run: StoredRun): QueryBank {
 const BRAND = "Lakewood Ranch";
 const BRAND_ALIASES = ["LWR", "Lakewood"];
 const BRAND_DOMAIN = "lakewoodranch.com";
-
-// Helper functions for label lookup with fallback for historical compatibility
-function getPersonaLabel(id: Persona, personas: PersonaConfig[]): string {
-  return personas.find(p => p.id === id)?.label || id;
-}
-
-function getStageLabel(id: Stage, stages: { id: Stage; label: string; description: string }[]): string {
-  return stages.find(s => s.id === id)?.label || id;
-}
 
 function recommendationStrengthToScore(strength: string): number {
   switch (strength) {
@@ -501,17 +489,15 @@ export default function VisibilityMatrixPage() {
   const [kpiMetric, setKpiMetric] = useState<"mention" | "sentiment" | "winrate" | "top3">("mention");
   const [kpiRange, setKpiRange] = useState<"day" | "week" | "month">("week");
   const [weightMode, setWeightMode] = useState<WeightMode>("equal");
-  const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
+  const [, setSelectedTimeIndex] = useState(0);
   const [personas, setPersonas] = useState<PersonaConfig[]>(DEFAULT_PERSONAS);
   const [stages, setStages] = useState<{ id: Stage; label: string; description: string }[]>(DEFAULT_STAGES);
   const [matrixConfigLoading, setMatrixConfigLoading] = useState(true);
-  const [editingPersona, setEditingPersona] = useState<Persona | null>(null);
-  const [editValue, setEditValue] = useState("");
   const [evidenceModal, setEvidenceModal] = useState<EvidenceModalData | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<ChatContext>({ scope: "global" });
   const [localQueryBank, setLocalQueryBank] = useState<QueryBank>(() => createEmptyQueryBank());
-  const [intentLibrary, setIntentLibrary] = useState<IntentLibrary | null>(null);
+  const [, setIntentLibrary] = useState<IntentLibrary | null>(null);
   const [viewMode, setViewMode] = useState<"summary" | "intents" | "queries" | "answers">("summary");
   // Cell Selection and Focus Mode
   const [selectedCell, setSelectedCell] = useState<{ persona: Persona; stage: Stage } | null>(null);
@@ -746,7 +732,13 @@ export default function VisibilityMatrixPage() {
     }
   }, [matrixDataHook.history, matrixDataHook.status]);
 
+  // Track active mutations to prevent sync from overwriting optimistic updates
+  const isMutatingRef = useRef(false);
+
   useEffect(() => {
+    // Don't overwrite during active mutations (optimistic updates in progress)
+    if (isMutatingRef.current) return;
+
     if (matrixDataHook.intentLibrary) {
       setIntentLibrary(matrixDataHook.intentLibrary);
       setLocalQueryBank(buildQueryBankFromIntentLibrary(matrixDataHook.intentLibrary));
@@ -781,24 +773,36 @@ export default function VisibilityMatrixPage() {
 
 
   const persistQueryBank = async (queryBank: QueryBank) => {
-    const resp = await fetch("/api/intents/library/queries", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ queryBank }),
-    });
-    if (!resp.ok) {
-      throw new Error("Failed to save intent queries");
-    }
+    // Set mutation lock to prevent sync effect from overwriting optimistic updates
+    isMutatingRef.current = true;
 
-    // The API returns the canonical intent library (including server-generated IDs for new intents).
-    const data = await resp.json().catch(() => null);
-    if (data?.library) {
-      setIntentLibrary(data.library);
-      setLocalQueryBank(buildQueryBankFromIntentLibrary(data.library));
-      return;
-    }
+    try {
+      const resp = await fetch("/api/intents/library/queries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ queryBank }),
+      });
+      if (!resp.ok) {
+        console.error(`/api/intents/library/queries failed: ${resp.status}`);
+        return;
+      }
 
-    setLocalQueryBank(queryBank);
+      // The API returns the canonical intent library (including server-generated IDs for new intents).
+      // We update intentLibrary for reference, but DON'T rebuild localQueryBank -
+      // the optimistic update is already correct and rebuilding would overwrite user's changes.
+      const data = await resp.json().catch(() => null);
+      if (data?.library) {
+        setIntentLibrary(data.library);
+      }
+    } catch (err) {
+      console.error("/api/intents/library/queries network error:", err);
+    } finally {
+      // Keep lock for a bit longer to account for polling race conditions
+      // (polling may have already fetched old data before our save completed)
+      setTimeout(() => {
+        isMutatingRef.current = false;
+      }, 2000);
+    }
   };
 
   // Helper to convert QueryResult[] to the format expected by ChatContext
@@ -935,13 +939,11 @@ export default function VisibilityMatrixPage() {
           }
 
           const allScores: number[] = [];
-          let totalResponses = 0;
 
           for (const qr of result.queries) {
             for (const resp of qr.responses) {
               if (!resp.error) {
                 allScores.push(resp.visibility.score);
-                totalResponses++;
               }
             }
           }
@@ -1056,21 +1058,6 @@ export default function VisibilityMatrixPage() {
     setEnabledProviders(new Set(PROVIDERS.map(p => p.id)));
   }, []);
 
-  const startEditingPersona = (persona: PersonaConfig) => {
-    setEditingPersona(persona.id);
-    setEditValue(persona.description);
-  };
-
-  const savePersonaEdit = () => {
-    if (editingPersona && editValue.trim()) {
-      setPersonas(prev => prev.map(p =>
-        p.id === editingPersona ? { ...p, description: editValue.trim() } : p
-      ));
-    }
-    setEditingPersona(null);
-    setEditValue("");
-  };
-
   // Background color based on legacy score (kept for hover cards / future use)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getCellBgColor = (score: number, mentionRate: number | null): string => {
@@ -1080,85 +1067,6 @@ export default function VisibilityMatrixPage() {
     if (score >= 0.2) return "bg-[#f5e6d3]";
     return "bg-[#f0d9d9]";
   };
-
-  // Check if a cell/row/column is in the current selection
-  const isInSelection = (personaId: Persona, stageId: Stage): boolean => {
-    if (selection.type === "all") return false; // Don't highlight all
-    if (selection.type === "cell") return selection.persona === personaId && selection.stage === stageId;
-    if (selection.type === "row") return selection.persona === personaId;
-    if (selection.type === "column") return selection.stage === stageId;
-    return false;
-  };
-
-  const isRowSelected = (personaId: Persona): boolean => {
-    return selection.type === "row" && selection.persona === personaId;
-  };
-
-  const isColumnSelected = (stageId: Stage): boolean => {
-    return selection.type === "column" && selection.stage === stageId;
-  };
-
-  const getFilteredCellStats = useCallback((cell: CellData) => {
-    if (cell.status !== "complete" || cell.results.length === 0) {
-      return {
-        avgScore: 0,
-        mentionRate: null,
-        mentionCount: 0,
-        mentionTotalResponses: 0,
-        totalResponses: 0,
-      };
-    }
-
-    let totalScore = 0;
-    let totalResponses = 0;
-
-    for (const qr of cell.results) {
-      for (const resp of qr.responses) {
-        if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
-          totalScore += resp.visibility.score;
-          totalResponses++;
-        }
-      }
-    }
-
-    const mentionStats = getExploreMentionStats(
-      { stage: cell.stage, results: cell.results },
-      enabledProviders
-    );
-
-    return {
-      avgScore: totalResponses > 0 ? totalScore / totalResponses : 0,
-      mentionRate: mentionStats.mentionRate,
-      mentionCount: mentionStats.mentionCount,
-      mentionTotalResponses: mentionStats.mentionTotalResponses,
-      totalResponses,
-    };
-  }, [enabledProviders]);
-
-  const overallStats = useMemo(() => {
-    const cells = Object.values(effectiveMatrixData).filter(c => c.status === "complete");
-    if (cells.length === 0) return null;
-
-    let totalScore = 0;
-    let totalMentions = 0;
-    let totalResponses = 0;
-    let totalMentionResponses = 0;
-    let blindSpots = 0;
-
-    for (const cell of cells) {
-      const stats = getFilteredCellStats(cell);
-      totalScore += stats.avgScore * stats.totalResponses;
-      totalMentions += stats.mentionCount;
-      totalResponses += stats.totalResponses;
-      totalMentionResponses += stats.mentionTotalResponses;
-      if (stats.mentionRate !== null && stats.mentionRate < 0.5) blindSpots++;
-    }
-
-    const avgScore = totalResponses > 0 ? totalScore / totalResponses : 0;
-    const avgMentionRate = totalMentionResponses > 0 ? totalMentions / totalMentionResponses : 0;
-
-    return { avgScore, avgMentionRate, blindSpots, totalCells: cells.length };
-  }, [effectiveMatrixData, getFilteredCellStats]);
 
   const selectedCellsData = useMemo(() => {
     const cells: CellData[] = [];
@@ -1182,59 +1090,6 @@ export default function VisibilityMatrixPage() {
 
     return cells;
   }, [selection, effectiveMatrixData, personas, stages]);
-
-  const competitorCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          if (enabledProviders.has(resp.provider as Provider)) {
-            for (const comp of resp.visibility.competitorsMentioned) {
-              counts[comp] = (counts[comp] || 0) + 1;
-            }
-          }
-        }
-      }
-    }
-
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-  }, [selectedCellsData, enabledProviders]);
-
-  // Provider-level KPIs from current selection
-  const modelStats = useMemo(() => {
-    const stats: Record<Provider, { score: number; mentions: number; mentionTotal: number; total: number }> = {
-      openai: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
-      anthropic: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
-      gemini: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
-      xai: { score: 0, mentions: 0, mentionTotal: 0, total: 0 },
-    };
-
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          const provider = resp.provider as Provider;
-          if (!resp.error) {
-            stats[provider].score += resp.visibility.score;
-            stats[provider].total++;
-            if (cell.stage === "explore") {
-              stats[provider].mentionTotal++;
-              if (resp.visibility.mentioned) stats[provider].mentions++;
-            }
-          }
-        }
-      }
-    }
-
-    return PROVIDERS.map(p => ({
-      ...p,
-      avgScore: stats[p.id].total > 0 ? stats[p.id].score / stats[p.id].total : 0,
-      mentionRate: stats[p.id].mentionTotal > 0 ? stats[p.id].mentions / stats[p.id].mentionTotal : null,
-      total: stats[p.id].total,
-    }));
-  }, [selectedCellsData]);
 
   const normalizedProviderWeights = useMemo(
     () => normalizeWeights(DEFAULT_PROVIDER_WEIGHTS),
@@ -1341,218 +1196,6 @@ export default function VisibilityMatrixPage() {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }, [kpiRange]);
 
-  // Stage-specific insights
-  const stageInsights = useMemo(() => {
-    // Determine which stage to show insights for
-    let targetStage: Stage | null = null;
-    if (selection.type === "column") {
-      targetStage = selection.stage;
-    } else if (selection.type === "cell") {
-      targetStage = selection.stage;
-    }
-
-    // Gather all responses for the selected cells
-    const responses: {
-      position: string;
-      sentiment: string;
-      comparisonOutcome: string;
-      recommendationStrength: string;
-    }[] = [];
-
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
-            responses.push({
-              position: resp.visibility.position,
-              sentiment: resp.visibility.sentiment,
-              comparisonOutcome: resp.visibility.comparisonOutcome || "neutral",
-              recommendationStrength: resp.visibility.recommendationStrength || "none",
-            });
-          }
-        }
-      }
-    }
-
-    // Position distribution (Explore)
-    const positionCounts = { "1st": 0, "2nd": 0, "3rd": 0, "later": 0, "absent": 0 };
-    for (const r of responses) {
-      if (r.position in positionCounts) {
-        positionCounts[r.position as keyof typeof positionCounts]++;
-      }
-    }
-    const totalPositions = responses.length;
-    const firstRate = totalPositions > 0 ? positionCounts["1st"] / totalPositions : 0;
-
-    // Sentiment distribution (Consider)
-    const sentimentCounts = { positive: 0, negative: 0, neutral: 0 };
-    for (const r of responses) {
-      if (r.sentiment in sentimentCounts) {
-        sentimentCounts[r.sentiment as keyof typeof sentimentCounts]++;
-      }
-    }
-    const totalSentiments = responses.length;
-    const sentimentScore = totalSentiments > 0
-      ? (sentimentCounts.positive - sentimentCounts.negative) / totalSentiments
-      : 0;
-
-    // Win rate (Compare)
-    const comparisonCounts = { favorable: 0, unfavorable: 0, neutral: 0, none: 0 };
-    for (const r of responses) {
-      if (r.comparisonOutcome in comparisonCounts) {
-        comparisonCounts[r.comparisonOutcome as keyof typeof comparisonCounts]++;
-      }
-    }
-    const totalComparisons = comparisonCounts.favorable + comparisonCounts.unfavorable;
-    const winRate = totalComparisons > 0 ? comparisonCounts.favorable / totalComparisons : 0;
-
-    // Recommendation strength (Decide)
-    const recCounts = { strong: 0, moderate: 0, weak: 0, none: 0 };
-    for (const r of responses) {
-      if (r.recommendationStrength in recCounts) {
-        recCounts[r.recommendationStrength as keyof typeof recCounts]++;
-      }
-    }
-    const totalRecs = responses.length;
-
-    return {
-      targetStage,
-      totalResponses: responses.length,
-      // Explore
-      positionCounts,
-      firstRate,
-      // Consider
-      sentimentCounts,
-      sentimentScore,
-      // Compare
-      comparisonCounts,
-      winRate,
-      // Decide
-      recCounts,
-      totalRecs,
-    };
-  }, [selectedCellsData, selection, enabledProviders]);
-
-  // Build evidence data for modals
-  const buildPositionEvidence = useCallback((): EvidenceModalData => {
-    const items: EvidenceModalData["items"] = [];
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
-            const provider = PROVIDERS.find(p => p.id === resp.provider);
-            items.push({
-              query: qr.query,
-              model: provider?.label || resp.model,
-              provider: resp.provider as Provider,
-              excerpt: resp.text.slice(0, 300) + (resp.text.length > 300 ? "..." : ""),
-              metric: "Position",
-              metricValue: resp.visibility.position,
-            });
-          }
-        }
-      }
-    }
-    return { type: "position", title: "Position Distribution Evidence", items };
-  }, [selectedCellsData, enabledProviders]);
-
-  const buildSentimentEvidence = useCallback((): EvidenceModalData => {
-    const items: EvidenceModalData["items"] = [];
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
-            const provider = PROVIDERS.find(p => p.id === resp.provider);
-            items.push({
-              query: qr.query,
-              model: provider?.label || resp.model,
-              provider: resp.provider as Provider,
-              excerpt: resp.text.slice(0, 300) + (resp.text.length > 300 ? "..." : ""),
-              metric: "Sentiment",
-              metricValue: resp.visibility.sentiment,
-            });
-          }
-        }
-      }
-    }
-    return { type: "sentiment", title: "Sentiment Analysis Evidence", items };
-  }, [selectedCellsData, enabledProviders]);
-
-  const buildCompetitorEvidence = useCallback((competitor: string): EvidenceModalData => {
-    const items: EvidenceModalData["items"] = [];
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
-            if (resp.visibility.competitorsMentioned.includes(competitor)) {
-              const provider = PROVIDERS.find(p => p.id === resp.provider);
-              items.push({
-                query: qr.query,
-                model: provider?.label || resp.model,
-                provider: resp.provider as Provider,
-                excerpt: resp.text.slice(0, 300) + (resp.text.length > 300 ? "..." : ""),
-                metric: "Competitor",
-                metricValue: competitor,
-              });
-            }
-          }
-        }
-      }
-    }
-    return { type: "competitor", title: `${competitor} Mentions`, items };
-  }, [selectedCellsData, enabledProviders]);
-
-  const buildWinRateEvidence = useCallback((): EvidenceModalData => {
-    const items: EvidenceModalData["items"] = [];
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
-            const outcome = resp.visibility.comparisonOutcome || "none";
-            if (outcome !== "none") {
-              const provider = PROVIDERS.find(p => p.id === resp.provider);
-              items.push({
-                query: qr.query,
-                model: provider?.label || resp.model,
-                provider: resp.provider as Provider,
-                excerpt: resp.text.slice(0, 300) + (resp.text.length > 300 ? "..." : ""),
-                metric: "Comparison",
-                metricValue: outcome,
-              });
-            }
-          }
-        }
-      }
-    }
-    return { type: "winrate", title: "Comparison Evidence", items };
-  }, [selectedCellsData, enabledProviders]);
-
-  const buildRecommendationEvidence = useCallback((): EvidenceModalData => {
-    const items: EvidenceModalData["items"] = [];
-    for (const cell of selectedCellsData) {
-      for (const qr of cell.results) {
-        for (const resp of qr.responses) {
-          if (enabledProviders.has(resp.provider as Provider) && !resp.error) {
-            const strength = resp.visibility.recommendationStrength || "none";
-            const provider = PROVIDERS.find(p => p.id === resp.provider);
-            items.push({
-              query: qr.query,
-              model: provider?.label || resp.model,
-              provider: resp.provider as Provider,
-              excerpt: resp.text.slice(0, 300) + (resp.text.length > 300 ? "..." : ""),
-              metric: "Recommendation",
-              metricValue: strength,
-            });
-          }
-        }
-      }
-    }
-    return { type: "recommendation", title: "Recommendation Strength Evidence", items };
-  }, [selectedCellsData, enabledProviders]);
-
-  const displayInsights = stageInsights;
-  const displayCompetitors = competitorCounts;
-
   const selectionLabel = useMemo(() => {
     if (selection.type === "all") return "All Cells";
     if (selection.type === "cell") {
@@ -1568,28 +1211,6 @@ export default function VisibilityMatrixPage() {
     }
     return "";
   }, [selection, personas, stages]);
-
-  const queryCount = useMemo(() => {
-    let count = 0;
-    if (selection.type === "all") {
-      for (const p of personas) {
-        for (const s of stages) {
-          count += localQueryBank[p.id]?.[s.id]?.intents.length || 0;
-        }
-      }
-    } else if (selection.type === "cell") {
-      count = localQueryBank[selection.persona]?.[selection.stage]?.intents.length || 0;
-    } else if (selection.type === "row") {
-      for (const s of stages) {
-        count += localQueryBank[selection.persona]?.[s.id]?.intents.length || 0;
-      }
-    } else if (selection.type === "column") {
-      for (const p of personas) {
-        count += localQueryBank[p.id]?.[selection.stage]?.intents.length || 0;
-      }
-    }
-    return count;
-  }, [selection, personas, stages, localQueryBank]);
 
   const showWeightedArea = weightMode === "weighted";
 
@@ -1730,72 +1351,16 @@ export default function VisibilityMatrixPage() {
                   <p className="text-xs mt-1">Run a benchmark to see performance trends</p>
                 </div>
               ) : (
-                <ChartContainer config={chartConfig} className="h-full w-full cursor-pointer">
-                  <RechartsAreaChart data={modelTrendData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }} onClick={handleChartClick}>
-                    <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="#efe6d9" />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={6}
-                      fontSize={10}
-                      interval={kpiTickInterval}
-                      tickFormatter={formatKpiTick}
-                      padding={{ left: 12, right: 12 }}
-                    />
-                    <YAxis 
-                      domain={[0, 100]}
-                      tickLine={false}
-                      axisLine={false}
-                      fontSize={9}
-                      width={24}
-                    />
-                    <ChartTooltip cursor={{ stroke: "#d4c9b8", strokeDasharray: "4 4" }} content={<ChartTooltipContent />} />
-                    {selectedRunChartIndex && (
-                      <ReferenceLine x={selectedRunChartIndex} stroke="#1f3b2c" strokeWidth={2} strokeDasharray="4 4" />
-                    )}
-                    {enabledProviders.has("openai") && (
-                      <Area
-                        type="monotone"
-                        dataKey="openai"
-                        stroke="#1f3b2c"
-                        fill={showWeightedArea ? "#1f3b2c" : "none"}
-                        fillOpacity={showWeightedArea ? 0.15 : 0}
-                        strokeWidth={2}
-                      />
-                    )}
-                    {enabledProviders.has("anthropic") && (
-                      <Area
-                        type="monotone"
-                        dataKey="anthropic"
-                        stroke="#b86f3a"
-                        fill={showWeightedArea ? "#b86f3a" : "none"}
-                        fillOpacity={showWeightedArea ? 0.15 : 0}
-                        strokeWidth={2}
-                      />
-                    )}
-                    {enabledProviders.has("gemini") && (
-                      <Area
-                        type="monotone"
-                        dataKey="gemini"
-                        stroke="#6e7c5b"
-                        fill={showWeightedArea ? "#6e7c5b" : "none"}
-                        fillOpacity={showWeightedArea ? 0.15 : 0}
-                        strokeWidth={2}
-                      />
-                    )}
-                    {enabledProviders.has("xai") && (
-                      <Area
-                        type="monotone"
-                        dataKey="xai"
-                        stroke="#7c6b7c"
-                        fill={showWeightedArea ? "#7c6b7c" : "none"}
-                        fillOpacity={showWeightedArea ? 0.15 : 0}
-                        strokeWidth={2}
-                      />
-                    )}
-                  </RechartsAreaChart>
-                </ChartContainer>
+                <MatrixTrendChart
+                  config={chartConfig}
+                  data={modelTrendData}
+                  selectedRunChartIndex={selectedRunChartIndex}
+                  onChartClick={handleChartClick}
+                  kpiTickInterval={kpiTickInterval}
+                  formatKpiTick={formatKpiTick}
+                  enabledProviders={enabledProviders}
+                  showWeightedArea={showWeightedArea}
+                />
               )}
             </div>
             <div className="w-full lg:w-44 flex flex-col gap-2 justify-center">
@@ -2093,6 +1658,7 @@ export default function VisibilityMatrixPage() {
                               intent: item.intent.text,
                               role: item.intent.role,
                               queryStyle: item.intent.queryStyle,
+                              count: 3, // Match cron job behavior
                             }),
                           });
 
@@ -2320,11 +1886,36 @@ export default function VisibilityMatrixPage() {
                 persistQueryBank(newBank);
               }
             }}
-            onQueryAdd={(intentId) => {
+            onQueryAdd={async (intentId) => {
+              const intent = localQueryBank[selectedCell.persona]?.[selectedCell.stage]?.intents.find(i => i.id === intentId);
+              if (!intent) return;
+
+              const existingQueries = intent.generatedQueries || [];
+
+              // Generate a single new query, avoiding existing ones
+              const resp = await fetch("/api/intents/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  persona: selectedCell.persona,
+                  stage: selectedCell.stage,
+                  intent: intent.text,
+                  role: intent.role,
+                  queryStyle: intent.queryStyle,
+                  count: 1,
+                  existingQueries,
+                }),
+              });
+
+              if (!resp.ok) return;
+              const data = await resp.json();
+              if (!data.queries?.length) return;
+
+              // Add the new query to existing ones
               const newBank = { ...localQueryBank };
-              const intent = newBank[selectedCell.persona]?.[selectedCell.stage]?.intents.find(i => i.id === intentId);
-              if (intent) {
-                intent.generatedQueries = [...(intent.generatedQueries || []), ""];
+              const targetIntent = newBank[selectedCell.persona]?.[selectedCell.stage]?.intents.find(i => i.id === intentId);
+              if (targetIntent) {
+                targetIntent.generatedQueries = [...existingQueries, ...data.queries];
                 setLocalQueryBank(newBank);
                 persistQueryBank(newBank);
               }
@@ -2342,6 +1933,7 @@ export default function VisibilityMatrixPage() {
                   intent: intent.text,
                   role: intent.role,
                   queryStyle: intent.queryStyle,
+                  count: 3, // Match cron job behavior
                 }),
               });
 
