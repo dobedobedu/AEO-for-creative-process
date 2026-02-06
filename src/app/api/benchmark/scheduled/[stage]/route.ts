@@ -144,7 +144,7 @@ export async function GET(
 
     // Check for batch results from batch-submit cron
     const batchResults = new Map<string, { text: string; citations: string[]; raw: unknown }>();
-    let batchStats = { anthropic: { available: 0, total: 0 } };
+    const batchStats = { anthropic: { available: 0, total: 0 } };
 
     try {
       const anthropicBatchJob = await getBatchJob(runId, "anthropic", "search");

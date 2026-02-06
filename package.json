@@ -6,7 +6,8 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --quiet",
+    "lint:full": "eslint",
     "test": "vitest run",
     "import:runs": "tsx scripts/import-runs-to-db.ts"
   },
