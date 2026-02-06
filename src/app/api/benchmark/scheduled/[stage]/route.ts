@@ -15,7 +15,8 @@
  */
 
 import { runBenchmark } from "@/lib/benchmark";
-import { loadIntentLibrary } from "@/lib/intents/library";
+import { loadIntentLibrary, updateIntent } from "@/lib/intents/library";
+import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
 import { loadMetricsConfig } from "@/lib/metrics/config";
 import { upsertRunCells, upsertSingleCell, getTodayRunId } from "@/lib/runs/storage";
 import type { CellResult } from "@/lib/runs/types";
@@ -105,12 +106,12 @@ export async function GET(
     const runId = getTodayRunId();
     console.log(`[cron/${stage}] Using run ID: ${runId}`);
 
-    const intentLibrary = await loadIntentLibrary();
+    let intentLibrary = await loadIntentLibrary();
     console.log(`[cron/${stage}] Loaded ${intentLibrary.intents.length} intents from library`);
 
-    // Guard: queries must be regenerated today before cron runs
-    // If any active intent for this stage/persona lacks fresh queries, abort early.
-    const REQUIRED_QUERY_COUNT = 3;
+    // Self-healing: detect stale intents and regenerate queries on-the-fly
+    // instead of aborting the entire stage with 409
+    const REQUIRED_QUERY_COUNT = 1; // Relaxed: 1+ queries is enough, 3 is ideal
     const todayUtc = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
     const staleIntents = intentLibrary.intents.filter((intent) => {
       if (!intent.active) return false;
@@ -124,17 +125,43 @@ export async function GET(
     });
 
     if (staleIntents.length > 0) {
-      console.error(
-        `[cron/${stage}] Aborting: ${staleIntents.length} intents missing fresh queries for ${todayUtc}`
+      console.log(
+        `[cron/${stage}] ${staleIntents.length} intents need fresh queries, generating...`
       );
-      return Response.json(
-        {
-          error: "Queries not refreshed for today",
-          date: todayUtc,
-          staleIntentIds: staleIntents.map((i) => i.id),
-        },
-        { status: 409 }
+
+      const regenResults = await Promise.allSettled(
+        staleIntents.map(async (intent) => {
+          const generated = await generateQueriesFromIntent({
+            persona: intent.persona,
+            stage,
+            coreStage,
+            intent: intent.text,
+            role: intent.role,
+            queryStyle: intent.queryStyle,
+            count: 3,
+          });
+          await updateIntent(intent.id, {
+            generatedQueries: generated.queries,
+            generatedQueriesAt: new Date().toISOString(),
+          });
+          return { id: intent.id, queryCount: generated.queries.length };
+        })
       );
+
+      const regenOk = regenResults.filter((r) => r.status === "fulfilled").length;
+      const regenFail = regenResults.filter((r) => r.status === "rejected").length;
+      console.log(`[cron/${stage}] Query regen: ${regenOk} succeeded, ${regenFail} failed`);
+      if (regenFail > 0) {
+        for (const r of regenResults) {
+          if (r.status === "rejected") {
+            console.error(`[cron/${stage}] Regen failure:`, r.reason instanceof Error ? r.reason.message : r.reason);
+          }
+        }
+      }
+
+      // Reload intent library with freshly generated queries
+      intentLibrary = await loadIntentLibrary();
+      console.log(`[cron/${stage}] Reloaded ${intentLibrary.intents.length} intents after regen`);
     }
 
     const metricsConfig = loadMetricsConfig();

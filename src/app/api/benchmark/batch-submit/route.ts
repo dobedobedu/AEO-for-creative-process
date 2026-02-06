@@ -30,8 +30,8 @@ import {
 import { submitAnthropicBatch } from "@/lib/providers/anthropic";
 import { DEFAULT_PROVIDERS } from "@/lib/runs/utils";
 
-// Batch submission should be fast - 60 seconds max
-export const maxDuration = 60;
+// Query gen for ~21 intents via OpenRouter needs headroom
+export const maxDuration = 180;
 
 interface GeneratedQuery {
   persona: string;
@@ -134,8 +134,21 @@ export async function GET(req: Request) {
       }
     }
 
-    // Wait for all query generation to complete
-    await Promise.all(queryGenerationPromises);
+    // Wait for all query generation — partial success is fine since each
+    // intent's queries are saved independently via updateIntent
+    const queryGenResults = await Promise.allSettled(queryGenerationPromises);
+    const queryGenSucceeded = queryGenResults.filter((r) => r.status === "fulfilled").length;
+    const queryGenFailed = queryGenResults.filter((r) => r.status === "rejected").length;
+    console.log(
+      `[batch-submit] Query gen: ${queryGenSucceeded} succeeded, ${queryGenFailed} failed out of ${queryGenResults.length}`
+    );
+    if (queryGenFailed > 0) {
+      for (const r of queryGenResults) {
+        if (r.status === "rejected") {
+          console.error("[batch-submit] Query gen failure:", r.reason instanceof Error ? r.reason.message : r.reason);
+        }
+      }
+    }
     console.log(`[batch-submit] Generated ${allQueries.length} total queries`);
 
     if (allQueries.length === 0) {
@@ -147,53 +160,60 @@ export async function GET(req: Request) {
       });
     }
 
-    // 4. Build batch requests (Anthropic only)
-    const anthropicModel = DEFAULT_PROVIDERS.find((p) => p.provider === "anthropic")?.model ?? "claude-haiku-4-5";
-    // Build intentId mapping: customId → full intentId
-    const intentIdMap: Record<string, string> = {};
-
-    const anthropicRequests: BatchRequest[] = allQueries.map((q) => {
-      const customId = generateBatchCustomId({
-        persona: q.persona,
-        stage: q.stage,
-        intentId: q.intentId,
-        provider: "anthropic",
-        queryIndex: q.queryIndex,
-      });
-      intentIdMap[customId] = q.intentId;
-      return {
-        customId,
-        query: q.query,
-        model: anthropicModel,
-        persona: q.persona,
-        stage: q.stage,
-        intentId: q.intentId,
-      };
-    });
-
-    // 5. Submit Anthropic batch
-    const anthropicResult = await submitAnthropicBatch(anthropicRequests);
-
+    // 4-6. Batch submission is best-effort — queries are already saved to DB
+    // If batch fails, stage crons will use the sync fallback
     const results: {
       anthropic?: { batchId: string; requestCount: number };
     } = {};
     const errors: Array<{ provider: string; error: string }> = [];
 
-    // 6. Store batch jobs in database
-    results.anthropic = anthropicResult;
+    try {
+      // Build batch requests (Anthropic only)
+      const anthropicModel = DEFAULT_PROVIDERS.find((p) => p.provider === "anthropic")?.model ?? "claude-haiku-4-5";
+      const intentIdMap: Record<string, string> = {};
 
-    await createBatchJob({
-      runId,
-      provider: "anthropic",
-      batchType: "search",
-      batchId: anthropicResult.batchId,
-      requestCount: anthropicResult.requestCount,
-      metadata: { intentIdMap },
-    });
+      const anthropicRequests: BatchRequest[] = allQueries.map((q) => {
+        const customId = generateBatchCustomId({
+          persona: q.persona,
+          stage: q.stage,
+          intentId: q.intentId,
+          provider: "anthropic",
+          queryIndex: q.queryIndex,
+        });
+        intentIdMap[customId] = q.intentId;
+        return {
+          customId,
+          query: q.query,
+          model: anthropicModel,
+          persona: q.persona,
+          stage: q.stage,
+          intentId: q.intentId,
+        };
+      });
 
-    console.log(
-      `[batch-submit] Anthropic batch submitted: ${anthropicResult.batchId} (${anthropicResult.requestCount} requests)`
-    );
+      // Submit Anthropic batch
+      const anthropicResult = await submitAnthropicBatch(anthropicRequests);
+      results.anthropic = anthropicResult;
+
+      // Store batch job in database
+      await createBatchJob({
+        runId,
+        provider: "anthropic",
+        batchType: "search",
+        batchId: anthropicResult.batchId,
+        requestCount: anthropicResult.requestCount,
+        metadata: { intentIdMap },
+      });
+
+      console.log(
+        `[batch-submit] Anthropic batch submitted: ${anthropicResult.batchId} (${anthropicResult.requestCount} requests)`
+      );
+    } catch (batchErr) {
+      const msg = batchErr instanceof Error ? batchErr.message : String(batchErr);
+      console.error("[batch-submit] Batch submission failed (non-fatal):", msg);
+      errors.push({ provider: "anthropic", error: msg });
+      // Queries are already saved — stage crons will use sync fallback
+    }
 
     const executionTimeMs = Date.now() - startTime;
     console.log(
@@ -204,6 +224,7 @@ export async function GET(req: Request) {
       success: true,
       runId,
       queriesGenerated: allQueries.length,
+      queryGenFailed,
       batches: results,
       errors: errors.length > 0 ? errors : undefined,
       executionTimeMs,
