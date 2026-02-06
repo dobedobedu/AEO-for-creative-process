@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
 
-// Types - using string to support dynamic config
-type Persona = string;
 type Stage = string;
 import {
   Dialog,
@@ -19,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { motion, AnimatePresence } from "framer-motion";
 import { MiniMatrixNavigation } from "./MiniMatrixNavigation";
-import { Plus, Pencil, Trash2, X, Check, RefreshCw, Loader2, ArrowRight, Play } from "lucide-react";
+import { Plus, Pencil, Trash2, X, RefreshCw, Loader2, Play } from "lucide-react";
 
 interface IntentEditorModalProps {
   open: boolean;
@@ -83,7 +81,6 @@ export function IntentEditorModal({
   onIntentChange,
   onIntentDelete,
   onIntentAdd,
-  onQueryChange,
   onQueryDelete,
   onQueryAdd,
   onQueryRegenerate,

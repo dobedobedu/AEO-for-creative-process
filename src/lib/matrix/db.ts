@@ -239,9 +239,6 @@ export async function publishConfig(
   const existingPersonas = await getAllPersonas();
   const existingStages = await getAllStages();
 
-  const existingPersonaIds = new Set(existingPersonas.map((p) => p.id));
-  const existingStageIds = new Set(existingStages.map((s) => s.id));
-
   const configPersonaIds = new Set(config.personas.map((p) => p.id));
   const configStageIds = new Set(config.stages.map((s) => s.id));
 

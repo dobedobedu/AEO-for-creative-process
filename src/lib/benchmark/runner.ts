@@ -3,7 +3,6 @@ import { callAnthropicWebSearch } from "@/lib/providers/anthropic";
 import { callGeminiWebSearch } from "@/lib/providers/gemini";
 import { callXaiSearch } from "@/lib/providers/xai";
 import type { VisibilityScore } from "./scoring";
-import type { Stage } from "@/lib/intents/types";
 import { extractStageMetrics, recommendationStrengthToScore } from "@/lib/scoring/extractor";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 import { getCachedResponse, setCachedResponse } from "@/lib/cache";

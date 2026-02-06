@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, X } from "lucide-react";
 

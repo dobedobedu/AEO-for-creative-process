@@ -23,8 +23,6 @@ const ROLE_LABELS: Record<Role, string> = {
 };
 
 export function IntentEditorPanel({
-  persona,
-  stage,
   intents,
   onIntentChange,
   onIntentDelete,

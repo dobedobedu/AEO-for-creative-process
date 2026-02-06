@@ -13,24 +13,6 @@ import { computeInsightMetrics, type CompareMetrics, type DecideMetrics } from "
 import type { ProviderKey } from "@/lib/matrix/weights";
 import { InsightCards } from "@/components/chat/InsightCards";
 
-// Types - using string to support dynamic config
-type Persona = string;
-type Stage = string;
-
-interface ResponseObject {
-    text: string;
-    visibility: {
-        mentioned: boolean;
-        position: string;
-        score: number;
-        sentiment: string;
-        competitorsMentioned: string[];
-        comparisonOutcome?: string;
-        recommendationStrength?: string;
-        recommended?: boolean;
-    };
-}
-
 interface InsightModalProps {
     open: boolean;
     onClose: () => void;

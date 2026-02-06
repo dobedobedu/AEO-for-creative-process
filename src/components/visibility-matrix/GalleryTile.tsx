@@ -1,18 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Target, Bot, Link2 } from "lucide-react";
+import { Link2 } from "lucide-react";
 import type { Citation } from "@/lib/parsers/types";
 import { getGalleryTileBgClass, getGalleryTileCardBaseClass, shouldShowGalleryTileFooter } from "@/lib/matrix/galleryTileStyle";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Types - using string to support dynamic config
-type Persona = string;
-type Stage = string;
 
 interface ResponsePreview {
     provider: string;
@@ -57,7 +51,6 @@ export function GalleryTile({
     intents,
     activeTab,
     results,
-    responses = [],
     citations = [],
     brandDomain,
     onClick,

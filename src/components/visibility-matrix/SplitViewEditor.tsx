@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { GalleryTile } from "./GalleryTile";
-import { Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
 
 // Types - using string to support dynamic config

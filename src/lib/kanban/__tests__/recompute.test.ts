@@ -3,7 +3,7 @@ import { recomputeKanbanSummary, resolveKanbanRunId } from "@/lib/kanban/recompu
 
 function makeSql(results: Array<unknown[]>) {
   const calls: string[] = [];
-  const sql = (strings: TemplateStringsArray, ..._values: unknown[]) => {
+  const sql = (strings: TemplateStringsArray) => {
     calls.push(strings.join("").replace(/\s+/g, " ").trim());
     const next = results.shift();
     return Promise.resolve(next ?? []);

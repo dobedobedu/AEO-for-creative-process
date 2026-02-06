@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Provider } from "./types";
-import { TrendingUp, TrendingDown, Minus, BarChart3, Award, MessageCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
 
 // Types - using string to support dynamic config
 type Stage = string;

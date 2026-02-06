@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   runBenchmark,
-  DEFAULT_VISIBILITY_SCORE,
   type BenchmarkConfig,
 } from "../runner";
 

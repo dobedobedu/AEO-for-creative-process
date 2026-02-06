@@ -9,7 +9,7 @@ vi.mock("../../providers/openrouter", () => ({
     callOpenRouter: vi.fn(),
 }));
 
-import { generateQueriesFromIntent, type QueryGenerationParams } from "../queryGenerator";
+import { generateQueriesFromIntent } from "../queryGenerator";
 import { callOpenRouter } from "../../providers/openrouter";
 
 const mockedCallOpenRouter = vi.mocked(callOpenRouter);

@@ -2,7 +2,7 @@
  * Tests for Persona Management Module
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   Persona,
   DEFAULT_PERSONAS,

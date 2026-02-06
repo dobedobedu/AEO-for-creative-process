@@ -23,8 +23,6 @@ interface QueriesCellProps {
 }
 
 export function QueriesCell({
-  persona,
-  stage,
   intentsWithQueries,
   onQueryChange,
   onQueryDelete,

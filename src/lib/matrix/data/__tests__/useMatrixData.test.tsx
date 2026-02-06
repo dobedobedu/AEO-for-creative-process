@@ -159,7 +159,6 @@ describe("useMatrixData", () => {
     await waitFor(() => expect(result.current.status).toBe("ready"));
     expect(fetchSpy).toHaveBeenCalled();
 
-    const callCountBefore = fetchSpy.mock.calls.length;
     fetchSpy.mockClear();
 
     // Deactivate

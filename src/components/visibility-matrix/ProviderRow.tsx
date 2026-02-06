@@ -99,7 +99,6 @@ function getMentionBadgeStyle(mentioned: boolean) {
 }
 
 export function ProviderRow({
-  provider,
   label,
   model,
   logo,

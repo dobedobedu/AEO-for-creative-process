@@ -14,9 +14,7 @@ import { sql } from "@/lib/db";
 import { getActiveMatrixConfigCached, getCoreStageMapping } from "@/lib/matrix/runtime";
 import type {
   BenchmarkRun,
-  CellResult,
   Provider,
-  QueryResult,
   ResponseResult,
 } from "./types";
 import type {
@@ -31,8 +29,6 @@ import { parseCellKey } from "./utils";
 import {
   matchEntitiesToRegistry,
   loadEntityRegistry,
-  type EntityTerm,
-  type MatchedEntity,
 } from "@/lib/scoring/entityMatcher";
 
 // ============================================

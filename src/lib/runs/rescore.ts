@@ -5,7 +5,7 @@
  * This allows historical runs to be re-scored with updated extraction logic.
  */
 
-import type { BenchmarkRun, CellResult, Provider } from "./types";
+import type { BenchmarkRun, CellResult } from "./types";
 import type {
   StageExtraction,
   ExploreExtraction,

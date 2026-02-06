@@ -11,10 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Zap, Eye, Filter } from "lucide-react";
 
-// Types - using string to support dynamic config
-type Persona = string;
-type Stage = string;
-
 interface MiniMatrixNavigationProps {
     personas: { id: string; label: string }[];
     stages: { id: string; label: string }[];

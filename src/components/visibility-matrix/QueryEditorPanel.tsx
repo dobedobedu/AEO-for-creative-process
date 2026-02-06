@@ -5,7 +5,7 @@ import { Persona, Stage, Role } from "./types";
 import { IntentNode } from "@/lib/intents/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Plus, Trash2, X, Check, Loader2 } from "lucide-react";
+import { RefreshCw, Plus, Trash2, Loader2 } from "lucide-react";
 
 interface QueryEditorPanelProps {
     persona: Persona;
@@ -24,8 +24,6 @@ const ROLE_LABELS: Record<Role, string> = {
 };
 
 export function QueryEditorPanel({
-    persona,
-    stage,
     intents,
     queries,
     onQueryChange,

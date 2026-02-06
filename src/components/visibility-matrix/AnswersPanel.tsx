@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import { Provider } from "./types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Send, Loader2, Bot, User, Play, ChevronDown, ChevronRight } from "lucide-react";
+import { MessageSquare, Send, Loader2, Bot, User, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WeekNavigator } from "./WeekNavigator";
 import { ProviderRow } from "./ProviderRow";

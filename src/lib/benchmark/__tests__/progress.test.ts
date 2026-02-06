@@ -67,7 +67,6 @@ vi.mock("@/lib/db", () => {
         const runIdMatch = query.match(/run_id = \?/);
         if (runIdMatch) {
           // Find the runId in values - it's usually the last ::uuid value
-          const runIdIndex = values.findIndex(v => typeof v === "string" && v.includes("::uuid") === false);
           const lastValue = values[values.length - 1];
           const runId = typeof lastValue === "string" ? lastValue.replace("::uuid", "") : "";
 
@@ -130,7 +129,6 @@ vi.mock("@/lib/db", () => {
 
 import {
   initProgress,
-  logProgress,
   incrementProgress,
   completeProgress,
   failProgress,

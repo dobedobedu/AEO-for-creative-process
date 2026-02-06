@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Middleware to enforce authentication on all routes except public ones.
+ * Proxy to enforce authentication on all routes except public ones.
  *
  * Public routes:
  * - /login (login page)
@@ -34,7 +34,7 @@ const PROTECTED_API_ROUTES = [
   "/api/matrix/config", // Admin matrix configuration
 ];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public routes
@@ -54,14 +54,14 @@ export async function middleware(request: NextRequest) {
   if (!supabaseUrl || !supabaseKey) {
     // In production, fail closed - don't allow unauthenticated access
     if (process.env.NODE_ENV === "production") {
-      console.error("[middleware] Supabase not configured in production!");
+      console.error("[proxy] Supabase not configured in production!");
       return NextResponse.json(
         { error: "Authentication service unavailable" },
         { status: 503 }
       );
     }
     // In development, allow bypass with warning
-    console.warn("[middleware] Supabase not configured - auth disabled (dev only)");
+    console.warn("[proxy] Supabase not configured - auth disabled (dev only)");
     return NextResponse.next();
   }
 

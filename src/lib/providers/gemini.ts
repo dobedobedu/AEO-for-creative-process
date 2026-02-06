@@ -10,7 +10,7 @@ const GeminiResponseSchema = z.object({
 export type GeminiResponse = z.infer<typeof GeminiResponseSchema>;
 
 // Gemini Batch API schemas
-const GeminiBatchJobSchema = z.object({
+export const GeminiBatchJobSchema = z.object({
   name: z.string(), // Format: projects/{project}/locations/{location}/batchPredictionJobs/{jobId}
   displayName: z.string().optional(),
   state: z.enum([
@@ -149,11 +149,8 @@ export async function submitGeminiBatch(
   const modelPath = normalizeModel(requests[0].model);
 
   // Build inline batch request
-  const batchRequests = requests.map((req) => ({
-    ...buildGeminiBatchRequest(req.query),
-    // Store customId in a metadata field for later retrieval
-    _customId: req.customId,
-  }));
+  const customIds = requests.map((req) => req.customId);
+  const batchRequests = requests.map((req) => buildGeminiBatchRequest(req.query));
 
   // Note: Gemini's batchGenerateContent endpoint processes requests synchronously
   // but with parallel execution on their end, which is faster than sequential calls.
@@ -169,7 +166,7 @@ export async function submitGeminiBatch(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      requests: batchRequests.map(({ _customId, ...rest }) => rest),
+      requests: batchRequests,
     }),
   });
 
@@ -187,7 +184,7 @@ export async function submitGeminiBatch(
   if (batchResponse.responses) {
     for (let i = 0; i < batchResponse.responses.length; i++) {
       const resp = batchResponse.responses[i];
-      const customId = batchRequests[i]._customId;
+      const customId = customIds[i] ?? `gemini-batch-item-${i}`;
 
       if (resp.error) {
         results.push({
@@ -241,7 +238,6 @@ export async function getGeminiBatchResults(
 }> {
   // Gemini batch processing is synchronous, so results are already available
   if (cachedResponses) {
-    const hasErrors = cachedResponses.some((r) => !r.success);
     const allErrors = cachedResponses.every((r) => !r.success);
 
     return {

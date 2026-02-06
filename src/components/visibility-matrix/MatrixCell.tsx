@@ -3,8 +3,6 @@
 import { Persona, Stage } from "./types";
 import { IntentNode } from "@/lib/intents/types";
 import { QueriesCell } from "./QueriesCell";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 type ViewMode = "summary" | "intents" | "queries";
 
@@ -35,21 +33,13 @@ export function MatrixCell({
   intents,
   queries,
   score,
-  mentionRate,
   status,
-  lastRun,
   onCellClick,
-  onIntentChange,
-  onIntentDelete,
-  onIntentAdd,
   onQueryChange,
   onQueryDelete,
   onQueryAdd,
   onQueryRegenerate,
 }: MatrixCellProps) {
-  // Flatten all queries for the cell
-  const allQueries: string[] = Object.values(queries).flat();
-
   // Prepare intents with queries for QueriesCell
   const intentsWithQueries = intents.map((intent) => ({
     intent,
