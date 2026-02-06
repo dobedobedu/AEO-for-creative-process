@@ -35,16 +35,21 @@ export async function getSearchMode(): Promise<SearchMode> {
     return cachedSearchMode.value;
   }
 
-  const setting = await getAppSetting<{ mode?: string } | SearchMode>(SEARCH_MODE_KEY);
   let mode = DEFAULT_SEARCH_MODE;
 
-  if (typeof setting === "string" && (setting === "x_search" || setting === "web_search")) {
-    mode = setting;
-  } else if (setting && typeof setting === "object") {
-    const candidate = setting.mode;
-    if (candidate === "x_search" || candidate === "web_search") {
-      mode = candidate;
+  try {
+    const setting = await getAppSetting<{ mode?: string } | SearchMode>(SEARCH_MODE_KEY);
+
+    if (typeof setting === "string" && (setting === "x_search" || setting === "web_search")) {
+      mode = setting;
+    } else if (setting && typeof setting === "object") {
+      const candidate = setting.mode;
+      if (candidate === "x_search" || candidate === "web_search") {
+        mode = candidate;
+      }
     }
+  } catch {
+    // Table doesn't exist or query failed - use default
   }
 
   cachedSearchMode = { value: mode, expiresAt: Date.now() + CACHE_TTL_MS };

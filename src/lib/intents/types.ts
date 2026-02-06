@@ -56,7 +56,7 @@ export const IntentHistoryEntrySchema = z.object({
 export type IntentHistoryEntry = z.infer<typeof IntentHistoryEntrySchema>;
 
 export const IntentLibrarySchema = z.object({
-  version: z.number().int().positive(),
+  version: z.number().int().nonnegative(),
   updatedAt: z.string().datetime(),
   intents: z.array(IntentSchema),
   history: z.array(IntentHistoryEntrySchema),

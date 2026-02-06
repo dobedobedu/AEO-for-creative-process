@@ -15,6 +15,7 @@ export interface QueryGenerationParams {
     role: "cpo" | "family_unit";
     queryStyle: number;  // 0.5 (common) to 1.0 (niche)
     count?: number;
+    existingQueries?: string[];  // Queries to avoid duplicating
 }
 
 export interface GeneratedQueries {
@@ -103,13 +104,21 @@ No markdown, no extra text.`;
 export async function generateQueriesFromIntent(
     params: QueryGenerationParams
 ): Promise<GeneratedQueries> {
-    const { intent, queryStyle, count = 5 } = params;
+    const { intent, queryStyle, count = 3, existingQueries = [] } = params;
 
     const systemPrompt = buildSystemPrompt(params);
 
-    const userPrompt = `INTENT: "${intent}"
+    // Build user prompt with existing queries context if present
+    let userPrompt = `INTENT: "${intent}"
 
 Generate exactly ${count} realistic Google search queries this buyer would type.`;
+
+    if (existingQueries.length > 0) {
+        userPrompt += `
+
+IMPORTANT: Do NOT duplicate these existing queries (generate different ones):
+${existingQueries.map(q => `- "${q}"`).join("\n")}`;
+    }
 
     // Use safeAsync to isolate SDK errors with read-only properties
     const result = await safeAsync(

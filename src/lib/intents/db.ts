@@ -27,7 +27,7 @@ interface IntentRow {
 
 interface MetaRow {
   version: number;
-  updated_at: Date;
+  updated_at: Date | string | null;
 }
 
 interface HistoryRow {
@@ -39,71 +39,77 @@ interface HistoryRow {
   actor_user_id: string | null;
 }
 
-// Schema initialization flag
-let schemaInitialized = false;
+// Schema initialization promise - prevents race condition when multiple callers
+// hit ensureIntentSchema() simultaneously. All callers await the same promise.
+let schemaPromise: Promise<void> | null = null;
 
 /**
  * Ensures intent tables exist in the database.
  * Safe to call multiple times - only initializes once per process.
+ * Uses a promise singleton to prevent race conditions when called concurrently.
  */
 export async function ensureIntentSchema(): Promise<void> {
-  if (schemaInitialized) return;
+  if (!schemaPromise) {
+    schemaPromise = (async () => {
+      // Create tables if they don't exist
+      await sql`
+        CREATE TABLE IF NOT EXISTS intent_library_meta (
+          id INT PRIMARY KEY DEFAULT 1,
+          version INT NOT NULL DEFAULT 0,
+          updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+        );
+      `;
 
-  // Create tables if they don't exist
-  await sql`
-    CREATE TABLE IF NOT EXISTS intent_library_meta (
-      id INT PRIMARY KEY DEFAULT 1,
-      version INT NOT NULL DEFAULT 0,
-      updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-    );
-  `;
+      await sql`
+        INSERT INTO intent_library_meta (id, version, updated_at)
+        VALUES (1, 0, NOW())
+        ON CONFLICT (id) DO NOTHING;
+      `;
 
-  await sql`
-    INSERT INTO intent_library_meta (id, version, updated_at)
-    VALUES (1, 0, NOW())
-    ON CONFLICT (id) DO NOTHING;
-  `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS intents (
+          id TEXT PRIMARY KEY,
+          persona TEXT NOT NULL,
+          stage TEXT NOT NULL,
+          text TEXT NOT NULL,
+          default_queries JSONB,
+          role TEXT DEFAULT 'cpo',
+          query_style FLOAT DEFAULT 0.75,
+          generated_queries JSONB,
+          generated_queries_at TIMESTAMP WITH TIME ZONE NULL,
+          active BOOLEAN DEFAULT true,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          created_by UUID NULL,
+          updated_by UUID NULL,
+          updated_at TIMESTAMP WITH TIME ZONE NULL
+        );
+      `;
 
-  await sql`
-    CREATE TABLE IF NOT EXISTS intents (
-      id TEXT PRIMARY KEY,
-      persona TEXT NOT NULL,
-      stage TEXT NOT NULL,
-      text TEXT NOT NULL,
-      default_queries JSONB,
-      role TEXT DEFAULT 'cpo',
-      query_style FLOAT DEFAULT 0.75,
-      generated_queries JSONB,
-      generated_queries_at TIMESTAMP WITH TIME ZONE NULL,
-      active BOOLEAN DEFAULT true,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-      created_by UUID NULL,
-      updated_by UUID NULL,
-      updated_at TIMESTAMP WITH TIME ZONE NULL
-    );
-  `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS intent_history (
+          id SERIAL PRIMARY KEY,
+          version INT NOT NULL,
+          date DATE NOT NULL,
+          changes JSONB NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          actor_user_id UUID NULL
+        );
+      `;
 
-  await sql`
-    CREATE TABLE IF NOT EXISTS intent_history (
-      id SERIAL PRIMARY KEY,
-      version INT NOT NULL,
-      date DATE NOT NULL,
-      changes JSONB NOT NULL,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-      actor_user_id UUID NULL
-    );
-  `;
-
-  // Create indexes (IF NOT EXISTS is implicit for CREATE INDEX)
-  try {
-    await sql`CREATE INDEX IF NOT EXISTS idx_intents_persona_stage ON intents(persona, stage);`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_intents_active ON intents(active);`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_intent_history_version ON intent_history(version);`;
-  } catch {
-    // Indexes may already exist
+      // Create indexes (IF NOT EXISTS is implicit for CREATE INDEX)
+      try {
+        await sql`CREATE INDEX IF NOT EXISTS idx_intents_persona_stage ON intents(persona, stage);`;
+        await sql`CREATE INDEX IF NOT EXISTS idx_intents_active ON intents(active);`;
+        await sql`CREATE INDEX IF NOT EXISTS idx_intent_history_version ON intent_history(version);`;
+      } catch {
+        // Indexes may already exist
+      }
+    })().catch((err) => {
+      schemaPromise = null; // allow retry on next call
+      throw err;
+    });
   }
-
-  schemaInitialized = true;
+  return schemaPromise;
 }
 
 /**
@@ -122,7 +128,11 @@ export async function fetchLibraryMeta(): Promise<{ version: number; updatedAt: 
 
   return {
     version: rows[0].version,
-    updatedAt: rows[0].updated_at.toISOString(),
+    updatedAt: rows[0].updated_at
+      ? (typeof rows[0].updated_at === 'string'
+          ? rows[0].updated_at
+          : rows[0].updated_at.toISOString())
+      : new Date().toISOString(),
   };
 }
 
@@ -286,12 +296,22 @@ export async function fetchHistory(): Promise<IntentHistoryEntry[]> {
       }
     }
 
+    // postgres.js may return DATE as string (YYYY-MM-DD), Date object, or undefined/null
+    let date: string;
+    if (typeof row.date === "string") {
+      date = row.date;
+    } else if (row.date instanceof Date) {
+      date = row.date.toISOString().split("T")[0];
+    } else if (row.date && typeof row.date === "object" && "toISOString" in row.date) {
+      date = (row.date as Date).toISOString().split("T")[0];
+    } else {
+      // Fallback to current date if date is missing
+      date = new Date().toISOString().split("T")[0];
+    }
+
     return {
       version: row.version,
-      // postgres.js may return DATE as string (YYYY-MM-DD) or Date object
-      date: typeof row.date === "string"
-        ? row.date
-        : row.date.toISOString().split("T")[0],
+      date,
       changes,
     };
   });

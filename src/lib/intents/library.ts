@@ -25,6 +25,17 @@ import {
   atomicUpdateIntent,
 } from "./db";
 
+/** Shallow equality check for string arrays (order-sensitive). */
+function arraysEqual(a: string[] | undefined, b: string[] | undefined): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
 /**
  * Loads the entire intent library from the database.
  */
@@ -42,7 +53,12 @@ export async function loadIntentLibrary(): Promise<IntentLibrary> {
     history,
   };
 
-  return IntentLibrarySchema.parse(library);
+  const result = IntentLibrarySchema.safeParse(library);
+  if (!result.success) {
+    console.error("[loadIntentLibrary] Zod validation failed:", JSON.stringify(result.error.issues, null, 2));
+    throw result.error;
+  }
+  return result.data;
 }
 
 /**
@@ -142,7 +158,7 @@ export async function updateIntent(
     });
   }
 
-  if (updates.generatedQueries !== undefined) {
+  if (updates.generatedQueries !== undefined && !arraysEqual(updates.generatedQueries, existing.generatedQueries)) {
     changes.push({
       action: "modified",
       intentId,

@@ -8,6 +8,8 @@ const GenerateRequestSchema = z.object({
   intent: z.string(),
   role: z.enum(["cpo", "family_unit"]),
   queryStyle: z.number().min(0.5).max(1),
+  existingQueries: z.array(z.string()).optional(),
+  count: z.number().min(1).max(10).optional(),
 });
 
 export async function POST(req: Request) {
@@ -38,6 +40,8 @@ export async function POST(req: Request) {
       intent: params.intent,
       role: params.role,
       queryStyle: params.queryStyle,
+      existingQueries: params.existingQueries,
+      count: params.count,
     });
 
     return Response.json({ queries: result.queries, reasoning: result.reasoning });

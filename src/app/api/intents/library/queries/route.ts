@@ -5,6 +5,17 @@ import { PersonaSchema, StageSchema, type Persona, type Stage } from "@/lib/inte
 import { getCurrentUser } from "@/lib/auth/supabase";
 import { touchUserActivity } from "@/lib/auth/activity";
 
+/** Shallow equality for string arrays (order-sensitive). */
+function arraysShallowEqual(a: string[] | undefined, b: string[] | undefined): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
 // Schema for an Intent Node (mirrors frontend)
 const IntentNodeSchema = z.object({
   id: z.string(),
@@ -58,6 +69,17 @@ export async function POST(req: Request) {
         // 3. Process Updates & Creations
         for (const incoming of entry.intents) {
           if (existingIds.has(incoming.id)) {
+            // Skip no-op updates to avoid unnecessary DB transactions
+            const existing = existingIntents.find(e => e.id === incoming.id);
+            if (
+              existing &&
+              incoming.text === existing.text &&
+              incoming.role === existing.role &&
+              incoming.queryStyle === existing.queryStyle &&
+              arraysShallowEqual(incoming.generatedQueries, existing.generatedQueries)
+            ) {
+              continue;
+            }
             // Update existing - pass actorUserId for attribution
             library = await updateIntent(incoming.id, {
               text: incoming.text,

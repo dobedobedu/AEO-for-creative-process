@@ -14,7 +14,10 @@ import { calculateRunSummary } from "./utils";
 let schemaReadyPromise: Promise<void> | null = null;
 async function ensureReady(): Promise<void> {
   if (!schemaReadyPromise) {
-    schemaReadyPromise = ensureSchema();
+    schemaReadyPromise = ensureSchema().catch((err) => {
+      schemaReadyPromise = null; // allow retry on next call
+      throw err;
+    });
   }
   await schemaReadyPromise;
 }
@@ -399,20 +402,30 @@ export async function upsertRunCells(
     throw new Error(`Run ${runId} not found after upsert`);
   }
 
-  let run = BenchmarkRunSchema.parse(rows[0].result_json);
+  const run = BenchmarkRunSchema.parse(rows[0].result_json);
 
   // Recalculate summary using shared utility
   run.summary = calculateRunSummary(run.cells);
 
   // Update with recalculated summary
+  // Note: separate branches avoid nested sql`` fragments which break under withRetry
   const validated = BenchmarkRunSchema.parse(run);
-  await sql`
-    UPDATE runs
-    SET result_json = ${sql.json(validated)},
-        status = ${isLastStage ? 'completed' : 'running'},
-        completed_at = ${isLastStage ? sql`NOW()` : sql`completed_at`}
-    WHERE id = ${runId}::text::uuid;
-  `;
+  if (isLastStage) {
+    await sql`
+      UPDATE runs
+      SET result_json = ${sql.json(validated)},
+          status = 'completed',
+          completed_at = NOW()
+      WHERE id = ${runId}::text::uuid;
+    `;
+  } else {
+    await sql`
+      UPDATE runs
+      SET result_json = ${sql.json(validated)},
+          status = 'running'
+      WHERE id = ${runId}::text::uuid;
+    `;
+  }
 
   return validated;
 }

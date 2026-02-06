@@ -20,6 +20,7 @@ import {
   getActiveStageIds,
   getCoreStageMapping,
 } from "@/lib/matrix/runtime";
+import { sql } from "@/lib/db";
 import { getTodayRunId } from "@/lib/runs/storage";
 import {
   createBatchJob,
@@ -58,6 +59,13 @@ export async function GET(req: Request) {
     // 1. Get run ID for today
     const runId = getTodayRunId();
     console.log(`[batch-submit] Using run ID: ${runId}`);
+
+    // Ensure today's run record exists (needed for batch_jobs FK constraint)
+    await sql`
+      INSERT INTO runs (id, status, config_json, pending_count)
+      VALUES (${runId}::text::uuid, 'pending', '{}'::jsonb, 0)
+      ON CONFLICT (id) DO NOTHING
+    `;
 
     // 2. Load matrix config and intent library
     const [cfg, intentLibrary] = await Promise.all([

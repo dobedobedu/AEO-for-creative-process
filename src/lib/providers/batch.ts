@@ -59,7 +59,10 @@ export type BatchJob = z.infer<typeof BatchJobSchema>;
 let schemaReadyPromise: Promise<void> | null = null;
 async function ensureReady(): Promise<void> {
   if (!schemaReadyPromise) {
-    schemaReadyPromise = ensureSchema();
+    schemaReadyPromise = ensureSchema().catch((err) => {
+      schemaReadyPromise = null; // allow retry on next call
+      throw err;
+    });
   }
   await schemaReadyPromise;
 }
@@ -184,19 +187,28 @@ export async function updateBatchJobStatus(
 ): Promise<void> {
   await ensureReady();
 
-  const completedAt = status === "completed" || status === "failed" || status === "expired"
-    ? sql`NOW()`
-    : sql`completed_at`;
-
-  await sql`
-    UPDATE batch_jobs
-    SET
-      status = ${status},
-      output_file_id = COALESCE(${params?.outputFileId ?? null}, output_file_id),
-      error_message = COALESCE(${params?.errorMessage ?? null}, error_message),
-      completed_at = ${completedAt}
-    WHERE id = ${jobId}::text::uuid
-  `;
+  // Separate branches avoid nested sql`` fragments which break under withRetry
+  const shouldComplete = status === "completed" || status === "failed" || status === "expired";
+  if (shouldComplete) {
+    await sql`
+      UPDATE batch_jobs
+      SET
+        status = ${status},
+        output_file_id = COALESCE(${params?.outputFileId ?? null}, output_file_id),
+        error_message = COALESCE(${params?.errorMessage ?? null}, error_message),
+        completed_at = NOW()
+      WHERE id = ${jobId}::text::uuid
+    `;
+  } else {
+    await sql`
+      UPDATE batch_jobs
+      SET
+        status = ${status},
+        output_file_id = COALESCE(${params?.outputFileId ?? null}, output_file_id),
+        error_message = COALESCE(${params?.errorMessage ?? null}, error_message)
+      WHERE id = ${jobId}::text::uuid
+    `;
+  }
 }
 
 /**
@@ -257,27 +269,45 @@ export async function getPendingBatchJobs(
 ): Promise<BatchJob[]> {
   await ensureReady();
 
-  const providerFilter = provider ? sql`AND provider = ${provider}` : sql``;
-
-  const rows = await sql`
-    SELECT
-      id::text as id,
-      run_id::text as "runId",
-      provider,
-      batch_type as "batchType",
-      batch_id as "batchId",
-      status,
-      request_count as "requestCount",
-      input_file_id as "inputFileId",
-      output_file_id as "outputFileId",
-      error_message as "errorMessage",
-      created_at as "createdAt",
-      completed_at as "completedAt"
-    FROM batch_jobs
-    WHERE status IN ('pending', 'in_progress')
-    ${providerFilter}
-    ORDER BY created_at ASC
-  ` as unknown[];
+  // Separate branches avoid nested sql`` fragments which break under withRetry
+  const rows = provider
+    ? await sql`
+        SELECT
+          id::text as id,
+          run_id::text as "runId",
+          provider,
+          batch_type as "batchType",
+          batch_id as "batchId",
+          status,
+          request_count as "requestCount",
+          input_file_id as "inputFileId",
+          output_file_id as "outputFileId",
+          error_message as "errorMessage",
+          created_at as "createdAt",
+          completed_at as "completedAt"
+        FROM batch_jobs
+        WHERE status IN ('pending', 'in_progress')
+          AND provider = ${provider}
+        ORDER BY created_at ASC
+      ` as unknown[]
+    : await sql`
+        SELECT
+          id::text as id,
+          run_id::text as "runId",
+          provider,
+          batch_type as "batchType",
+          batch_id as "batchId",
+          status,
+          request_count as "requestCount",
+          input_file_id as "inputFileId",
+          output_file_id as "outputFileId",
+          error_message as "errorMessage",
+          created_at as "createdAt",
+          completed_at as "completedAt"
+        FROM batch_jobs
+        WHERE status IN ('pending', 'in_progress')
+        ORDER BY created_at ASC
+      ` as unknown[];
 
   return rows.map((row: unknown) => BatchJobSchema.parse(row));
 }
