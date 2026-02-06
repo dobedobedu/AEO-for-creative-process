@@ -34,7 +34,7 @@ import {
 } from "@/lib/scoring/extractor";
 import { uploadRunAsync } from "@/lib/filesearch/uploader";
 import { getActiveMatrixConfigCached, getActivePersonaIds, getCoreStageMapping } from "@/lib/matrix/runtime";
-import type { Persona, Stage } from "@/lib/intents/types";
+import type { Stage } from "@/lib/intents/types";
 import { saveRunAggregates, refreshRunMetadata } from "@/lib/runs/aggregator";
 import {
   DEFAULT_PROVIDERS,
@@ -48,7 +48,6 @@ import {
   updateBatchJobStatus,
   parseBatchCustomId,
   getBatchJobMetadata,
-  type BatchJob,
 } from "@/lib/providers/batch";
 import {
   getAnthropicBatchStatus,
@@ -212,9 +211,6 @@ export async function GET(
       metricsConfigVersion: metricsConfig.version,
     };
 
-    // Track how many cells we've saved (for determining isLastStage logic)
-    let savedCellCount = 0;
-
     // Process all active personas for THIS stage IN PARALLEL
     // Each persona SAVES IMMEDIATELY after completion - no data lost on timeout!
     const personaResults = await Promise.allSettled(
@@ -341,8 +337,6 @@ export async function GET(
         const cellKey = getCellKey(persona, stage);
         console.log(`[cron/${stage}] Saving ${cellKey} atomically to database...`);
         await upsertSingleCell(runId, cellKey, cellResult, runMetadata);
-        savedCellCount++;
-
         console.log(`[cron/${stage}] Completed and saved ${persona}/${stage}`);
         return { persona, cellResult };
       })

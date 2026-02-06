@@ -16,7 +16,7 @@ dotenv.config({ path: ".env.local" });
 import * as fs from "fs";
 import * as path from "path";
 import { sql } from "../src/lib/db";
-import { BenchmarkRunSchema, type BenchmarkRun, type CellResult } from "../src/lib/runs/types";
+import { type BenchmarkRun, type CellResult } from "../src/lib/runs/types";
 import { saveRunAggregates, refreshRunMetadata } from "../src/lib/runs/aggregator";
 import type { Stage, Persona } from "../src/lib/intents/types";
 import type { StageExtraction } from "../src/lib/scoring/schemas";

@@ -66,38 +66,30 @@ export function getSql(): SqlClient {
 function sqlFn(stringsOrValues: TemplateStringsArray | unknown[], ...values: unknown[]) {
   const executeQuery = () => {
     const client = getClient();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (client as any)(stringsOrValues, ...values);
   };
   return withRetry(executeQuery);
 }
 
 // Add helper methods to the sql function
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sqlFn as any).array = function <T>(arr: readonly T[], oid?: number) {
   const client = getClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return client.array(arr as any, oid);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sqlFn as any).json = function <T>(value: T) {
   const client = getClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return client.json(value as any);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sqlFn as any).end = function () {
   const client = getClient();
   return client.end();
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sqlFn as any).unsafe = function (query: string, params?: unknown[]) {
   const executeQuery = () => {
     const client = getClient();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (client.unsafe as any)(query, params);
   };
   return withRetry(executeQuery);
@@ -106,11 +98,9 @@ function sqlFn(stringsOrValues: TemplateStringsArray | unknown[], ...values: unk
 // Add begin helper for transactions
 // Note: Retry wraps the entire transaction. If connection fails at start,
 // we reconnect and re-run the callback. Mid-transaction failures are not retried.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sqlFn as any).begin = function<T>(callback: (sql: any) => Promise<T>): Promise<T> {
   const executeTransaction = () => {
     const client = getClient();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return client.begin(callback) as Promise<T>;
   };
   return withRetry(executeTransaction);
@@ -119,14 +109,10 @@ function sqlFn(stringsOrValues: TemplateStringsArray | unknown[], ...values: unk
 type SqlTag = (stringsOrValues: TemplateStringsArray | unknown[], ...values: unknown[]) => Promise<any[]>;
 
 export const sql = sqlFn as SqlTag & {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   array: <T>(arr: readonly T[], oid?: number) => any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   json: <T>(value: T) => any;
   end: () => Promise<void>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   unsafe: (query: string, params?: unknown[]) => any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   begin: <T>(callback: (sql: any) => Promise<T>) => Promise<T>;
 };
 
@@ -134,7 +120,6 @@ export const sql = sqlFn as SqlTag & {
 export function query<T>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T[]> {
   const executeQuery = () => {
     const client = getClient();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (client as any)(strings, ...values) as Promise<T[]>;
   };
   return withRetry(executeQuery);

@@ -28,7 +28,7 @@ import {
   type BatchRequest,
 } from "@/lib/providers/batch";
 import { submitAnthropicBatch } from "@/lib/providers/anthropic";
-import { DEFAULT_PROVIDERS, DEFAULT_BRAND, DEFAULT_ALIASES } from "@/lib/runs/utils";
+import { DEFAULT_PROVIDERS } from "@/lib/runs/utils";
 
 // Batch submission should be fast - 60 seconds max
 export const maxDuration = 60;

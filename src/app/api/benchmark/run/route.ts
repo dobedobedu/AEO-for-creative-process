@@ -1,7 +1,6 @@
 import { z } from "zod";
-import { runBenchmark, type Provider } from "@/lib/benchmark";
+import { runBenchmark } from "@/lib/benchmark";
 import type { BenchmarkResult } from "@/lib/benchmark/runner";
-import { type Persona, type Stage } from "@/lib/intents/types";
 import { loadIntentLibrary } from "@/lib/intents/library";
 import { loadMetricsConfig } from "@/lib/metrics/config";
 import { saveRun, generateRunId } from "@/lib/runs/storage";

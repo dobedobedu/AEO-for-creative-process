@@ -33,9 +33,8 @@ import {
   loadEntityRegistry,
   matchEntitiesToRegistry,
   type EntityTerm,
-  type MatchedEntity,
 } from "../src/lib/scoring/entityMatcher";
-import { EntityCategorySchema, EntityMentionSchema } from "../src/lib/scoring/schemas";
+import { EntityMentionSchema } from "../src/lib/scoring/schemas";
 
 // Schema for entity extraction from response text
 const EntityExtractionSchema = z.object({

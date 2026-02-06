@@ -115,11 +115,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     const lanes = categories.map((cat) => {
       const categoryEntities = byCategory[cat.id] || [];
 
-      // Create a set of entity IDs that have mentions
-      const mentionedEntityIds = new Set(
-        categoryEntities.map((e: any) => e.entity_term_id)
-      );
-
       // Get all terms for this category
       const categoryTerms = allTerms.filter((t) => t.category_id === cat.id);
 

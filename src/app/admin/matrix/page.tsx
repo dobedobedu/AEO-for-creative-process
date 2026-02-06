@@ -152,7 +152,7 @@ export default function AdminMatrixStudioPage() {
 
       if (!response.ok) throw new Error("Failed to save draft");
 
-      const data = await response.json();
+      await response.json();
       setLastSaved(new Date().toLocaleTimeString());
       setOriginalConfig(config);
       setHasChanges(false);
@@ -179,7 +179,7 @@ export default function AdminMatrixStudioPage() {
 
       if (!response.ok) throw new Error("Failed to publish");
 
-      const data = await response.json();
+      await response.json();
       setLastSaved(new Date().toLocaleTimeString());
       setOriginalConfig(config);
       setHasChanges(false);
