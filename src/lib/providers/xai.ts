@@ -64,7 +64,8 @@ export async function callXaiSearch(params: {
         { role: "user", content: params.query },
       ],
       tools: [{ type: toolType }],
-      include: ["inline_citations"],
+      // Note: "include" param was removed — x.ai rejects it with 400.
+      // Top-level citations array is returned by default per x.ai docs.
       temperature: 0.2,
       max_output_tokens: 512,
     }),
