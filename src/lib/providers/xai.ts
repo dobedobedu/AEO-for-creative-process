@@ -79,5 +79,25 @@ export async function callXaiSearch(params: {
   console.log("[xai] Raw response keys:", Object.keys(json));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   console.log("[xai] Output block types:", json.output?.map((b: any) => b.type));
+  console.log("[xai] Citations count:", json.citations?.length ?? 0);
+  // Log first output block structure for debugging format changes
+  if (json.output?.[0]) {
+    const first = json.output[0];
+    console.log("[xai] First output block:", JSON.stringify({
+      type: first.type,
+      contentType: typeof first.content,
+      contentIsArray: Array.isArray(first.content),
+      hasText: !!first.text,
+      role: first.role,
+    }));
+  }
+  // Log the message block specifically
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const msgBlock = json.output?.find((b: any) => b.type === "message");
+  if (msgBlock) {
+    console.log("[xai] Message block content sample:", JSON.stringify(msgBlock.content)?.slice(0, 300));
+  } else {
+    console.log("[xai] No message block found. Full output:", JSON.stringify(json.output)?.slice(0, 500));
+  }
   return XaiResponseSchema.parse(json);
 }
