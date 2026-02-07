@@ -22,6 +22,9 @@ import { initProgress, logProgress, incrementProgress, completeProgress, failPro
 import { getCurrentUser } from "@/lib/auth/supabase";
 import { touchUserActivity } from "@/lib/auth/activity";
 
+// 16 cells × 4 providers in parallel needs headroom
+export const maxDuration = 300;
+
 const RequestSchema = z.object({
   brand: z.string().min(1),
   brandAliases: z.array(z.string()).optional(),
@@ -90,121 +93,127 @@ export async function POST(req: Request) {
     const resultsByCell: Record<string, BenchmarkResult> = {};
     const runCells: Record<string, CellResult> = {};
 
-    for (const cell of data.cells) {
-      // Fetch all active intents for this cell from the library
-      const activeIntents = intentLibrary.intents
-        .filter((i) => i.persona === cell.persona && i.stage === cell.stage && i.active)
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    // Process all cells in parallel (like cron route) to stay within 300s
+    const cellResults = await Promise.allSettled(
+      data.cells.map(async (cell) => {
+        // Fetch all active intents for this cell from the library
+        const activeIntents = intentLibrary.intents
+          .filter((i) => i.persona === cell.persona && i.stage === cell.stage && i.active)
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
-      if (activeIntents.length === 0) continue;
+        if (activeIntents.length === 0) return null;
 
-      // Generate queries via DeepSeek for each intent
-      const coreStage = getCoreStageMapping(cell.stage, cfg);
-      const intentsToRun = await Promise.all(
-        activeIntents.map(async (intent) => {
-          const generated = await generateQueriesFromIntent({
-            persona: cell.persona,
-            stage: cell.stage,
-            coreStage, // Pass core stage for prompt context
-            intent: intent.text,
-            role: intent.role,
-            queryStyle: intent.queryStyle,
-            count: quickTest ? 1 : 3,
-          });
-          return {
-            id: intent.id,
-            queries: generated.queries,
-          };
-        })
-      );
+        // Generate queries via DeepSeek for each intent
+        const coreStage = getCoreStageMapping(cell.stage, cfg);
+        const intentsToRun = await Promise.all(
+          activeIntents.map(async (intent) => {
+            const generated = await generateQueriesFromIntent({
+              persona: cell.persona,
+              stage: cell.stage,
+              coreStage,
+              intent: intent.text,
+              role: intent.role,
+              queryStyle: intent.queryStyle,
+              count: quickTest ? 1 : 3,
+            });
+            return {
+              id: intent.id,
+              queries: generated.queries,
+            };
+          })
+        );
 
-      const benchmarkResult = await runBenchmark({
-        stage: cell.stage,
-        coreStage, // Pass core stage for scoring
-        intents: intentsToRun,
-        brand: data.brand,
-        brandAliases: data.brandAliases,
-        providers,
-        concurrency: 2,
-      });
+        const benchmarkResult = await runBenchmark({
+          stage: cell.stage,
+          coreStage,
+          intents: intentsToRun,
+          brand: data.brand,
+          brandAliases: data.brandAliases,
+          providers,
+          concurrency: 4,
+        });
 
-      const uiKey = `${cell.persona}-${cell.stage}`;
-      resultsByCell[uiKey] = benchmarkResult;
+        // Calculate aggregate metrics across ALL intents in this cell
+        const allExtractions = benchmarkResult.queries
+          .flatMap((qr) => qr.responses)
+          .map((r) => r.stageExtraction)
+          .filter((e): e is StageExtraction => Boolean(e));
 
-      // Calculate aggregate metrics across ALL intents in this cell
-      const allExtractions = benchmarkResult.queries
-        .flatMap((qr) => qr.responses)
-        .map((r) => r.stageExtraction)
-        .filter((e): e is StageExtraction => Boolean(e));
+        const relevantExtractions = allExtractions.filter((e) => e.responseRelevant);
+        const extractionsForMetrics = (relevantExtractions.length > 0 ? relevantExtractions : allExtractions) as StageExtraction[];
 
-      const relevantExtractions = allExtractions.filter((e) => e.responseRelevant);
-      const extractionsForMetrics = (relevantExtractions.length > 0 ? relevantExtractions : allExtractions) as StageExtraction[];
+        const metrics: CellResult["metrics"] = {};
 
-      const metrics: CellResult["metrics"] = {};
-
-      if (cell.stage === "explore") {
-        const { discoveryRate, topThreeRate } = calculateExploreMetrics(extractionsForMetrics as ExploreExtraction[]);
-        metrics.discoveryRate = discoveryRate;
-        metrics.topThreeRate = topThreeRate;
-      } else if (cell.stage === "consider") {
-        const { avgSentiment } = calculateConsiderMetrics(extractionsForMetrics as ConsiderExtraction[]);
-        metrics.sentimentScore = avgSentiment;
-      } else if (cell.stage === "compare") {
-        const { winRate } = calculateCompareMetrics(extractionsForMetrics as CompareExtraction[]);
-        metrics.winRate = winRate;
-      } else if (cell.stage === "decide") {
-        const { recommendationRate } = calculateDecideMetrics(extractionsForMetrics as DecideExtraction[]);
-        metrics.recommendationRate = recommendationRate;
-      }
-
-      // Convert to run storage format
-      // Note: We currently store one intent text as "primary" for the cell summary in old format
-      // but queries now have intentId attached.
-      const queryResults: CellResult["results"] = benchmarkResult.queries.map((qr) => {
-        const responses: Record<string, { model: string; responseText: string; score: StageExtraction; citations?: { url: string; domain: string; title?: string; snippet?: string; sourceType: "url_citation" | "grounding_chunk" }[] }> = {};
-
-        for (const resp of qr.responses) {
-          // Convert citations to stored format (strip unnecessary fields like startIndex, endIndex, raw)
-          const storedCitations = resp.citations?.map(c => ({
-            url: c.url,
-            domain: c.domain,
-            title: c.title,
-            snippet: c.snippet,
-            sourceType: c.sourceType,
-          }));
-
-          responses[resp.provider] = {
-            model: resp.model,
-            responseText: resp.text,
-            score: resp.stageExtraction ?? emptyExtraction(cell.stage),
-            citations: storedCitations,
-          };
+        if (cell.stage === "explore") {
+          const { discoveryRate, topThreeRate } = calculateExploreMetrics(extractionsForMetrics as ExploreExtraction[]);
+          metrics.discoveryRate = discoveryRate;
+          metrics.topThreeRate = topThreeRate;
+        } else if (cell.stage === "consider") {
+          const { avgSentiment } = calculateConsiderMetrics(extractionsForMetrics as ConsiderExtraction[]);
+          metrics.sentimentScore = avgSentiment;
+        } else if (cell.stage === "compare") {
+          const { winRate } = calculateCompareMetrics(extractionsForMetrics as CompareExtraction[]);
+          metrics.winRate = winRate;
+        } else if (cell.stage === "decide") {
+          const { recommendationRate } = calculateDecideMetrics(extractionsForMetrics as DecideExtraction[]);
+          metrics.recommendationRate = recommendationRate;
         }
 
-        return {
-          query: qr.query,
-          // Inject intentId if available from runner, otherwise fallback to first intent
-          intentId: qr.intentId,
-          responses
+        const queryResults: CellResult["results"] = benchmarkResult.queries.map((qr) => {
+          const responses: Record<string, { model: string; responseText: string; score: StageExtraction; citations?: { url: string; domain: string; title?: string; snippet?: string; sourceType: "url_citation" | "grounding_chunk" }[] }> = {};
+
+          for (const resp of qr.responses) {
+            const storedCitations = resp.citations?.map(c => ({
+              url: c.url,
+              domain: c.domain,
+              title: c.title,
+              snippet: c.snippet,
+              sourceType: c.sourceType,
+            }));
+
+            responses[resp.provider] = {
+              model: resp.model,
+              responseText: resp.text,
+              score: resp.stageExtraction ?? emptyExtraction(cell.stage),
+              citations: storedCitations,
+            };
+          }
+
+          return {
+            query: qr.query,
+            intentId: qr.intentId,
+            responses
+          };
+        });
+
+        const cellResult: CellResult = {
+          intentId: activeIntents[0].id,
+          intentText: activeIntents[0].text,
+          queriesUsed: benchmarkResult.queries.map(q => q.query),
+          metrics,
+          results: queryResults,
         };
-      });
 
-      runCells[getCellKey(cell.persona, cell.stage)] = {
-        // Use the most recent intent as the "primary" label for legacy views
-        intentId: activeIntents[0].id,
-        intentText: activeIntents[0].text,
-        queriesUsed: benchmarkResult.queries.map(q => q.query),
-        metrics,
-        results: queryResults,
-      };
+        return { cell, benchmarkResult, cellResult };
+      })
+    );
 
-      // Track progress
-      await incrementProgress(id, 1);
-      await logProgress(id, {
-        message: `Completed ${cell.persona}/${cell.stage}`,
-        persona: cell.persona,
-        stage: cell.stage,
-      });
+    // Collect results and track progress
+    for (const result of cellResults) {
+      if (result.status === "fulfilled" && result.value) {
+        const { cell, benchmarkResult, cellResult } = result.value;
+        const uiKey = `${cell.persona}-${cell.stage}`;
+        resultsByCell[uiKey] = benchmarkResult;
+        runCells[getCellKey(cell.persona, cell.stage)] = cellResult;
+        await incrementProgress(id, 1);
+        await logProgress(id, {
+          message: `Completed ${cell.persona}/${cell.stage}`,
+          persona: cell.persona,
+          stage: cell.stage,
+        });
+      } else if (result.status === "rejected") {
+        console.error("[benchmark/run] Cell failed:", result.reason instanceof Error ? result.reason.message : result.reason);
+      }
     }
 
     const timestamp = new Date().toISOString();
