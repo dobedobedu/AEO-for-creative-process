@@ -93,9 +93,20 @@ export async function POST(req: Request) {
     const resultsByCell: Record<string, BenchmarkResult> = {};
     const runCells: Record<string, CellResult> = {};
 
-    // Process all cells in parallel (like cron route) to stay within 300s
-    const cellResults = await Promise.allSettled(
-      data.cells.map(async (cell) => {
+    // Process cells in batches of 4 to avoid provider rate limits
+    // (16 cells × 3 queries × 4 providers = 192 API calls; batching keeps
+    // concurrent Anthropic calls at ~12 instead of ~48)
+    const BATCH_SIZE = 4;
+    const allCellResults: PromiseSettledResult<{
+      cell: { persona: string; stage: string };
+      benchmarkResult: BenchmarkResult;
+      cellResult: CellResult;
+    } | null>[] = [];
+
+    for (let i = 0; i < data.cells.length; i += BATCH_SIZE) {
+      const batch = data.cells.slice(i, i + BATCH_SIZE);
+      const batchResults = await Promise.allSettled(
+        batch.map(async (cell) => {
         // Fetch all active intents for this cell from the library
         const activeIntents = intentLibrary.intents
           .filter((i) => i.persona === cell.persona && i.stage === cell.stage && i.active)
@@ -195,11 +206,14 @@ export async function POST(req: Request) {
         };
 
         return { cell, benchmarkResult, cellResult };
-      })
-    );
+        })
+      );
+      allCellResults.push(...batchResults);
+      console.log(`[benchmark/run] Batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(data.cells.length / BATCH_SIZE)} complete`);
+    }
 
     // Collect results and track progress
-    for (const result of cellResults) {
+    for (const result of allCellResults) {
       if (result.status === "fulfilled" && result.value) {
         const { cell, benchmarkResult, cellResult } = result.value;
         const uiKey = `${cell.persona}-${cell.stage}`;
