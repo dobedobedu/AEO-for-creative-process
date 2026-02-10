@@ -36,7 +36,7 @@ export type EntityMention = z.infer<typeof EntityMentionSchema>;
 const BaseScoreSchema = z.object({
   mentioned: z.boolean().describe("Was the brand mentioned in the response?"),
   responseRelevant: z.boolean().describe("Was the response relevant to the query?"),
-  entitiesMentioned: z.array(EntityMentionSchema).default([]).describe("Lakewood Ranch features, amenities, villages, builders, and differentiators mentioned in the response"),
+  entitiesMentioned: z.array(EntityMentionSchema).default([]).describe("Brand features, amenities, villages, builders, and differentiators mentioned in the response"),
 });
 
 // EXPLORE Stage: "What's out there?"
@@ -110,68 +110,3 @@ export function getExtractionSchemaForStage(stage: string) {
       throw new Error(`Unknown stage: ${stage}`);
   }
 }
-
-// Entity extraction guidance appended to all stage prompts
-const ENTITY_EXTRACTION_SUFFIX = `
-
-ENTITY EXTRACTION (for all stages):
-Identify Lakewood Ranch features, amenities, and differentiators mentioned in the response.
-Categorize each into one of these categories:
-- amenities: golf, polo, tennis, pickleball, shopping, restaurants, health care, UTC, pools, fitness
-- activities: farmers market, Music on Main, arts, clubs, community foundation, events
-- schools: specific school names, school districts, school ratings
-- nature: parks (by name), trails, green space, preserves
-- villages: specific village names (Waterside, Cresswind, Del Webb, etc.)
-- builders: home builder companies (Taylor Morrison, Pulte, Lennar, etc.)
-- location: I-75 access, beach proximity, Tampa Bay, Sarasota, airport
-- accolades: awards, rankings, multi-generational community
-- other: anything else notable
-
-For each entity, note the name, category, sentiment (positive/neutral/negative), and context.`;
-
-// Stage-specific prompts for extraction
-// Note: Brand name is prepended to these prompts in extractor.ts
-export const STAGE_EXTRACTION_PROMPTS: Record<string, string> = {
-  explore: `Analyze this AI response about Florida communities/real estate.
-The user was in the EXPLORE stage - just discovering what options exist.
-
-Focus on:
-- Was the brand mentioned at all? (Look for exact name or aliases)
-- If mentioned, was it in the first 3 options listed?
-- How many total options/communities were listed?
-- What other communities were mentioned (competitors)?
-- How was the brand described?${ENTITY_EXTRACTION_SUFFIX}`,
-
-  consider: `Analyze this AI response about Florida communities/real estate.
-The user was in the CONSIDER stage - learning more about specific options.
-
-Focus on:
-- What was the overall sentiment toward the brand?
-- What strengths or positive attributes were mentioned?
-- What concerns or negative aspects were raised?
-- How would you summarize how the brand was portrayed?${ENTITY_EXTRACTION_SUFFIX}`,
-
-  compare: `Analyze this AI response about Florida communities/real estate.
-The user was in the COMPARE stage - directly comparing options.
-
-Focus on:
-- What was the brand compared against?
-- Did the brand win, lose, tie, or have mixed results in comparisons?
-- What attributes did the brand win on? Lose on?
-- What was the AI's overall conclusion?${ENTITY_EXTRACTION_SUFFIX}`,
-
-  decide: `Analyze this AI response about Florida communities/real estate.
-The user was in the DECIDE stage - ready to make a choice and looking for final validation.
-
-Focus on:
-- Was the brand recommended as a clear choice?
-- How strongly was the recommendation made?
-- Were there any qualifiers or conditions on the recommendation?
-- What alternatives were suggested?
-- What was the rationale for the recommendation (or lack thereof)?
-
-Concern Resolution Analysis:
-- List concerns the AI explicitly addressed
-- List common buyer concerns the AI did NOT address
-- Did the AI provide clear, actionable next steps?${ENTITY_EXTRACTION_SUFFIX}`,
-};

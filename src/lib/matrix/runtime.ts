@@ -55,7 +55,7 @@ export function assertValidPersonaStage(
 
 /**
  * Get the core stage mapping for scoring
- * Custom stages must map to one of: explore, consider, compare, decide
+ * Maps both old (explore/consider/compare/decide) and new (discover/research/compare/apply) stage IDs
  */
 export function getCoreStageMapping(
   stageId: string,
@@ -67,18 +67,29 @@ export function getCoreStageMapping(
     throw new Error(`Stage not found: ${stageId}`);
   }
 
-  // Core stages map to themselves
-  if (stage.coreStage && !stage.coreStageMapping) {
-    if (["explore", "consider", "compare", "decide"].includes(stageId)) {
-      return stageId as "explore" | "consider" | "compare" | "decide";
-    }
+  // Map new SSES stages to legacy scoring stages
+  const stageMapping: Record<string, "explore" | "consider" | "compare" | "decide"> = {
+    discover: "explore",
+    research: "consider",
+    compare: "compare",
+    apply: "decide",
+    // Legacy stages
+    explore: "explore",
+    consider: "consider",
+    decide: "decide"
+  };
+
+  // If stage has explicit coreStageMapping, use it
+  if (stage.coreStageMapping) {
+    return stage.coreStageMapping;
   }
 
-  if (!stage.coreStageMapping) {
-    throw new Error(`Stage ${stageId} missing coreStageMapping - required for scoring`);
+  // Otherwise, map using stageMapping
+  if (stageMapping[stageId]) {
+    return stageMapping[stageId];
   }
 
-  return stage.coreStageMapping;
+  throw new Error(`Stage ${stageId} cannot be mapped to a core stage - missing coreStageMapping`);
 }
 
 /**

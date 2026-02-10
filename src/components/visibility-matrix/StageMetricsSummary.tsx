@@ -43,10 +43,10 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, subValue, trend, color = "default" }: MetricCardProps) {
   const bgColor = {
-    green: "bg-[#dcf3dc] border-[#1f3b2c]/20",
+    green: "bg-brand-highlight border-brand-primary/20",
     red: "bg-[#fce9e9] border-[#b86f3a]/20",
     tan: "bg-[#faf5ef] border-[#b86f3a]/20",
-    default: "bg-white border-[#e3dacb]",
+    default: "bg-white border-brand-secondary",
   }[color];
 
   const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
@@ -62,7 +62,7 @@ function MetricCard({ label, value, subValue, trend, color = "default" }: Metric
         </span>
         {trend && (
           <TrendIcon className={`w-4 h-4 mb-1 ${
-            trend === "up" ? "text-[#1f3b2c]" : trend === "down" ? "text-[#b86f3a]" : "text-black/30"
+            trend === "up" ? "text-brand-primary" : trend === "down" ? "text-[#b86f3a]" : "text-black/30"
           }`} />
         )}
       </div>
@@ -186,7 +186,7 @@ export function StageMetricsSummary({ stage, results }: StageMetricsSummaryProps
 
   if (!metrics) {
     return (
-      <div className="px-6 py-4 border-b border-[#e3dacb] bg-[#faf9f6]/50">
+      <div className="px-6 py-4 border-b border-brand-secondary bg-[#faf9f6]/50">
         <p className="text-[10px] text-black/30 uppercase tracking-wider">
           No data available for metrics
         </p>
@@ -202,7 +202,7 @@ export function StageMetricsSummary({ stage, results }: StageMetricsSummaryProps
   };
 
   return (
-    <div className="px-6 py-4 border-b border-[#e3dacb] bg-[#faf9f6]/50">
+    <div className="px-6 py-4 border-b border-brand-secondary bg-[#faf9f6]/50">
       <div className="flex items-center gap-2 mb-3">
         <BarChart3 className="w-3.5 h-3.5 text-black/30" />
         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/40">
@@ -273,7 +273,7 @@ export function StageMetricsSummary({ stage, results }: StageMetricsSummaryProps
               subValue="Direct comparisons analyzed"
             />
             {metrics.topCompetitors.length > 0 && (
-              <div className="flex flex-col gap-1 p-4 border border-[#e3dacb] bg-white min-w-[160px]">
+              <div className="flex flex-col gap-1 p-4 border border-brand-secondary bg-white min-w-[160px]">
                 <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40">
                   Top Competitors
                 </span>

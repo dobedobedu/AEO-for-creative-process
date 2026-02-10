@@ -1,5 +1,7 @@
 import { callOpenRouter } from "../providers/openrouter";
 import { Persona, Stage } from "./types";
+import { getTenantConfig, getBrandName } from "@/lib/config";
+import { getPrompt } from "@/lib/config/prompts";
 
 export interface GenerationParams {
   persona: Persona;
@@ -9,19 +11,23 @@ export interface GenerationParams {
   creativity: number;
 }
 
-const STAGE_LABELS: Record<Stage, string> = {
-  explore: "Explore (Macro Research)",
-  consider: "Consider (Evaluation & Quality)",
-  compare: "Compare (Total Cost & Logistics)",
-  decide: "Decide (Final Validation & Life Integration)",
-};
+/**
+ * Get the label for a stage from config, with fallback
+ */
+function getStageLabel(stageId: string): string {
+  const config = getTenantConfig();
+  const stageConfig = config.stages.find(s => s.id === stageId);
+  return stageConfig?.label ?? stageId.charAt(0).toUpperCase() + stageId.slice(1);
+}
 
-const PERSONA_LABELS: Record<Persona, string> = {
-  move_up: "Move-Up Buyer",
-  retiree: "Active Retiree (55+)",
-  luxury: "Luxury/Legacy Buyer",
-  first_time: "First-Time Buyer",
-};
+/**
+ * Get the label for a persona from config, with fallback
+ */
+function getPersonaLabel(personaId: string): string {
+  const config = getTenantConfig();
+  const personaConfig = config.personas.find(p => p.id === personaId);
+  return personaConfig?.label ?? personaId.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
 
 /**
  * Generate 5 authentic search queries using DeepSeek via OpenRouter
@@ -29,8 +35,8 @@ const PERSONA_LABELS: Record<Persona, string> = {
 export async function generateQueries(params: GenerationParams): Promise<string[]> {
   const { persona, stage, intent, role, creativity } = params;
 
-  const stageLabel = STAGE_LABELS[stage];
-  const personaLabel = PERSONA_LABELS[persona];
+  const stageLabel = getStageLabel(stage);
+  const personaLabel = getPersonaLabel(persona);
 
   const roleDirectives =
     role === "cpo"
@@ -46,7 +52,22 @@ export async function generateQueries(params: GenerationParams): Promise<string[
       ? "Generate rare, niche, and highly specific long-tail queries that reveal deep-seated concerns or specific lifestyle needs."
       : "Generate a balanced mix of common and specific search queries.";
 
-  const systemPrompt = `You are an expert in real estate psychographics and search behavior in Southwest Florida (Lakewood Ranch, Sarasota, Bradenton).
+  // Try to use the Prompt_Template_System for the system prompt
+  const templatePrompt = getPrompt("intent-generation", "system", {
+    persona_label: personaLabel,
+    stage_label: stageLabel,
+    intent,
+    role_directives: roleDirectives,
+    creativity_directive: creativityDirective,
+  });
+
+  // Fallback: build inline prompt with config values
+  const config = getTenantConfig();
+  const geography = config.geography;
+  const geographyRegion = geography?.region ?? "";
+  const geographyLocalities = geography?.localities?.join(", ") ?? "";
+
+  const systemPrompt = templatePrompt ?? `You are an expert in ${config.industry} psychographics and search behavior in ${geographyRegion} (${geographyLocalities}).
 Task: Generate 5 distinct Google search queries for a ${personaLabel} in the ${stageLabel} stage.
 
 Base Intent: "${intent}"
@@ -59,7 +80,7 @@ ${creativityDirective}
 
 Guidelines:
 - Queries must be in the first-person (what the user types into Google).
-- Use local context where appropriate (Lakewood Ranch villages, Zone X, CDD fees, SRQ, UTC).
+- Use local context where appropriate (${geographyLocalities}, ${geographyRegion}).
 - Return ONLY a valid JSON array of strings. No markdown, no explanations.`;
 
   const response = await callOpenRouter({
@@ -88,7 +109,7 @@ Guidelines:
       `${intent} ${stageLabel}`,
       `${intent} reviews`,
       `${intent} costs`,
-      `${intent} florida`,
+      `${intent} ${geographyRegion || "near me"}`,
     ];
   }
 }

@@ -3,6 +3,8 @@ import { query, sql } from "@/lib/db";
 import { callGeminiAnalysis } from "@/lib/providers/geminiAnalysis";
 import { buildAnalysisInput } from "@/lib/analysis/normalize";
 import { upsertInsight, saveAnalyses } from "@/lib/storage/insightStore";
+import { getPrompt } from "@/lib/config/prompts";
+import { getBrandName } from "@/lib/config";
 
 const RequestSchema = z.object({
   runId: z.string().uuid(),
@@ -32,10 +34,18 @@ type CitationRow = {
 };
 
 function buildConsultantPrompt(payload: ReturnType<typeof buildAnalysisInput>) {
-  return `You are a senior strategy consultant. Analyze AI visibility for Lakewood Ranch.
+  const brand = getBrandName();
+  const payloadJson = JSON.stringify(payload);
+
+  // Try loading from template system first
+  const templatePrompt = getPrompt("analysis", "consultant", { payload: payloadJson });
+  if (templatePrompt) return templatePrompt;
+
+  // Fallback inline prompt if template file is missing
+  return `You are a senior strategy consultant. Analyze AI visibility for ${brand}.
 Focus on: source authority, top topics, pros/cons, alternatives, recency, evidence quality, and stage-specific insights.
 
-Input JSON:\n${JSON.stringify(payload)}
+Input JSON:\n${payloadJson}
 
 Return JSON matching the required schema:
 - Provide 3-5 charts with labels and series values.
@@ -45,10 +55,18 @@ Return JSON matching the required schema:
 }
 
 function buildHypothesisPrompt(payload: ReturnType<typeof buildAnalysisInput>) {
-  return `You analyze LLM search and recommendation behavior across models.
-Do NOT mention Lakewood Ranch or any specific brand/community. Use generic terms like "the community" or "the target market."
+  const brand = getBrandName();
+  const payloadJson = JSON.stringify(payload);
 
-Input JSON:\n${JSON.stringify(payload)}
+  // Try loading from template system first
+  const templatePrompt = getPrompt("analysis", "hypothesis", { payload: payloadJson });
+  if (templatePrompt) return templatePrompt;
+
+  // Fallback inline prompt if template file is missing
+  return `You analyze LLM search and recommendation behavior across models.
+Do NOT mention ${brand} or any specific brand/community. Use generic terms like "the community" or "the target market."
+
+Input JSON:\n${payloadJson}
 
 Return JSON matching the required schema, but focus on falsifiable hypotheses:
 - Provide 3-5 hypotheses as insight_cards (type "other").

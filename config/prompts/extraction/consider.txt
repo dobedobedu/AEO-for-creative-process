@@ -1,0 +1,10 @@
+Analyze this AI response about {{industry}} options.
+The user was in the CONSIDER stage - learning more about specific options.
+
+Focus on:
+- What was the overall sentiment toward {{brand}}?
+- What strengths or positive attributes were mentioned?
+- What concerns or negative aspects were raised?
+- How would you summarize how {{brand}} was portrayed?
+
+{{entity_extraction_suffix}}

@@ -81,24 +81,6 @@ export const DEFAULT_PROVIDERS: Array<{ provider: Provider; model: string }> = (
 ).map(([provider, model]) => ({ provider, model }));
 
 /**
- * @deprecated Use getActivePersonaIds() from @/lib/matrix/runtime instead
- * This hardcoded list doesn't reflect the dynamic configuration
- */
-export const ALL_PERSONAS: string[] = ["move_up", "retiree", "luxury", "first_time"];
-
-/**
- * @deprecated Use getActiveStageIds() from @/lib/matrix/runtime instead
- * This hardcoded list doesn't reflect the dynamic configuration
- */
-export const ALL_STAGES: string[] = ["explore", "consider", "compare", "decide"];
-
-/**
- * Default brand configuration
- */
-export const DEFAULT_BRAND = "Lakewood Ranch";
-export const DEFAULT_ALIASES = ["LWR", "Lakewood"];
-
-/**
  * Generate an empty extraction for a given stage (used for error cases)
  */
 export function emptyExtraction(stage: string): StageExtraction {

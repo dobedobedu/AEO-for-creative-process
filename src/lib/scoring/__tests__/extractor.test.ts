@@ -10,6 +10,7 @@ import {
   getTopCompetitors,
 } from "../extractor";
 import type { ExploreExtraction, ConsiderExtraction, CompareExtraction, DecideExtraction } from "../schemas";
+import { TEST_BRAND, TEST_COMPETITORS } from "@/__tests__/test-constants";
 
 // Mock AI SDK
 vi.mock("ai", () => ({
@@ -23,7 +24,7 @@ describe("extractStageMetrics", () => {
       query: "test query",
       responseText: "",
       provider: "openai",
-      brand: "Lakewood Ranch",
+      brand: TEST_BRAND,
     });
 
     expect(result.success).toBe(false);
@@ -37,7 +38,7 @@ describe("extractStageMetrics", () => {
       query: "test query",
       responseText: "   \n\t   ",
       provider: "openai",
-      brand: "Lakewood Ranch",
+      brand: TEST_BRAND,
     });
 
     expect(result.success).toBe(false);
@@ -115,9 +116,9 @@ describe("calculateConsiderMetrics", () => {
 describe("calculateCompareMetrics", () => {
   it("calculates win rate correctly", () => {
     const extractions: CompareExtraction[] = [
-      { mentioned: true, responseRelevant: true, comparedTo: ["The Villages"], outcome: "win", winsOn: [], losesOn: [], aiConclusion: "Lakewood wins" },
-      { mentioned: true, responseRelevant: true, comparedTo: ["Nocatee"], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: "Lakewood loses" },
-      { mentioned: true, responseRelevant: true, comparedTo: ["The Villages"], outcome: "tie", winsOn: [], losesOn: [], aiConclusion: "Tie" },
+      { mentioned: true, responseRelevant: true, comparedTo: [TEST_COMPETITORS[0]], outcome: "win", winsOn: [], losesOn: [], aiConclusion: `${TEST_BRAND} wins` },
+      { mentioned: true, responseRelevant: true, comparedTo: [TEST_COMPETITORS[1]], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: `${TEST_BRAND} loses` },
+      { mentioned: true, responseRelevant: true, comparedTo: [TEST_COMPETITORS[0]], outcome: "tie", winsOn: [], losesOn: [], aiConclusion: "Tie" },
       { mentioned: false, responseRelevant: false, comparedTo: [], outcome: "not_compared", winsOn: [], losesOn: [], aiConclusion: "No comparison" },
     ];
 
@@ -136,8 +137,8 @@ describe("calculateCompareMetrics", () => {
 
   it("handles all wins", () => {
     const extractions: CompareExtraction[] = [
-      { mentioned: true, responseRelevant: true, comparedTo: ["The Villages"], outcome: "win", winsOn: [], losesOn: [], aiConclusion: "Lakewood wins" },
-      { mentioned: true, responseRelevant: true, comparedTo: ["Nocatee"], outcome: "win", winsOn: [], losesOn: [], aiConclusion: "Lakewood wins" },
+      { mentioned: true, responseRelevant: true, comparedTo: [TEST_COMPETITORS[0]], outcome: "win", winsOn: [], losesOn: [], aiConclusion: `${TEST_BRAND} wins` },
+      { mentioned: true, responseRelevant: true, comparedTo: [TEST_COMPETITORS[1]], outcome: "win", winsOn: [], losesOn: [], aiConclusion: `${TEST_BRAND} wins` },
     ];
 
     const result = calculateCompareMetrics(extractions);
@@ -147,8 +148,8 @@ describe("calculateCompareMetrics", () => {
 
   it("handles all losses", () => {
     const extractions: CompareExtraction[] = [
-      { mentioned: true, responseRelevant: true, comparedTo: ["The Villages"], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: "Lakewood loses" },
-      { mentioned: true, responseRelevant: true, comparedTo: ["Nocatee"], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: "Lakewood loses" },
+      { mentioned: true, responseRelevant: true, comparedTo: [TEST_COMPETITORS[0]], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: `${TEST_BRAND} loses` },
+      { mentioned: true, responseRelevant: true, comparedTo: [TEST_COMPETITORS[1]], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: `${TEST_BRAND} loses` },
     ];
 
     const result = calculateCompareMetrics(extractions);
@@ -224,43 +225,46 @@ describe("recommendationStrengthToScore", () => {
 
 describe("aggregateCompetitors", () => {
   it("aggregates competitors from ExploreExtraction", () => {
+    const [c1, c2, c3] = TEST_COMPETITORS;
     const extractions: ExploreExtraction[] = [
-      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: ["The Villages", "Nocatee"], howDescribed: "Good" },
-      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["The Villages"], howDescribed: "Okay" },
-      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["Nocatee", "Wesley Chapel"], howDescribed: "Bad" },
+      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: [c1, c2], howDescribed: "Good" },
+      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [c1], howDescribed: "Okay" },
+      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [c2, c3], howDescribed: "Bad" },
     ];
 
     const result = aggregateCompetitors(extractions);
 
-    expect(result.get("the villages")).toBe(2);
-    expect(result.get("nocatee")).toBe(2);
-    expect(result.get("wesley chapel")).toBe(1);
+    expect(result.get(c1.toLowerCase())).toBe(2);
+    expect(result.get(c2.toLowerCase())).toBe(2);
+    expect(result.get(c3.toLowerCase())).toBe(1);
   });
 
   it("normalizes competitor names to lowercase", () => {
+    const name = TEST_COMPETITORS[0];
     const extractions: ExploreExtraction[] = [
-      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: ["The Villages"], howDescribed: "Good" },
-      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["the villages"], howDescribed: "Okay" },
-      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["THE VILLAGES"], howDescribed: "Bad" },
+      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: [name], howDescribed: "Good" },
+      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [name.toLowerCase()], howDescribed: "Okay" },
+      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [name.toUpperCase()], howDescribed: "Bad" },
     ];
 
     const result = aggregateCompetitors(extractions);
 
     expect(result.size).toBe(1);
-    expect(result.get("the villages")).toBe(3);
+    expect(result.get(name.toLowerCase())).toBe(3);
   });
 
   it("handles CompareExtraction", () => {
+    const [c1, c2] = TEST_COMPETITORS;
     const extractions: CompareExtraction[] = [
-      { mentioned: true, responseRelevant: true, comparedTo: ["The Villages"], outcome: "win", winsOn: [], losesOn: [], aiConclusion: "Win" },
-      { mentioned: true, responseRelevant: true, comparedTo: ["Nocatee"], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: "Lose" },
-      { mentioned: true, responseRelevant: true, comparedTo: ["The Villages"], outcome: "win", winsOn: [], losesOn: [], aiConclusion: "Win" },
+      { mentioned: true, responseRelevant: true, comparedTo: [c1], outcome: "win", winsOn: [], losesOn: [], aiConclusion: "Win" },
+      { mentioned: true, responseRelevant: true, comparedTo: [c2], outcome: "lose", winsOn: [], losesOn: [], aiConclusion: "Lose" },
+      { mentioned: true, responseRelevant: true, comparedTo: [c1], outcome: "win", winsOn: [], losesOn: [], aiConclusion: "Win" },
     ];
 
     const result = aggregateCompetitors(extractions);
 
-    expect(result.get("the villages")).toBe(2);
-    expect(result.get("nocatee")).toBe(1);
+    expect(result.get(c1.toLowerCase())).toBe(2);
+    expect(result.get(c2.toLowerCase())).toBe(1);
   });
 
   it("handles empty array", () => {
@@ -272,30 +276,32 @@ describe("aggregateCompetitors", () => {
 
 describe("getTopCompetitors", () => {
   it("returns top N competitors by count", () => {
+    const [c1, c2, c3] = TEST_COMPETITORS;
     const extractions: ExploreExtraction[] = [
-      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: ["The Villages", "Nocatee"], howDescribed: "Good" },
-      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["The Villages"], howDescribed: "Okay" },
-      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["Nocatee", "Wesley Chapel"], howDescribed: "Bad" },
-      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["The Villages", "Wesley Chapel"], howDescribed: "Bad" },
+      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: [c1, c2], howDescribed: "Good" },
+      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [c1], howDescribed: "Okay" },
+      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [c2, c3], howDescribed: "Bad" },
+      { mentioned: false, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [c1, c3], howDescribed: "Bad" },
     ];
 
     const result = getTopCompetitors(extractions, 3);
 
-    expect(result).toEqual(["the villages", "nocatee", "wesley chapel"]);
+    expect(result).toEqual([c1.toLowerCase(), c2.toLowerCase(), c3.toLowerCase()]);
     expect(result.length).toBe(3);
   });
 
   it("returns all competitors when less than limit", () => {
+    const [c1, c2] = TEST_COMPETITORS;
     const extractions: ExploreExtraction[] = [
-      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: ["The Villages"], howDescribed: "Good" },
-      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: ["Nocatee"], howDescribed: "Okay" },
+      { mentioned: true, inTopThree: true, responseRelevant: true, totalOptionsListed: 3, competitors: [c1], howDescribed: "Good" },
+      { mentioned: true, inTopThree: false, responseRelevant: true, totalOptionsListed: 3, competitors: [c2], howDescribed: "Okay" },
     ];
 
     const result = getTopCompetitors(extractions, 5);
 
     expect(result.length).toBe(2);
-    expect(result).toContain("the villages");
-    expect(result).toContain("nocatee");
+    expect(result).toContain(c1.toLowerCase());
+    expect(result).toContain(c2.toLowerCase());
   });
 
   it("handles empty array", () => {

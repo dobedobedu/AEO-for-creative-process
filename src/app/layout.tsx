@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
+import { BrandThemeProvider } from "@/components/brand-theme-provider";
 
 const display = Fraunces({
   variable: "--font-display",
@@ -27,7 +28,7 @@ export default function RootLayout({
       <body
         className={`${display.variable} ${body.variable} antialiased`}
       >
-        {children}
+        <BrandThemeProvider>{children}</BrandThemeProvider>
       </body>
     </html>
   );

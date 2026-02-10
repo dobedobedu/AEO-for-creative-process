@@ -9,13 +9,13 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import {
   getExtractionSchemaForStage,
-  STAGE_EXTRACTION_PROMPTS,
   type StageExtraction,
   type ExploreExtraction,
   type ConsiderExtraction,
   type CompareExtraction,
   type DecideExtraction,
 } from "./schemas";
+import { getExtractionPrompt } from "@/lib/config/prompts";
 import type { Stage } from "../intents/types";
 import { safeAsync } from "../utils";
 
@@ -50,7 +50,15 @@ export async function extractStageMetrics(input: ExtractionInput): Promise<Extra
   }
 
   const schema = getExtractionSchemaForStage(stage);
-  const stagePrompt = STAGE_EXTRACTION_PROMPTS[stage];
+  const stagePrompt = getExtractionPrompt(stage);
+
+  if (!stagePrompt) {
+    return {
+      success: false,
+      extraction: null,
+      error: `No extraction prompt found for stage: ${stage}`,
+    };
+  }
 
   // Brand name MUST come first so Gemini knows what to look for
   const brandInfo = brandTerms.length > 0 

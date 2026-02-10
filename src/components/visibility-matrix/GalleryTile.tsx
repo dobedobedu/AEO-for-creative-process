@@ -54,7 +54,7 @@ export function GalleryTile({
     citations = [],
     brandDomain,
     onClick,
-    accentColor = "#1f3b2c",
+    accentColor = "var(--brand-primary)",
     isMissing = false,
     loading = false,
 }: GalleryTileProps) {
@@ -81,7 +81,7 @@ export function GalleryTile({
 
     // Heatmap color logic - standardized thresholds (0.7/0.4)
     const getHeatmapBg = (score: number) => {
-        if (score >= 0.7) return "bg-[#dcf3dc] hover:bg-[#d2ebd2]"; // Green - strong
+        if (score >= 0.7) return "bg-brand-highlight hover:bg-[#d2ebd2]"; // Green - strong
         if (score >= 0.4) return "bg-[#faf5ef] hover:bg-[#f3eadf]"; // Tan - moderate
         return "bg-[#fce9e9] hover:bg-[#f9dada]"; // Red - weak
     };
@@ -137,8 +137,8 @@ export function GalleryTile({
                         </div>
                         {/* Skeleton content area */}
                         <div className="flex-1 flex flex-col items-center justify-center py-4">
-                            <Skeleton className="h-3 w-20 mb-3 bg-[#e3dacb]/50" />
-                            <Skeleton className="h-10 w-24 bg-[#e3dacb]/50" />
+                            <Skeleton className="h-3 w-20 mb-3 bg-brand-secondary/50" />
+                            <Skeleton className="h-10 w-24 bg-brand-secondary/50" />
                         </div>
                     </>
                 ) : (
@@ -220,16 +220,16 @@ export function GalleryTile({
                                                 <div
                                                     key={idx}
                                                     className={`flex items-center justify-between py-1 px-2 rounded-sm ${
-                                                        isBrand ? "bg-[#dcf3dc]" : "bg-black/[0.02]"
+                                                        isBrand ? "bg-brand-highlight" : "bg-black/[0.02]"
                                                     }`}
                                                 >
                                                     <span className={`text-[10px] truncate max-w-[140px] ${
-                                                        isBrand ? "font-bold text-[#1f3b2c]" : "text-black/60"
+                                                        isBrand ? "font-bold text-brand-primary" : "text-black/60"
                                                     }`}>
                                                         {domain}
                                                     </span>
                                                     <span className={`text-[10px] font-bold ${
-                                                        isBrand ? "text-[#1f3b2c]" : "text-black/40"
+                                                        isBrand ? "text-brand-primary" : "text-black/40"
                                                     }`}>
                                                         {count}×
                                                     </span>

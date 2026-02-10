@@ -23,22 +23,10 @@ export interface VisibilityScore {
   recommendationStrength: "strong" | "moderate" | "weak" | "none";
 }
 
-// Florida master-planned community competitors
-const COMPETITORS = [
-  "The Villages",
-  "Villages",
-  "Nocatee",
-  "Wellen Park",
-  "Ave Maria",
-  "Babcock Ranch",
-  "Sun City Center",
-  "Sarasota",
-  "Tampa",
-  "Orlando",
-  "Jacksonville",
-  "On Top of the World",
-  "OTOW",
-];
+import { findCompetitorMentions } from "@/lib/config";
+
+// Competitors are now loaded from config/tenant.json
+// Use findCompetitorMentions() to detect competitors in text
 
 const POSITIVE_SIGNALS = [
   "recommend",
@@ -285,20 +273,8 @@ function analyzeSentiment(context: string): "positive" | "negative" | "neutral" 
 }
 
 function detectCompetitors(text: string): string[] {
-  const lowerText = text.toLowerCase();
-  const found: string[] = [];
-
-  for (const competitor of COMPETITORS) {
-    if (lowerText.includes(competitor.toLowerCase())) {
-      // Normalize "Villages" to "The Villages"
-      const normalized = competitor === "Villages" ? "The Villages" : competitor;
-      if (!found.includes(normalized)) {
-        found.push(normalized);
-      }
-    }
-  }
-
-  return found;
+  // Use config-loaded competitors with alias normalization
+  return findCompetitorMentions(text);
 }
 
 function determinePosition(

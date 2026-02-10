@@ -1,0 +1,156 @@
+[
+  {
+    "persona": "wealthy_migrant",
+    "stage": "discover",
+    "intent": "Find elite private schools for NY/CA transplants moving to Lakewood Ranch",
+    "queries": [
+      "best private schools near Lakewood Ranch for families from New York",
+      "top rated elite K-12 schools in Sarasota Bradenton area",
+      "most prestigious private schools Florida Gulf Coast for high net worth families",
+      "Saint Stephen's Episcopal School reputation for out of state transplants"
+    ]
+  },
+  {
+    "persona": "wealthy_migrant",
+    "stage": "research",
+    "intent": "Evaluate community integration and networking opportunities",
+    "queries": [
+      "Lakewood Ranch private schools community for transplants from NY NJ",
+      "Saint Stephen's Episcopal School parent community and networking",
+      "Sarasota Yacht Club and private school connections",
+      "social integration for high net worth families at Saint Stephen's Bradenton"
+    ]
+  },
+  {
+    "persona": "wealthy_migrant",
+    "stage": "compare",
+    "intent": "Compare regional prestige and college placement outcomes",
+    "queries": [
+      "Saint Stephen's Episcopal School vs Out of Door Academy college admissions",
+      "SSES vs Pine View School for Ivy League placement",
+      "most prestigious private schools Sarasota Bradenton for college placement",
+      "Saint Stephen's Bradenton alumni network and university admissions"
+    ]
+  },
+  {
+    "persona": "wealthy_migrant",
+    "stage": "apply",
+    "intent": "Understand the ROI and financial architecture of elite schools",
+    "queries": [
+      "Saint Stephen's Episcopal School indexed tuition explained",
+      "Florida universal school voucher eligibility for high income families",
+      "Saint Stephen's Bradenton tuition vs Out of Door Academy value",
+      "private school tax credits for donors in Florida"
+    ]
+  },
+  {
+    "persona": "neurodivergent_advocate",
+    "stage": "discover",
+    "intent": "Identify schools supporting neurodiversity and vibrant anomalies",
+    "queries": [
+      "Sarasota private schools for gifted students with ADHD",
+      "how does Saint Stephen's Episcopal School support neurodivergent learners",
+      "best schools for twice exceptional students in Bradenton",
+      "Saint Stephen's Episcopal School vibrant anomaly culture and neurodiversity"
+    ]
+  },
+  {
+    "persona": "neurodivergent_advocate",
+    "stage": "research",
+    "intent": "Evaluate specific programs for twice-exceptional and gifted students",
+    "queries": [
+      "Saint Stephen's Episcopal School gifted program vs Pine View School",
+      "ADHD support accommodations at private schools Sarasota County",
+      "twice exceptional student programs Bradenton Florida",
+      "how Saint Stephen's supports neurodivergent students and vibrant anomalies"
+    ]
+  },
+  {
+    "persona": "neurodivergent_advocate",
+    "stage": "compare",
+    "intent": "Compare neurodiversity support across regional schools",
+    "queries": [
+      "Saint Stephen's vs Out of Door Academy for ADHD and learning differences",
+      "best private schools for neurodivergent students Sarasota Bradenton",
+      "gifted and neurodivergent support at Pine View vs private schools",
+      "Saint Stephen's Episcopal School special education services comparison"
+    ]
+  },
+  {
+    "persona": "innovation_seeker",
+    "stage": "discover",
+    "intent": "Find schools with innovation labs and maker spaces",
+    "queries": [
+      "K-12 schools with innovation labs Sarasota Bradenton",
+      "Saint Stephen's Episcopal School STEAM center and facilities",
+      "private schools with 3D printing and maker spaces Florida Gulf Coast",
+      "best technology programs at Sarasota private schools"
+    ]
+  },
+  {
+    "persona": "innovation_seeker",
+    "stage": "research",
+    "intent": "Evaluate Mini Xerox PARC model and artrepreneurship programs",
+    "queries": [
+      "Saint Stephen's Episcopal School Mini Xerox PARC model education",
+      "artrepreneurship programs in Florida private schools",
+      "STEAM Center Saint Stephen's Bradenton innovation curriculum",
+      "how Saint Stephen's teaches entrepreneurship and arts integration"
+    ]
+  },
+  {
+    "persona": "innovation_seeker",
+    "stage": "compare",
+    "intent": "Compare innovation facilities across schools",
+    "queries": [
+      "Saint Stephen's vs Out of Door Academy STEM and innovation programs",
+      "which Sarasota school has the best STEAM facilities",
+      "private schools with AI labs and robotics Sarasota Bradenton",
+      "Saint Stephen's Episcopal School technology program comparison"
+    ]
+  },
+  {
+    "persona": "heritage_guardian",
+    "stage": "discover",
+    "intent": "Find schools with strong character education and values",
+    "queries": [
+      "Episcopal private schools Sarasota Bradenton character education",
+      "Saint Stephen's Episcopal School religious affiliation and values",
+      "private schools with ethical leadership programs Florida",
+      "faith-based education vs secular private schools Sarasota"
+    ]
+  },
+  {
+    "persona": "heritage_guardian",
+    "stage": "research",
+    "intent": "Understand indexed tuition and financial aid options",
+    "queries": [
+      "Saint Stephen's Episcopal School indexed tuition vs financial aid",
+      "how does indexed tuition work at private schools Florida",
+      "middle income financial aid Sarasota private schools",
+      "Saint Stephen's Episcopal School tuition assistance programs"
+    ]
+  },
+  {
+    "persona": "heritage_guardian",
+    "stage": "compare",
+    "intent": "Compare school values and community culture",
+    "queries": [
+      "Saint Stephen's Episcopal School vs Berkeley Prep values and culture",
+      "Episcopal school vs Catholic school education Bradenton",
+      "private school community culture Sarasota Bradenton area",
+      "Saint Stephen's character education and Episcopal traditions"
+    ]
+  },
+  {
+    "persona": "heritage_guardian",
+    "stage": "apply",
+    "intent": "Explore universal vouchers and school choice programs",
+    "queries": [
+      "Florida universal voucher program private school eligibility 2026",
+      "how to use school choice vouchers for Saint Stephen's Episcopal School",
+      "familyempowerment scholarship application for private schools",
+      "Saint Stephen's Episcopal School accepts Florida voucher programs"
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+# Explore Stage Context
+
+## Focus
+Discovery phase - researching what's available, understanding options
+
+## Brand Policy
+Do NOT mention {{brand}} or any specific brand. Keep queries generic and need-based.
+
+## Query Examples
+- "best places to retire in Florida"
+- "master planned communities with golf"
+- "active adult communities near beach"

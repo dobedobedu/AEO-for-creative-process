@@ -71,7 +71,7 @@ function highlightBrandMentions(text: string, brandTerms: string[]): ReactNode {
       return (
         <mark
           key={idx}
-          className="bg-[#dcf3dc] text-[#1f3b2c] px-1 py-0.5 rounded-sm font-semibold not-italic"
+          className="bg-brand-highlight text-brand-primary px-1 py-0.5 rounded-sm font-semibold not-italic"
         >
           {part}
         </mark>
@@ -84,7 +84,7 @@ function highlightBrandMentions(text: string, brandTerms: string[]): ReactNode {
 function getSentimentBadgeStyle(sentiment: string) {
   switch (sentiment) {
     case "positive":
-      return "bg-[#dcf3dc] text-[#1f3b2c]";
+      return "bg-brand-highlight text-brand-primary";
     case "negative":
       return "bg-[#fce9e9] text-[#b86f3a]";
     default:
@@ -94,7 +94,7 @@ function getSentimentBadgeStyle(sentiment: string) {
 
 function getMentionBadgeStyle(mentioned: boolean) {
   return mentioned
-    ? "bg-[#dcf3dc] text-[#1f3b2c]"
+    ? "bg-brand-highlight text-brand-primary"
     : "bg-[#fce9e9] text-[#b86f3a]";
 }
 
@@ -186,14 +186,14 @@ export function ProviderRow({
   const firstResponse = responses[0]?.response;
 
   return (
-    <div className="border border-[#e3dacb] bg-white">
+    <div className="border border-brand-secondary bg-white">
       {/* Collapsed Header */}
       <button
         onClick={onToggleExpand}
         className="w-full p-4 flex items-start gap-4 hover:bg-[#faf9f6] transition-colors text-left"
       >
         {/* Provider Logo */}
-        <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#faf9f6] border border-[#e3dacb]">
+        <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#faf9f6] border border-brand-secondary">
           <Image
             src={logo}
             alt={label}
@@ -218,7 +218,7 @@ export function ProviderRow({
               {mentionCount > 0 ? `Mentioned ${mentionCount}×` : "Not Mentioned"}
             </Badge>
             {showPosition && bestPosition && (
-              <Badge className="text-[8px] uppercase px-1.5 py-0 rounded-none border-0 bg-[#1f3b2c]/10 text-[#1f3b2c]">
+              <Badge className="text-[8px] uppercase px-1.5 py-0 rounded-none border-0 bg-brand-primary/10 text-brand-primary">
                 Position: {bestPosition}
               </Badge>
             )}
@@ -277,7 +277,7 @@ export function ProviderRow({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-[#e3dacb] bg-[#faf9f6]/50 divide-y divide-[#e3dacb]/50">
+            <div className="border-t border-brand-secondary bg-[#faf9f6]/50 divide-y divide-brand-secondary/50">
               {responses.map((item, idx) => (
                 <div key={idx} className="p-4">
                   {/* Query */}
@@ -301,7 +301,7 @@ export function ProviderRow({
                       </Badge>
                     )}
                     {item.response.visibility?.position && item.response.visibility.position !== "absent" && (
-                      <Badge className="text-[8px] uppercase px-1.5 py-0 rounded-none border-0 bg-[#1f3b2c]/10 text-[#1f3b2c]">
+                      <Badge className="text-[8px] uppercase px-1.5 py-0 rounded-none border-0 bg-brand-primary/10 text-brand-primary">
                         Position: {item.response.visibility.position}
                       </Badge>
                     )}
@@ -315,7 +315,7 @@ export function ProviderRow({
 
                     {/* Citations for this response */}
                     {item.response.citations && item.response.citations.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-[#e3dacb]/50">
+                      <div className="mt-3 pt-3 border-t border-brand-secondary/50">
                         <div className="flex items-center gap-2 mb-2">
                           <Link2 className="w-3 h-3 text-[#6e7c5b]" />
                           <span className="text-[8px] font-black uppercase text-black/30">
@@ -341,7 +341,7 @@ export function ProviderRow({
                                   href={data.sampleUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-[9px] px-2 py-1 bg-[#faf9f6] border border-[#e3dacb] text-black/60 hover:bg-[#efe6d9] hover:text-black/80 transition-colors"
+                                  className="inline-flex items-center gap-1 text-[9px] px-2 py-1 bg-[#faf9f6] border border-brand-secondary text-black/60 hover:bg-[#efe6d9] hover:text-black/80 transition-colors"
                                 >
                                   {domain}
                                   {data.count > 1 && (

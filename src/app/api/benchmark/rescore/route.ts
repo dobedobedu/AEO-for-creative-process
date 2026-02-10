@@ -11,6 +11,7 @@ import { loadRun, saveRun } from "@/lib/runs/storage";
 import { backupRun } from "@/lib/runs/backup";
 import { rescoreRun } from "@/lib/runs/rescore";
 import { saveRunAggregates } from "@/lib/runs/aggregator";
+import { getBrandName, getBrandAliases } from "@/lib/config";
 
 const RequestSchema = z.object({
   runIds: z.array(z.string().uuid()).min(1).max(10),
@@ -18,17 +19,13 @@ const RequestSchema = z.object({
   brandAliases: z.array(z.string()).optional(),
 });
 
-// Default brand info if not provided
-const DEFAULT_BRAND = "Lakewood Ranch";
-const DEFAULT_BRAND_ALIASES = ["LWR", "Lakewood"];
-
 export async function POST(req: Request) {
   try {
     const payload = await req.json();
     const data = RequestSchema.parse(payload);
 
-    const brand = data.brand ?? DEFAULT_BRAND;
-    const brandAliases = data.brandAliases ?? DEFAULT_BRAND_ALIASES;
+    const brand = data.brand ?? getBrandName();
+    const brandAliases = data.brandAliases ?? getBrandAliases();
 
     const results = {
       rescored: 0,

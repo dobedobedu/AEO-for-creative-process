@@ -6,6 +6,8 @@
 
 import { callOpenRouter } from "../providers/openrouter";
 import { safeAsync } from "../utils";
+import { getTenantConfig, getBrandName } from "@/lib/config";
+import { loadPromptTemplate, interpolatePrompt, getDefaultPromptContext, getQueryGenerationPrompt } from "@/lib/config/prompts";
 
 export interface QueryGenerationParams {
     persona: string;
@@ -23,13 +25,6 @@ export interface GeneratedQueries {
     reasoning?: string;
 }
 
-// Persona descriptions - now as Record<string, string> to support dynamic personas
-const PERSONA_DESCRIPTIONS: Record<string, string> = {
-    move_up: "a growing family upgrading from their starter home, needing more space for kids",
-    retiree: "an active adult 55+ couple seeking vibrant community with healthcare access",
-    luxury: "a high-net-worth buyer seeking premium amenities and exclusivity",
-    first_time: "a first-time homebuyer entering the market, budget-conscious and learning",
-};
 
 // Role descriptors for different perspectives
 const ROLE_DESCRIPTORS: Record<"cpo" | "family_unit", string> = {
@@ -37,38 +32,37 @@ const ROLE_DESCRIPTORS: Record<"cpo" | "family_unit", string> = {
     family_unit: "a family unit weighing lifestyle fit, community feel, schools, and day-to-day happiness",
 };
 
-// Stage context - keyed by core stage for prompt generation
-// Custom stages map to core stages for scoring, but prompts use core stage context
-const STAGE_CONTEXT: Record<string, { focus: string; brandPolicy: string }> = {
-    explore: {
-        focus: "Discovery phase - researching what's available, understanding options",
-        brandPolicy: "Do NOT mention Lakewood Ranch or any specific brand. Keep queries generic and need-based.",
-    },
-    consider: {
-        focus: "Evaluation phase - assessing specific options against criteria",
-        brandPolicy: "Lakewood Ranch may be mentioned. Focus on feasibility and fit.",
-    },
-    compare: {
-        focus: "Comparison phase - weighing alternatives head-to-head",
-        brandPolicy: "Include Lakewood Ranch explicitly. Compare against alternatives (The Villages, Wellen Park, etc.).",
-    },
-    decide: {
-        focus: "Decision phase - ready to commit, needs final validation",
-        brandPolicy: "Lakewood Ranch is the presumed choice. Focus on next steps: agents, touring, deposits.",
-    },
-};
 
 /**
- * Build system prompt for DeepSeek
+ * Build system prompt using the Prompt_Template_System
  */
 function buildSystemPrompt(params: QueryGenerationParams): string {
     const { persona, stage, coreStage, role, queryStyle } = params;
 
     // Use coreStage for context, fallback to stage if not provided
     const stageKey = coreStage || stage;
-    const personaDesc = PERSONA_DESCRIPTIONS[persona] || `a ${persona} home buyer`;
+
+    // Get persona description from config, fallback to generic
+    const config = getTenantConfig();
+    const personaConfig = config.personas.find(p => p.id === persona);
+    const personaDesc = personaConfig?.description || `a ${persona} buyer`;
+
     const roleDesc = ROLE_DESCRIPTORS[role];
-    const stageInfo = STAGE_CONTEXT[stageKey] || STAGE_CONTEXT.explore; // Default to explore context
+
+    // Load stage-specific context from prompt templates
+    const stageTemplate = loadPromptTemplate("query-generation", stageKey);
+    let stageFocus = "Discovery phase - researching what's available";
+    let brandPolicy = `Do NOT mention ${getBrandName()} or any specific brand. Keep queries generic and need-based.`;
+
+    if (stageTemplate) {
+        // Parse the template to extract focus and brand policy sections
+        const context = getDefaultPromptContext();
+        const interpolated = interpolatePrompt(stageTemplate, context);
+        const focusMatch = interpolated.match(/## Focus\n(.+)/);
+        const policyMatch = interpolated.match(/## Brand Policy\n(.+)/);
+        if (focusMatch) stageFocus = focusMatch[1].trim();
+        if (policyMatch) brandPolicy = policyMatch[1].trim();
+    }
 
     const styleDirective = queryStyle < 0.7
         ? "Generate COMMON, high-volume queries that many buyers would type."
@@ -76,22 +70,41 @@ function buildSystemPrompt(params: QueryGenerationParams): string {
             ? "Generate NICHE, long-tail queries revealing specific concerns or lifestyle needs."
             : "Generate a balanced mix of common and specific queries.";
 
-    return `You are simulating a home buyer searching Google.
+    // Try to use the Prompt_Template_System for the full system prompt
+    const templatePrompt = getQueryGenerationPrompt({
+        persona_description: personaDesc,
+        role_description: roleDesc,
+        stage: stage.toUpperCase(),
+        core_stage: stageKey.toUpperCase(),
+        stage_focus: stageFocus,
+        brand_policy: brandPolicy,
+        style_directive: styleDirective,
+    });
+
+    if (templatePrompt) {
+        return templatePrompt;
+    }
+
+    // Fallback: build inline prompt with config values
+    const geography = config.geography;
+    const localContext = geography
+        ? `- Region: ${geography.region} (${geography.localities.join(", ")})\n- Nearby metros: ${geography.nearbyMetros?.join(", ") ?? ""}`
+        : "";
+
+    return `You are simulating a buyer searching Google.
 
 BUYER: ${personaDesc}
 ROLE: Right now, ${roleDesc} is doing the research.
-STAGE: ${stage.toUpperCase()} (${stageKey.toUpperCase()} phase) - ${stageInfo.focus}
+STAGE: ${stage.toUpperCase()} (${stageKey.toUpperCase()} phase) - ${stageFocus}
 
 BRAND POLICY:
-${stageInfo.brandPolicy}
+${brandPolicy}
 
 QUERY STYLE:
 ${styleDirective}
 
 LOCAL CONTEXT (use when appropriate):
-- Region: Southwest Florida (Sarasota, Bradenton, Lakewood Ranch area)
-- Concerns: CDD fees, hurricane insurance, flood zones, HOA rules
-- Villages: Waterside, Cresswind, Del Webb, Country Club East
+${localContext}
 
 OUTPUT:
 Return ONLY a JSON object: {"queries": ["...", "...", ...], "reasoning": "brief explanation"}

@@ -147,13 +147,21 @@ export function PersonaList({ personas, onUpdate, onReorder, onAdd, onDelete }: 
                 placeholder="Short description (optional)"
               />
 
-              <Textarea
-                value={editFullText}
-                onChange={(e) => setEditFullText(e.target.value)}
-                placeholder="Full persona description"
-                rows={4}
-                className="text-sm"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Detailed Prompt Context <span className="text-xs text-gray-400">(optional)</span>
+                </label>
+                <Textarea
+                  value={editFullText}
+                  onChange={(e) => setEditFullText(e.target.value)}
+                  placeholder="Provide rich context about this persona for LLM prompts. E.g., demographics, motivations, pain points, decision-making style, typical questions they ask..."
+                  rows={4}
+                  className="text-sm"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Used to give AI models richer context when generating queries and analyzing responses for this persona.
+                </p>
+              </div>
 
               <div className="flex justify-end gap-2">
                 <Button
@@ -265,13 +273,21 @@ export function PersonaList({ personas, onUpdate, onReorder, onAdd, onDelete }: 
             placeholder="Short description (optional)"
           />
 
-          <Textarea
-            value={editFullText}
-            onChange={(e) => setEditFullText(e.target.value)}
-            placeholder="Full persona description"
-            rows={4}
-            className="text-sm"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Detailed Prompt Context <span className="text-xs text-gray-400">(optional)</span>
+            </label>
+            <Textarea
+              value={editFullText}
+              onChange={(e) => setEditFullText(e.target.value)}
+              placeholder="Provide rich context about this persona for LLM prompts. E.g., demographics, motivations, pain points, decision-making style, typical questions they ask..."
+              rows={4}
+              className="text-sm"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Used to give AI models richer context when generating queries and analyzing responses for this persona.
+            </p>
+          </div>
 
           <div className="flex justify-end gap-2">
             <Button

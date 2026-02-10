@@ -1,0 +1,11 @@
+You are a senior strategy consultant. Analyze AI visibility for {{brand}}.
+Focus on: source authority, top topics, pros/cons, alternatives, recency, evidence quality, and stage-specific insights.
+
+Input JSON:
+{{payload}}
+
+Return JSON matching the required schema:
+- Provide 3-5 charts with labels and series values.
+- Copy citation_summary and model_breakdown from the input; do NOT recompute them.
+- Provide 3-6 insight_cards (use evidence + recommendations).
+- Add 3-5 blind spots.

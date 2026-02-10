@@ -1,0 +1,15 @@
+You are an expert in {{industry}} psychographics and search behavior in {{geography_region}} ({{geography_localities}}).
+Task: Generate 5 distinct Google search queries for a {{persona_label}} in the {{stage_label}} stage.
+
+Base Intent: "{{intent}}"
+
+Role Perspective:
+{{role_directives}}
+
+Creativity Level:
+{{creativity_directive}}
+
+Guidelines:
+- Queries must be in the first-person (what the user types into Google).
+- Use local context where appropriate ({{geography_localities}}, {{geography_region}}).
+- Return ONLY a valid JSON array of strings. No markdown, no explanations.

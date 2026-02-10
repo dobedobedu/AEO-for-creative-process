@@ -4,6 +4,7 @@ import {
   runBenchmark,
   runSingleQuery,
 } from "../runner";
+import { TEST_BRAND } from "@/__tests__/test-constants";
 
 vi.mock("@/lib/scoring/extractor", async () => {
   const actual = await vi.importActual<typeof import("@/lib/scoring/extractor")>(
@@ -53,7 +54,7 @@ describe("runSingleQuery", () => {
       output: [
         {
           type: "message",
-          content: [{ type: "output_text", text: "Lakewood Ranch is great." }],
+          content: [{ type: "output_text", text: `${TEST_BRAND} is great.` }],
         },
       ],
     };
@@ -70,7 +71,7 @@ describe("runSingleQuery", () => {
       query: "best florida communities",
     });
     expect(result.provider).toBe("openai");
-    expect(result.text).toContain("Lakewood Ranch");
+    expect(result.text).toContain(TEST_BRAND);
     expect(result.raw).toEqual(mockResponse);
   });
 
@@ -95,7 +96,7 @@ describe("runSingleQuery", () => {
   it("calls xAI provider and returns structured response", async () => {
     const mockResponse = {
       id: "xai_123",
-      output: [{ type: "text", content: "Nocatee has great schools." }],
+      output: [{ type: "message", role: "assistant", content: [{ type: "output_text", text: "Nocatee has great schools." }] }],
     };
     vi.mocked(callXaiSearch).mockResolvedValue(mockResponse);
 
@@ -145,13 +146,13 @@ describe("runBenchmark", () => {
       candidates: [{ content: { parts: [{ text: "Gemini response" }] } }],
     });
     vi.mocked(callXaiSearch).mockResolvedValue({
-      output: [{ type: "text", content: "xAI response" }],
+      output: [{ type: "message", role: "assistant", content: [{ type: "output_text", text: "xAI response" }] }],
     });
 
     const config: BenchmarkConfig = {
       stage: "explore",
       intents: [{ id: "intent-1", queries: ["test query 1"] }],
-      brand: "Lakewood Ranch",
+      brand: TEST_BRAND,
       providers: [
         { provider: "openai", model: "gpt-5.2" },
         { provider: "anthropic", model: "claude-haiku-4-5" },
@@ -182,7 +183,7 @@ describe("runBenchmark", () => {
 
   it("calculates brand visibility scores for each response", async () => {
     vi.mocked(callOpenAIWebSearch).mockResolvedValue({
-      output: [{ type: "message", content: [{ type: "output_text", text: "Lakewood Ranch is recommended." }] }],
+      output: [{ type: "message", content: [{ type: "output_text", text: `${TEST_BRAND} is recommended.` }] }],
     });
     vi.mocked(callAnthropicWebSearch).mockResolvedValue({
       content: [{ type: "text", text: "The Villages is the best option." }],
@@ -191,7 +192,7 @@ describe("runBenchmark", () => {
     const config: BenchmarkConfig = {
       stage: "explore",
       intents: [{ id: "intent-1", queries: ["best retirement community"] }],
-      brand: "Lakewood Ranch",
+      brand: TEST_BRAND,
       providers: [
         { provider: "openai", model: "gpt-5.2" },
         { provider: "anthropic", model: "claude-haiku-4-5" },
@@ -246,7 +247,7 @@ describe("runBenchmark", () => {
     const config: BenchmarkConfig = {
       stage: "explore",
       intents: [{ id: "intent-1", queries: ["q1", "q2", "q3", "q4"] }],
-      brand: "Test",
+      brand: TEST_BRAND,
       providers: [{ provider: "openai", model: "gpt-5.2" }],
       concurrency: 2,
     };

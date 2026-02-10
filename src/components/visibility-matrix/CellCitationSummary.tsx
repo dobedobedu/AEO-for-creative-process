@@ -61,7 +61,7 @@ export function CellCitationSummary({
 
   if (totalCitations === 0) {
     return (
-      <div className="py-3 px-4 bg-[#faf9f6] border border-dashed border-[#e3dacb]">
+      <div className="py-3 px-4 bg-[#faf9f6] border border-dashed border-brand-secondary">
         <div className="flex items-center gap-2 text-black/30">
           <Link2 className="w-3 h-3" />
           <span className="text-[10px] font-medium">
@@ -75,7 +75,7 @@ export function CellCitationSummary({
   }
 
   return (
-    <div className="py-3 px-4 bg-[#faf9f6] border border-[#e3dacb]">
+    <div className="py-3 px-4 bg-[#faf9f6] border border-brand-secondary">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export function CellCitationSummary({
           <div
             key={domain}
             className={`flex items-center justify-between py-1.5 px-2 rounded-sm ${
-              isBrand ? "bg-[#dcf3dc]" : "bg-white"
+              isBrand ? "bg-brand-highlight" : "bg-white"
             }`}
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -105,14 +105,14 @@ export function CellCitationSummary({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`text-[11px] font-medium truncate hover:underline ${
-                    isBrand ? "text-[#1f3b2c]" : "text-black/70"
+                    isBrand ? "text-brand-primary" : "text-black/70"
                   }`}
                 >
                   {domain}
                 </a>
               ) : (
                 <span className={`text-[11px] font-medium truncate ${
-                  isBrand ? "text-[#1f3b2c]" : "text-black/70"
+                  isBrand ? "text-brand-primary" : "text-black/70"
                 }`}>
                   {domain}
                 </span>
@@ -122,7 +122,7 @@ export function CellCitationSummary({
               )}
             </div>
             <span className={`text-[10px] font-bold tabular-nums flex-shrink-0 ${
-              isBrand ? "text-[#1f3b2c]" : "text-black/40"
+              isBrand ? "text-brand-primary" : "text-black/40"
             }`}>
               {count}×
             </span>

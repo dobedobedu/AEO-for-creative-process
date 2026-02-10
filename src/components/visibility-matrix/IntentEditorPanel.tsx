@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { useBrandConfig } from "@/lib/config/client";
 
 interface IntentEditorPanelProps {
   persona: Persona;
@@ -33,6 +34,8 @@ export function IntentEditorPanel({
   const [editRole, setEditRole] = useState<Role>("cpo");
   const [editStyle, setEditStyle] = useState(0.75);
   const [isAddingNew, setIsAddingNew] = useState(false);
+  const { brand } = useBrandConfig();
+  const brandName = brand?.name ?? "Brand";
 
   const startEdit = (intent: IntentNode) => {
     setEditingId(intent.id);
@@ -81,7 +84,7 @@ export function IntentEditorPanel({
   return (
     <div className="h-full flex flex-col bg-[#fffaf2]">
       {/* Header / Toolbar */}
-      <div className="px-8 py-6 border-b border-[#e3dacb] flex justify-between items-center bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="px-8 py-6 border-b border-brand-secondary flex justify-between items-center bg-white/50 backdrop-blur-sm sticky top-0 z-10">
         <div>
           <h2 className="text-xl font-semibold text-[#1e1b16] tracking-tight">Research Intents</h2>
           <p className="text-sm text-[#1e1b16]/60 mt-1">
@@ -90,7 +93,7 @@ export function IntentEditorPanel({
         </div>
         <Button
           onClick={addNew}
-          className="bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white shadow-sm transition-all hover:shadow-md"
+          className="bg-brand-primary hover:bg-brand-primary-light text-white shadow-sm transition-all hover:shadow-md"
           disabled={isAddingNew}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -101,9 +104,9 @@ export function IntentEditorPanel({
       <div className="flex-1 overflow-y-auto p-8 space-y-6">
         {/* Ad New Form */}
         {isAddingNew && (
-          <div className="border border-[#1f3b2c] bg-white rounded-xl shadow-lg p-6 animate-in slide-in-from-top-4 duration-200">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[#1f3b2c] mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#1f3b2c]" />
+          <div className="border border-brand-primary bg-white rounded-xl shadow-lg p-6 animate-in slide-in-from-top-4 duration-200">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-brand-primary mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-brand-primary" />
               New Intent
             </h3>
             
@@ -115,9 +118,9 @@ export function IntentEditorPanel({
                 <textarea
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
-                  className="w-full text-base text-[#1e1b16] bg-[#f6f1e8]/50 border border-[#e3dacb] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#1f3b2c] focus:border-transparent resize-none leading-relaxed transition-all placeholder:text-[#1e1b16]/20"
+                  className="w-full text-base text-[#1e1b16] bg-[#f6f1e8]/50 border border-brand-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none leading-relaxed transition-all placeholder:text-[#1e1b16]/20"
                   rows={4}
-                  placeholder="e.g., Understanding the differences between Lakewood Ranch and The Villages..."
+                  placeholder={`e.g., Understanding the differences between ${brandName} and competitors...`}
                   autoFocus
                 />
               </div>
@@ -131,7 +134,7 @@ export function IntentEditorPanel({
                     <select
                       value={editRole}
                       onChange={(e) => setEditRole(e.target.value as Role)}
-                      className="w-full text-sm font-medium bg-white border border-[#e3dacb] rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1f3b2c] appearance-none"
+                      className="w-full text-sm font-medium bg-white border border-brand-secondary rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary appearance-none"
                     >
                       <option value="cpo">CPO (Chief Purchasing Officer)</option>
                       <option value="family_unit">Family Unit</option>
@@ -149,7 +152,7 @@ export function IntentEditorPanel({
                      <label className="text-xs font-semibold text-[#1e1b16]/70 block uppercase tracking-wide">
                       Query Style
                     </label>
-                    <span className="text-xs font-mono text-[#1f3b2c] font-medium">{Math.round(editStyle * 100)}%</span>
+                    <span className="text-xs font-mono text-brand-primary font-medium">{Math.round(editStyle * 100)}%</span>
                   </div>
                   <div className="flex items-center gap-3 pt-1">
                     <span className="text-xs text-[#1e1b16]/50 font-medium">Common</span>
@@ -166,11 +169,11 @@ export function IntentEditorPanel({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-2 border-t border-[#e3dacb]/50">
+              <div className="flex items-center gap-3 pt-2 border-t border-brand-secondary/50">
                 <Button
                   onClick={saveNew}
                   disabled={!editText.trim()}
-                  className="bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white flex-1"
+                  className="bg-brand-primary hover:bg-brand-primary-light text-white flex-1"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   Save Intent
@@ -178,7 +181,7 @@ export function IntentEditorPanel({
                 <Button
                   variant="outline"
                   onClick={cancelEdit}
-                  className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#f6f1e8] flex-1"
+                  className="border-brand-secondary text-[#1e1b16] hover:bg-[#f6f1e8] flex-1"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
@@ -191,9 +194,9 @@ export function IntentEditorPanel({
         {/* Existing Intents */}
         <div className="space-y-4">
           {intents.length === 0 && !isAddingNew ? (
-            <div className="text-center py-20 bg-white/40 rounded-xl border-2 border-dashed border-[#e3dacb]">
+            <div className="text-center py-20 bg-white/40 rounded-xl border-2 border-dashed border-brand-secondary">
               <div className="w-16 h-16 rounded-full bg-[#f6f1e8] flex items-center justify-center mx-auto mb-4">
-                 <Plus className="h-8 w-8 text-[#e3dacb]" />
+                 <Plus className="h-8 w-8 text-brand-secondary" />
               </div>
               <p className="text-[#1e1b16]/60 font-medium text-lg">No intents defined yet.</p>
               <p className="text-sm text-[#1e1b16]/40 mt-1 max-w-sm mx-auto">
@@ -202,7 +205,7 @@ export function IntentEditorPanel({
               <Button
                 variant="outline"
                 onClick={addNew}
-                className="mt-6 border-[#1f3b2c] text-[#1f3b2c] hover:bg-[#1f3b2c] hover:text-white transition-all"
+                className="mt-6 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white transition-all"
               >
                 Create First Intent
               </Button>
@@ -213,9 +216,9 @@ export function IntentEditorPanel({
 
               if (isEditing) {
                 return (
-                  <div key={intent.id} className="border border-[#1f3b2c] bg-white rounded-xl shadow-lg p-6">
+                  <div key={intent.id} className="border border-brand-primary bg-white rounded-xl shadow-lg p-6">
                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-[#1f3b2c] flex items-center gap-2">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-brand-primary flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-[#b86f3a]" />
                         Editing Intent
                         </h3>
@@ -237,7 +240,7 @@ export function IntentEditorPanel({
                         <textarea
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
-                          className="w-full text-base text-[#1e1b16] bg-[#f6f1e8]/50 border border-[#e3dacb] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#1f3b2c] focus:border-transparent resize-none leading-relaxed"
+                          className="w-full text-base text-[#1e1b16] bg-[#f6f1e8]/50 border border-brand-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none leading-relaxed"
                           rows={4}
                         />
                       </div>
@@ -251,7 +254,7 @@ export function IntentEditorPanel({
                             <select
                                 value={editRole}
                                 onChange={(e) => setEditRole(e.target.value as Role)}
-                                className="w-full text-sm font-medium bg-white border border-[#e3dacb] rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1f3b2c] appearance-none"
+                                className="w-full text-sm font-medium bg-white border border-brand-secondary rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary appearance-none"
                             >
                                 <option value="cpo">CPO</option>
                                 <option value="family_unit">Family Unit</option>
@@ -269,7 +272,7 @@ export function IntentEditorPanel({
                                 <label className="text-xs font-semibold text-[#1e1b16]/70 block uppercase tracking-wide">
                                     Style
                                 </label>
-                                <span className="text-xs font-mono text-[#1f3b2c] font-medium">{Math.round(editStyle * 100)}%</span>
+                                <span className="text-xs font-mono text-brand-primary font-medium">{Math.round(editStyle * 100)}%</span>
                             </div>
                           <div className="flex items-center gap-3 pt-1">
                             <span className="text-xs text-[#1e1b16]/50 font-medium">Common</span>
@@ -286,10 +289,10 @@ export function IntentEditorPanel({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 pt-2 border-t border-[#e3dacb]/50">
+                      <div className="flex items-center gap-3 pt-2 border-t border-brand-secondary/50">
                         <Button
                           onClick={saveEdit}
-                          className="bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white flex-1"
+                          className="bg-brand-primary hover:bg-brand-primary-light text-white flex-1"
                         >
                           <Check className="h-4 w-4 mr-2" />
                           Save Changes
@@ -297,7 +300,7 @@ export function IntentEditorPanel({
                         <Button
                           variant="outline"
                           onClick={cancelEdit}
-                          className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#f6f1e8] flex-1"
+                          className="border-brand-secondary text-[#1e1b16] hover:bg-[#f6f1e8] flex-1"
                         >
                           <X className="h-4 w-4 mr-2" />
                           Cancel
@@ -311,7 +314,7 @@ export function IntentEditorPanel({
               return (
                 <div
                   key={intent.id}
-                  className="group relative bg-white border border-[#e3dacb] rounded-xl p-5 hover:border-[#b86f3a]/30 hover:shadow-md transition-all duration-200"
+                  className="group relative bg-white border border-brand-secondary rounded-xl p-5 hover:border-[#b86f3a]/30 hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -319,13 +322,13 @@ export function IntentEditorPanel({
                             <Badge
                                 className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 border-none shadow-none ${
                                     intent.role === "cpo"
-                                    ? "bg-[#1f3b2c]/10 text-[#1f3b2c]"
+                                    ? "bg-brand-primary/10 text-brand-primary"
                                     : "bg-[#6e7c5b]/10 text-[#6e7c5b]"
                                 }`}
                             >
                                 {ROLE_LABELS[intent.role as Role]}
                             </Badge>
-                             <div className="h-3 w-[1px] bg-[#e3dacb]" />
+                             <div className="h-3 w-[1px] bg-brand-secondary" />
                              <span className="text-[10px] text-[#1e1b16]/40 uppercase tracking-wider font-medium">
                                 Style {Math.round((intent.queryStyle || 0.75) * 100)}%
                             </span>
@@ -341,7 +344,7 @@ export function IntentEditorPanel({
                         size="sm"
                         variant="ghost"
                         onClick={() => startEdit(intent)}
-                        className="h-8 w-8 p-0 text-[#1e1b16]/40 hover:text-[#1f3b2c] hover:bg-[#1f3b2c]/10"
+                        className="h-8 w-8 p-0 text-[#1e1b16]/40 hover:text-brand-primary hover:bg-brand-primary/10"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>

@@ -46,7 +46,7 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
     }
   }
 
-  if (stage === "explore") {
+  if (stage === "explore" || stage === "discover") {
     const total = validResponses.length;
     const mentioned = validResponses.filter((r) => r.visibility?.mentioned).length;
     const top3 = validResponses.filter((r) =>
@@ -72,7 +72,7 @@ export function computeInsightMetrics(stage: string, results: QueryResult[]): In
     return { stage: "explore", overall, byProvider: per };
   }
 
-  if (stage === "consider") {
+  if (stage === "consider" || stage === "research") {
     // Only consider responses where brand was mentioned
     const mentioned = validResponses.filter((r) => r.visibility?.mentioned);
     const total = mentioned.length;

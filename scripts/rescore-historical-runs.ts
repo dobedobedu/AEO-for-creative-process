@@ -20,9 +20,7 @@ config({ path: ".env.local" });
 import { loadAllRuns, loadRun, saveRun } from "../src/lib/runs/storage";
 import { backupRun } from "../src/lib/runs/backup";
 import { rescoreRun, dryRunRescore } from "../src/lib/runs/rescore";
-
-const DEFAULT_BRAND = "Lakewood Ranch";
-const DEFAULT_BRAND_ALIASES = ["LWR", "Lakewood"];
+import { getBrandName, getBrandAliases } from "../src/lib/config";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -102,7 +100,7 @@ async function main() {
 
       // Rescore
       console.log("\nRe-scoring responses...");
-      const result = await rescoreRun(run, DEFAULT_BRAND, DEFAULT_BRAND_ALIASES, (progress) => {
+      const result = await rescoreRun(run, getBrandName(), getBrandAliases(), (progress) => {
         process.stdout.write(
           `\r  Progress: ${progress.completed}/${progress.total} (${progress.currentCell || ""})`
         );

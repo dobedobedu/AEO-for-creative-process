@@ -1,0 +1,11 @@
+Analyze this AI response about {{industry}} options.
+The user was in the EXPLORE stage - just discovering what options exist.
+
+Focus on:
+- Was {{brand}} mentioned at all? (Look for exact name or aliases: {{brand_aliases}})
+- If mentioned, was it in the first 3 options listed?
+- How many total options were listed?
+- What other options were mentioned (competitors)?
+- How was {{brand}} described?
+
+{{entity_extraction_suffix}}

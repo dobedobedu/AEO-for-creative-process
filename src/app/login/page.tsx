@@ -2,10 +2,14 @@
 
 import { createSupabaseBrowserClient } from "@/lib/auth/supabase";
 import { useState } from "react";
+import { useBrandConfig, DEFAULT_BRAND } from "@/lib/config/client";
 
 type AuthMode = "signin" | "signup";
 
 export default function LoginPage() {
+  const { brand } = useBrandConfig();
+  const brandName = brand?.name ?? DEFAULT_BRAND.name;
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -78,16 +82,16 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#f6f1e8] flex flex-col items-center justify-center p-4">
       {/* Logo / Brand */}
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-[#1f3b2c] tracking-tight">
+        <h1 className="text-3xl font-bold text-brand-primary tracking-tight">
           AI Visibility Baseline
         </h1>
         <p className="mt-2 text-sm text-[#1e1b16]/60">
-          Lakewood Ranch Brand Monitoring
+          {brandName} Brand Monitoring
         </p>
       </div>
 
       {/* Login Card */}
-      <div className="bg-white rounded-lg shadow-md border border-[#e3dacb] p-8 w-full max-w-sm">
+      <div className="bg-white rounded-lg shadow-md border border-brand-secondary p-8 w-full max-w-sm">
         <h2 className="text-lg font-semibold text-[#1e1b16] mb-6 text-center">
           {mode === "signin" ? "Sign in to continue" : "Create an account"}
         </h2>
@@ -108,7 +112,7 @@ export default function LoginPage() {
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-[#e3dacb] rounded-lg hover:bg-[#f6f1e8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-brand-secondary rounded-lg hover:bg-[#f6f1e8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {/* Google Icon */}
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -137,7 +141,7 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#e3dacb]" />
+            <div className="w-full border-t border-brand-secondary" />
           </div>
           <div className="relative flex justify-center text-xs">
             <span className="bg-white px-2 text-[#1e1b16]/50">or</span>
@@ -156,7 +160,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-[#e3dacb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1f3b2c]/20 focus:border-[#1f3b2c]"
+              className="w-full px-3 py-2 border border-brand-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
               placeholder="you@example.com"
             />
           </div>
@@ -171,14 +175,14 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-3 py-2 border border-[#e3dacb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1f3b2c]/20 focus:border-[#1f3b2c]"
+              className="w-full px-3 py-2 border border-brand-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
               placeholder="At least 6 characters"
             />
           </div>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-[#1f3b2c] text-white rounded-lg font-medium hover:bg-[#1f3b2c]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-brand-primary text-white rounded-lg font-medium hover:bg-brand-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading
               ? "Please wait..."
@@ -199,7 +203,7 @@ export default function LoginPage() {
                   setError(null);
                   setSuccess(null);
                 }}
-                className="text-[#1f3b2c] font-medium hover:underline"
+                className="text-brand-primary font-medium hover:underline"
               >
                 Sign up
               </button>
@@ -213,7 +217,7 @@ export default function LoginPage() {
                   setError(null);
                   setSuccess(null);
                 }}
-                className="text-[#1f3b2c] font-medium hover:underline"
+                className="text-brand-primary font-medium hover:underline"
               >
                 Sign in
               </button>

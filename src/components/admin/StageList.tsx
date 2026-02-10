@@ -51,14 +51,14 @@ export function StageList({ stages, onUpdate, onReorder, onAdd, onDelete }: Stag
   };
 
   const saveNew = () => {
-    if (editLabel.trim()) {
+    if (editLabel.trim() && editCoreStageMapping) {
       const newStage: Omit<MatrixStage, "id"> = {
         label: editLabel.trim(),
         description: editDescription.trim() || undefined,
         orderIndex: stages.length,
         active: true,
-        coreStage: editCoreStage,
-        coreStageMapping: (editCoreStageMapping || undefined) as any,
+        coreStage: true,
+        coreStageMapping: editCoreStageMapping as any,
         primaryMetric: (editPrimaryMetric || undefined) as any,
       };
       onAdd(newStage);
@@ -184,50 +184,43 @@ export function StageList({ stages, onUpdate, onReorder, onAdd, onDelete }: Stag
                 placeholder="Short description (optional)"
               />
 
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={editCoreStage}
-                    onChange={(e) => setEditCoreStage(e.target.checked)}
-                    className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                  />
-                  <span>Core Stage</span>
-                </label>
-
-                <select
-                  value={editPrimaryMetric}
-                  onChange={(e) => setEditPrimaryMetric(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">No Primary Metric</option>
-                  {METRIC_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {editCoreStage && (
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 text-sm">
-                    <span className="text-gray-600">Maps to:</span>
-                    <select
-                      value={editCoreStageMapping}
-                      onChange={(e) => setEditCoreStageMapping(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="">Select core stage...</option>
-                      {CORE_STAGE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Core Stage Mapping
                   </label>
+                  <select
+                    value={editCoreStageMapping}
+                    onChange={(e) => setEditCoreStageMapping(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">Select mapping...</option>
+                    {CORE_STAGE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Primary Metric
+                  </label>
+                  <select
+                    value={editPrimaryMetric}
+                    onChange={(e) => setEditPrimaryMetric(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">No Primary Metric</option>
+                    {METRIC_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
               <div className="flex justify-end gap-2">
                 <Button
@@ -275,6 +268,11 @@ export function StageList({ stages, onUpdate, onReorder, onAdd, onDelete }: Stag
                   )}
 
                   <div className="flex items-center gap-3 mt-2">
+                    {stage.coreStageMapping && (
+                      <span className="text-xs text-gray-500">
+                        Mapping: <span className="font-medium capitalize">{stage.coreStageMapping}</span>
+                      </span>
+                    )}
                     {stage.primaryMetric && (
                       <span className="text-xs text-gray-500">
                         Metric: <span className="font-medium">{getMetricLabel(stage.primaryMetric)}</span>
@@ -358,50 +356,48 @@ export function StageList({ stages, onUpdate, onReorder, onAdd, onDelete }: Stag
             placeholder="Short description (optional)"
           />
 
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={editCoreStage}
-                onChange={(e) => setEditCoreStage(e.target.checked)}
-                className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-              />
-              <span>Core Stage</span>
-            </label>
-
-            <select
-              value={editPrimaryMetric}
-              onChange={(e) => setEditPrimaryMetric(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="">No Primary Metric</option>
-              {METRIC_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {editCoreStage && (
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600">Maps to:</span>
-                <select
-                  value={editCoreStageMapping}
-                  onChange={(e) => setEditCoreStageMapping(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">Select core stage...</option>
-                  {CORE_STAGE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Core Stage Mapping <span className="text-red-500">*</span>
               </label>
+              <select
+                value={editCoreStageMapping}
+                onChange={(e) => setEditCoreStageMapping(e.target.value)}
+                className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  !editCoreStageMapping ? "border-red-300" : "border-gray-300"
+                }`}
+              >
+                <option value="">Select mapping...</option>
+                {CORE_STAGE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {!editCoreStageMapping && (
+                <p className="text-xs text-red-500 mt-1">Required for scoring</p>
+              )}
             </div>
-          )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Primary Metric
+              </label>
+              <select
+                value={editPrimaryMetric}
+                onChange={(e) => setEditPrimaryMetric(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="">No Primary Metric</option>
+                {METRIC_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           <div className="flex justify-end gap-2">
             <Button
@@ -416,6 +412,7 @@ export function StageList({ stages, onUpdate, onReorder, onAdd, onDelete }: Stag
             <Button
               size="sm"
               onClick={saveNew}
+              disabled={!editLabel.trim() || !editCoreStageMapping}
               className="gap-1"
             >
               <Check className="w-4 h-4" />

@@ -182,16 +182,15 @@ export async function runSingleQuery(params: {
         const response = await callXaiSearch({ model, query, searchMode });
         raw = response;
         text = extractXaiText(response);
-
         // Extract citations: try top-level first, then annotations in content
         const topLevelCitations = response.citations ?? [];
         const annotationCitations: string[] = [];
         for (const block of response.output ?? []) {
           if (block.type === "message" && Array.isArray(block.content)) {
-            for (const item of block.content) {
-              if (typeof item === "object" && item.annotations) {
-                for (const ann of item.annotations) {
-                  if (ann.type === "url_citation" && ann.url) {
+            for (const item of block.content as Array<Record<string, unknown>>) {
+              if (typeof item === "object" && Array.isArray((item as Record<string, unknown>).annotations)) {
+                for (const ann of (item as Record<string, unknown>).annotations as Array<Record<string, unknown>>) {
+                  if (ann.type === "url_citation" && typeof ann.url === "string") {
                     annotationCitations.push(ann.url);
                   }
                 }
@@ -199,9 +198,7 @@ export async function runSingleQuery(params: {
             }
           }
         }
-        const allCitationUrls = topLevelCitations.length > 0
-          ? topLevelCitations
-          : annotationCitations;
+        const allCitationUrls = topLevelCitations.length > 0 ? topLevelCitations : annotationCitations;
         citations = allCitationUrls.map((url: string) => ({
           url,
           domain: extractDomainFromUrl(url),
@@ -522,26 +519,24 @@ function extractAnthropicText(response: { content?: Array<Record<string, unknown
   return parts.join("\n").trim();
 }
 
-// Agent Tools API returns output blocks — handles both old and new formats
-// Old: type "text" with content as string
-// New: type "message" with content as array of { type: "output_text", text: "..." }
-function extractXaiText(response: XaiResponse): string {
+function extractXaiText(response: { output?: Array<Record<string, unknown>> }): string {
   if (!response.output) return "";
 
   const parts: string[] = [];
   for (const block of response.output) {
-    // New format: type "message" with content array
+    // Responses API format: type "message" with content array of output_text items
     if (block.type === "message" && Array.isArray(block.content)) {
-      for (const item of block.content) {
-        if (typeof item === "object" && item.type === "output_text" && item.text) {
+      for (const item of block.content as Array<Record<string, unknown>>) {
+        if (item.type === "output_text" && typeof item.text === "string") {
           parts.push(item.text);
         }
       }
     }
-    // Old format: type "text" with content as string
+    // Fallback: type "text" with content as string
     if (block.type === "text" && typeof block.content === "string") {
       parts.push(block.content);
     }
   }
+
   return parts.join("\n").trim();
 }

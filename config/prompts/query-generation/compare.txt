@@ -1,0 +1,12 @@
+# Compare Stage Context
+
+## Focus
+Comparison phase - weighing alternatives head-to-head
+
+## Brand Policy
+Include {{brand}} explicitly. Compare against alternatives ({{competitors}}).
+
+## Query Examples
+- "{{brand}} vs {{competitor}}"
+- "which is better {{brand}} or {{competitor}}"
+- "{{brand}} compared to {{competitor}} for retirees"

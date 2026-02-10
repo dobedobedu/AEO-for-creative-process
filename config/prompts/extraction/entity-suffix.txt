@@ -1,0 +1,6 @@
+ENTITY EXTRACTION (for all stages):
+Identify {{brand}} features, amenities, and differentiators mentioned in the response.
+Categorize each into one of these categories:
+{{entity_categories}}
+
+For each entity, note the name, category, sentiment (positive/neutral/negative), and context.

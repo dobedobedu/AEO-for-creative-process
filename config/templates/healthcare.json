@@ -1,0 +1,71 @@
+{
+  "$schema": "../schema/tenant-config.json",
+  "_templateInfo": {
+    "name": "Healthcare Provider",
+    "description": "For hospitals, health systems, and healthcare providers",
+    "examples": ["Mayo Clinic", "Cleveland Clinic", "Kaiser Permanente"]
+  },
+  "brand": {
+    "name": "Your Health System",
+    "aliases": [],
+    "domain": "yourhealthsystem.org",
+    "highlightColor": "#e3f2e3"
+  },
+  "competitors": [
+    { "name": "Competitor Hospital 1", "aliases": [], "isPrimary": true },
+    { "name": "Competitor Health System 2", "aliases": [], "isPrimary": true },
+    { "name": "Regional Medical Center", "aliases": [], "isPrimary": true },
+    { "name": "Academic Medical Center", "aliases": [], "isPrimary": false },
+    { "name": "Community Hospital", "aliases": [], "isPrimary": false }
+  ],
+  "personas": [
+    { "id": "patient", "label": "Patient", "description": "Individual seeking care for themselves" },
+    { "id": "caregiver", "label": "Caregiver", "description": "Family member researching care for loved one" },
+    { "id": "referring", "label": "Referring Provider", "description": "Doctor looking to refer patients" },
+    { "id": "insurance", "label": "Insurance Navigator", "description": "Evaluating in-network providers" }
+  ],
+  "stages": [
+    { "id": "explore", "label": "Symptom Search", "description": "Understanding condition and options" },
+    { "id": "consider", "label": "Provider Research", "description": "Evaluating specific providers" },
+    { "id": "compare", "label": "Comparison", "description": "Comparing hospitals/doctors" },
+    { "id": "decide", "label": "Decision", "description": "Ready to schedule care" }
+  ],
+  "entityCategories": [
+    { "id": "specialties", "label": "Specialties", "examples": ["cardiology", "oncology", "orthopedics", "neurology"] },
+    { "id": "facilities", "label": "Facilities", "examples": ["hospitals", "clinics", "ERs", "urgent care"] },
+    { "id": "doctors", "label": "Physicians", "examples": ["doctor names", "specialists", "surgeons"] },
+    { "id": "insurance", "label": "Insurance", "examples": ["accepted plans", "Medicare", "Medicaid"] },
+    { "id": "outcomes", "label": "Outcomes", "examples": ["survival rates", "ratings", "awards", "rankings"] },
+    { "id": "services", "label": "Services", "examples": ["procedures", "treatments", "screenings"] }
+  ],
+  "geography": {
+    "region": "Your Region",
+    "localities": ["City", "County", "Metro Area"],
+    "nearbyMetros": ["Major City"]
+  },
+  "providers": {
+    "weights": {
+      "openai": 0.64,
+      "gemini": 0.22,
+      "anthropic": 0.02,
+      "xai": 0.04
+    },
+    "models": {
+      "openai": "gpt-4.5-preview",
+      "gemini": "gemini-3-pro-preview",
+      "anthropic": "claude-3-5-haiku-20241022",
+      "xai": "grok-3-preview"
+    }
+  },
+  "thresholds": {
+    "strong": 0.7,
+    "moderate": 0.4,
+    "weak": 0.2
+  },
+  "industry": "healthcare",
+  "metadata": {
+    "version": "1.0.0",
+    "createdAt": "2026-01-26",
+    "updatedAt": "2026-01-26"
+  }
+}

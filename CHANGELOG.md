@@ -16,16 +16,84 @@ All notable changes to the AI Visibility Baseline app are documented here.
 ## [Unreleased]
 
 ### Added
-- Intent Library modal for centralized intent management
-- Model logos (OpenAI, Claude, Gemini, Grok) on visibility matrix
-- Home page redirect to visibility matrix
+- Admin panel integration into view toggle (Matrix | Kanban | Admin)
+- Environment-based admin access control (`NEXT_PUBLIC_ADMIN_ENABLED`)
+- Expanded SSES query library with 14 research-aligned intents
+- SSES deployment guide with Supabase and Vercel setup instructions
 
 ### Changed
-- Deprecated old Market Visibility Dashboard (replaced with redirect)
-- Updated role parameter from 'buyer' to 'cpo' in query generation
+- ViewToggle component now supports 3 views (matrix, kanban, admin)
+- Middleware enforces `NEXT_PUBLIC_ADMIN_ENABLED` check for `/admin/matrix` route
+- Admin routes protected with authentication and feature flag
 
 ### Fixed
 - Test expectations for role parameter mismatch
+
+### Technical Details
+- **ViewToggle**: Added admin view with conditional rendering based on `NEXT_PUBLIC_ADMIN_ENABLED`
+- **Middleware**: Added admin route protection and feature flag checking
+- **Query Library**: Created `data/intents/education-k12-elite-expanded.json` with 14 intents across 4 personas
+- **Documentation**: Added `docs/SSES-DEPLOYMENT-GUIDE.md` for complete deployment instructions
+
+---
+
+## 2026-01-26 - Platformization (Phase 1)
+
+### Added
+```
++------------------------------------------+
+|  feat: White-label Platform Architecture |
++------------------------------------------+
+|  - File-based tenant configuration       |
+|  - Industry templates (4 industries)     |
+|  - Prompt templates with interpolation   |
+|  - Database multi-tenancy preparation    |
++------------------------------------------+
+```
+
+**Configuration System (`config/`)**
+- `config/tenant.json` - Main tenant configuration file
+- `config/templates/` - Industry templates (real-estate, education, healthcare, marketing)
+- `config/prompts/` - Externalized prompt templates
+
+**Config Module (`src/lib/config/`)**
+- `types.ts` - TenantConfig schema with Zod validation
+- `loader.ts` - File-based config loading with env overrides
+- `brand.ts` - Brand name, aliases, domain utilities
+- `competitors.ts` - Competitor matching with aliases
+- `entities.ts` - Entity category management
+- `thresholds.ts` - Score threshold and color utilities
+- `providers.ts` - Provider weights and models
+- `prompts.ts` - Prompt template loading and interpolation
+- `client.ts` - Client-side config hooks for React
+
+**API Endpoints**
+- `GET /api/tenant/config` - Fetch tenant configuration
+
+**Database Migrations (`sql/migrations/`)**
+- `001_add_tenant_id.sql` - Add tenant_id columns (nullable)
+- `002_create_tenant_configs.sql` - Create tenant_configs table
+- `003_backfill_tenant_id.sql` - Backfill existing data
+- `004_add_tenant_indexes.sql` - Performance indexes
+- `005_add_prompt_version.sql` - Prompt version tracking
+
+**Scripts**
+- `scripts/apply-template.sh` - Apply industry template to config
+
+### Changed
+- Brand constants now loaded from `config/tenant.json`
+- Competitors loaded from config instead of hardcoded array
+- Scoring functions use config-based competitor matching
+- Login page shows dynamic brand name
+- Provider weights can be configured per-tenant
+
+### Architectural Decisions
+| Decision | Choice |
+|----------|--------|
+| Tenant Model | Single-tenant per deployment |
+| Config Source | JSON file + env overrides (DB in Phase 2) |
+| Prompt Storage | File-based with variable interpolation |
+| Migration Strategy | Nullable tenant_id for backward compatibility |
 
 ---
 

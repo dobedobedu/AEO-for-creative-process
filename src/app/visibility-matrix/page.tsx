@@ -64,10 +64,17 @@ import type { StageExtraction } from "@/lib/scoring/schemas";
 import type { Citation } from "@/lib/parsers/types";
 import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
 import {
+import {
   DEFAULT_PROVIDER_MODELS,
   buildProviderModelMap,
   type SearchModelConfig,
 } from "@/lib/models/providerModels";
+import {
+  useTenantConfig,
+  DEFAULT_BRAND,
+  DEFAULT_PERSONAS as CONFIG_DEFAULT_PERSONAS,
+  DEFAULT_STAGES as CONFIG_DEFAULT_STAGES,
+} from "@/lib/config/client";
 
 // Types - using string type to support dynamic config
 type Persona = string;
@@ -172,7 +179,7 @@ const DEFAULT_STAGES: { id: Stage; label: string; description: string }[] = [
 ];
 
 const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; chartColor: string; logo: string }[] = [
-  { id: "openai", label: "GPT 5.2", color: "text-[#1f3b2c]", bgColor: "bg-[#1f3b2c]", chartColor: "#1f3b2c", logo: "/OpenAI-black-monoblossom.svg" },
+  { id: "openai", label: "GPT 5.2", color: "text-brand-primary", bgColor: "bg-brand-primary", chartColor: "#1f3b2c", logo: "/OpenAI-black-monoblossom.svg" },
   { id: "anthropic", label: "Haiku 4.5", color: "text-[#b86f3a]", bgColor: "bg-[#b86f3a]", chartColor: "#b86f3a", logo: "/claude-color.svg" },
   { id: "gemini", label: "Gemini 3", color: "text-[#6e7c5b]", bgColor: "bg-[#6e7c5b]", chartColor: "#6e7c5b", logo: "/gemini-color.svg" },
   { id: "xai", label: "Grok 4", color: "text-[#7c6b7c]", bgColor: "bg-[#7c6b7c]", chartColor: "#7c6b7c", logo: "/Grok_Logomark_Dark.svg" },
@@ -242,9 +249,8 @@ function storedRunToQueryBank(run: StoredRun): QueryBank {
   return bank;
 }
 
-const BRAND = "Lakewood Ranch";
-const BRAND_ALIASES = ["LWR", "Lakewood"];
-const BRAND_DOMAIN = "lakewoodranch.com";
+// Brand configuration is now loaded from config/tenant.json via useTenantConfig hook
+// See the component body for how BRAND, BRAND_ALIASES, BRAND_DOMAIN are derived
 
 function recommendationStrengthToScore(strength: string): number {
   switch (strength) {
@@ -474,6 +480,15 @@ const chartConfig: ChartConfig = {
 export default function VisibilityMatrixPage() {
   const pathname = usePathname();
   const isMatrixActive = pathname ? pathname.startsWith("/visibility-matrix") : false;
+
+  // Load tenant configuration
+  const { config: tenantConfig, loading: configLoading } = useTenantConfig();
+
+  // Derive brand values from config (with fallbacks)
+  const BRAND = tenantConfig?.brand.name ?? DEFAULT_BRAND.name;
+  const BRAND_ALIASES = tenantConfig?.brand.aliases ?? DEFAULT_BRAND.aliases;
+  const BRAND_DOMAIN = tenantConfig?.brand.domain ?? "";
+
   const [matrixData, setMatrixData] = useState<Record<string, CellData>>({});
   const [selection, setSelection] = useState<SelectionType>({ type: "all" });
   const [isRunning, setIsRunning] = useState(false);
@@ -1229,7 +1244,7 @@ export default function VisibilityMatrixPage() {
 
       <div className={`min-h-screen pb-16 ${selectedHistoricalRun ? "bg-[#f6f1e8]/70" : "bg-[#f6f1e8]"}`}>
       {/* Header */}
-      <div className="border-b border-[#e3dacb] bg-[var(--panel)]">
+      <div className="border-b border-brand-secondary bg-[var(--panel)]">
         <div className="max-w-6xl mx-auto px-6 py-5 space-y-4">
           {/* Top row: Toggle + Stats */}
           <div className="flex items-center justify-between">
@@ -1242,7 +1257,7 @@ export default function VisibilityMatrixPage() {
               <span>
                 Last run{" "}
                 {matrixDataHook.status === "loading" && historicalRuns.length === 0 ? (
-                  <Skeleton className="h-4 w-16 inline-block align-middle bg-[#e3dacb]/50" />
+                  <Skeleton className="h-4 w-16 inline-block align-middle bg-brand-secondary/50" />
                 ) : (
                   <span className="font-medium text-[var(--ink)]">
                     {historicalRuns.length > 0 ? new Date(historicalRuns[historicalRuns.length - 1].timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}
@@ -1261,16 +1276,16 @@ export default function VisibilityMatrixPage() {
 
       {/* Historical Run Banner */}
       {selectedHistoricalRun && selectedRunDateLabel && (
-        <div className="bg-[#1f3b2c]/5 border-b border-[#1f3b2c]/10">
+        <div className="bg-brand-primary/5 border-b border-brand-primary/10">
           <div className="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between">
-            <span className="text-xs text-[#1f3b2c]/80">
+            <span className="text-xs text-brand-primary/80">
               Viewing run from {selectedRunDateLabel}
             </span>
             <Button
               size="sm"
               variant="ghost"
               onClick={clearHistoricalSelection}
-              className="text-[#1f3b2c] hover:bg-[#1f3b2c]/10 h-7 px-3 text-[10px] font-bold uppercase tracking-wider"
+              className="text-brand-primary hover:bg-brand-primary/10 h-7 px-3 text-[10px] font-bold uppercase tracking-wider"
             >
               Clear
             </Button>
@@ -1280,7 +1295,7 @@ export default function VisibilityMatrixPage() {
 
       <div className="max-w-6xl mx-auto p-6 space-y-6">
         {/* Provider KPI Strip */}
-        <div className="rounded-none border border-[#e3dacb] bg-white p-8">
+        <div className="rounded-none border border-brand-secondary bg-white p-8">
           <div className="flex flex-col gap-6 mb-12">
             {/* Top Row: Title Only */}
             <div className="flex items-center justify-between">
@@ -1290,12 +1305,12 @@ export default function VisibilityMatrixPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Weighting</span>
-                <div className="flex rounded-full border border-[#e3dacb] overflow-hidden bg-white">
+                <div className="flex rounded-full border border-brand-secondary overflow-hidden bg-white">
                   <button
                     onClick={() => setWeightMode("equal")}
                     className={`px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${
                       weightMode === "equal"
-                        ? "bg-[#1f3b2c] text-white"
+                        ? "bg-brand-primary text-white"
                         : "text-black/40 hover:text-black/60"
                     }`}
                   >
@@ -1305,7 +1320,7 @@ export default function VisibilityMatrixPage() {
                     onClick={() => setWeightMode("weighted")}
                     className={`px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${
                       weightMode === "weighted"
-                        ? "bg-[#1f3b2c] text-white"
+                        ? "bg-brand-primary text-white"
                         : "text-black/40 hover:text-black/60"
                     }`}
                   >
@@ -1317,7 +1332,7 @@ export default function VisibilityMatrixPage() {
 
             {/* Middle Row: Centered Metric Selector */}
             <div className="flex justify-center">
-              <div className="flex gap-8 border-b border-[#e3dacb] px-12">
+              <div className="flex gap-8 border-b border-brand-secondary px-12">
                 {[
                   { id: "mention", label: "Mention" },
                   { id: "sentiment", label: "Sentiment" },
@@ -1328,7 +1343,7 @@ export default function VisibilityMatrixPage() {
                     key={metric.id}
                     onClick={() => setKpiMetric(metric.id as typeof kpiMetric)}
                     className={`px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-all border-b-2 -mb-[2px] ${kpiMetric === metric.id
-                      ? "text-[#1f3b2c] border-[#1f3b2c]"
+                      ? "text-brand-primary border-brand-primary"
                       : "text-black/30 border-transparent hover:text-black/50"
                       }`}
                   >
@@ -1341,9 +1356,9 @@ export default function VisibilityMatrixPage() {
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 h-[160px]">
               {matrixDataHook.status === "loading" && benchmarkHistory.length === 0 ? (
-                <Skeleton className="h-full w-full bg-[#e3dacb]/30" />
+                <Skeleton className="h-full w-full bg-brand-secondary/30" />
               ) : benchmarkHistory.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-black/30 border border-dashed border-[#e3dacb] rounded-lg">
+                <div className="h-full flex flex-col items-center justify-center text-black/30 border border-dashed border-brand-secondary rounded-lg">
                   <svg className="w-10 h-10 mb-3 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                   </svg>
@@ -1368,7 +1383,7 @@ export default function VisibilityMatrixPage() {
                 onClick={selectAllProviders}
                 className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${enabledProviders.size === PROVIDERS.length
                   ? "bg-[#2b6cb0] text-white border-[#2b6cb0]"
-                  : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#2b6cb0]/40"
+                  : "bg-white text-[#1e1b16]/70 border-brand-secondary hover:border-[#2b6cb0]/40"
                   }`}
               >
                 <span>All Models</span>
@@ -1381,7 +1396,7 @@ export default function VisibilityMatrixPage() {
                     onClick={() => toggleProvider(p.id)}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${isEnabled
                       ? `${p.bgColor} text-white border-transparent`
-                      : "bg-white text-[#1e1b16]/70 border-[#e3dacb] hover:border-[#1f3b2c]/40"
+                      : "bg-white text-[#1e1b16]/70 border-brand-secondary hover:border-brand-primary/40"
                       }`}
                   >
                     <span className="flex items-center gap-2">
@@ -1401,8 +1416,8 @@ export default function VisibilityMatrixPage() {
           </div>
 
           {/* Bottom Row: Centered Range Selector (Time Scale) */}
-          <div className="flex justify-center mt-8 border-t border-[#e3dacb]/50 pt-6">
-            <div className="flex gap-4 border-b border-[#e3dacb]">
+          <div className="flex justify-center mt-8 border-t border-brand-secondary/50 pt-6">
+            <div className="flex gap-4 border-b border-brand-secondary">
               {(["day", "week", "month"] as const).map(range => (
                 <button
                   key={range}
@@ -1425,16 +1440,16 @@ export default function VisibilityMatrixPage() {
 
         {/* Historical Run Banner */}
         {selectedHistoricalRun && (
-          <div className="mt-6 flex items-center justify-between bg-[#1f3b2c]/10 border border-[#1f3b2c]/20 rounded-lg px-4 py-3">
+          <div className="mt-6 flex items-center justify-between bg-brand-primary/10 border border-brand-primary/20 rounded-lg px-4 py-3">
             <div className="flex items-center gap-3">
-              <Clock className="h-4 w-4 text-[#1f3b2c]" />
-              <span className="text-sm font-medium text-[#1f3b2c]">
+              <Clock className="h-4 w-4 text-brand-primary" />
+              <span className="text-sm font-medium text-brand-primary">
                 Viewing historical run from {selectedRunDateLabel}
               </span>
             </div>
             <button
               onClick={clearHistoricalSelection}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#1f3b2c] hover:text-[#1f3b2c]/70 transition-colors"
+              className="flex items-center gap-1.5 text-xs font-semibold text-brand-primary hover:text-brand-primary/70 transition-colors"
             >
               <X className="h-3.5 w-3.5" />
               Return to current
@@ -1447,7 +1462,7 @@ export default function VisibilityMatrixPage() {
           <div className="flex-1">
             {/* Empty State - when ready but no data */}
             {matrixDataHook.status === "ready" && historicalRuns.length === 0 && Object.values(matrixData).every(cell => cell.results.length === 0) ? (
-              <div className="border border-dashed border-[#e3dacb] bg-white px-8 py-16 text-center mx-6">
+              <div className="border border-dashed border-brand-secondary bg-white px-8 py-16 text-center mx-6">
                 <div className="max-w-md mx-auto space-y-4">
                   <div className="w-12 h-12 mx-auto rounded-full bg-[#f6f1e8] flex items-center justify-center">
                     <svg className="w-6 h-6 text-black/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -1689,7 +1704,7 @@ export default function VisibilityMatrixPage() {
 
       {/* Deep Dive Dialog */}
       <Dialog open={deepDiveOpen} onOpenChange={setDeepDiveOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-[#fffaf2] border-[#e3dacb]">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-[#fffaf2] border-brand-secondary">
           <DialogHeader>
             <DialogTitle className="text-[#1e1b16]">Deep Dive: {selectionLabel}</DialogTitle>
           </DialogHeader>
@@ -1708,7 +1723,7 @@ export default function VisibilityMatrixPage() {
                         .map((resp, rIdx) => {
                           const provider = PROVIDERS.find(p => p.id === resp.provider);
                           return (
-                            <div key={rIdx} className="border border-[#e3dacb] rounded-xl p-3 bg-[#fffaf2]">
+                            <div key={rIdx} className="border border-brand-secondary rounded-xl p-3 bg-[#fffaf2]">
                               <div className="flex items-center justify-between mb-2">
                                 <Badge className={`${provider?.bgColor} text-white`}>{provider?.label}</Badge>
                                 <div className="flex items-center gap-2 text-xs">
@@ -1729,7 +1744,7 @@ export default function VisibilityMatrixPage() {
                                 {resp.error ? (
                                   <span className="text-[#8b4a4a]">Error: {resp.error}</span>
                                 ) : (
-                                  highlightBrandMentions(resp.text, resp.visibility.sentiment)
+                                  highlightBrandMentions(resp.text, resp.visibility.sentiment, [BRAND, ...BRAND_ALIASES])
                                 )}
                               </div>
                               {resp.visibility.competitorsMentioned.length > 0 && (
@@ -1751,14 +1766,14 @@ export default function VisibilityMatrixPage() {
 
       {/* Evidence Modal */}
       <Dialog open={evidenceModal !== null} onOpenChange={(open) => !open && setEvidenceModal(null)}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-[#fffaf2] border-[#e3dacb]">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-[#fffaf2] border-brand-secondary">
           <DialogHeader>
             <DialogTitle className="text-[#1e1b16] flex items-center justify-between">
               <span>{evidenceModal?.title}</span>
               <Button
                 size="sm"
                 variant="outline"
-                className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
+                className="border-brand-secondary text-[#1e1b16] hover:bg-[#efe6d9]"
                 onClick={() => {
                   const selectedResults = selectedCellsData.flatMap(cell => cell.results);
                   setEvidenceModal(null);
@@ -1786,7 +1801,7 @@ export default function VisibilityMatrixPage() {
                       : "bg-[#efe6d9] text-[#1e1b16]/70";
 
                 return (
-                  <div key={idx} className="border border-[#e3dacb] rounded-xl p-4 bg-white">
+                  <div key={idx} className="border border-brand-secondary rounded-xl p-4 bg-white">
                     <div className="mb-3">
                       <div className="text-sm font-medium text-[#1e1b16] mb-1">
                         Q: &quot;{item.query}&quot;
@@ -1798,10 +1813,12 @@ export default function VisibilityMatrixPage() {
                         </Badge>
                       </div>
                     </div>
-                    <div className="text-sm text-[#1e1b16]/80 leading-relaxed border-t border-[#e3dacb] pt-3">
-                      {highlightBrandMentions(item.excerpt,
+                    <div className="text-sm text-[#1e1b16]/80 leading-relaxed border-t border-brand-secondary pt-3">
+                      {highlightBrandMentions(
+                        item.excerpt,
                         item.metricValue === "positive" ? "positive" :
-                          item.metricValue === "negative" ? "negative" : "neutral"
+                          item.metricValue === "negative" ? "negative" : "neutral",
+                        [BRAND, ...BRAND_ALIASES]
                       )}
                     </div>
                   </div>
@@ -2071,7 +2088,11 @@ export default function VisibilityMatrixPage() {
   );
 }
 
-function highlightBrandMentions(text: string, sentiment: string): React.ReactNode {
+function highlightBrandMentions(
+  text: string,
+  sentiment: string,
+  brandTerms: string[]
+): React.ReactNode {
   const bgColor = sentiment === "positive"
     ? "bg-[#d4e5d4]"
     : sentiment === "negative"
@@ -2081,13 +2102,13 @@ function highlightBrandMentions(text: string, sentiment: string): React.ReactNod
   // Custom component to highlight brand mentions within markdown
   const components = {
     p: ({ children }: { children?: React.ReactNode }) => (
-      <p className="my-1">{highlightInText(children, bgColor)}</p>
+      <p className="my-1">{highlightInText(children, bgColor, brandTerms)}</p>
     ),
     li: ({ children }: { children?: React.ReactNode }) => (
-      <li className="my-0.5">{highlightInText(children, bgColor)}</li>
+      <li className="my-0.5">{highlightInText(children, bgColor, brandTerms)}</li>
     ),
     strong: ({ children }: { children?: React.ReactNode }) => (
-      <strong>{highlightInText(children, bgColor)}</strong>
+      <strong>{highlightInText(children, bgColor, brandTerms)}</strong>
     ),
   };
 
@@ -2098,12 +2119,24 @@ function highlightBrandMentions(text: string, sentiment: string): React.ReactNod
   );
 }
 
-function highlightInText(children: React.ReactNode, bgColor: string): React.ReactNode {
+function highlightInText(
+  children: React.ReactNode,
+  bgColor: string,
+  brandTerms: string[]
+): React.ReactNode {
   if (typeof children === "string") {
-    const brand = BRAND.toLowerCase();
-    const parts = children.split(new RegExp(`(${brand}|lakewood|lwr)`, "gi"));
+    // Build regex pattern from brand terms
+    const escapedTerms = brandTerms.map(term =>
+      term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    );
+    if (escapedTerms.length === 0) return children;
+
+    const pattern = new RegExp(`(${escapedTerms.join("|")})`, "gi");
+    const parts = children.split(pattern);
+    const lowerTerms = new Set(brandTerms.map(t => t.toLowerCase()));
+
     return parts.map((part, i) => {
-      if (part.toLowerCase() === brand || part.toLowerCase() === "lakewood" || part.toLowerCase() === "lwr") {
+      if (lowerTerms.has(part.toLowerCase())) {
         return <span key={i} className={`${bgColor} px-1 rounded`}>{part}</span>;
       }
       return part;

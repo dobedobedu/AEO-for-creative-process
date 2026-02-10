@@ -1,0 +1,70 @@
+{
+  "brand": {
+    "name": "Lakewood Ranch",
+    "aliases": ["LWR", "Lakewood"],
+    "domain": "lakewoodranch.com",
+    "highlightColor": "#dcf3dc"
+  },
+  "competitors": [
+    { "name": "The Villages", "aliases": ["Villages"], "isPrimary": true },
+    { "name": "Nocatee", "aliases": [], "isPrimary": true },
+    { "name": "Wellen Park", "aliases": [], "isPrimary": true },
+    { "name": "Ave Maria", "aliases": [], "isPrimary": true },
+    { "name": "Babcock Ranch", "aliases": [], "isPrimary": false },
+    { "name": "Sun City Center", "aliases": [], "isPrimary": false },
+    { "name": "On Top of the World", "aliases": ["OTOW"], "isPrimary": false },
+    { "name": "Sarasota", "aliases": [], "isPrimary": false },
+    { "name": "Tampa", "aliases": [], "isPrimary": false },
+    { "name": "Orlando", "aliases": [], "isPrimary": false },
+    { "name": "Jacksonville", "aliases": [], "isPrimary": false }
+  ],
+  "personas": [
+    { "id": "move_up", "label": "Move-Up", "description": "Upgrading from starter home" },
+    { "id": "retiree", "label": "Retiree", "description": "55+ active lifestyle" },
+    { "id": "luxury", "label": "Luxury", "description": "High-end amenities focus" },
+    { "id": "first_time", "label": "First-Time", "description": "Entry-level, value-conscious" }
+  ],
+  "stages": [
+    { "id": "explore", "label": "Explore", "description": "Starting research" },
+    { "id": "consider", "label": "Consider", "description": "Evaluating options" },
+    { "id": "compare", "label": "Compare", "description": "Narrowing choices" },
+    { "id": "decide", "label": "Decide", "description": "Ready to buy" }
+  ],
+  "entityCategories": [
+    { "id": "amenities", "label": "Amenities", "examples": ["golf courses", "pools", "fitness centers", "tennis courts"] },
+    { "id": "neighborhoods", "label": "Neighborhoods", "examples": ["Waterside", "Cresswind", "Del Webb", "Country Club"] },
+    { "id": "schools", "label": "Schools", "examples": ["Lakewood Ranch High", "Braden River High", "charter schools"] },
+    { "id": "healthcare", "label": "Healthcare", "examples": ["hospitals", "medical centers", "urgent care"] },
+    { "id": "lifestyle", "label": "Lifestyle", "examples": ["dining", "shopping", "entertainment", "Main Street"] }
+  ],
+  "geography": {
+    "region": "Southwest Florida",
+    "localities": ["Sarasota", "Bradenton", "Manatee County", "Sarasota County"],
+    "nearbyMetros": ["Tampa", "St. Petersburg", "Fort Myers"]
+  },
+  "providers": {
+    "weights": {
+      "openai": 0.64,
+      "gemini": 0.22,
+      "anthropic": 0.02,
+      "xai": 0.04
+    },
+    "models": {
+      "openai": "gpt-4.5-preview",
+      "gemini": "gemini-3-pro-preview",
+      "anthropic": "claude-3-5-haiku-20241022",
+      "xai": "grok-3-preview"
+    }
+  },
+  "thresholds": {
+    "strong": 0.7,
+    "moderate": 0.4,
+    "weak": 0.2
+  },
+  "industry": "real_estate",
+  "metadata": {
+    "version": "1.0.0",
+    "createdAt": "2026-01-26",
+    "updatedAt": "2026-01-26"
+  }
+}

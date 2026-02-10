@@ -49,7 +49,7 @@ function extractionToScalarScore(stage: Stage, extraction: StageExtraction): num
     if (extraction.outcome === "tie" || extraction.outcome === "mixed") return 0.5;
     return 0;
   }
-  if (stage === "decide" && "recommendationStrength" in extraction) {
+  if ((stage === "decide" || stage === "apply") && "recommendationStrength" in extraction) {
     return recommendationStrengthToScore(extraction.recommendationStrength);
   }
   return 0;
@@ -164,7 +164,7 @@ export function toUiBenchmarkRun(run: StoredRun): UiBenchmarkRun {
           if (extraction.outcome === "tie" || extraction.outcome === "mixed") compareOutcomes.win += 0.5;
         }
 
-        if (stage === "decide" && "recommendationStrength" in extraction) {
+        if ((stage === "decide" || stage === "apply") && "recommendationStrength" in extraction) {
           hasDecide = true;
           recStrengths.push(recommendationStrengthToScore(extraction.recommendationStrength));
         }

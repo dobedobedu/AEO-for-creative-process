@@ -8,6 +8,7 @@ import { formatBenchmarkForUpload, formatRunForUpload, type FormattedBenchmark }
 import type { BenchmarkResult } from "@/lib/benchmark/runner";
 import type { BenchmarkRun } from "@/lib/runs/types";
 import { getSearchMode } from "@/lib/appSettings";
+import { getBrandName } from "@/lib/config";
 
 export interface UploadResult {
   success: boolean;
@@ -106,10 +107,10 @@ export async function uploadBenchmarkResults(
   results: BenchmarkResult,
   persona: string,
   stage: string,
-  brand: string = "Lakewood Ranch"
+  brand?: string
 ): Promise<UploadResult> {
-  const searchMode = await getSearchMode();
-  const formatted = formatBenchmarkForUpload(results, persona, stage, brand, searchMode);
+  const resolvedBrand = brand ?? getBrandName();
+  const formatted = formatBenchmarkForUpload(results, persona, stage, resolvedBrand);
   return uploadFormattedBenchmark(formatted);
 }
 
@@ -120,10 +121,11 @@ export function uploadBenchmarkResultsAsync(
   results: BenchmarkResult,
   persona: string,
   stage: string,
-  brand: string = "Lakewood Ranch"
+  brand?: string
 ): void {
+  const resolvedBrand = brand ?? getBrandName();
   // Fire and forget - don't await
-  uploadBenchmarkResults(results, persona, stage, brand)
+  uploadBenchmarkResults(results, persona, stage, resolvedBrand)
     .then((result) => {
       if (result.success) {
         console.log(`[FileSearch] Background upload succeeded: ${result.documentName}`);

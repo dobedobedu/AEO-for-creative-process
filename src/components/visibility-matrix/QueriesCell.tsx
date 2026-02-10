@@ -53,7 +53,7 @@ export function QueriesCell({
       {/* Spreadsheet-style table */}
       <table className="w-full border-collapse">
         <thead className="sticky top-0 bg-white z-10">
-          <tr className="border-b border-[#e3dacb]">
+          <tr className="border-b border-brand-secondary">
             <th className="text-left py-2 px-3 text-[10px] font-semibold text-[#1e1b16]/60 uppercase tracking-wider">
               Query
             </th>
@@ -77,7 +77,7 @@ export function QueriesCell({
                 <tr
                   key={`${intent.id}-${idx}`}
                   className={`
-                    border-b border-[#e3dacb]/50 hover:bg-[#f6f1e8]/50
+                    border-b border-brand-secondary/50 hover:bg-[#f6f1e8]/50
                     transition-colors
                     ${isEditing ? "bg-[#f6f1e8]" : ""}
                   `}
@@ -88,7 +88,7 @@ export function QueriesCell({
                       <textarea
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
-                        className="w-full text-xs text-[#1e1b16] bg-white border border-[#e3dacb] rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#b86f3a] resize-none"
+                        className="w-full text-xs text-[#1e1b16] bg-white border border-brand-secondary rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#b86f3a] resize-none"
                         rows={2}
                         autoFocus
                       />
@@ -106,7 +106,7 @@ export function QueriesCell({
                   <td className="py-2 px-2 align-top">
                     <Badge
                       variant="outline"
-                      className="text-[9px] px-1.5 py-0.5 bg-[#f6f1e8] border-[#e3dacb] text-[#1e1b16]/70"
+                      className="text-[9px] px-1.5 py-0.5 bg-[#f6f1e8] border-brand-secondary text-[#1e1b16]/70"
                     >
                       {intent.text.length > 15
                         ? intent.text.slice(0, 15) + "..."
@@ -157,7 +157,7 @@ export function QueriesCell({
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-6 w-6 p-0 text-[#1e1b16]/40 hover:text-[#1f3b2c] hover:bg-[#efe6d9]"
+                            className="h-6 w-6 p-0 text-[#1e1b16]/40 hover:text-brand-primary hover:bg-[#efe6d9]"
                             onClick={() => startEdit(intent.id, idx, query)}
                             title="Edit"
                           >

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 
-type View = "matrix" | "kanban";
+type View = "matrix" | "kanban" | "admin";
 
 interface ViewToggleProps {
   className?: string;
@@ -15,7 +15,13 @@ const prefetchedViews = new Set<string>();
 
 export function ViewToggle({ className = "" }: ViewToggleProps) {
   const pathname = usePathname();
-  const activeView: View = pathname?.includes("visibility-board") ? "kanban" : "matrix";
+  const activeView: View = pathname?.includes("visibility-board") ? "kanban" 
+    : pathname?.includes("/admin/matrix") ? "admin" 
+    : "matrix";
+
+  // Check if admin panel is enabled via environment variable
+  // Note: This is checked on client side only - actual access control is enforced by middleware
+  const adminEnabled = process.env.NEXT_PUBLIC_ADMIN_ENABLED === "true";
   const prefetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const prefetchMatrix = useCallback(() => {
@@ -35,12 +41,20 @@ export function ViewToggle({ className = "" }: ViewToggleProps) {
     fetch("/api/kanban").catch(() => {});
   }, []);
 
+  const prefetchAdmin = useCallback(() => {
+    if (prefetchedViews.has("admin")) return;
+    prefetchedViews.add("admin");
+
+    fetch("/api/matrix/config").catch(() => {});
+  }, []);
+
   const prefetchView = useCallback(
     (view: View) => {
       if (view === "matrix") prefetchMatrix();
-      else prefetchKanban();
+      else if (view === "kanban") prefetchKanban();
+      else if (view === "admin") prefetchAdmin();
     },
-    [prefetchMatrix, prefetchKanban]
+    [prefetchMatrix, prefetchKanban, prefetchAdmin]
   );
 
   const handleMouseEnter = useCallback((view: View) => {
@@ -138,6 +152,26 @@ export function ViewToggle({ className = "" }: ViewToggleProps) {
         />
         Kanban
       </Link>
+      {adminEnabled && (
+        <Link
+          href="/admin/matrix"
+          prefetch={true}
+          onMouseEnter={() => handleMouseEnter("admin")}
+          onMouseLeave={handleMouseLeave}
+          className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+            activeView === "admin"
+              ? "bg-[var(--forest)] text-white shadow-sm"
+              : "text-[var(--ink)]/60 hover:text-[var(--ink)] hover:bg-[var(--mist)]"
+          }`}
+        >
+          <span
+            className={`h-2 w-2 rounded-full ${
+              activeView === "admin" ? "bg-white" : "bg-[var(--ink)]/30"
+            }`}
+          />
+          Admin
+        </Link>
+      )}
     </div>
   );
 }

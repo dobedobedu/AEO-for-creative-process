@@ -103,10 +103,10 @@ export function GlobalProgressBar({
   }[displayState.status];
 
   const statusColor = {
-    running: "bg-[#1f3b2c]",
+    running: "bg-brand-primary",
     complete: "bg-[#6e7c5b]",
     error: "bg-[#b86f3a]",
-    idle: "bg-[#e3dacb]",
+    idle: "bg-brand-secondary",
   }[displayState.status];
 
   return (
@@ -120,7 +120,7 @@ export function GlobalProgressBar({
           className="fixed bottom-[52px] left-0 right-0 z-50"
         >
           {/* Progress bar track */}
-          <div className="h-1 bg-[#e3dacb]">
+          <div className="h-1 bg-brand-secondary">
             <motion.div
               className={`h-full ${statusColor}`}
               initial={{ width: 0 }}
@@ -130,7 +130,7 @@ export function GlobalProgressBar({
           </div>
 
           {/* Status strip */}
-          <div className="bg-white border-t border-[#e3dacb] px-6 py-2">
+          <div className="bg-white border-t border-brand-secondary px-6 py-2">
             <div className="max-w-6xl mx-auto flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {statusIcon}

@@ -10,6 +10,8 @@ import type { BenchmarkRun, CellResult } from "@/lib/runs/types";
 import type { Stage } from "@/lib/intents/types";
 import type { StageExtraction } from "@/lib/scoring/schemas";
 
+import { getBrandName } from "@/lib/config";
+
 export interface FormattedBenchmark {
   content: string;
   metadata: CustomMetadata[];
@@ -48,9 +50,9 @@ export function formatBenchmarkForUpload(
   results: BenchmarkResult,
   persona: string,
   stage: string,
-  brand: string = "Lakewood Ranch",
-  searchMode?: string
+  brand?: string
 ): FormattedBenchmark {
+  const resolvedBrand = brand ?? getBrandName();
   const runDate = new Date().toISOString().split("T")[0];
   const timestamp = new Date().toISOString();
 
@@ -58,7 +60,7 @@ export function formatBenchmarkForUpload(
   const header = [
     `# AI Visibility Benchmark Results`,
     ``,
-    `- **Brand**: ${brand}`,
+    `- **Brand**: ${resolvedBrand}`,
     `- **Persona**: ${persona}`,
     `- **Stage**: ${stage}`,
     `- **Run Date**: ${runDate}`,
@@ -114,7 +116,7 @@ export function formatBenchmarkForUpload(
   const metadata: CustomMetadata[] = [
     { key: "persona", stringValue: persona },
     { key: "stage", stringValue: stage },
-    { key: "brand", stringValue: brand },
+    { key: "brand", stringValue: resolvedBrand },
     { key: "run_date", stringValue: runDate },
     { key: "timestamp", stringValue: timestamp },
     { key: "total_queries", numericValue: results.summary.totalQueries },
@@ -141,16 +143,16 @@ export function formatQueryResult(
   queryResult: QueryResult,
   persona: string,
   stage: string,
-  brand: string = "Lakewood Ranch",
-  searchMode?: string
+  brand?: string
 ): FormattedBenchmark {
+  const resolvedBrand = brand ?? getBrandName();
   const runDate = new Date().toISOString().split("T")[0];
   const timestamp = new Date().toISOString();
 
   const lines = [
     `# AI Response: "${queryResult.query}"`,
     ``,
-    `- **Brand**: ${brand}`,
+    `- **Brand**: ${resolvedBrand}`,
     `- **Persona**: ${persona}`,
     `- **Stage**: ${stage}`,
     `- **Run Date**: ${runDate}`,
@@ -177,7 +179,7 @@ export function formatQueryResult(
   const metadata: CustomMetadata[] = [
     { key: "persona", stringValue: persona },
     { key: "stage", stringValue: stage },
-    { key: "brand", stringValue: brand },
+    { key: "brand", stringValue: resolvedBrand },
     { key: "run_date", stringValue: runDate },
     { key: "timestamp", stringValue: timestamp },
     { key: "query", stringValue: queryResult.query.slice(0, 200) },

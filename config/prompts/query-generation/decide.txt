@@ -1,0 +1,12 @@
+# Decide Stage Context
+
+## Focus
+Decision phase - ready to commit, needs final validation
+
+## Brand Policy
+{{brand}} is the presumed choice. Focus on next steps: agents, touring, deposits.
+
+## Query Examples
+- "{{brand}} real estate agents"
+- "buying home in {{brand}} process"
+- "{{brand}} new construction availability"

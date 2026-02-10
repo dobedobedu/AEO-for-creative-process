@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { InsightModal } from "@/components/visibility-matrix/InsightModal";
+import { TEST_BRAND } from "@/__tests__/test-constants";
 
 describe("InsightModal metrics", () => {
   it("shows overall + provider breakdown for explore stage", () => {
@@ -12,14 +13,14 @@ describe("InsightModal metrics", () => {
         stage="explore"
         personaLabel="Move-Up"
         stageLabel="Explore"
-        brand="Lakewood Ranch"
+        brand={TEST_BRAND}
         results={[
           {
             query: "test query",
             responses: [
               {
                 provider: "openai",
-                text: "Lakewood Ranch is mentioned",
+                text: `${TEST_BRAND} is mentioned`,
                 visibility: { mentioned: true, position: "1st", sentiment: "neutral" },
               },
             ],
@@ -46,7 +47,7 @@ describe("InsightModal metrics", () => {
         stage="consider"
         personaLabel="Move-Up"
         stageLabel="Consider"
-        brand="Lakewood Ranch"
+        brand={TEST_BRAND}
         results={[
           {
             query: "test query",
@@ -79,7 +80,7 @@ describe("InsightModal metrics", () => {
         stage="compare"
         personaLabel="Retiree"
         stageLabel="Compare"
-        brand="Lakewood Ranch"
+        brand={TEST_BRAND}
         results={[
           {
             query: "test query",
@@ -117,7 +118,7 @@ describe("InsightModal metrics", () => {
         stage="decide"
         personaLabel="Luxury"
         stageLabel="Decide"
-        brand="Lakewood Ranch"
+        brand={TEST_BRAND}
         results={[
           {
             query: "test query",
@@ -155,7 +156,7 @@ describe("InsightModal metrics", () => {
         stage="explore"
         personaLabel="First-Time"
         stageLabel="Explore"
-        brand="Lakewood Ranch"
+        brand={TEST_BRAND}
         results={[]}
       />
     );
@@ -173,7 +174,7 @@ describe("InsightModal metrics", () => {
         stage="explore"
         personaLabel="Move-Up"
         stageLabel="Explore"
-        brand="Lakewood Ranch"
+        brand={TEST_BRAND}
         results={[
           {
             query: "test query",

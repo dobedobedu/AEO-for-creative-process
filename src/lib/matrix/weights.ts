@@ -1,11 +1,33 @@
 export type ProviderKey = "openai" | "anthropic" | "gemini" | "xai";
 
+/**
+ * Default provider weights (fallback when config is not available)
+ * These values should match config/tenant.json for consistency
+ * In production, weights are loaded from tenant config
+ */
 export const DEFAULT_PROVIDER_WEIGHTS: Record<ProviderKey, number> = {
   openai: 0.64,
   gemini: 0.22,
   anthropic: 0.02,
   xai: 0.04,
 };
+
+/**
+ * Create provider weights from tenant config
+ * Use this when you have access to the tenant config object
+ */
+export function createProviderWeights(
+  configWeights?: { openai?: number; gemini?: number; anthropic?: number; xai?: number }
+): Record<ProviderKey, number> {
+  if (!configWeights) return DEFAULT_PROVIDER_WEIGHTS;
+
+  return {
+    openai: configWeights.openai ?? DEFAULT_PROVIDER_WEIGHTS.openai,
+    gemini: configWeights.gemini ?? DEFAULT_PROVIDER_WEIGHTS.gemini,
+    anthropic: configWeights.anthropic ?? DEFAULT_PROVIDER_WEIGHTS.anthropic,
+    xai: configWeights.xai ?? DEFAULT_PROVIDER_WEIGHTS.xai,
+  };
+}
 
 export type WeightMode = "equal" | "weighted";
 

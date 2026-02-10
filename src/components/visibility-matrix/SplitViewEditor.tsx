@@ -122,7 +122,7 @@ export function SplitViewEditor({
                                 className={`
                                     px-8 py-3 text-[11px] font-black uppercase tracking-[0.2em] transition-all relative rounded-t-xl
                                     ${activeTab === m
-                                        ? "bg-[#faf9f6] text-black border-t border-l border-r border-[#e3dacb] -mb-[1px] z-10"
+                                        ? "bg-[#faf9f6] text-black border-t border-l border-r border-brand-secondary -mb-[1px] z-10"
                                         : "bg-transparent text-black/30 hover:text-black/50 hover:bg-black/5"
                                     }
                                 `}
@@ -134,7 +134,7 @@ export function SplitViewEditor({
                 )}
 
                 {/* Filters Row */}
-                <div className="bg-[#faf9f6]/80 backdrop-blur-xl border-b border-[#e3dacb] px-8 py-4">
+                <div className="bg-[#faf9f6]/80 backdrop-blur-xl border-b border-brand-secondary px-8 py-4">
                     <div className="max-w-[1600px] mx-auto flex flex-col gap-6">
                         {/* Level 1: Title & High-level Actions */}
                         <div className="flex items-center justify-between">
@@ -142,7 +142,7 @@ export function SplitViewEditor({
                                 <h2 className="text-sm font-bold uppercase tracking-widest text-black/40">
                                     {activeTab === "summary" ? "Research Summary" : activeTab === "intents" ? "Research Intents" : activeTab === "queries" ? "Query Bank" : "LLM Answers"}
                                 </h2>
-                                <div className="h-4 w-[1px] bg-[#e3dacb]" />
+                                <div className="h-4 w-[1px] bg-brand-secondary" />
                                 {activeTab !== "answers" && activeTab !== "summary" && (
                                     <div className="flex gap-4">
                                         <Button
@@ -183,7 +183,7 @@ export function SplitViewEditor({
                             </div>
                         </div>
 
-                        <div className="h-4 w-[1px] bg-[#e3dacb]" />
+                        <div className="h-4 w-[1px] bg-brand-secondary" />
 
                         {/* Role Filter */}
                         <div className="flex items-center gap-3">
@@ -207,7 +207,7 @@ export function SplitViewEditor({
                             </div>
                         </div>
 
-                        <div className="h-4 w-[1px] bg-[#e3dacb]" />
+                        <div className="h-4 w-[1px] bg-brand-secondary" />
 
                         {/* Style Filter */}
                         <div className="flex items-center gap-3">
@@ -241,7 +241,7 @@ export function SplitViewEditor({
                     <AnimatePresence mode="popLayout">
                         <motion.div
                             layout
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#e3dacb] border border-[#e3dacb] auto-rows-fr"
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-brand-secondary border border-brand-secondary auto-rows-fr"
                         >
                             {filteredCells.map((cell) => {
                                 const cellResult = cellResults?.[cell.persona]?.[cell.stage];
@@ -261,7 +261,7 @@ export function SplitViewEditor({
                                         citations={cellResult?.citations}
                                         brandDomain={brandDomain}
                                         onClick={() => onSelectCell(cell.persona, cell.stage)}
-                                        accentColor={STAGE_COLORS[cell.stage] || "#1f3b2c"}
+                                        accentColor={STAGE_COLORS[cell.stage] || "var(--brand-primary)"}
                                         isMissing={isMissing}
                                         loading={loading}
                                     />

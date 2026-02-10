@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PersonaList } from "@/components/admin/PersonaList";
 import { StageList } from "@/components/admin/StageList";
 import { MatrixPreview } from "@/components/admin/MatrixPreview";
+import { ViewToggle } from "@/components/ui/view-toggle";
 import { Save, EyeOff, RotateCcw, Loader2 } from "lucide-react";
 import type { MatrixConfig, MatrixPersona, MatrixStage } from "@/lib/matrix/types";
 
@@ -234,56 +235,57 @@ export default function AdminMatrixStudioPage() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-[1800px] mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Matrix Studio</h1>
               <p className="text-sm text-gray-500 mt-1">Manage personas and stages for the visibility matrix</p>
             </div>
+            <ViewToggle />
+          </div>
 
-            <div className="flex items-center gap-3">
-              {lastSaved && (
-                <span className="text-sm text-gray-500 mr-2">
-                  Last saved: {lastSaved}
-                </span>
+          <div className="flex items-center gap-3">
+            {lastSaved && (
+              <span className="text-sm text-gray-500 mr-2">
+                Last saved: {lastSaved}
+              </span>
+            )}
+
+            <Button
+              variant="outline"
+              onClick={handleDiscard}
+              disabled={!hasChanges}
+              className="gap-2"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Discard
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleSaveDraft}
+              disabled={!hasChanges || saving}
+              className="gap-2"
+            >
+              {saving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
               )}
+              Save Draft
+            </Button>
 
-              <Button
-                variant="outline"
-                onClick={handleDiscard}
-                disabled={!hasChanges}
-                className="gap-2"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Discard
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={handleSaveDraft}
-                disabled={!hasChanges || saving}
-                className="gap-2"
-              >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                Save Draft
-              </Button>
-
-              <Button
-                onClick={handlePublish}
-                disabled={publishing}
-                className="gap-2 bg-emerald-700 hover:bg-emerald-800"
-              >
-                {publishing ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <EyeOff className="w-4 h-4" />
-                )}
-                Publish
-              </Button>
-            </div>
+            <Button
+              onClick={handlePublish}
+              disabled={publishing}
+              className="gap-2 bg-emerald-700 hover:bg-emerald-800"
+            >
+              {publishing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <EyeOff className="w-4 h-4" />
+              )}
+              Publish
+            </Button>
           </div>
         </div>
       </header>

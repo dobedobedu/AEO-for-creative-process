@@ -169,14 +169,14 @@ export function IntentEditorModal({
 
         {/* Left Focus Sidebar: Context Navigation */}
         <div className="flex h-full">
-          <div className="w-[300px] border-r border-[#e3dacb] bg-[#faf9f6] flex flex-col">
-            <div className="p-6 border-b border-[#e3dacb] bg-white">
+          <div className="w-[300px] border-r border-brand-secondary bg-[#faf9f6] flex flex-col">
+            <div className="p-6 border-b border-brand-secondary bg-white">
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-black/20 mb-1">Focus Mode</h2>
               <h3 className="text-xl font-light tracking-tight text-black">
                 {DEFAULT_PERSONA_LABELS[persona] || personas.find(p => p.id === persona)?.label || persona}
               </h3>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-[11px] font-bold text-black px-2 py-0.5 bg-[#e3dacb]/30">
+                <span className="text-[11px] font-bold text-black px-2 py-0.5 bg-brand-secondary/30">
                   {STAGE_LABELS[stage]}
                 </span>
               </div>
@@ -270,7 +270,7 @@ export function IntentEditorModal({
                 <div className="max-w-2xl mx-auto space-y-8">
 
                   {intents.length === 0 && !isAddingNew ? (
-                    <div className="text-center py-24 border border-dashed border-[#e3dacb]">
+                    <div className="text-center py-24 border border-dashed border-brand-secondary">
                       <p className="font-serif text-lg text-black/30 italic mb-6">No research objectives have been defined yet.</p>
                       <Button
                         variant="outline"

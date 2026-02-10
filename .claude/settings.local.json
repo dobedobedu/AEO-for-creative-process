@@ -48,7 +48,11 @@
       "mcp__supabase__apply_migration",
       "mcp__supabase__execute_sql",
       "Bash(git diff --unified=5 HEAD -- src/app/visibility-board/page.tsx)",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(npx supabase db execute:*)",
+      "mcp__supabase__get_project",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__get_publishable_keys"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -199,8 +199,8 @@ export function QueryPanel({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[85vh] bg-[#fffaf2] border-[#e3dacb] overflow-hidden flex flex-col">
-        <DialogHeader className="pb-4 border-b border-[#e3dacb] flex-shrink-0">
+      <DialogContent className="max-w-4xl max-h-[85vh] bg-[#fffaf2] border-brand-secondary overflow-hidden flex flex-col">
+        <DialogHeader className="pb-4 border-b border-brand-secondary flex-shrink-0">
           <DialogTitle className="text-[#1e1b16]">Query Bank</DialogTitle>
         </DialogHeader>
 
@@ -212,7 +212,7 @@ export function QueryPanel({
               onClick={() => handleScopeChange(s)}
               className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 scope === s
-                  ? "bg-white text-[#1f3b2c] shadow-sm"
+                  ? "bg-white text-brand-primary shadow-sm"
                   : "text-[#1e1b16]/60 hover:text-[#1e1b16]"
               }`}
             >
@@ -231,7 +231,7 @@ export function QueryPanel({
             <select
               value={selectedPersona || ""}
               onChange={e => setSelectedPersona(e.target.value as Persona)}
-              className="text-sm bg-white border border-[#e3dacb] rounded-md px-2 py-1 text-[#1e1b16]"
+              className="text-sm bg-white border border-brand-secondary rounded-md px-2 py-1 text-[#1e1b16]"
             >
               {personas.map(p => (
                 <option key={p.id} value={p.id}>{p.label}</option>
@@ -242,7 +242,7 @@ export function QueryPanel({
             <select
               value={selectedStage || ""}
               onChange={e => setSelectedStage(e.target.value as Stage)}
-              className="text-sm bg-white border border-[#e3dacb] rounded-md px-2 py-1 text-[#1e1b16]"
+              className="text-sm bg-white border border-brand-secondary rounded-md px-2 py-1 text-[#1e1b16]"
             >
               {stages.map(s => (
                 <option key={s.id} value={s.id}>{s.label}</option>
@@ -262,7 +262,7 @@ export function QueryPanel({
             const showHeader = !isCellScope;
 
             return (
-              <div key={sectionKey} className="border border-[#e3dacb] rounded-xl bg-white overflow-hidden">
+              <div key={sectionKey} className="border border-brand-secondary rounded-xl bg-white overflow-hidden">
                 {showHeader && (
                   <button
                     onClick={() => toggleSection(sectionKey)}
@@ -285,7 +285,7 @@ export function QueryPanel({
                 )}
 
                 {isExpanded && (
-                  <div className={`${showHeader ? "border-t border-[#e3dacb]" : ""} p-2 space-y-2`}>
+                  <div className={`${showHeader ? "border-t border-brand-secondary" : ""} p-2 space-y-2`}>
                     {queries.map((query, idx) => {
                       const isEditing = editingQuery?.persona === persona && editingQuery?.stage === stage && editingQuery?.index === idx;
                       
@@ -302,7 +302,7 @@ export function QueryPanel({
                               onChange={e => setEditValue(e.target.value)}
                               onBlur={saveEditQuery}
                               onKeyDown={e => e.key === "Enter" && saveEditQuery()}
-                              className="flex-1 text-sm bg-white border border-[#1f3b2c] rounded px-2 py-1 text-[#1e1b16] focus:outline-none focus:ring-1 focus:ring-[#1f3b2c]"
+                              className="flex-1 text-sm bg-white border border-brand-primary rounded px-2 py-1 text-[#1e1b16] focus:outline-none focus:ring-1 focus:ring-brand-primary"
                               autoFocus
                             />
                           ) : (
@@ -324,7 +324,7 @@ export function QueryPanel({
                     })}
                     <button
                       onClick={() => addQuery(persona, stage)}
-                      className="flex items-center gap-1 text-xs text-[#1f3b2c]/70 hover:text-[#1f3b2c] px-2 py-1"
+                      className="flex items-center gap-1 text-xs text-brand-primary/70 hover:text-brand-primary px-2 py-1"
                     >
                       <Plus className="h-3 w-3" />
                       Add query
@@ -337,10 +337,10 @@ export function QueryPanel({
         </div>
 
         {/* Actions */}
-        <div className="mt-6 pt-4 border-t border-[#e3dacb] flex gap-2 flex-shrink-0">
+        <div className="mt-6 pt-4 border-t border-brand-secondary flex gap-2 flex-shrink-0">
           <Button
             onClick={handleRun}
-            className="flex-1 bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white"
+            className="flex-1 bg-brand-primary hover:bg-brand-primary-light text-white"
           >
             <Play className="h-4 w-4 mr-2" />
             Run {totalQueryCount} Queries
@@ -348,7 +348,7 @@ export function QueryPanel({
           <Button
             onClick={handleSave}
             variant="outline"
-            className="border-[#e3dacb] text-[#1e1b16] hover:bg-[#efe6d9]"
+            className="border-brand-secondary text-[#1e1b16] hover:bg-[#efe6d9]"
           >
             <Save className="h-4 w-4 mr-2" />
             Save

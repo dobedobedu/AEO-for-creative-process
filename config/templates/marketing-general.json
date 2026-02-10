@@ -1,0 +1,71 @@
+{
+  "$schema": "../schema/tenant-config.json",
+  "_templateInfo": {
+    "name": "General Marketing / B2B/B2C",
+    "description": "For general products, services, and brands across industries",
+    "examples": ["SaaS companies", "Consumer brands", "Professional services"]
+  },
+  "brand": {
+    "name": "Your Brand",
+    "aliases": [],
+    "domain": "yourbrand.com",
+    "highlightColor": "#f0e6d4"
+  },
+  "competitors": [
+    { "name": "Main Competitor 1", "aliases": [], "isPrimary": true },
+    { "name": "Main Competitor 2", "aliases": [], "isPrimary": true },
+    { "name": "Main Competitor 3", "aliases": [], "isPrimary": true },
+    { "name": "Emerging Competitor", "aliases": [], "isPrimary": false },
+    { "name": "Alternative Solution", "aliases": [], "isPrimary": false }
+  ],
+  "personas": [
+    { "id": "decision_maker", "label": "Decision Maker", "description": "C-level or budget holder making final choice" },
+    { "id": "influencer", "label": "Influencer", "description": "Team member who influences purchase" },
+    { "id": "end_user", "label": "End User", "description": "Person who will use the product daily" },
+    { "id": "researcher", "label": "Researcher", "description": "Analyst or evaluator gathering options" }
+  ],
+  "stages": [
+    { "id": "explore", "label": "Awareness", "description": "Discovering solutions exist" },
+    { "id": "consider", "label": "Evaluation", "description": "Assessing if solution fits needs" },
+    { "id": "compare", "label": "Consideration", "description": "Comparing alternatives" },
+    { "id": "decide", "label": "Purchase", "description": "Ready to buy or subscribe" }
+  ],
+  "entityCategories": [
+    { "id": "features", "label": "Features", "examples": ["product capabilities", "functionality", "tools"] },
+    { "id": "pricing", "label": "Pricing", "examples": ["plans", "cost", "ROI", "value"] },
+    { "id": "integrations", "label": "Integrations", "examples": ["connected tools", "APIs", "ecosystem"] },
+    { "id": "support", "label": "Support", "examples": ["customer service", "documentation", "training"] },
+    { "id": "reviews", "label": "Reviews & Social Proof", "examples": ["testimonials", "case studies", "ratings"] },
+    { "id": "company", "label": "Company", "examples": ["leadership", "funding", "culture", "values"] }
+  ],
+  "geography": {
+    "region": "Global",
+    "localities": [],
+    "nearbyMetros": []
+  },
+  "providers": {
+    "weights": {
+      "openai": 0.64,
+      "gemini": 0.22,
+      "anthropic": 0.02,
+      "xai": 0.04
+    },
+    "models": {
+      "openai": "gpt-4.5-preview",
+      "gemini": "gemini-3-pro-preview",
+      "anthropic": "claude-3-5-haiku-20241022",
+      "xai": "grok-3-preview"
+    }
+  },
+  "thresholds": {
+    "strong": 0.7,
+    "moderate": 0.4,
+    "weak": 0.2
+  },
+  "industry": "marketing",
+  "metadata": {
+    "version": "1.0.0",
+    "createdAt": "2026-01-26",
+    "updatedAt": "2026-01-26"
+  }
+}

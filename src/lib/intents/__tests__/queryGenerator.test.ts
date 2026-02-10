@@ -11,6 +11,7 @@ vi.mock("../../providers/openrouter", () => ({
 
 import { generateQueriesFromIntent } from "../queryGenerator";
 import { callOpenRouter } from "../../providers/openrouter";
+import { getBrandName, getTenantConfig } from "@/lib/config";
 
 const mockedCallOpenRouter = vi.mocked(callOpenRouter);
 
@@ -64,7 +65,7 @@ describe("Query Generator", () => {
             const result = await generateQueriesFromIntent({
                 persona: "move_up",
                 stage: "consider",
-                intent: "Lakewood Ranch schools",
+                intent: "Best schools in the area",
                 role: "family_unit",
                 queryStyle: 0.75,
                 count: 5,
@@ -75,11 +76,15 @@ describe("Query Generator", () => {
     });
 
     describe("Prompt Construction", () => {
-        it("includes persona description", async () => {
+        it("includes persona description from config", async () => {
             mockedCallOpenRouter.mockResolvedValue('{"queries": ["test"]}');
 
+            // Use a persona that exists in the current config
+            const config = getTenantConfig();
+            const testPersona = config.personas[0];
+
             await generateQueriesFromIntent({
-                persona: "retiree",
+                persona: testPersona?.id ?? "retiree",
                 stage: "consider",
                 intent: "Test intent",
                 role: "cpo",
@@ -87,8 +92,15 @@ describe("Query Generator", () => {
             });
 
             const systemPrompt = mockedCallOpenRouter.mock.calls[0][0].messages[0].content;
-            expect(systemPrompt).toContain("55+");
-            expect(systemPrompt).toContain("active adult");
+            // The prompt should contain the persona description from config
+            if (testPersona?.description) {
+                // Check that some part of the config description appears in the prompt
+                const descWords = testPersona.description.split(" ").slice(0, 3).join(" ");
+                expect(systemPrompt).toContain(descWords);
+            } else {
+                // Fallback: generic persona description should be present
+                expect(systemPrompt).toContain("buyer");
+            }
         });
 
         it("includes role descriptor", async () => {
@@ -109,6 +121,8 @@ describe("Query Generator", () => {
         it("Explore stage has no-brand policy", async () => {
             mockedCallOpenRouter.mockResolvedValue('{"queries": ["test"]}');
 
+            const brandName = getBrandName();
+
             await generateQueriesFromIntent({
                 persona: "luxury",
                 stage: "explore",
@@ -118,11 +132,13 @@ describe("Query Generator", () => {
             });
 
             const systemPrompt = mockedCallOpenRouter.mock.calls[0][0].messages[0].content;
-            expect(systemPrompt).toContain("Do NOT mention Lakewood Ranch");
+            expect(systemPrompt).toContain(`Do NOT mention ${brandName}`);
         });
 
         it("Compare stage requires brand comparisons", async () => {
             mockedCallOpenRouter.mockResolvedValue('{"queries": ["test"]}');
+
+            const brandName = getBrandName();
 
             await generateQueriesFromIntent({
                 persona: "retiree",
@@ -133,7 +149,7 @@ describe("Query Generator", () => {
             });
 
             const systemPrompt = mockedCallOpenRouter.mock.calls[0][0].messages[0].content;
-            expect(systemPrompt).toContain("Include Lakewood Ranch explicitly");
+            expect(systemPrompt).toContain(`Include ${brandName} explicitly`);
         });
     });
 

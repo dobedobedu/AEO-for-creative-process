@@ -82,7 +82,7 @@ export function MiniMatrixNavigation({
                                             group relative w-6 h-6 rounded-full border transition-all flex items-center justify-center
                                             ${isSelected
                                                 ? "bg-black border-black scale-110 z-10"
-                                                : "bg-[#faf9f6] border-[#e3dacb] hover:border-black/40"
+                                                : "bg-[#faf9f6] border-brand-secondary hover:border-black/40"
                                             }
                                         `}
                                     >
@@ -92,7 +92,7 @@ export function MiniMatrixNavigation({
                                                 ${isSelected
                                                     ? "bg-white"
                                                     : status === "has-queries"
-                                                        ? "bg-[#1f3b2c]"
+                                                        ? "bg-brand-primary"
                                                         : status === "has-intents"
                                                             ? "bg-[#b86f3a]"
                                                             : "bg-black/5"
@@ -115,7 +115,7 @@ export function MiniMatrixNavigation({
     }
 
     return (
-        <div className="w-full bg-[#f6f1e8] border-b border-[#e3dacb] p-4 flex items-center justify-between gap-8">
+        <div className="w-full bg-[#f6f1e8] border-b border-brand-secondary p-4 flex items-center justify-between gap-8">
             {/* Left Panel: Bulk Actions */}
             <div className="flex flex-col gap-2 min-w-[140px]">
                 <h3 className="text-[10px] font-bold uppercase text-[#1e1b16]/40 tracking-widest pl-1">Actions</h3>
@@ -183,8 +183,8 @@ export function MiniMatrixNavigation({
                                                     className={`
                                                         w-full h-8 rounded-lg border flex items-center justify-center transition-colors relative
                                                         ${isSelected
-                                                            ? "bg-[#1f3b2c] border-[#1f3b2c] shadow-sm z-10"
-                                                            : "bg-white border-[#e3dacb] hover:border-[#1f3b2c]/40 hover:bg-[#fffbf5]"
+                                                            ? "bg-brand-primary border-brand-primary shadow-sm z-10"
+                                                            : "bg-white border-brand-secondary hover:border-brand-primary/40 hover:bg-[#fffbf5]"
                                                         }
                                                     `}
                                                     whileHover={{ scale: 1.05 }}
@@ -197,10 +197,10 @@ export function MiniMatrixNavigation({
                                                             ${isSelected
                                                                 ? "bg-white"
                                                                 : status === "has-queries"
-                                                                    ? "bg-[#1f3b2c]"
+                                                                    ? "bg-brand-primary"
                                                                     : status === "has-intents"
                                                                         ? "bg-[#b86f3a]"
-                                                                        : "bg-[#e3dacb]"
+                                                                        : "bg-brand-secondary"
                                                             }
                                                         `}
                                                     />
@@ -231,7 +231,7 @@ export function MiniMatrixNavigation({
                     {/* Role Filter */}
                     <div className="flex flex-col gap-1">
                         <span className="text-[9px] font-bold text-[#1e1b16]/30 uppercase tracking-tight pl-0.5">Role</span>
-                        <div className="flex bg-white/40 rounded-md p-0.5 border border-[#e3dacb]">
+                        <div className="flex bg-white/40 rounded-md p-0.5 border border-brand-secondary">
                             {["All", "CPO", "Family"].map((r) => (
                                 <button
                                     key={r}
@@ -239,7 +239,7 @@ export function MiniMatrixNavigation({
                                     className={`
                                         flex-1 text-[10px] py-1 px-2 rounded-sm transition-all
                                         ${(r === "All" ? !roleFilter : roleFilter === r)
-                                            ? "bg-[#1f3b2c] text-white shadow-sm"
+                                            ? "bg-brand-primary text-white shadow-sm"
                                             : "text-[#1e1b16]/60 hover:bg-white/60"
                                         }
                                     `}
@@ -253,7 +253,7 @@ export function MiniMatrixNavigation({
                     {/* Style Filter */}
                     <div className="flex flex-col gap-1">
                         <span className="text-[9px] font-bold text-[#1e1b16]/30 uppercase tracking-tight pl-0.5">Style</span>
-                        <div className="flex bg-white/40 rounded-md p-0.5 border border-[#e3dacb]">
+                        <div className="flex bg-white/40 rounded-md p-0.5 border border-brand-secondary">
                             {["All", "Common", "Niche"].map((s, idx) => (
                                 <button
                                     key={s}
@@ -261,7 +261,7 @@ export function MiniMatrixNavigation({
                                     className={`
                                         flex-1 text-[10px] py-1 px-2 rounded-sm transition-all
                                         ${(s === "All" ? styleFilter === null : styleFilter === idx)
-                                            ? "bg-[#1f3b2c] text-white shadow-sm"
+                                            ? "bg-brand-primary text-white shadow-sm"
                                             : "text-[#1e1b16]/60 hover:bg-white/60"
                                         }
                                     `}

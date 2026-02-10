@@ -1,0 +1,16 @@
+Analyze this AI response about {{industry}} options.
+The user was in the DECIDE stage - ready to make a choice and looking for final validation.
+
+Focus on:
+- Was {{brand}} recommended as a clear choice?
+- How strongly was the recommendation made?
+- Were there any qualifiers or conditions on the recommendation?
+- What alternatives were suggested?
+- What was the rationale for the recommendation (or lack thereof)?
+
+Concern Resolution Analysis:
+- List concerns the AI explicitly addressed
+- List common buyer concerns the AI did NOT address
+- Did the AI provide clear, actionable next steps?
+
+{{entity_extraction_suffix}}

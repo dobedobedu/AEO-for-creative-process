@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { callOpenRouter } from "@/lib/providers/openrouter";
+import { getBrandName, getCompetitorNames, getPrompt, getTenantConfig } from "@/lib/config";
 
 const RequestSchema = z.object({
   personaText: z.string().min(1),
@@ -35,9 +36,45 @@ function fallbackExtractQueries(content: string, count: number): string[] {
     .map((chunk) => `${chunk}?`);
 }
 
+/**
+ * Build a stage guardrail string from the prompt template system.
+ * Falls back to a generic guardrail if the template is not found.
+ */
+function getStageGuardrail(stage: string): string {
+  const brand = getBrandName();
+  const competitors = getCompetitorNames();
+
+  // Load the stage-specific prompt template (e.g., explore.txt, consider.txt, compare.txt)
+  const stagePrompt = getPrompt("query-generation", stage, {
+    brand,
+    competitors: competitors.join(", "),
+    competitor: competitors[0] ?? "competitor",
+  });
+
+  if (stagePrompt) {
+    return stagePrompt.trim();
+  }
+
+  // Fallback guardrails if templates are missing
+  switch (stage) {
+    case "explore":
+      return `Explore stage: do NOT mention ${brand} or any specific community/brand. Keep queries generic, need-based, and location-agnostic.`;
+    case "consider":
+      return `Consider stage: ${brand} may be mentioned, but keep phrasing balanced with needs and constraints.`;
+    case "compare":
+      return `Compare stage: include ${brand} explicitly and compare against alternatives.`;
+    default:
+      return `${stage} stage: use ${brand} as appropriate for the stage context.`;
+  }
+}
+
 export async function POST(req: Request) {
   const payload = await req.json();
   const data = RequestSchema.parse(payload);
+
+  const brand = getBrandName();
+  const config = getTenantConfig();
+  const industry = config.industry !== "other" ? config.industry : "search";
 
   const count = data.count ?? 5;
   const triggers = (data.triggers ?? []).filter(Boolean);
@@ -52,25 +89,20 @@ export async function POST(req: Request) {
         : data.queryLength === "long"
           ? "Query length: long (16-26 words)."
           : "Query length: auto (match the persona's natural search style; mix short and long if appropriate).";
-  const stageGuardrail =
-    data.triggerStage === "explore"
-      ? "Explore stage: do NOT mention Lakewood Ranch or any specific community/brand. Keep queries generic, need-based, and location-agnostic; if geography is provided, use it as a regional reference (e.g., 'master-planned community near Sarasota')."
-      : data.triggerStage === "consider"
-        ? "Consider stage: Lakewood Ranch may be mentioned, but keep phrasing balanced with needs and constraints."
-        : "Compare stage: include Lakewood Ranch explicitly and compare against alternatives or nearby communities.";
+  const stageGuardrail = getStageGuardrail(data.triggerStage);
   const system =
-    "You generate realistic real-estate search queries for a persona. Embody the persona's priorities, constraints, and life context. Use the triggers and stage intent to shape the queries. Return only JSON.";
+    `You generate realistic ${industry} search queries for a persona. Embody the persona's priorities, constraints, and life context. Use the triggers and stage intent to shape the queries. Return only JSON.`;
   const user = `Persona: ${data.personaText}
 Stage: ${data.triggerStage}
 ${stageGuardrail}
 ${geoLine}
 ${lengthHint}
 Selected triggers: ${triggerList}
-Brand focus: Lakewood Ranch community + builder reputation
+Brand focus: ${brand}
 
 Stage intent:
 - Explore: broad discovery, needs-based, no brand names, focus on lifestyle + fit + tradeoffs.
-- Consider: feasibility, costs, constraints, financing, risks, builder quality, insurance/HOA.
+- Consider: feasibility, costs, constraints, financing, risks, quality, value.
 - Compare: side-by-side comparisons, tradeoffs, best-fit decision support.
 
 Generate exactly ${count} search queries.

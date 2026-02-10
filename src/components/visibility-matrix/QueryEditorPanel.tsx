@@ -71,7 +71,7 @@ export function QueryEditorPanel({
     return (
         <div className="h-full flex flex-col bg-[#fffaf2]">
             {/* Header */}
-            <div className="px-8 py-6 border-b border-[#e3dacb] bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+            <div className="px-8 py-6 border-b border-brand-secondary bg-white/50 backdrop-blur-sm sticky top-0 z-10">
                 <h2 className="text-xl font-semibold text-[#1e1b16] tracking-tight">Buyer Might Ask</h2>
                 <p className="text-sm text-[#1e1b16]/60 mt-1">
                     Specific queries the persona uses to find answers.
@@ -80,7 +80,7 @@ export function QueryEditorPanel({
 
             <div className="flex-1 overflow-y-auto p-8 space-y-8">
                 {intents.length === 0 ? (
-                    <div className="text-center py-20 bg-white/40 rounded-xl border-2 border-dashed border-[#e3dacb]">
+                    <div className="text-center py-20 bg-white/40 rounded-xl border-2 border-dashed border-brand-secondary">
                         <p className="text-[#1e1b16]/60 font-medium text-lg">No intents defined.</p>
                         <p className="text-sm text-[#1e1b16]/40 mt-1">
                             Switch to the Intents tab to define research goals first.
@@ -92,14 +92,14 @@ export function QueryEditorPanel({
                         const isRegenerating = regeneratingId === intent.id;
 
                         return (
-                            <div key={intent.id} className="bg-white border border-[#e3dacb] rounded-xl shadow-sm overflow-hidden">
+                            <div key={intent.id} className="bg-white border border-brand-secondary rounded-xl shadow-sm overflow-hidden">
                                 {/* Intent Header */}
-                                <div className="px-5 py-4 bg-[#f6f1e8]/50 border-b border-[#e3dacb] flex items-start justify-between gap-4">
+                                <div className="px-5 py-4 bg-[#f6f1e8]/50 border-b border-brand-secondary flex items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Badge
                                                 className={`text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 border-none shadow-none ${intent.role === "cpo"
-                                                        ? "bg-[#1f3b2c]/10 text-[#1f3b2c]"
+                                                        ? "bg-brand-primary/10 text-brand-primary"
                                                         : "bg-[#6e7c5b]/10 text-[#6e7c5b]"
                                                     }`}
                                             >
@@ -143,7 +143,7 @@ export function QueryEditorPanel({
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => onQueryAdd(intent.id)}
-                                                className="mt-2 text-[#1f3b2c] hover:bg-[#1f3b2c]/5 h-8 text-xs uppercase tracking-wide font-bold"
+                                                className="mt-2 text-brand-primary hover:bg-brand-primary/5 h-8 text-xs uppercase tracking-wide font-bold"
                                             >
                                                 <Plus className="h-3 w-3 mr-1" /> Add Manually
                                             </Button>
@@ -156,7 +156,7 @@ export function QueryEditorPanel({
                                                 return (
                                                     <div
                                                         key={idx}
-                                                        className={`group flex items-start gap-3 p-3 rounded-lg transition-all ${isEditing ? "bg-white shadow-md ring-1 ring-[#1f3b2c]" : "hover:bg-[#f6f1e8]"
+                                                        className={`group flex items-start gap-3 p-3 rounded-lg transition-all ${isEditing ? "bg-white shadow-md ring-1 ring-brand-primary" : "hover:bg-[#f6f1e8]"
                                                             }`}
                                                     >
                                                         <span className="text-[10px] font-bold text-[#1e1b16]/30 mt-1.5 w-4 text-right flex-shrink-0">
@@ -204,12 +204,12 @@ export function QueryEditorPanel({
 
                                 {/* Footer Add Button */}
                                 {intentQueries.length > 0 && (
-                                    <div className="p-2 border-t border-[#e3dacb]/50">
+                                    <div className="p-2 border-t border-brand-secondary/50">
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => onQueryAdd(intent.id)}
-                                            className="w-full text-[#1e1b16]/40 hover:text-[#1f3b2c] hover:bg-[#1f3b2c]/5 h-8 text-xs uppercase tracking-wide font-bold"
+                                            className="w-full text-[#1e1b16]/40 hover:text-brand-primary hover:bg-brand-primary/5 h-8 text-xs uppercase tracking-wide font-bold"
                                         >
                                             <Plus className="h-3 w-3 mr-1" /> Add Query
                                         </Button>

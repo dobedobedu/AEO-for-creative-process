@@ -1,0 +1,71 @@
+{
+  "$schema": "../schema/tenant-config.json",
+  "_templateInfo": {
+    "name": "Higher Education",
+    "description": "For universities, colleges, and educational institutions",
+    "examples": ["Stanford University", "MIT", "Community College"]
+  },
+  "brand": {
+    "name": "Your University",
+    "aliases": [],
+    "domain": "youruniversity.edu",
+    "highlightColor": "#d4e5f7"
+  },
+  "competitors": [
+    { "name": "Competitor University 1", "aliases": [], "isPrimary": true },
+    { "name": "Competitor University 2", "aliases": [], "isPrimary": true },
+    { "name": "Competitor University 3", "aliases": [], "isPrimary": true },
+    { "name": "State University", "aliases": [], "isPrimary": false },
+    { "name": "Regional College", "aliases": [], "isPrimary": false }
+  ],
+  "personas": [
+    { "id": "prospective", "label": "Prospective Student", "description": "High school senior researching colleges" },
+    { "id": "parent", "label": "Parent/Guardian", "description": "Parent helping with college search" },
+    { "id": "transfer", "label": "Transfer Student", "description": "Student looking to transfer from another school" },
+    { "id": "graduate", "label": "Graduate Student", "description": "Seeking masters or doctoral programs" }
+  ],
+  "stages": [
+    { "id": "explore", "label": "Discover", "description": "What schools are out there?" },
+    { "id": "consider", "label": "Research", "description": "Does this school fit my goals?" },
+    { "id": "compare", "label": "Compare", "description": "How does it compare to alternatives?" },
+    { "id": "decide", "label": "Apply", "description": "Ready to apply and commit" }
+  ],
+  "entityCategories": [
+    { "id": "programs", "label": "Academic Programs", "examples": ["majors", "departments", "degrees", "research areas"] },
+    { "id": "campus_life", "label": "Campus Life", "examples": ["dorms", "dining", "clubs", "athletics"] },
+    { "id": "rankings", "label": "Rankings & Awards", "examples": ["US News ranking", "accreditation", "awards"] },
+    { "id": "financial_aid", "label": "Financial Aid", "examples": ["scholarships", "grants", "tuition", "cost"] },
+    { "id": "outcomes", "label": "Outcomes", "examples": ["employment rate", "grad school placement", "salaries"] },
+    { "id": "location", "label": "Location", "examples": ["city", "campus setting", "accessibility"] }
+  ],
+  "geography": {
+    "region": "Your Region",
+    "localities": ["City", "State"],
+    "nearbyMetros": ["Major City"]
+  },
+  "providers": {
+    "weights": {
+      "openai": 0.64,
+      "gemini": 0.22,
+      "anthropic": 0.02,
+      "xai": 0.04
+    },
+    "models": {
+      "openai": "gpt-4.5-preview",
+      "gemini": "gemini-3-pro-preview",
+      "anthropic": "claude-3-5-haiku-20241022",
+      "xai": "grok-3-preview"
+    }
+  },
+  "thresholds": {
+    "strong": 0.7,
+    "moderate": 0.4,
+    "weak": 0.2
+  },
+  "industry": "education",
+  "metadata": {
+    "version": "1.0.0",
+    "createdAt": "2026-01-26",
+    "updatedAt": "2026-01-26"
+  }
+}

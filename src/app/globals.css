@@ -14,6 +14,14 @@
   --panel-border: #e3dacb;
   --shadow: 0 20px 50px rgba(31, 27, 22, 0.12);
   --radius: 0.625rem;
+
+  /* Brand theming colors (configurable per tenant) */
+  --brand-primary: var(--forest);
+  --brand-primary-light: #2a4d3a;
+  --brand-primary-muted: rgba(31, 59, 44, 0.1);
+  --brand-secondary: var(--panel-border);
+  --brand-secondary-light: #f6efe0;
+  --brand-highlight: #dcf3dc;
   --dialog-gutter: clamp(1.5rem, 10vw, 8rem);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -53,6 +61,15 @@
   --color-foreground: var(--ink);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
+
+  /* Brand colors for Tailwind utilities (e.g., bg-brand-primary, text-brand-primary) */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-light: var(--brand-primary-light);
+  --color-brand-primary-muted: var(--brand-primary-muted);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-secondary-light: var(--brand-secondary-light);
+  --color-brand-highlight: var(--brand-highlight);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

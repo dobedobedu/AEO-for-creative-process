@@ -5,7 +5,63 @@
 - **Stack**: Next.js 16 + React 19 + TypeScript
 - **UI**: shadcn/ui components (prefer over custom implementations)
 - **Design System**: Warm palette - sage green `#1f3b2c`, cream `#f6f1e8`, terracotta `#b86f3a`
-- **Brand**: Lakewood Ranch (Florida master-planned community)
+- **Architecture**: White-label platform (brand/competitors configurable)
+- **Default Brand**: Lakewood Ranch (Florida master-planned community)
+
+## Platform Architecture (v0.6.0)
+
+The app is now a **white-label platform** supporting multiple industries.
+
+### Configuration System
+
+```
+config/
+├── tenant.json           # Main config (brand, competitors, personas, stages)
+├── prompts/              # Externalized prompt templates
+│   ├── query-generation/
+│   ├── extraction/
+│   └── chat/
+└── templates/            # Industry templates
+    ├── real-estate.json
+    ├── education.json
+    ├── healthcare.json
+    └── marketing-general.json
+```
+
+### Config Module (`src/lib/config/`)
+
+```typescript
+// Server-side (API routes, server components)
+import { getTenantConfig, getBrandName, getCompetitors } from "@/lib/config";
+
+// Client-side (React components)
+import { useTenantConfig, useBrandConfig } from "@/lib/config/client";
+```
+
+### Key Utilities
+
+| Function | Purpose |
+|----------|---------|
+| `getBrandName()` | Get brand name from config |
+| `getBrandTerms()` | Get brand + aliases for matching |
+| `findCompetitorMentions(text)` | Find competitors in text |
+| `getExtractionPrompt(stage)` | Get extraction prompt for stage |
+| `useTenantConfig()` | React hook for client components |
+
+### Environment Overrides
+
+Brand config can be overridden via environment variables:
+- `BRAND_NAME` - Override brand name
+- `BRAND_ALIASES` - Comma-separated aliases
+- `BRAND_DOMAIN` - Brand website domain
+
+### Industry Templates
+
+Apply a template to start with a pre-configured setup:
+
+```bash
+./scripts/apply-template.sh education
+```
 
 ## Architecture
 

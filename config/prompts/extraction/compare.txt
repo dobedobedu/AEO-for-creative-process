@@ -1,0 +1,10 @@
+Analyze this AI response about {{industry}} options.
+The user was in the COMPARE stage - directly comparing options.
+
+Focus on:
+- What was {{brand}} compared against?
+- Did {{brand}} win, lose, tie, or have mixed results in comparisons?
+- What attributes did {{brand}} win on? Lose on?
+- What was the AI's overall conclusion?
+
+{{entity_extraction_suffix}}

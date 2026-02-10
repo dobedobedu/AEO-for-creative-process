@@ -3,22 +3,49 @@ import type { Citation } from "@/lib/parsers/types";
 import type { XaiResponse } from "@/lib/providers/xai";
 import { extractDomain } from "@/lib/parsers/utils";
 
-export function parseXaiResponse(response: XaiResponse): { text: string; citations: Citation[] } {
-  // Agent Tools API returns output blocks with type and content
-  const textBlocks = response.output?.filter(b => b.type === "text") ?? [];
-  const text = textBlocks.map(b => b.content ?? "").join("\n").trim();
-
-  const citations: Citation[] = [];
-  if (Array.isArray(response.citations)) {
-    for (const url of response.citations) {
-      citations.push({
-        url,
-        domain: extractDomain(url),
-        sourceType: "url_citation",
-        raw: url,
-      });
+function parseXaiResponse(response: XaiResponse): { text: string; citations: Citation[] } {
+  // Responses API format: output[].content[].text where type === "output_text"
+  const parts: string[] = [];
+  if (Array.isArray(response.output)) {
+    for (const block of response.output) {
+      if (block.type === "message" && Array.isArray(block.content)) {
+        for (const item of block.content) {
+          if (typeof item === "object" && item.type === "output_text" && item.text) {
+            parts.push(item.text);
+          }
+        }
+      }
+      if (block.type === "text" && typeof block.content === "string") {
+        parts.push(block.content);
+      }
     }
   }
+  const text = parts.join("\n").trim();
+
+  // Extract citations: top-level first, then annotation fallback
+  const topLevelCitations = response.citations ?? [];
+  const annotationUrls: string[] = [];
+  for (const block of response.output ?? []) {
+    if (block.type === "message" && Array.isArray(block.content)) {
+      for (const item of block.content) {
+        if (typeof item === "object" && item.annotations) {
+          for (const ann of item.annotations) {
+            if (ann.type === "url_citation" && ann.url) {
+              annotationUrls.push(ann.url);
+            }
+          }
+        }
+      }
+    }
+  }
+  const allUrls = topLevelCitations.length > 0 ? topLevelCitations : annotationUrls;
+
+  const citations: Citation[] = allUrls.map((url) => ({
+    url,
+    domain: extractDomain(url),
+    sourceType: "url_citation" as const,
+    raw: url,
+  }));
 
   return { text, citations };
 }

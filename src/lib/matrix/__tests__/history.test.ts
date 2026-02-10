@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
 import type { BenchmarkRun as StoredRun } from "@/lib/runs/types";
+import { TEST_BRAND } from "@/__tests__/test-constants";
 
 describe("getRunCacheKey", () => {
   it("includes id and timestamp", () => {
@@ -34,7 +35,7 @@ describe("benchmark history conversion", () => {
       timestamp: "2026-01-20T00:00:00.000Z",
       intentLibraryVersion: 1,
       metricsConfigVersion: 1,
-      brand: "Lakewood Ranch",
+      brand: TEST_BRAND,
       summary: {
         overall: {
           recommendationRate: 0,
@@ -111,7 +112,7 @@ describe("benchmark history conversion", () => {
       timestamp: "2026-01-21T00:00:00.000Z",
       intentLibraryVersion: 1,
       metricsConfigVersion: 1,
-      brand: "Lakewood Ranch",
+      brand: TEST_BRAND,
       summary: {
         overall: {
           recommendationRate: 0,

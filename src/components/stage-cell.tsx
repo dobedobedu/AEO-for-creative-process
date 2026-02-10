@@ -53,7 +53,7 @@ function formatMetric(stage: Stage, value: number): string {
 // Get color tone based on mention rate
 function getMentionTone(mentionRate?: number | null): { bg: string; border: string } {
   if (mentionRate === undefined || mentionRate === null || Number.isNaN(mentionRate)) {
-    return { bg: "bg-white", border: "border-[#e3dacb]/50" };
+    return { bg: "bg-white", border: "border-brand-secondary/50" };
   }
   if (mentionRate >= 0.6) {
     return { bg: "bg-[#e3f1e6]", border: "border-[#b6d7bf]" };
@@ -62,7 +62,7 @@ function getMentionTone(mentionRate?: number | null): { bg: string; border: stri
     return { bg: "bg-[#edf1e0]", border: "border-[#cfd8b4]" };
   }
   if (mentionRate >= 0.2) {
-    return { bg: "bg-[#f6efe0]", border: "border-[#e3dacb]" };
+    return { bg: "bg-[#f6efe0]", border: "border-brand-secondary" };
   }
   return { bg: "bg-[#f7e6e3]", border: "border-[#e6c3bb]" };
 }
@@ -90,8 +90,8 @@ function ProgressDots({
           className={`
             w-2.5 h-2.5 rounded-full transition-all duration-300
             ${i < filledDots 
-              ? "bg-[#1f3b2c] scale-110" 
-              : "bg-[#e3dacb]"
+              ? "bg-brand-primary scale-110" 
+              : "bg-brand-secondary"
             }
             ${isRunning && i === filledDots ? "animate-pulse bg-[#6e7c5b]" : ""}
           `}
@@ -121,8 +121,8 @@ export function StageCell({
       <div className={`
         w-full h-full min-h-[80px] p-3 rounded-xl
         flex flex-col items-center justify-center gap-2
-        bg-[#faf7f2] border border-[#e3dacb]/50
-        ${selected ? "ring-2 ring-[#1f3b2c]" : ""}
+        bg-[#faf7f2] border border-brand-secondary/50
+        ${selected ? "ring-2 ring-brand-primary" : ""}
       `}>
         <ProgressDots total={queryCount} completed={0} isRunning={false} />
         <span className="text-[10px] text-[#1e1b16]/40">
@@ -138,8 +138,8 @@ export function StageCell({
       <div className={`
         w-full h-full min-h-[80px] p-3 rounded-xl
         flex flex-col items-center justify-center gap-2
-        bg-white border border-[#e3dacb]/50
-        ${selected ? "ring-2 ring-[#1f3b2c]" : ""}
+        bg-white border border-brand-secondary/50
+        ${selected ? "ring-2 ring-brand-primary" : ""}
       `}>
         <ProgressDots total={queryCount} completed={completedCount} isRunning={true} />
         <span className="text-[10px] text-[#1e1b16]/50 animate-pulse">
@@ -155,7 +155,7 @@ export function StageCell({
       w-full h-full min-h-[80px] p-3 rounded-xl
       flex flex-col items-center justify-center gap-1
       ${mentionTone.bg} border ${mentionTone.border}
-      ${selected ? "ring-2 ring-[#1f3b2c]" : ""}
+      ${selected ? "ring-2 ring-brand-primary" : ""}
     `}>
       <span className="text-xl font-semibold text-[#1e1b16]">
         {primaryMetric !== null ? formatMetric(stage, primaryMetric) : "—"}

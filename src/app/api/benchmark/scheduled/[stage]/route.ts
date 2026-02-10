@@ -38,9 +38,6 @@ import { getActiveMatrixConfigCached, getActivePersonaIds, getCoreStageMapping }
 import type { Stage } from "@/lib/intents/types";
 import { saveRunAggregates, refreshRunMetadata } from "@/lib/runs/aggregator";
 import {
-  DEFAULT_PROVIDERS,
-  DEFAULT_BRAND,
-  DEFAULT_ALIASES,
   getCellKey,
   emptyExtraction,
 } from "@/lib/runs/utils";
@@ -54,6 +51,8 @@ import {
   getAnthropicBatchStatus,
   getAnthropicBatchResults,
 } from "@/lib/providers/anthropic";
+import { getBrandName, getBrandAliases, getConfiguredProviders } from "@/lib/config";
+import { loadTenantConfigAsync } from "@/lib/config/loader";
 
 // Each stage should complete in ~90s with parallelized providers
 // Set to 300s (5 min) for safety margin
@@ -78,6 +77,9 @@ export async function GET(
   }
 
   try {
+    // Ensure DB-first config cache is populated before any sync config reads
+    await loadTenantConfigAsync();
+
     // Load active matrix config
     const cfg = await getActiveMatrixConfigCached();
 
@@ -233,7 +235,7 @@ export async function GET(
 
     // Metadata for saving cells
     const runMetadata = {
-      brand: DEFAULT_BRAND,
+      brand: getBrandName(),
       intentLibraryVersion: intentLibrary.version,
       metricsConfigVersion: metricsConfig.version,
     };
@@ -265,9 +267,9 @@ export async function GET(
           stage,
           coreStage, // Pass core stage for scoring
           intents: intentsToRun,
-          brand: DEFAULT_BRAND,
-          brandAliases: DEFAULT_ALIASES,
-          providers: DEFAULT_PROVIDERS,
+          brand: getBrandName(),
+          brandAliases: getBrandAliases(),
+          providers: getConfiguredProviders(),
           concurrency: 4, // Increased from 2 to 4 for more throughput
           triggerMode: "cron",
           runId,

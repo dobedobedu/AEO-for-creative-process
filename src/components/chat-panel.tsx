@@ -139,8 +139,8 @@ export function ChatPanel({ open, onOpenChange, context, personas = [] }: ChatPa
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="h-[82vh] w-full max-w-[calc(100%-var(--dialog-gutter))] sm:max-w-[calc(100%-var(--dialog-gutter))] bg-[#fffaf2] border-[#e3dacb] flex flex-col p-0">
-        <DialogHeader className="px-6 py-4 border-b border-[#e3dacb] flex-shrink-0">
+      <DialogContent className="h-[82vh] w-full max-w-[calc(100%-var(--dialog-gutter))] sm:max-w-[calc(100%-var(--dialog-gutter))] bg-[#fffaf2] border-brand-secondary flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b border-brand-secondary flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-[#1e1b16]">Insight Chat</DialogTitle>
             <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export function ChatPanel({ open, onOpenChange, context, personas = [] }: ChatPa
               <Badge
                 variant="outline"
                 className={`border-transparent ${
-                  hasCurrentData ? "bg-[#1f3b2c]/10 text-[#1f3b2c]" : "bg-[#6e7c5b]/15 text-[#6e7c5b]"
+                  hasCurrentData ? "bg-brand-primary/10 text-brand-primary" : "bg-[#6e7c5b]/15 text-[#6e7c5b]"
                 }`}
               >
                 {hasCurrentData ? "Current Run" : "Historical Data"}
@@ -161,7 +161,7 @@ export function ChatPanel({ open, onOpenChange, context, personas = [] }: ChatPa
                   ragError
                     ? "bg-[#b86f3a]/15 text-[#b86f3a]"
                     : ragStatus?.hasDocuments
-                    ? "bg-[#1f3b2c]/10 text-[#1f3b2c]"
+                    ? "bg-brand-primary/10 text-brand-primary"
                     : "bg-[#efe6d9] text-[#1e1b16]/60"
                 }`}
               >
@@ -197,15 +197,15 @@ export function ChatPanel({ open, onOpenChange, context, personas = [] }: ChatPa
                   className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {message.role === "assistant" && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1f3b2c] flex items-center justify-center">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center">
                       <Bot className="h-4 w-4 text-white" />
                     </div>
                   )}
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                       message.role === "user"
-                        ? "bg-[#1f3b2c] text-white"
-                        : "bg-white border border-[#e3dacb] text-[#1e1b16]"
+                        ? "bg-brand-primary text-white"
+                        : "bg-white border border-brand-secondary text-[#1e1b16]"
                     }`}
                   >
                     {message.role === "user" ? (
@@ -229,10 +229,10 @@ export function ChatPanel({ open, onOpenChange, context, personas = [] }: ChatPa
           )}
           {isLoading && (
             <div className="flex gap-3">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1f3b2c] flex items-center justify-center">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center">
                 <Bot className="h-4 w-4 text-white" />
               </div>
-              <div className="bg-white border border-[#e3dacb] rounded-2xl px-4 py-3">
+              <div className="bg-white border border-brand-secondary rounded-2xl px-4 py-3">
                 <Loader2 className="h-4 w-4 animate-spin text-[#1e1b16]/40" />
               </div>
             </div>
@@ -241,20 +241,20 @@ export function ChatPanel({ open, onOpenChange, context, personas = [] }: ChatPa
         </div>
 
         {/* Input */}
-        <div className="px-6 py-4 border-t border-[#e3dacb] flex-shrink-0">
+        <div className="px-6 py-4 border-t border-brand-secondary flex-shrink-0">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your visibility data..."
-              className="flex-1 px-4 py-2.5 bg-white border border-[#e3dacb] rounded-xl text-[#1e1b16] placeholder:text-[#1e1b16]/40 focus:outline-none focus:ring-2 focus:ring-[#1f3b2c]/20 focus:border-[#1f3b2c]"
+              className="flex-1 px-4 py-2.5 bg-white border border-brand-secondary rounded-xl text-[#1e1b16] placeholder:text-[#1e1b16]/40 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
               disabled={isLoading}
             />
             <Button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="bg-[#1f3b2c] hover:bg-[#2a4d3a] text-white px-4"
+              className="bg-brand-primary hover:bg-brand-primary-light text-white px-4"
             >
               <Send className="h-4 w-4" />
             </Button>

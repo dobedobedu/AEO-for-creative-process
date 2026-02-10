@@ -1,0 +1,71 @@
+{
+  "$schema": "../schema/tenant-config.json",
+  "_templateInfo": {
+    "name": "Real Estate / Master-Planned Communities",
+    "description": "For real estate developers, master-planned communities, and residential developments",
+    "examples": ["Lakewood Ranch", "The Villages", "Sun City"]
+  },
+  "brand": {
+    "name": "Your Community Name",
+    "aliases": [],
+    "domain": "yourcommunity.com",
+    "highlightColor": "#dcf3dc"
+  },
+  "competitors": [
+    { "name": "Competitor Community 1", "aliases": [], "isPrimary": true },
+    { "name": "Competitor Community 2", "aliases": [], "isPrimary": true },
+    { "name": "Competitor Community 3", "aliases": [], "isPrimary": true },
+    { "name": "Regional City 1", "aliases": [], "isPrimary": false },
+    { "name": "Regional City 2", "aliases": [], "isPrimary": false }
+  ],
+  "personas": [
+    { "id": "move_up", "label": "Move-Up Buyer", "description": "Upgrading from starter home, family growing" },
+    { "id": "retiree", "label": "Active Retiree", "description": "55+ seeking active lifestyle community" },
+    { "id": "luxury", "label": "Luxury Buyer", "description": "High-end amenities focus, premium homes" },
+    { "id": "first_time", "label": "First-Time Buyer", "description": "Entry-level, value-conscious, learning" }
+  ],
+  "stages": [
+    { "id": "explore", "label": "Explore", "description": "Discovery - what communities exist?" },
+    { "id": "consider", "label": "Consider", "description": "Evaluation - does this fit my needs?" },
+    { "id": "compare", "label": "Compare", "description": "Comparison - how does it stack up?" },
+    { "id": "decide", "label": "Decide", "description": "Decision - ready to commit" }
+  ],
+  "entityCategories": [
+    { "id": "amenities", "label": "Amenities", "examples": ["golf courses", "pools", "fitness centers", "clubhouses"] },
+    { "id": "neighborhoods", "label": "Neighborhoods/Villages", "examples": ["village names", "neighborhood sections"] },
+    { "id": "schools", "label": "Schools", "examples": ["local schools", "school districts", "ratings"] },
+    { "id": "healthcare", "label": "Healthcare", "examples": ["hospitals", "medical centers", "urgent care"] },
+    { "id": "lifestyle", "label": "Lifestyle", "examples": ["dining", "shopping", "entertainment"] },
+    { "id": "builders", "label": "Home Builders", "examples": ["builder company names"] }
+  ],
+  "geography": {
+    "region": "Your Region",
+    "localities": ["City 1", "City 2", "County"],
+    "nearbyMetros": ["Major City 1", "Major City 2"]
+  },
+  "providers": {
+    "weights": {
+      "openai": 0.64,
+      "gemini": 0.22,
+      "anthropic": 0.02,
+      "xai": 0.04
+    },
+    "models": {
+      "openai": "gpt-4.5-preview",
+      "gemini": "gemini-3-pro-preview",
+      "anthropic": "claude-3-5-haiku-20241022",
+      "xai": "grok-3-preview"
+    }
+  },
+  "thresholds": {
+    "strong": 0.7,
+    "moderate": 0.4,
+    "weak": 0.2
+  },
+  "industry": "real_estate",
+  "metadata": {
+    "version": "1.0.0",
+    "createdAt": "2026-01-26",
+    "updatedAt": "2026-01-26"
+  }
+}

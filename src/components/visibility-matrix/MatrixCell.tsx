@@ -59,11 +59,11 @@ export function MatrixCell({
               ? "bg-[#efe6d9] border-[#b86f3a] animate-pulse"
               : status === "complete"
                 ? score >= 0.7
-                  ? "bg-[#dcf3dc] border-[#1f3b2c]/40"  // Green - strong (standardized 0.7 threshold)
+                  ? "bg-brand-highlight border-brand-primary/40"  // Green - strong (standardized 0.7 threshold)
                   : score >= 0.4
-                    ? "bg-[#faf5ef] border-[#1f3b2c]/40"  // Tan - moderate (standardized 0.4 threshold)
+                    ? "bg-[#faf5ef] border-brand-primary/40"  // Tan - moderate (standardized 0.4 threshold)
                     : "bg-[#fce9e9] border-[#b86f3a]/40"  // Red - weak
-                : "bg-white border-[#e3dacb] hover:border-[#1f3b2c]/50 hover:shadow-sm"
+                : "bg-white border-brand-secondary hover:border-brand-primary/50 hover:shadow-sm"
           }
         `}
         onClick={onCellClick}
@@ -100,7 +100,7 @@ export function MatrixCell({
         data-testid={`cell-${persona}-${stage}`}
         className={`
           relative min-h-[80px] rounded-lg border-2 transition-all cursor-pointer
-          ${status === "running" ? "border-[#b86f3a] bg-[#efe6d9]" : "border-[#e3dacb] bg-white"}
+          ${status === "running" ? "border-[#b86f3a] bg-[#efe6d9]" : "border-brand-secondary bg-white"}
         `}
         onClick={onCellClick}
       >
@@ -136,7 +136,7 @@ export function MatrixCell({
         data-testid={`cell-${persona}-${stage}`}
         className={`
           relative min-h-[120px] rounded-xl border-2 transition-all
-          ${status === "running" ? "border-[#b86f3a] bg-[#efe6d9]" : "border-[#e3dacb] bg-white"}
+          ${status === "running" ? "border-[#b86f3a] bg-[#efe6d9]" : "border-brand-secondary bg-white"}
         `}
       >
         <QueriesCell

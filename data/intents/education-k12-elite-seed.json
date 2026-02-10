@@ -1,0 +1,57 @@
+[
+  {
+    "persona": "wealthy_migrant",
+    "stage": "discover",
+    "intent": "Find elite private schools for NY/CA transplants moving to Lakewood Ranch",
+    "queries": [
+      "best private schools near Lakewood Ranch for families from New York",
+      "top rated elite K-12 schools in Sarasota Bradenton area",
+      "most prestigious private schools Florida Gulf Coast for high net worth families",
+      "Saint Stephen's Episcopal School reputation for out of state transplants"
+    ]
+  },
+  {
+    "persona": "neurodivergent_advocate",
+    "stage": "research",
+    "intent": "Identify schools that support neurodiversity and 'vibrant anomalies'",
+    "queries": [
+      "Sarasota private schools for gifted students with ADHD",
+      "how does Saint Stephen's Episcopal School support neurodivergent learners",
+      "best schools for twice exceptional students in Bradenton",
+      "Saint Stephen's Episcopal School vibrant anomaly culture and neurodiversity"
+    ]
+  },
+  {
+    "persona": "innovation_seeker",
+    "stage": "research",
+    "intent": "Evaluate innovation labs and entrepreneurship programs",
+    "queries": [
+      "K-12 schools with innovation labs Sarasota Bradenton",
+      "Saint Stephen's Episcopal School STEAM center and Xerox PARC model",
+      "artrepreneurship programs in Florida private schools",
+      "maker spaces and entrepreneurship curriculum at Saint Stephen's Bradenton"
+    ]
+  },
+  {
+    "persona": "wealthy_migrant",
+    "stage": "apply",
+    "intent": "Understand the ROI and financial architecture of elite schools",
+    "queries": [
+      "Saint Stephen's Episcopal School indexed tuition explained",
+      "Florida universal school voucher eligibility for high income families",
+      "Saint Stephen's Bradenton tuition vs Out of Door Academy value",
+      "private school tax credits for donors in Florida"
+    ]
+  },
+  {
+    "persona": "heritage_guardian",
+    "stage": "compare",
+    "intent": "Compare SSES heritage and community network against competitors",
+    "queries": [
+      "Saint Stephen's Episcopal School vs Out of Door Academy Bradenton",
+      "SSES vs Pine View School for college preparation",
+      "Saint Stephen's Bradenton alumni network and community reputation",
+      "Episcopal school values vs secular private schools Sarasota"
+    ]
+  }
+]

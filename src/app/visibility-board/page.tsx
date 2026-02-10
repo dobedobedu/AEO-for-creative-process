@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useBrandConfig } from "@/lib/config/client";
 
 // Types for mentions history
 interface MentionDay {
@@ -172,6 +173,8 @@ function getSentimentLabel(score: number | null): string {
 }
 
 export default function VisibilityBoard() {
+  const { brand } = useBrandConfig();
+  const brandName = brand?.name ?? "Brand";
   const [query, setQuery] = useState("");
   const [selectedItem, setSelectedItem] = useState<KanbanItem | null>(null);
   const [activeCategory, setActiveCategory] = useState<Category>("all");
@@ -338,7 +341,7 @@ export default function VisibilityBoard() {
                 <>
                   <span>
                     {loading ? (
-                      <Skeleton className="h-4 w-6 inline-block align-middle bg-[#e3dacb]/50" />
+                      <Skeleton className="h-4 w-6 inline-block align-middle bg-brand-secondary/50" />
                     ) : (
                       <span className="font-semibold text-[var(--ink)]">{allItems.length}</span>
                     )} entities
@@ -347,7 +350,7 @@ export default function VisibilityBoard() {
                   <span>
                     Last scan{" "}
                     {loading ? (
-                      <Skeleton className="h-4 w-20 inline-block align-middle bg-[#e3dacb]/50" />
+                      <Skeleton className="h-4 w-20 inline-block align-middle bg-brand-secondary/50" />
                     ) : (
                       <span className="font-medium text-[var(--ink)]">{formatDate(data?.run?.completed_at || data?.run?.created_at)}</span>
                     )}
@@ -359,7 +362,7 @@ export default function VisibilityBoard() {
 
           {/* Title */}
           <h1 className="text-2xl font-semibold text-[var(--forest)] font-display">
-            Lakewood Ranch Feature Visibility
+            {brandName} Feature Visibility
           </h1>
 
           {/* Mentions Graph */}
@@ -429,7 +432,7 @@ export default function VisibilityBoard() {
                       <span className="text-[11px] text-[var(--ink)]/45">{column.description}</span>
                     </div>
                     {isLoading ? (
-                      <Skeleton className="h-6 w-8 rounded-full bg-[#e3dacb]/50" />
+                      <Skeleton className="h-6 w-8 rounded-full bg-brand-secondary/50" />
                     ) : (
                       <span className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${tone.border} ${tone.bg} ${tone.text}`}>
                         {cards.length}
@@ -446,8 +449,8 @@ export default function VisibilityBoard() {
                             key={i}
                             className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-white/60 px-4 py-3"
                           >
-                            <Skeleton className="h-4 w-24 bg-[#e3dacb]/50" />
-                            <Skeleton className="h-5 w-10 rounded-full bg-[#e3dacb]/50" />
+                            <Skeleton className="h-4 w-24 bg-brand-secondary/50" />
+                            <Skeleton className="h-5 w-10 rounded-full bg-brand-secondary/50" />
                           </div>
                         ))}
                       </>

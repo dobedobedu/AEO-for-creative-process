@@ -211,7 +211,7 @@ export function TimeMachinePanel({
                       <div
                         className={`h-2 rounded-sm transition-all duration-150 ease-out ${
                           isSelected
-                            ? "bg-gradient-to-r from-[#1f3b2c] to-[#2d5a40] shadow-[0_0_8px_rgba(45,90,64,0.5)]"
+                            ? "bg-gradient-to-r from-brand-primary to-[#2d5a40] shadow-[0_0_8px_rgba(45,90,64,0.5)]"
                             : "bg-gradient-to-r from-white/20 to-white/40"
                         }`}
                         style={{

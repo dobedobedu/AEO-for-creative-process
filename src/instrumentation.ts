@@ -1,11 +1,17 @@
 /**
  * Next.js instrumentation file
- * Handles global error management to prevent crashes from SDK errors
+ * - Pre-populates tenant config cache from DB at startup
+ * - Handles global error management to prevent crashes from SDK errors
  */
 
 export async function register() {
   // Only run on server
   if (process.env.NEXT_RUNTIME === "nodejs") {
+    // Pre-populate the config cache from DB before any request handler runs.
+    // This ensures all sync getTenantConfig() calls return DB-loaded config.
+    const { initConfigFromDB } = await import("@/lib/config/loader");
+    await initConfigFromDB();
+
     // Handle unhandled rejections gracefully
     process.on("unhandledRejection", (reason: unknown) => {
       // Safely extract error info without modifying the error object

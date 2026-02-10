@@ -316,7 +316,7 @@ export function InsightModal({
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-6xl h-[90vh] overflow-hidden flex flex-col p-0 border-none bg-white">
                 {/* Header */}
-                <DialogHeader className="p-6 pb-4 border-b border-[#e3dacb] bg-[#faf9f6] flex-shrink-0">
+                <DialogHeader className="p-6 pb-4 border-b border-brand-secondary bg-[#faf9f6] flex-shrink-0">
                     <div className="flex items-center justify-between">
                         <div className="space-y-1">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black/30">{stageLabel} Intelligence</span>
@@ -345,7 +345,7 @@ export function InsightModal({
                             )}
                             <Badge
                                 variant="outline"
-                                className={`border-transparent rounded-none ${hasCurrentData ? "bg-[#1f3b2c]/10 text-[#1f3b2c]" : "bg-[#6e7c5b]/15 text-[#6e7c5b]"
+                                className={`border-transparent rounded-none ${hasCurrentData ? "bg-brand-primary/10 text-brand-primary" : "bg-[#6e7c5b]/15 text-[#6e7c5b]"
                                     }`}
                             >
                                 {hasCurrentData ? "Mode: Session" : "Mode: File Search"}
@@ -355,7 +355,7 @@ export function InsightModal({
                                 className={`border-transparent rounded-none ${ragError
                                         ? "bg-[#b86f3a]/15 text-[#b86f3a]"
                                         : ragStatus?.hasDocuments
-                                            ? "bg-[#1f3b2c]/10 text-[#1f3b2c]"
+                                            ? "bg-brand-primary/10 text-brand-primary"
                                             : "bg-[#efe6d9] text-[#1e1b16]/60"
                                     }`}
                             >
@@ -367,7 +367,7 @@ export function InsightModal({
 
                 <div className="flex-1 flex overflow-hidden">
                     {/* Top half (Left side in this layout for better space usage) - Metrics & Insights */}
-                    <div className="w-1/2 overflow-y-auto border-r border-[#e3dacb] bg-[#faf9f6]/30 p-8 space-y-8">
+                    <div className="w-1/2 overflow-y-auto border-r border-brand-secondary bg-[#faf9f6]/30 p-8 space-y-8">
                         <div>
                             {stage === "explore" && renderExplore()}
                             {stage === "consider" && renderConsider()}
@@ -375,7 +375,7 @@ export function InsightModal({
                             {stage === "decide" && renderDecide()}
 
                             {results.length === 0 && (
-                                <div className="py-24 text-center space-y-4 border border-dashed border-[#e3dacb]">
+                                <div className="py-24 text-center space-y-4 border border-dashed border-brand-secondary">
                                     <AlertCircle className="w-12 h-12 text-black/10 mx-auto" />
                                     <p className="font-serif italic text-black/30 text-lg">Benchmark data unavailable.</p>
                                 </div>
@@ -431,7 +431,7 @@ export function InsightModal({
                                             )}
                                             <div
                                                 className={`max-w-[85%] px-4 py-3 text-xs leading-relaxed ${message.role === "user"
-                                                        ? "bg-[#1f3b2c] text-white"
+                                                        ? "bg-brand-primary text-white"
                                                         : "bg-[#faf9f6] border border-black/5 text-black"
                                                     }`}
                                             >
@@ -466,7 +466,7 @@ export function InsightModal({
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-6 border-t border-[#e3dacb] bg-white">
+                        <div className="p-6 border-t border-brand-secondary bg-white">
                             <form onSubmit={handleSubmit} className="flex gap-2">
                                 <input
                                     type="text"

@@ -3,71 +3,77 @@ import { z } from "zod";
 // Agent Tools API response schema (replaces deprecated Live Search API)
 // See: https://docs.x.ai/docs/guides/tools/search-tools
 
-// Content item within a message block (new Responses API format)
-const XaiContentItemSchema = z.object({
-  type: z.string(),
-  text: z.string().optional(),
-  annotations: z.array(z.object({
+// Content item within a message block (Responses API format)
+const XaiContentItemSchema = z
+  .object({
     type: z.string(),
-    url: z.string().optional(),
-    title: z.string().optional(),
-    start_index: z.number().optional(),
-    end_index: z.number().optional(),
-  })).optional(),
-});
+    text: z.string().optional(),
+    annotations: z
+      .array(
+        z
+          .object({
+            type: z.string(),
+            url: z.string().optional(),
+            title: z.string().optional(),
+            start_index: z.number().optional(),
+            end_index: z.number().optional(),
+          })
+          .passthrough()
+      )
+      .optional(),
+  })
+  .passthrough();
 
 // Output block — can be message, web_search_call, text, etc.
-const XaiOutputBlockSchema = z.object({
-  type: z.string(),
-  // Old format: content as string; New format: content as array of items
-  content: z.union([z.string(), z.array(XaiContentItemSchema)]).optional(),
-  text: z.string().optional(),
-  role: z.string().optional(),
-  status: z.string().optional(),
-}).passthrough();
+const XaiOutputBlockSchema = z
+  .object({
+    type: z.string(),
+    content: z.union([z.string(), z.array(XaiContentItemSchema)]).optional(),
+    text: z.string().optional(),
+    role: z.string().optional(),
+    status: z.string().optional(),
+  })
+  .passthrough();
 
-const XaiResponseSchema = z.object({
-  id: z.string().optional(),
-  model: z.string().optional(),
-  output: z.array(XaiOutputBlockSchema).optional(),
-  citations: z.array(z.string()).optional(),
-});
+const XaiResponseSchema = z
+  .object({
+    id: z.string().optional(),
+    model: z.string().optional(),
+    output: z.array(XaiOutputBlockSchema).optional(),
+    citations: z.array(z.string()).optional(),
+  })
+  .passthrough();
 
 export type XaiResponse = z.infer<typeof XaiResponseSchema>;
 export type XaiContentItem = z.infer<typeof XaiContentItemSchema>;
-
 export type XaiSearchMode = "x_search" | "web_search";
 
 export async function callXaiSearch(params: {
   model: string;
   query: string;
-  searchMode: XaiSearchMode;
+  searchMode?: XaiSearchMode;
 }): Promise<XaiResponse> {
   const apiKey = process.env.XAI_API_KEY;
   if (!apiKey) {
     throw new Error("XAI_API_KEY is not set");
   }
 
-  const toolType = params.searchMode === "x_search" ? "x_search" : "web_search";
+  const toolType = params.searchMode ?? "web_search";
 
   // Agent Tools API - /v1/responses endpoint with search tools
-  // Replaces deprecated search_parameters on /v1/chat/completions (deprecated Jan 12, 2026)
   const response = await fetch("https://api.x.ai/v1/responses", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "content-type": "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       model: params.model,
-      input: [
-        { role: "user", content: params.query },
-      ],
+      input: [{ role: "user", content: params.query }],
       tools: [{ type: toolType }],
-      // Note: "include" param was removed — x.ai rejects it with 400.
-      // Top-level citations array is returned by default per x.ai docs.
       temperature: 0.2,
       max_output_tokens: 512,
+      store: false,
     }),
   });
 

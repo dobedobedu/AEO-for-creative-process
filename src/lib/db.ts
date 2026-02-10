@@ -149,3 +149,33 @@ export async function ensureSchema(): Promise<void> {
     console.warn("Schema migration warning:", e);
   }
 }
+
+/**
+ * Set the tenant context for the current database session.
+ * This is required when RLS policies are enabled.
+ *
+ * The third parameter (false) means the setting persists for the entire session,
+ * not just the current transaction.
+ *
+ * @param tenantId - The tenant UUID to set as context
+ * @returns Promise that resolves when context is set
+ */
+export async function setTenantContext(tenantId: string): Promise<void> {
+  await sql`SELECT set_config('app.tenant_id', ${tenantId}, false)`;
+}
+
+/**
+ * Execute a callback with tenant context set.
+ * Useful for wrapping multiple queries that need tenant isolation.
+ *
+ * @param tenantId - The tenant UUID
+ * @param callback - Function to execute with tenant context
+ * @returns The result of the callback
+ */
+export async function withTenantContext<T>(
+  tenantId: string,
+  callback: () => Promise<T>
+): Promise<T> {
+  await setTenantContext(tenantId);
+  return callback();
+}

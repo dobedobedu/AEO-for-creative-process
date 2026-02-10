@@ -97,7 +97,7 @@ export function WeekNavigator({
   };
 
   return (
-    <div className="border-b border-[#e3dacb] bg-white px-6 py-4">
+    <div className="border-b border-brand-secondary bg-white px-6 py-4">
       <div className="flex items-center justify-center gap-2">
         {/* Previous Week Button */}
         <Button
@@ -126,7 +126,7 @@ export function WeekNavigator({
                 className={`
                   flex flex-col items-center px-3 py-2 min-w-[60px] transition-all
                   ${isSelected
-                    ? "bg-[#1f3b2c] text-white"
+                    ? "bg-brand-primary text-white"
                     : hasData
                       ? "bg-[#faf9f6] text-black hover:bg-[#efe6d9]"
                       : "bg-transparent text-black/20 cursor-not-allowed"

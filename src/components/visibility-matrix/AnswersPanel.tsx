@@ -222,7 +222,7 @@ export function AnswersPanel({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-[95vw] max-w-[95vw] h-[90vh] max-h-[90vh] overflow-hidden flex flex-col p-0 border-none bg-white">
         {/* Header */}
-        <DialogHeader className="p-6 pb-4 border-b border-[#e3dacb] bg-[#faf9f6] flex-shrink-0">
+        <DialogHeader className="p-6 pb-4 border-b border-brand-secondary bg-[#faf9f6] flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black/30">
@@ -255,7 +255,7 @@ export function AnswersPanel({
                 variant="outline"
                 className={`border-transparent rounded-none text-[10px] uppercase font-bold ${
                   hasCurrentData
-                    ? "bg-[#1f3b2c]/10 text-[#1f3b2c]"
+                    ? "bg-brand-primary/10 text-brand-primary"
                     : "bg-[#6e7c5b]/15 text-[#6e7c5b]"
                 }`}
               >
@@ -267,7 +267,7 @@ export function AnswersPanel({
 
         <div className="flex-1 flex overflow-hidden">
           {/* Left side - Provider Matrix */}
-          <div className="w-1/2 overflow-y-auto border-r border-[#e3dacb] bg-[#faf9f6]/30">
+          <div className="w-1/2 overflow-y-auto border-r border-brand-secondary bg-[#faf9f6]/30">
             {/* Week Navigator - shows available run dates */}
             <WeekNavigator
               selectedDate={selectedDate}
@@ -320,7 +320,7 @@ export function AnswersPanel({
               })}
 
               {results.length === 0 && (
-                <div className="py-24 text-center space-y-4 border border-dashed border-[#e3dacb]">
+                <div className="py-24 text-center space-y-4 border border-dashed border-brand-secondary">
                   <Bot className="w-12 h-12 text-black/10 mx-auto" />
                   <p className="font-serif italic text-black/30 text-lg">
                     No LLM responses yet. Run benchmark to see answers.
@@ -352,7 +352,7 @@ export function AnswersPanel({
                         key={prompt}
                         type="button"
                         onClick={() => setInput(prompt)}
-                        className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-white border border-[#e3dacb] text-black/60 hover:bg-[#efe6d9] hover:text-black transition-colors"
+                        className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-white border border-brand-secondary text-black/60 hover:bg-[#efe6d9] hover:text-black transition-colors"
                       >
                         {prompt}
                       </button>
@@ -377,7 +377,7 @@ export function AnswersPanel({
                       <div
                         className={`max-w-[85%] px-4 py-3 text-xs leading-relaxed ${
                           message.role === "user"
-                            ? "bg-[#1f3b2c] text-white"
+                            ? "bg-brand-primary text-white"
                             : "bg-[#faf9f6] border border-black/5 text-black"
                         }`}
                       >
@@ -412,7 +412,7 @@ export function AnswersPanel({
             </div>
 
             {/* Input Area */}
-            <div className="p-6 border-t border-[#e3dacb] bg-white">
+            <div className="p-6 border-t border-brand-secondary bg-white">
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                   type="text"

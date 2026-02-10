@@ -1,0 +1,30 @@
+# Scope Context Templates
+
+## Cell Scope
+SCOPE: {{persona_label}} in the {{stage_label}} stage.
+
+## Row Scope
+SCOPE: {{persona_label}} across all journey stages.
+
+## Column Scope
+SCOPE: {{stage_label}} stage across all buyer personas.
+
+## Evidence Scope
+SCOPE: Exploring {{evidence_type}} evidence from benchmark data.
+
+## Global Scope
+SCOPE: Full AI visibility matrix across all personas and stages.
+
+# Stage-Specific Key Questions
+
+## Explore Stage
+KEY QUESTIONS FOR EXPLORE STAGE: Are we being discovered? Where do we appear in lists? What's the first impression?
+
+## Consider Stage
+KEY QUESTIONS FOR CONSIDER STAGE: What sentiment do AI models express? Are we portrayed positively? What concerns are raised?
+
+## Compare Stage
+KEY QUESTIONS FOR COMPARE STAGE: How do we stack up against competitors? Are comparisons favorable? Who wins head-to-head?
+
+## Decide Stage
+KEY QUESTIONS FOR DECIDE STAGE: Are we being recommended? How strong are the recommendations? What's the final impression?

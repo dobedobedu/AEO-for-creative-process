@@ -1,6 +1,12 @@
 import type { ChatContext } from "./types";
+import { getTenantConfig, getBrandName } from "@/lib/config";
+import { getChatSystemPrompt, getFileSearchSystemPrompt } from "@/lib/config/prompts";
 
-const BASE_PROMPT = `You are a field intelligence analyst helping a marketer understand their AI visibility benchmark data for a master-planned community brand.
+/**
+ * Hardcoded fallback for the chat system prompt, used only when the
+ * template file at config/prompts/chat/system.txt cannot be loaded.
+ */
+const FALLBACK_BASE_PROMPT = `You are a field intelligence analyst helping a marketer understand their AI visibility benchmark data.
 
 Your role is to CONTEXTUALIZE the data - explain what it shows, what patterns you see, what's interesting or concerning.
 
@@ -18,20 +24,61 @@ Key metrics to consider:
 - Competitors: Which competitors are mentioned alongside the brand
 - Recommendation strength: How strongly the AI recommends the brand`;
 
+/**
+ * Hardcoded fallback for the file search system prompt, used only when the
+ * template file at config/prompts/chat/file-search-system.txt cannot be loaded.
+ */
+const FALLBACK_FILE_SEARCH_PROMPT = `You are a field intelligence analyst helping a marketer understand their AI visibility benchmark data.
+
+Your role is to ANALYZE the benchmark data retrieved from the knowledge base and provide actionable insights.
+
+Guidelines:
+- Ground EVERY claim in the benchmark data retrieved via File Search
+- Quote or paraphrase specific AI responses when making observations
+- Reference the source documents when making claims (e.g., "In the Jan 5th benchmark...")
+- If the retrieved data doesn't answer the question, say "I couldn't find relevant data for that"
+- Be concise - 2-3 paragraphs max unless asked for more detail
+
+Key metrics to look for in the data:
+- Position: Where the brand appears in AI responses (1st, 2nd, 3rd, later, absent)
+- Sentiment: How the brand is portrayed (positive, neutral, negative)
+- Competitors: Which competitors are mentioned alongside the brand
+- Recommendation strength: How strongly the AI recommends the brand
+
+When answering:
+1. Start with the key finding
+2. Support with specific data points from the benchmark responses
+3. Note any patterns or trends across providers`;
+
+/**
+ * Build a lookup map of persona id → label from tenant config.
+ */
+function getPersonaLabels(): Record<string, string> {
+  const config = getTenantConfig();
+  const labels: Record<string, string> = {};
+  for (const persona of config.personas) {
+    const desc = persona.description ? ` (${persona.description})` : "";
+    labels[persona.id] = `${persona.label}${desc}`;
+  }
+  return labels;
+}
+
+/**
+ * Build a lookup map of stage id → label from tenant config.
+ */
+function getStageLabels(): Record<string, string> {
+  const config = getTenantConfig();
+  const labels: Record<string, string> = {};
+  for (const stage of config.stages) {
+    const desc = stage.description ? ` (${stage.description})` : "";
+    labels[stage.id] = `${stage.label}${desc}`;
+  }
+  return labels;
+}
+
 function getScopeContext(context: ChatContext): string {
-  const personaLabels: Record<string, string> = {
-    move_up: "Move-Up Buyers (upgrading from starter home)",
-    retiree: "Retirees (55+ active lifestyle)",
-    luxury: "Luxury Buyers (high-end amenities focus)",
-    first_time: "First-Time Buyers (entry-level, value-conscious)",
-  };
-  
-  const stageLabels: Record<string, string> = {
-    explore: "Explore (starting research)",
-    consider: "Consider (evaluating options)",
-    compare: "Compare (narrowing choices)",
-    decide: "Decide (ready to buy)",
-  };
+  const personaLabels = getPersonaLabels();
+  const stageLabels = getStageLabels();
 
   switch (context.scope) {
     case "cell":
@@ -57,7 +104,7 @@ function formatBenchmarkData(context: ChatContext): string {
     return "\n\nNO BENCHMARK DATA AVAILABLE - Tell the user to run a benchmark first.";
   }
 
-  const brand = context.brand || "Lakewood Ranch";
+  const brand = context.brand || getBrandName();
   let output = `\n\nBRAND: ${brand}`;
   output += `\n\n=== BENCHMARK RESPONSES ===\n`;
 
@@ -126,8 +173,12 @@ function getStageHints(context: ChatContext): string {
 }
 
 export function buildSystemPrompt(context: ChatContext): string {
+  // Use the externalized chat system prompt from the Prompt_Template_System,
+  // falling back to the hardcoded prompt if the template file is missing.
+  const basePrompt = getChatSystemPrompt() ?? FALLBACK_BASE_PROMPT;
+
   return (
-    BASE_PROMPT + 
+    basePrompt + 
     getScopeContext(context) + 
     getStageHints(context) +
     formatBenchmarkData(context) + 
@@ -139,29 +190,11 @@ export function buildSystemPrompt(context: ChatContext): string {
  * Build system prompt for File Search mode (no embedded data, uses RAG)
  */
 export function buildFileSearchSystemPrompt(context: ChatContext): string {
-  const FILE_SEARCH_PROMPT = `You are a field intelligence analyst helping a marketer understand their AI visibility benchmark data for a master-planned community brand.
+  // Use the externalized file search system prompt from the Prompt_Template_System,
+  // falling back to the hardcoded prompt if the template file is missing.
+  const fileSearchPrompt = getFileSearchSystemPrompt() ?? FALLBACK_FILE_SEARCH_PROMPT;
 
-Your role is to ANALYZE the benchmark data retrieved from the knowledge base and provide actionable insights.
-
-Guidelines:
-- Ground EVERY claim in the benchmark data retrieved via File Search
-- Quote or paraphrase specific AI responses when making observations
-- Reference the source documents when making claims (e.g., "In the Jan 5th benchmark...")
-- If the retrieved data doesn't answer the question, say "I couldn't find relevant data for that"
-- Be concise - 2-3 paragraphs max unless asked for more detail
-
-Key metrics to look for in the data:
-- Position: Where the brand appears in AI responses (1st, 2nd, 3rd, later, absent)
-- Sentiment: How the brand is portrayed (positive, neutral, negative)
-- Competitors: Which competitors are mentioned alongside the brand
-- Recommendation strength: How strongly the AI recommends the brand
-
-When answering:
-1. Start with the key finding
-2. Support with specific data points from the benchmark responses
-3. Note any patterns or trends across providers`;
-
-  return FILE_SEARCH_PROMPT + getScopeContext(context) + getStageHints(context);
+  return fileSearchPrompt + getScopeContext(context) + getStageHints(context);
 }
 
 /**

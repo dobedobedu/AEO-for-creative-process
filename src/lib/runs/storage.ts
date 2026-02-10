@@ -8,6 +8,7 @@ import {
   getRunFilename,
 } from "./types";
 import { calculateRunSummary } from "./utils";
+import { DEFAULT_TENANT_ID } from "@/lib/tenant/context";
 
 // Ensure schema is up to date on first query
 // Use Promise-based singleton to prevent race conditions in serverless
@@ -22,7 +23,7 @@ async function ensureReady(): Promise<void> {
   await schemaReadyPromise;
 }
 
-export async function saveRun(run: BenchmarkRun): Promise<string> {
+export async function saveRun(run: BenchmarkRun, tenantId: string = DEFAULT_TENANT_ID): Promise<string> {
   await ensureReady();
 
   const validated = BenchmarkRunSchema.parse(run);
@@ -38,20 +39,22 @@ export async function saveRun(run: BenchmarkRun): Promise<string> {
     await sql`
       UPDATE runs
       SET result_json = ${sql.json(validated)},
-          completed_at = NOW()
+          completed_at = NOW(),
+          tenant_id = ${tenantId}::uuid
       WHERE id = ${validated.id}::text::uuid;
     `;
   } else {
     // Insert new run with result
     await sql`
-      INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
+      INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at, tenant_id)
       VALUES (
         ${validated.id}::text::uuid,
         'completed',
         ${sql.json({ brand: validated.brand })},
         ${sql.json(validated)},
         0,
-        NOW()
+        NOW(),
+        ${tenantId}::uuid
       );
     `;
   }
@@ -59,12 +62,14 @@ export async function saveRun(run: BenchmarkRun): Promise<string> {
   return validated.id;
 }
 
-export async function loadRun(runId: string): Promise<BenchmarkRun | null> {
+export async function loadRun(runId: string, tenantId: string = DEFAULT_TENANT_ID): Promise<BenchmarkRun | null> {
   await ensureReady();
 
   const rows = await sql`
     SELECT result_json FROM runs
-    WHERE id = ${runId}::text::uuid AND result_json IS NOT NULL
+    WHERE id = ${runId}::text::uuid
+      AND result_json IS NOT NULL
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     LIMIT 1;
   `;
 
@@ -75,12 +80,13 @@ export async function loadRun(runId: string): Promise<BenchmarkRun | null> {
   return BenchmarkRunSchema.parse(rows[0].result_json);
 }
 
-export async function listRunMetadata(): Promise<RunMetadata[]> {
+export async function listRunMetadata(tenantId: string = DEFAULT_TENANT_ID): Promise<RunMetadata[]> {
   await ensureReady();
 
   const rows = await sql`
     SELECT result_json FROM runs
     WHERE result_json IS NOT NULL
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     ORDER BY completed_at DESC NULLS LAST, created_at DESC;
   `;
 
@@ -105,12 +111,13 @@ export async function listRunMetadata(): Promise<RunMetadata[]> {
   return metadata;
 }
 
-export async function loadAllRuns(): Promise<BenchmarkRun[]> {
+export async function loadAllRuns(tenantId: string = DEFAULT_TENANT_ID): Promise<BenchmarkRun[]> {
   await ensureReady();
 
   const rows = await sql`
     SELECT result_json FROM runs
     WHERE result_json IS NOT NULL
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     ORDER BY completed_at ASC NULLS LAST, created_at ASC;
   `;
 
@@ -134,12 +141,13 @@ export async function loadAllRuns(): Promise<BenchmarkRun[]> {
  * Load recent runs with full data (for timeline UI)
  * More efficient than loadAllRuns for fetching limited results
  */
-export async function loadRecentRuns(limit: number = 30): Promise<BenchmarkRun[]> {
+export async function loadRecentRuns(limit: number = 30, tenantId: string = DEFAULT_TENANT_ID): Promise<BenchmarkRun[]> {
   await ensureReady();
 
   const rows = await sql`
     SELECT result_json FROM runs
     WHERE result_json IS NOT NULL
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     ORDER BY completed_at DESC NULLS LAST, created_at DESC
     LIMIT ${limit};
   `;
@@ -170,7 +178,7 @@ export async function loadRecentRuns(limit: number = 30): Promise<BenchmarkRun[]
   return runs;
 }
 
-export async function getRunsForDateRange(startDate: string, endDate: string): Promise<BenchmarkRun[]> {
+export async function getRunsForDateRange(startDate: string, endDate: string, tenantId: string = DEFAULT_TENANT_ID): Promise<BenchmarkRun[]> {
   await ensureReady();
 
   // Use SQL filtering instead of loading all runs (performance optimization)
@@ -179,6 +187,7 @@ export async function getRunsForDateRange(startDate: string, endDate: string): P
     WHERE result_json IS NOT NULL
       AND (result_json->>'timestamp')::date >= ${startDate}::date
       AND (result_json->>'timestamp')::date <= ${endDate}::date
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     ORDER BY completed_at ASC NULLS LAST, created_at ASC;
   `;
 
@@ -198,12 +207,13 @@ export async function getRunsForDateRange(startDate: string, endDate: string): P
   return runs;
 }
 
-export async function getLatestRun(): Promise<BenchmarkRun | null> {
+export async function getLatestRun(tenantId: string = DEFAULT_TENANT_ID): Promise<BenchmarkRun | null> {
   await ensureReady();
 
   const rows = await sql`
     SELECT result_json FROM runs
     WHERE result_json IS NOT NULL
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     ORDER BY completed_at DESC NULLS LAST, created_at DESC
     LIMIT 1;
   `;
@@ -215,7 +225,7 @@ export async function getLatestRun(): Promise<BenchmarkRun | null> {
   return BenchmarkRunSchema.parse(rows[0].result_json);
 }
 
-export async function getRunsByIntentLibraryVersion(version: number): Promise<BenchmarkRun[]> {
+export async function getRunsByIntentLibraryVersion(version: number, tenantId: string = DEFAULT_TENANT_ID): Promise<BenchmarkRun[]> {
   await ensureReady();
 
   // Use SQL filtering instead of loading all runs (performance optimization)
@@ -223,6 +233,7 @@ export async function getRunsByIntentLibraryVersion(version: number): Promise<Be
     SELECT result_json FROM runs
     WHERE result_json IS NOT NULL
       AND (result_json->>'intentLibraryVersion')::int = ${version}
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     ORDER BY completed_at ASC NULLS LAST, created_at ASC;
   `;
 
@@ -242,12 +253,13 @@ export async function getRunsByIntentLibraryVersion(version: number): Promise<Be
   return runs;
 }
 
-export async function deleteRun(runId: string): Promise<boolean> {
+export async function deleteRun(runId: string, tenantId: string = DEFAULT_TENANT_ID): Promise<boolean> {
   await ensureReady();
 
   const result = await sql`
     DELETE FROM runs
     WHERE id = ${runId}::text::uuid
+      AND (tenant_id = ${tenantId}::uuid OR tenant_id IS NULL)
     RETURNING id;
   `;
 
@@ -296,10 +308,12 @@ export async function upsertSingleCell(
     brand: string;
     intentLibraryVersion: number;
     metricsConfigVersion: number;
+    tenantId?: string;
   }
 ): Promise<void> {
   await ensureReady();
 
+  const tenantId = metadata.tenantId ?? DEFAULT_TENANT_ID;
   const timestamp = new Date().toISOString();
 
   // Build initial run structure as a full JSON object
@@ -344,14 +358,15 @@ export async function upsertSingleCell(
   // IMPORTANT: Use sql.json() NOT JSON.stringify()::jsonb to avoid double-serialization
   // The postgres library escapes strings, so JSON.stringify() + ::jsonb results in a JSON string, not object
   await sql`
-    INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at)
+    INSERT INTO runs (id, status, config_json, result_json, pending_count, completed_at, tenant_id)
     VALUES (
       ${runId}::text::uuid,
       'running',
       ${sql.json({ brand: metadata.brand })},
       ${sql.json(initialRun)},
       0,
-      NULL
+      NULL,
+      ${tenantId}::uuid
     )
     ON CONFLICT (id) DO UPDATE SET
       result_json = jsonb_set(
@@ -363,7 +378,8 @@ export async function upsertSingleCell(
         ARRAY['cells', ${cellKey}::text],
         ${sql.json(cellResult)},
         true
-      )
+      ),
+      tenant_id = ${tenantId}::uuid
   `;
 }
 
@@ -383,6 +399,7 @@ export async function upsertRunCells(
     brand: string;
     intentLibraryVersion: number;
     metricsConfigVersion: number;
+    tenantId?: string;
   },
   isLastStage: boolean = false
 ): Promise<BenchmarkRun> {

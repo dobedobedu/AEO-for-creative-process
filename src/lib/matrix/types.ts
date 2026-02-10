@@ -3,9 +3,9 @@ import { z } from "zod";
 // Persona configuration
 export const MatrixPersonaSchema = z.object({
   id: z.string(),
-  label: z.string().min(1).max(50),
-  description: z.string().max(200).optional(),
-  fullText: z.string().max(1000).optional(),
+  label: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+  fullText: z.string().max(5000).optional(), // Increased from 1000 to 5000
   orderIndex: z.number().int().min(0),
   active: z.boolean().default(true),
 });
@@ -15,12 +15,12 @@ export type MatrixPersona = z.infer<typeof MatrixPersonaSchema>;
 // Stage configuration
 export const MatrixStageSchema = z.object({
   id: z.string(),
-  label: z.string().min(1).max(50),
-  description: z.string().max(200).optional(),
+  label: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
   orderIndex: z.number().int().min(0),
   active: z.boolean().default(true),
   coreStage: z.boolean().default(false),
-  coreStageMapping: z.enum(["explore", "consider", "compare", "decide"]).optional(),
+  coreStageMapping: z.enum(["explore", "consider", "compare", "decide"]).optional(), // Legacy core stages for backward compatibility
   primaryMetric: z.enum(["discovery_rate", "mention_rate", "top3_rate", "sentiment_score", "win_rate", "recommendation_rate"]).optional(),
 });
 
