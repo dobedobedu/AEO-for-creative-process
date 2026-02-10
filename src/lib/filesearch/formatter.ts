@@ -127,10 +127,6 @@ export function formatBenchmarkForUpload(
     { key: "competitors_mentioned", stringValue: [...allCompetitors].slice(0, 10).join(", ") },
   ];
 
-  if (searchMode) {
-    metadata.push({ key: "search_mode", stringValue: searchMode });
-  }
-
   const displayName = `${persona}_${stage}_${runDate}_${Date.now()}`;
 
   return { content, metadata, displayName };
@@ -186,10 +182,6 @@ export function formatQueryResult(
     { key: "mention_count", numericValue: mentionedCount },
     { key: "avg_score", numericValue: Math.round(avgScore * 100) },
   ];
-
-  if (searchMode) {
-    metadata.push({ key: "search_mode", stringValue: searchMode });
-  }
 
   const querySlug = queryResult.query.slice(0, 30).replace(/[^a-z0-9]/gi, "_");
   const displayName = `${persona}_${stage}_${querySlug}_${Date.now()}`;

@@ -16,7 +16,7 @@ if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY && process.env.GEMINI_API_KEY) {
 import { callXaiSearch, type XaiSearchMode } from "../src/lib/providers/xai";
 import { parseXaiResponse } from "../src/lib/ingest/xaiIngest";
 import { extractStageMetrics, calculateExploreMetrics, calculateConsiderMetrics, calculateCompareMetrics, calculateDecideMetrics } from "../src/lib/scoring/extractor";
-import { emptyExtraction, parseCellKey, calculateRunSummary, DEFAULT_ALIASES, DEFAULT_BRAND } from "../src/lib/runs/utils";
+import { emptyExtraction, parseCellKey, calculateRunSummary } from "../src/lib/runs/utils";
 import { getRunsForDateRange, saveRun } from "../src/lib/runs/storage";
 import { saveRunAggregates } from "../src/lib/runs/aggregator";
 import { extractDomain } from "../src/lib/parsers/utils";
@@ -27,6 +27,8 @@ import type { StageExtraction } from "../src/lib/scoring/schemas";
 const DEFAULT_XAI_MODEL = "grok-4-1-fast-reasoning";
 const DEFAULT_XAI_SEARCH_MODE: XaiSearchMode =
   process.env.XAI_SEARCH_MODE === "web_search" ? "web_search" : "x_search";
+const DEFAULT_BRAND = "Brand";
+const DEFAULT_ALIASES: string[] = [];
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

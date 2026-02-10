@@ -3,7 +3,7 @@ import type { Citation } from "@/lib/parsers/types";
 import type { XaiResponse } from "@/lib/providers/xai";
 import { extractDomain } from "@/lib/parsers/utils";
 
-function parseXaiResponse(response: XaiResponse): { text: string; citations: Citation[] } {
+export function parseXaiResponse(response: XaiResponse): { text: string; citations: Citation[] } {
   // Responses API format: output[].content[].text where type === "output_text"
   const parts: string[] = [];
   if (Array.isArray(response.output)) {

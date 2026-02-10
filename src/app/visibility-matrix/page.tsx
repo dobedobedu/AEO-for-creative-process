@@ -64,7 +64,6 @@ import type { StageExtraction } from "@/lib/scoring/schemas";
 import type { Citation } from "@/lib/parsers/types";
 import { toUiBenchmarkRun, getRunCacheKey } from "@/lib/matrix/history";
 import {
-import {
   DEFAULT_PROVIDER_MODELS,
   buildProviderModelMap,
   type SearchModelConfig,
