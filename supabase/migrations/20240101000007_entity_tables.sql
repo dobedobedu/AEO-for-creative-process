@@ -1,17 +1,12 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000007_entity_tables.sql
-
--- Migration: Entity Extraction Tables for Kanban
--- Date: January 24, 2026
--- Purpose: Track which Lakewood Ranch features/entities are mentioned by LLMs
--- Enables the Kanban view showing mention rates per entity
-
-BEGIN;
+-- Canonical Migration: Entity Extraction Tables
+-- Source: sql/2026-01-24-entity-tables.sql
+-- Purpose: Track which entities/features are mentioned by LLMs (Kanban view)
+-- Note: Tenant-specific seed data (entity categories, entity terms) removed.
+--        Seed data should be applied separately per deployment.
+--        BEGIN/COMMIT wrappers removed (Supabase handles transactions automatically).
 
 -- ============================================
--- 1. Entity Categories (8 Kanban lanes)
+-- 1. Entity Categories (Kanban lanes)
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS matrix_entity_categories (
@@ -21,18 +16,6 @@ CREATE TABLE IF NOT EXISTS matrix_entity_categories (
   display_order INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
--- Insert default categories
-INSERT INTO matrix_entity_categories (id, label, description, display_order) VALUES
-  ('amenities', 'Amenities', 'Golf, tennis, shopping, restaurants, health care, etc.', 1),
-  ('activities', 'Activities', 'Events, clubs, farmers market, arts & culture', 2),
-  ('schools', 'Schools', 'Public and private schools in the area', 3),
-  ('nature', 'Nature', 'Parks, trails, green space, preserves', 4),
-  ('villages', 'Villages', 'Specific village and community names', 5),
-  ('builders', 'Builders', 'Home builder companies', 6),
-  ('location', 'Location', 'Geographic proximity and access points', 7),
-  ('accolades', 'Accolades', 'Awards, rankings, and recognition', 8)
-ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
 -- 2. Entity Terms (trackable entities within categories)
@@ -66,7 +49,6 @@ CREATE TABLE IF NOT EXISTS run_entity_mentions (
   provider TEXT NOT NULL CHECK (provider IN ('openai', 'anthropic', 'gemini', 'xai')),
   query_index INT NOT NULL DEFAULT 0,
 
-  -- Entity data
   entity_term_id UUID REFERENCES matrix_entity_terms(id) ON DELETE SET NULL,
   raw_mention TEXT NOT NULL,
   sentiment TEXT CHECK (sentiment IN ('positive', 'neutral', 'negative')),
@@ -89,13 +71,11 @@ CREATE TABLE IF NOT EXISTS run_entity_summary (
   entity_term_id UUID NOT NULL REFERENCES matrix_entity_terms(id) ON DELETE CASCADE,
   category_id TEXT NOT NULL REFERENCES matrix_entity_categories(id),
 
-  -- Aggregated metrics
   total_responses INT NOT NULL DEFAULT 0,
   mention_count INT NOT NULL DEFAULT 0,
   mention_rate NUMERIC(5,4) NOT NULL DEFAULT 0,
   avg_sentiment NUMERIC(4,3),
 
-  -- Provider breakdown
   by_provider JSONB DEFAULT '{}',
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -126,5 +106,3 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
-
-COMMIT;

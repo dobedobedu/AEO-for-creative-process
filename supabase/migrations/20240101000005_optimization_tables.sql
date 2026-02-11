@@ -1,14 +1,7 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000005_optimization_tables.sql
-
--- Migration: Supabase Database Optimization
--- Date: January 22, 2026
+-- Canonical Migration: Database Optimization Tables
+-- Source: sql/2026-01-22-optimization-tables.sql
 -- Purpose: Add aggregation tables and materialized view for fast queries
--- This enables historical trending, fast history loading, and future analytics
-
-BEGIN;
+-- Note: BEGIN/COMMIT wrappers removed (Supabase handles transactions automatically)
 
 -- ============================================
 -- 1. Create run_metrics table (pre-computed aggregates)
@@ -21,25 +14,21 @@ CREATE TABLE IF NOT EXISTS run_metrics (
   stage TEXT NOT NULL CHECK (stage IN ('explore', 'consider', 'compare', 'decide')),
   provider TEXT NOT NULL CHECK (provider IN ('openai', 'anthropic', 'gemini', 'xai')),
 
-  -- Counts and rates
   responses_count INT NOT NULL DEFAULT 0,
   mentions_count INT NOT NULL DEFAULT 0,
   mention_rate NUMERIC(5,4) NOT NULL DEFAULT 0,
 
-  -- Stage-specific metrics (NULL when not applicable to the stage)
-  sentiment_score NUMERIC(4,3),           -- consider stage only
-  win_rate NUMERIC(5,4),                  -- compare stage only
-  recommendation_rate NUMERIC(5,4),       -- decide stage only
-  top3_rate NUMERIC(5,4),                 -- explore stage only
+  sentiment_score NUMERIC(4,3),
+  win_rate NUMERIC(5,4),
+  recommendation_rate NUMERIC(5,4),
+  top3_rate NUMERIC(5,4),
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  -- Ensure one metric row per (run, persona, stage, provider) combination
   CONSTRAINT run_metrics_unique UNIQUE(run_id, persona, stage, provider)
 );
 
--- Indexes for common query patterns
 CREATE INDEX IF NOT EXISTS idx_run_metrics_run ON run_metrics(run_id);
 CREATE INDEX IF NOT EXISTS idx_run_metrics_persona_stage ON run_metrics(persona, stage);
 CREATE INDEX IF NOT EXISTS idx_run_metrics_provider ON run_metrics(provider);
@@ -58,15 +47,13 @@ CREATE TABLE IF NOT EXISTS run_citations (
   domain TEXT NOT NULL,
 
   citation_count INT NOT NULL DEFAULT 1,
-  sample_url TEXT,                       -- example URL for UI linking
+  sample_url TEXT,
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  -- Ensure one citation row per (run, persona, stage, provider, domain) combination
   CONSTRAINT run_citations_unique UNIQUE(run_id, persona, stage, provider, domain)
 );
 
--- Indexes for citation lookups
 CREATE INDEX IF NOT EXISTS idx_run_citations_lookup ON run_citations(run_id, persona, stage, provider);
 CREATE INDEX IF NOT EXISTS idx_run_citations_domain ON run_citations(domain);
 CREATE INDEX IF NOT EXISTS idx_run_citations_run ON run_citations(run_id);
@@ -78,20 +65,17 @@ CREATE INDEX IF NOT EXISTS idx_run_citations_run ON run_citations(run_id);
 CREATE TABLE IF NOT EXISTS run_summary (
   run_id UUID PRIMARY KEY REFERENCES runs(id) ON DELETE CASCADE,
 
-  -- Overall metrics (cached from result_json->summary)
   discovery_rate NUMERIC(5,4) NOT NULL DEFAULT 0,
   avg_sentiment NUMERIC(4,3) NOT NULL DEFAULT 0,
   avg_win_rate NUMERIC(5,4) NOT NULL DEFAULT 0,
   recommendation_rate NUMERIC(5,4) NOT NULL DEFAULT 0,
 
-  -- Metadata for filtering/sorting
   brand TEXT NOT NULL,
   completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Indexes for summary queries
 CREATE INDEX IF NOT EXISTS idx_run_summary_completed ON run_summary(completed_at DESC);
 CREATE INDEX IF NOT EXISTS idx_run_summary_brand ON run_summary(brand);
 
@@ -113,17 +97,13 @@ FROM runs r
 WHERE r.result_json IS NOT NULL
 WITH DATA;
 
--- Unique index required for REFRESH CONCURRENTLY
 CREATE UNIQUE INDEX IF NOT EXISTS idx_run_metadata_mv_id ON run_metadata_mv(id);
-
--- Index for sorted history queries (most common pattern)
 CREATE INDEX IF NOT EXISTS idx_run_metadata_mv_timestamp ON run_metadata_mv(timestamp DESC NULLS LAST, created_at DESC);
 
 -- ============================================
 -- 5. Create trigger for updated_at on run_metrics
 -- ============================================
 
--- Reuse existing function if available, otherwise create it
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -154,31 +134,3 @@ BEGIN
   REFRESH MATERIALIZED VIEW CONCURRENTLY run_metadata_mv;
 END;
 $$ LANGUAGE plpgsql;
-
--- ============================================
--- 7. Grant permissions (if using RLS later)
--- ============================================
-
--- For now, we use server-only access via connection string
--- No RLS policies needed yet
-
-COMMIT;
-
--- ============================================
--- Verification queries (run manually after migration)
--- ============================================
-
--- Check tables exist
--- SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name LIKE 'run_%';
-
--- Check materialized view exists
--- SELECT matviewname FROM pg_matviews WHERE matviewname = 'run_metadata_mv';
-
--- Test query from materialized view
--- SELECT * FROM run_metadata_mv ORDER BY timestamp DESC LIMIT 5;
-
--- Test aggregation function (requires a run with result_json)
--- SELECT run_id, persona, stage, provider, responses_count, mentions_count, mention_rate
--- FROM run_metrics
--- ORDER BY created_at DESC
--- LIMIT 10;

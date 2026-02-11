@@ -1,3 +1,8 @@
+-- ⚠️ DEPRECATED: This file is no longer the source of truth.
+-- Use `supabase/migrations/` and the Supabase CLI workflow instead.
+-- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
+-- Canonical migration: supabase/migrations/20240101000012_multi_tenant_columns.sql
+
 -- Migration 002: Create tenant_configs table and default tenant
 -- Purpose: Store tenant configuration in database (Phase 2 preparation)
 -- Run: psql $DATABASE_URL -f sql/migrations/002_create_tenant_configs.sql

@@ -1,8 +1,3 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000008_batch_jobs.sql
-
 -- Create batch_jobs table for cron batch tracking (Anthropic only)
 
 CREATE TABLE IF NOT EXISTS batch_jobs (

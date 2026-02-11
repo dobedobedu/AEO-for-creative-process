@@ -1,3 +1,9 @@
+-- ⚠️ DEPRECATED: This file is no longer the source of truth.
+-- Use `supabase/migrations/` and the Supabase CLI workflow instead.
+-- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
+-- Tenant seed — not part of canonical migration chain.
+-- Apply separately per deployment for SSES-specific personas, stages, and entity terms.
+
 -- Migration: Update SSES Personas and Stages (Institutional Vanguard)
 -- Date: January 26, 2026
 -- Purpose: Update personas and stages to align with "The Institutional Vanguard" research

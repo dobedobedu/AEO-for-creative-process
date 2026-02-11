@@ -1,10 +1,4 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000011_tenant_config.sql
-
 -- Migration: Tenant Configuration
--- Date: February 7, 2026
 -- Purpose: Add tenant_config table for storing white-label tenant configuration
 --          (brand, competitors, geography, entity categories, providers, industry)
 
@@ -30,15 +24,15 @@ CREATE TABLE IF NOT EXISTS tenant_config (
 -- 2. Create trigger for updated_at
 -- ============================================
 
--- Reuse the update_updated_at_column() function created in 2026-01-22-matrix-config.sql
+-- Reuse the update_updated_at_column() function created in 000004_matrix_config.sql
 -- Create it if it doesn't exist (idempotent)
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $
+RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
 -- Drop existing trigger if any
 DROP TRIGGER IF EXISTS update_tenant_config_updated_at ON tenant_config;
@@ -57,13 +51,3 @@ CREATE TRIGGER update_tenant_config_updated_at
 INSERT INTO tenant_config (id)
 VALUES ('default')
 ON CONFLICT (id) DO NOTHING;
-
--- ============================================
--- Verification queries (commented out)
--- ============================================
-
--- Check tenant config
--- SELECT * FROM tenant_config;
-
--- Check default row exists
--- SELECT id, industry, setup_complete, created_at, updated_at FROM tenant_config WHERE id = 'default';
