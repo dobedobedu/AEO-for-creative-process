@@ -1,8 +1,3 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000000_core_schema.sql
-
 -- AI Visibility Baseline MVP schema
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;

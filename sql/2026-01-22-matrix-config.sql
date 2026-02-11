@@ -1,3 +1,8 @@
+-- ⚠️ DEPRECATED: This file is no longer the source of truth.
+-- Use `supabase/migrations/` and the Supabase CLI workflow instead.
+-- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
+-- Canonical migration: supabase/migrations/20240101000004_matrix_config.sql
+
 -- Migration: Matrix Configuration Management
 -- Date: January 22, 2026
 -- Purpose: Add tables for managing personas and stages in Admin Matrix Studio

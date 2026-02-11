@@ -1,5 +1,9 @@
 # Database Migrations
 
+> **⚠️ DEPRECATED**: These migrations are no longer the source of truth.
+> The canonical migration source is `supabase/migrations/` using the Supabase CLI workflow.
+> See `docs/SSES-DEPLOYMENT-GUIDE.md` for the canonical process.
+
 This directory contains SQL migrations for the AI Visibility Platform.
 
 ## Migration Order

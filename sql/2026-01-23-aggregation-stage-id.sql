@@ -1,3 +1,8 @@
+-- ⚠️ DEPRECATED: This file is no longer the source of truth.
+-- Use `supabase/migrations/` and the Supabase CLI workflow instead.
+-- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
+-- Canonical migration: supabase/migrations/20240101000006_aggregation_stage_id.sql
+
 -- Migration: Add stage_id to aggregation tables
 -- Date: January 23, 2026
 -- Purpose: Support custom stage IDs while maintaining core stage compatibility

@@ -1,3 +1,8 @@
+-- ⚠️ DEPRECATED: This file is no longer the source of truth.
+-- Use `supabase/migrations/` and the Supabase CLI workflow instead.
+-- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
+-- Canonical migration: supabase/migrations/20240101000012_multi_tenant_columns.sql
+
 -- Migration 001: Add tenant_id columns
 -- Purpose: Prepare tables for multi-tenancy (Phase 1: nullable columns)
 -- Run: psql $DATABASE_URL -f sql/migrations/001_add_tenant_id.sql

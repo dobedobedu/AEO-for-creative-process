@@ -1,3 +1,9 @@
+-- ⚠️ DEPRECATED: This file is no longer the source of truth.
+-- Use `supabase/migrations/` and the Supabase CLI workflow instead.
+-- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
+-- Canonical migration: supabase/migrations/20240101000015_rls_policies.sql
+-- Note: Rollback is legacy-only; canonical workflow uses supabase db reset.
+
 -- Rollback Migration 007: Remove Row Level Security (RLS) Policies
 -- Purpose: Disable RLS if needed for debugging or migration issues
 -- Run: psql $DATABASE_URL -f sql/migrations/007_add_rls_policies_rollback.sql

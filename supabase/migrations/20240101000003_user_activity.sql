@@ -1,8 +1,3 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000003_user_activity.sql
-
 -- Migration: User Activity Tracking
 -- Date: 2026-01-20
 -- Purpose: Lightweight usage tracking via last_active_at timestamp

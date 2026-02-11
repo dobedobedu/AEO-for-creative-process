@@ -46,7 +46,9 @@ yarn-error.log*
 data/runs/run-id-map.json
 
 # local supabase
-supabase/
+supabase/*
+!supabase/migrations/
+!supabase/migrations/*.sql
 
 # local worktrees
 .worktrees/

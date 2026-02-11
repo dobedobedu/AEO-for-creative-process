@@ -1,14 +1,9 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000015_rls_policies.sql
-
--- Migration 007: Add Row Level Security (RLS) Policies
--- Purpose: Enforce tenant isolation at the database level
--- Run: psql $DATABASE_URL -f sql/migrations/007_add_rls_policies.sql
+-- Migration 000015: Add Row Level Security (RLS) Policies
+-- Source: sql/migrations/007_add_rls_policies.sql
+-- Style: Incremental (assumes prior migrations 000000–000014 have run)
 --
 -- IMPORTANT: Before enabling this:
--- 1. Ensure all data has been backfilled with tenant_id (run migration 003)
+-- 1. Ensure all data has been backfilled with tenant_id (run migration 000012)
 -- 2. Application must set app.tenant_id session variable before queries
 -- 3. Test thoroughly in staging before production
 
@@ -167,7 +162,7 @@ END $$;
 -- Success message
 DO $$
 BEGIN
-  RAISE NOTICE 'Migration 007 complete: RLS policies enabled on all data tables';
+  RAISE NOTICE 'Migration 000015 complete: RLS policies enabled on all data tables';
   RAISE NOTICE 'IMPORTANT: Application must now set app.tenant_id before queries';
   RAISE NOTICE 'Example: SELECT set_config(''app.tenant_id'', ''your-tenant-uuid'', false)';
 END $$;

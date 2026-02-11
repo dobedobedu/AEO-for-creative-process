@@ -1,0 +1,12 @@
+-- Migration 000014: Tenant Seed Placeholder (intentionally skipped)
+--
+-- This migration is intentionally a no-op in the canonical chain.
+-- SSES-specific personas, stages, and entity terms are tenant seed data
+-- and must NOT be part of the platform bootstrap schema.
+--
+-- To apply SSES seed data for a specific deployment, run:
+--   sql/migrations/006_update_sses_personas_stages.sql
+--
+-- See docs/migration-map.md for the full legacy-to-canonical mapping.
+
+-- No-op: tenant seed data is applied separately per deployment.

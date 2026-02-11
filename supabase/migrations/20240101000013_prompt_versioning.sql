@@ -1,11 +1,7 @@
--- ⚠️ DEPRECATED: This file is no longer the source of truth.
--- Use `supabase/migrations/` and the Supabase CLI workflow instead.
--- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
--- Canonical migration: supabase/migrations/20240101000013_prompt_versioning.sql
-
--- Migration 005: Add prompt version tracking to runs
--- Purpose: Track which prompt version was used for each run
--- Run: psql $DATABASE_URL -f sql/migrations/005_add_prompt_version.sql
+-- Migration 000013: Add prompt version tracking to runs
+-- Source: sql/migrations/005_add_prompt_version.sql
+-- Style: Incremental (assumes prior migrations 000000–000012 have run)
+-- NOTE: CONCURRENTLY removed from index creation — cannot run inside Supabase migration transaction
 
 -- Add prompt_version column to runs table
 ALTER TABLE runs
@@ -15,7 +11,7 @@ ADD COLUMN IF NOT EXISTS prompt_version VARCHAR(64);
 COMMENT ON COLUMN runs.prompt_version IS 'Version/hash of prompts used when run was created (for replay/comparison)';
 
 -- Create an index for filtering by prompt version
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_runs_prompt_version
+CREATE INDEX IF NOT EXISTS idx_runs_prompt_version
 ON runs(prompt_version)
 WHERE prompt_version IS NOT NULL;
 
@@ -42,8 +38,3 @@ CREATE INDEX IF NOT EXISTS idx_tenant_prompts_type_name ON tenant_prompts(tenant
 COMMENT ON TABLE tenant_prompts IS 'Versioned prompt storage for tenant customization';
 COMMENT ON COLUMN tenant_prompts.version IS 'Hash or version number of prompt content';
 COMMENT ON COLUMN tenant_prompts.is_active IS 'Whether this version is currently active';
-
-DO $$
-BEGIN
-  RAISE NOTICE 'Migration 005 complete: Added prompt version tracking';
-END $$;

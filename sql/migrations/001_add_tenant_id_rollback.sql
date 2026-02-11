@@ -1,3 +1,9 @@
+-- ⚠️ DEPRECATED: This file is no longer the source of truth.
+-- Use `supabase/migrations/` and the Supabase CLI workflow instead.
+-- See docs/SSES-DEPLOYMENT-GUIDE.md for canonical process.
+-- Canonical migration: supabase/migrations/20240101000012_multi_tenant_columns.sql
+-- Note: Rollback is legacy-only; canonical workflow uses supabase db reset.
+
 -- Rollback for Migration 001: Remove tenant_id columns
 -- WARNING: This will lose all tenant_id data
 -- Run only if you need to fully revert multi-tenancy changes
