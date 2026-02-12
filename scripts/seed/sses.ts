@@ -298,7 +298,7 @@ async function seed(databaseUrl: string): Promise<void> {
     const competitorsJson = JSON.stringify(SSES_COMPETITORS);
     const geographyJson = JSON.stringify(SSES_GEOGRAPHY);
 
-    await sql`
+    const updatedTenantConfig = await sql`
       UPDATE tenant_config
       SET
         brand_json = ${brandJson}::jsonb,
@@ -307,7 +307,14 @@ async function seed(databaseUrl: string): Promise<void> {
         industry = 'education',
         updated_at = NOW()
       WHERE id = 'default'
+      RETURNING id
     `;
+
+    if (updatedTenantConfig.length === 0) {
+      throw new Error(
+        "tenant_config row with id='default' not found. Run canonical migrations (000011+) before seeding."
+      );
+    }
     console.log("  ✅ tenant_config updated with SSES brand, competitors, geography");
 
     console.log("\n✨ SSES seed complete!");

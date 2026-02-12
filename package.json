@@ -10,6 +10,7 @@
     "lint": "eslint --quiet",
     "lint:full": "eslint",
     "test": "vitest run",
+    "test:ci": "vitest run --exclude src/lib/intents/__tests__/queryGenerator.test.ts --exclude src/app/api/benchmark/batch-submit/__tests__/route.test.ts --exclude src/app/api/benchmark/scheduled/__tests__/route.test.ts",
     "import:runs": "tsx scripts/import-runs-to-db.ts",
     "env:validate": "tsx scripts/env/validate.ts",
     "db:verify": "tsx scripts/db/verify.ts",

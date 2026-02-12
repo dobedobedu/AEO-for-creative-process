@@ -9,6 +9,11 @@ interface ProviderConfig {
   envVar: string;
 }
 
+interface DbProviderResult {
+  providers: string[];
+  error?: string;
+}
+
 const PROVIDERS: ProviderConfig[] = [
   { id: "openai", envVar: "OPENAI_API_KEY" },
   { id: "anthropic", envVar: "ANTHROPIC_API_KEY" },
@@ -46,12 +51,14 @@ function needsSsl(connectionString: string): boolean {
   return !/localhost|127\.0\.0\.1/.test(connectionString);
 }
 
-async function parseEnabledProvidersFromDB(): Promise<string[]> {
+async function parseEnabledProvidersFromDB(): Promise<DbProviderResult> {
   const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) return [];
+  if (!databaseUrl) return { providers: [] };
+
+  let sql;
 
   try {
-    const sql = postgres(databaseUrl, {
+    sql = postgres(databaseUrl, {
       ssl: needsSsl(databaseUrl) ? "require" : undefined,
       max: 1,
     });
@@ -59,20 +66,22 @@ async function parseEnabledProvidersFromDB(): Promise<string[]> {
     const rows = await sql`
       SELECT providers_json FROM tenant_config WHERE id = 'default' LIMIT 1
     `;
-    await sql.end();
-
-    if (rows.length === 0) return [];
+    if (rows.length === 0) return { providers: [] };
 
     const providersJson = rows[0].providers_json as {
       providers?: Array<{ id: string; active: boolean }>;
     };
-    if (!providersJson?.providers) return [];
+    if (!providersJson?.providers) return { providers: [] };
 
-    return providersJson.providers
-      .filter((p) => p.active)
-      .map((p) => p.id.toLowerCase());
-  } catch {
-    return [];
+    return {
+      providers: providersJson.providers
+        .filter((p) => p.active)
+        .map((p) => p.id.toLowerCase()),
+    };
+  } catch (err) {
+    return { providers: [], error: (err as Error).message };
+  } finally {
+    if (sql) await sql.end();
   }
 }
 
@@ -118,11 +127,27 @@ async function run(): Promise<number> {
   let enabledProviders = enabledFromArg;
 
   if (enabledProviders.length === 0) {
-    enabledProviders = await parseEnabledProvidersFromDB();
-  }
+    const fromDb = await parseEnabledProvidersFromDB();
 
-  if (enabledProviders.length === 0) {
-    enabledProviders = parseEnabledProvidersFromTenantFile();
+    if (fromDb.error) {
+      if (target === "local") {
+        console.warn(
+          `[secrets:check] warning: failed to read enabled providers from DB (${fromDb.error}); falling back to config/tenant.json`
+        );
+      } else {
+        console.error(
+          `[secrets:check] error: failed to read enabled providers from DB (${fromDb.error}); refusing file fallback for ${target}`
+        );
+        return 1;
+      }
+    }
+
+    enabledProviders = fromDb.providers;
+
+    // Local-only fallback for developer convenience.
+    if (enabledProviders.length === 0 && target === "local") {
+      enabledProviders = parseEnabledProvidersFromTenantFile();
+    }
   }
 
   if (enabledProviders.length === 0) {

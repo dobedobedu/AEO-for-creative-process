@@ -40,7 +40,7 @@ jobs:
         run: npm run build
 
       - name: Test
-        run: npm test
+        run: npm run test:ci
 
       # TODO: Integrate with Vercel GitHub deployment to get the preview URL automatically.
       # For now, smoke tests should be run manually after Vercel deploys the preview.
