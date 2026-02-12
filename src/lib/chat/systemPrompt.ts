@@ -202,7 +202,7 @@ export function buildFileSearchSystemPrompt(context: ChatContext): string {
  * Uses the 3 lenses but retrieves data via File Search instead of embedding it
  */
 export function buildFileSearchInsightPrompt(context: ChatContext): string {
-  const brand = context.brand || "Lakewood Ranch";
+  const brand = context.brand || getBrandName();
 
   const INSIGHT_RAG_PROMPT = `You are a persona strategist helping marketers understand why AI engines favor competitors and what content to create next.
 
@@ -404,7 +404,7 @@ Always structure your response with these sections:
 - Be direct and actionable - this is for marketers who need to decide what to publish next
 - If asked about something not in the data, say "I don't have data on that in this scope"`;
 
-  const brand = context.brand || "Lakewood Ranch";
+  const brand = context.brand || getBrandName();
 
   let fullPrompt = INSIGHT_PROMPT;
   fullPrompt += `\n\nBRAND: ${brand}`;

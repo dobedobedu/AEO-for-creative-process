@@ -15,7 +15,8 @@
     "db:verify": "tsx scripts/db/verify.ts",
     "deploy:precheck": "tsx scripts/deploy/precheck.ts",
     "secrets:check": "tsx scripts/secrets/check.ts",
-    "smoke": "tsx scripts/smoke/test.ts"
+    "smoke": "tsx scripts/smoke/test.ts",
+    "seed:sses": "tsx scripts/seed/sses.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.2",

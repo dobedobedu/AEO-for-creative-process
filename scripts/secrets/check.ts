@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import postgres from "postgres";
 
 type EnvironmentTarget = "local" | "preview" | "production";
 
@@ -41,6 +42,40 @@ function parseEnabledProvidersFromArg(): string[] {
     .filter(Boolean);
 }
 
+function needsSsl(connectionString: string): boolean {
+  return !/localhost|127\.0\.0\.1/.test(connectionString);
+}
+
+async function parseEnabledProvidersFromDB(): Promise<string[]> {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) return [];
+
+  try {
+    const sql = postgres(databaseUrl, {
+      ssl: needsSsl(databaseUrl) ? "require" : undefined,
+      max: 1,
+    });
+
+    const rows = await sql`
+      SELECT providers_json FROM tenant_config WHERE id = 'default' LIMIT 1
+    `;
+    await sql.end();
+
+    if (rows.length === 0) return [];
+
+    const providersJson = rows[0].providers_json as {
+      providers?: Array<{ id: string; active: boolean }>;
+    };
+    if (!providersJson?.providers) return [];
+
+    return providersJson.providers
+      .filter((p) => p.active)
+      .map((p) => p.id.toLowerCase());
+  } catch {
+    return [];
+  }
+}
+
 function parseEnabledProvidersFromTenantFile(): string[] {
   const tenantPath = path.join(process.cwd(), "config", "tenant.json");
   if (!fs.existsSync(tenantPath)) return [];
@@ -70,7 +105,7 @@ function parseEnabledProvidersFromTenantFile(): string[] {
   return [];
 }
 
-function run(): number {
+async function run(): Promise<number> {
   let target: EnvironmentTarget;
   try {
     target = getTarget();
@@ -80,12 +115,19 @@ function run(): number {
   }
 
   const enabledFromArg = parseEnabledProvidersFromArg();
-  const enabledProviders =
-    enabledFromArg.length > 0 ? enabledFromArg : parseEnabledProvidersFromTenantFile();
+  let enabledProviders = enabledFromArg;
+
+  if (enabledProviders.length === 0) {
+    enabledProviders = await parseEnabledProvidersFromDB();
+  }
+
+  if (enabledProviders.length === 0) {
+    enabledProviders = parseEnabledProvidersFromTenantFile();
+  }
 
   if (enabledProviders.length === 0) {
     console.log(
-      "[secrets:check] No enabled providers detected (use --enabled-providers or configure providers in config/tenant.json)."
+      "[secrets:check] No enabled providers detected (use --enabled-providers, configure DB tenant_config, or configure providers in config/tenant.json)."
     );
     return 0;
   }
@@ -119,4 +161,9 @@ function run(): number {
   return 1;
 }
 
-process.exit(run());
+run()
+  .then((code) => process.exit(code))
+  .catch((err) => {
+    console.error(`[secrets:check] fatal: ${(err as Error).message}`);
+    process.exit(1);
+  });
