@@ -17,18 +17,14 @@ import {
 
 describe("Persona Manager", () => {
   describe("DEFAULT_PERSONAS", () => {
-    it("should have 6 default personas", () => {
-      expect(DEFAULT_PERSONAS).toHaveLength(6);
+    it("should have 2 generic default personas", () => {
+      expect(DEFAULT_PERSONAS).toHaveLength(2);
     });
 
-    it("should include all required persona types", () => {
+    it("should include generic placeholder personas", () => {
       const names = DEFAULT_PERSONAS.map((p) => p.name);
-      expect(names).toContain("Move Up");
-      expect(names).toContain("Empty Nester / Retiree");
-      expect(names).toContain("Luxury");
-      expect(names).toContain("First-Time");
-      expect(names).toContain("Relocating Pro");
-      expect(names).toContain("Investor");
+      expect(names).toContain("Persona 1");
+      expect(names).toContain("Persona 2");
     });
 
     it("should have unique IDs for all personas", () => {

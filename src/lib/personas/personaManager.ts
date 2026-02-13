@@ -16,39 +16,11 @@ export type PersonaState = {
 };
 
 /**
- * Default personas for Lakewood Ranch real estate context
+ * Generic default personas used when no tenant-specific personas are configured.
  */
 export const DEFAULT_PERSONAS: Persona[] = [
-  {
-    id: "persona-1",
-    name: "Move Up",
-    text: "Millennial or Gen X, college education, HHI $100-200K, married with children. Seeking a larger home with more amenities for their growing family. Image focused, buying designer clothes. Wants to eat healthy but often grabs takeout for ease. Thrives in social settings.",
-  },
-  {
-    id: "persona-2",
-    name: "Empty Nester / Retiree",
-    text: "Gen X or Boomer, college education, HHI $100-$200K, married without children at home. Seeking to downsize as they become empty nesters or retire. Purchases high quality brands, particularly if they support a cause. Frequently diets to stay in shape. Likely to use smart home devices.",
-  },
-  {
-    id: "persona-3",
-    name: "Luxury",
-    text: "Millennial or Gen X, college or grad school education, HHI $200K+, married, potentially with children. Seeking a custom home in an esteemed community. Career-focused and a natural leader. An early adopter of products and services. Intelligent and well-informed.",
-  },
-  {
-    id: "persona-4",
-    name: "First-Time",
-    text: "Gen Z or Millennial, college or high school education, HHI $100-200K, some married with kids, some single. Seeking their first home in a community where they can grow. Follows trends and celebrities. Eager to get ahead and become successful. A risk taker and thrill seeker.",
-  },
-  {
-    id: "persona-5",
-    name: "Relocating Pro",
-    text: "Millennial or Gen X, college or grad school education, HHI $150-300K, often married. Relocating for a new job opportunity or remote work flexibility. Researches extensively online before making decisions. Values convenience, schools, and proximity to airports. Tech-savvy and relies on digital tools for the home search.",
-  },
-  {
-    id: "persona-6",
-    name: "Investor",
-    text: "Gen X or Boomer, college education, HHI $200K+, experienced in real estate or financial investments. Looking for rental properties, vacation homes, or appreciation potential. Analyzes market data, cap rates, and rental yields. Prefers communities with strong HOAs and appreciating property values. May own multiple properties.",
-  },
+  { id: "persona-1", name: "Persona 1", text: "Primary target audience segment." },
+  { id: "persona-2", name: "Persona 2", text: "Secondary target audience segment." },
 ];
 
 /**

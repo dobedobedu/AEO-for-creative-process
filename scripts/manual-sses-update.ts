@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+// ⚠️ DEPRECATED: This file is no longer the source of truth.
+// Use `scripts/seed/sses.ts` instead.
+// See docs/runbook.md for canonical tenant seed process.
+
 /**
  * Manual SSES Personas & Stages Update Script
  * Run this with: node scripts/manual-sses-update.js

@@ -1,3 +1,7 @@
+// ⚠️ DEPRECATED: This file is no longer the source of truth.
+// Use `scripts/seed/sses.ts` instead.
+// See docs/runbook.md for canonical tenant seed process.
+
 import { sql } from '../src/lib/db';
 
 async function updateSSESDetailedPersonas() {

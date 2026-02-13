@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+  DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+  NEXT_PUBLIC_ADMIN_ENABLED: "true"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validate environment
+        run: npm run env:validate -- --target preview
+
+      - name: Deployment precheck
+        run: >
+          npm run deploy:precheck --
+          --preview-url ${{ secrets.STAGING_SUPABASE_URL }}
+          --production-url ${{ secrets.PROD_SUPABASE_URL }}
+
+      - name: Verify database schema
+        run: npm run db:verify
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm run test:ci
+
+      # TODO: Integrate with Vercel GitHub deployment to get the preview URL automatically.
+      # For now, smoke tests should be run manually after Vercel deploys the preview.
+      # Example: npm run smoke -- --base-url https://<preview-url>
+      # - name: Smoke test
+      #   run: npm run smoke -- --base-url ${{ steps.deploy.outputs.preview-url }}

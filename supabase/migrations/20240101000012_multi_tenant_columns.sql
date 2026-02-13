@@ -182,7 +182,7 @@ ON intents(tenant_id);
 
 -- Composite indexes for common query patterns
 CREATE INDEX IF NOT EXISTS idx_runs_tenant_timestamp
-ON runs(tenant_id, timestamp DESC);
+ON runs(tenant_id, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_responses_tenant_run
 ON responses(tenant_id, run_id);
