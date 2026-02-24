@@ -7,6 +7,6 @@ Discovery phase - researching what's available, understanding options
 Do NOT mention {{brand}} or any specific brand. Keep queries generic and need-based.
 
 ## Query Examples
-- "best places to retire in Florida"
-- "master planned communities with golf"
-- "active adult communities near beach"
+- "best {{industry}} options for my needs"
+- "how to compare providers in {{industry}}"
+- "{{industry}} options with strong reviews"

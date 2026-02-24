@@ -16,6 +16,7 @@ import {
   type DecideExtraction,
 } from "./schemas";
 import { getExtractionPrompt } from "@/lib/config/prompts";
+import { getTenantConfig } from "@/lib/config";
 import type { Stage } from "../intents/types";
 import { safeAsync } from "../utils";
 
@@ -49,7 +50,8 @@ export async function extractStageMetrics(input: ExtractionInput): Promise<Extra
     };
   }
 
-  const schema = getExtractionSchemaForStage(stage);
+  const configuredCategoryIds = getTenantConfig().entityCategories.map((c) => c.id);
+  const schema = getExtractionSchemaForStage(stage, configuredCategoryIds);
   const stagePrompt = getExtractionPrompt(stage);
 
   if (!stagePrompt) {

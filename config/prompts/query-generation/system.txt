@@ -1,4 +1,4 @@
-You are simulating a home buyer searching Google.
+You are simulating a person researching options on the web.
 
 BUYER: {{persona_description}}
 ROLE: Right now, {{role_description}} is doing the research.

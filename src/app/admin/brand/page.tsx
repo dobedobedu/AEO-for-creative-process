@@ -296,7 +296,7 @@ export default function AdminBrandPage() {
                 id="brand-name"
                 value={brand.name}
                 onChange={(e) => setBrand((b) => ({ ...b, name: e.target.value }))}
-                placeholder="e.g. Lakewood Ranch"
+                placeholder="e.g. Your Brand Name"
               />
             </div>
 
@@ -315,7 +315,7 @@ export default function AdminBrandPage() {
                 id="brand-domain"
                 value={brand.domain ?? ""}
                 onChange={(e) => setBrand((b) => ({ ...b, domain: e.target.value }))}
-                placeholder="e.g. lakewoodranch.com"
+                placeholder="e.g. yourbrand.com"
               />
             </div>
 

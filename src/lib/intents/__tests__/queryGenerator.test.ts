@@ -35,7 +35,7 @@ describe("Query Generator", () => {
                 queryStyle: 0.75,
             });
 
-            expect(result.queries).toHaveLength(5);
+            expect(result.queries).toHaveLength(3);
             expect(result.reasoning).toBe("Test reasoning");
         });
 
@@ -115,7 +115,7 @@ describe("Query Generator", () => {
             });
 
             const systemPrompt = mockedCallOpenRouter.mock.calls[0][0].messages[0].content;
-            expect(systemPrompt).toContain("family unit");
+            expect(systemPrompt).toContain("household decision-maker");
         });
 
         it("Explore stage has no-brand policy", async () => {

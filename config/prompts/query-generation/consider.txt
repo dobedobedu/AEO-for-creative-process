@@ -7,6 +7,6 @@ Evaluation phase - assessing specific options against criteria
 {{brand}} may be mentioned. Focus on feasibility and fit.
 
 ## Query Examples
-- "{{brand}} reviews from residents"
-- "cost of living in {{geography.region}}"
-- "{{brand}} vs other communities"
+- "{{brand}} customer reviews"
+- "total cost of {{brand}}"
+- "{{brand}} vs alternatives"

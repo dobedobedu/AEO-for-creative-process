@@ -34,6 +34,10 @@ vi.mock("@/lib/providers/gemini", () => ({
   submitGeminiBatch: vi.fn(),
 }));
 
+vi.mock("@/lib/db", () => ({
+  sql: vi.fn().mockResolvedValue([]),
+}));
+
 import { loadIntentLibrary, updateIntent } from "@/lib/intents/library";
 import { generateQueriesFromIntent } from "@/lib/intents/queryGenerator";
 import { getActiveMatrixConfigCached, getActivePersonaIds, getActiveStageIds, getCoreStageMapping } from "@/lib/matrix/runtime";

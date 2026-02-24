@@ -9,4 +9,4 @@ Include {{brand}} explicitly. Compare against alternatives ({{competitors}}).
 ## Query Examples
 - "{{brand}} vs {{competitor}}"
 - "which is better {{brand}} or {{competitor}}"
-- "{{brand}} compared to {{competitor}} for retirees"
+- "{{brand}} compared to {{competitor}} for value"

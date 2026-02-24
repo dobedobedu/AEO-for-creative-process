@@ -28,8 +28,8 @@ export interface GeneratedQueries {
 
 // Role descriptors for different perspectives
 const ROLE_DESCRIPTORS: Record<"cpo" | "family_unit", string> = {
-    cpo: "a chief purchasing officer focused on financial trade-offs, risks, and practical decision criteria",
-    family_unit: "a family unit weighing lifestyle fit, community feel, schools, and day-to-day happiness",
+    cpo: "a practical decision-maker focused on cost, risk, and measurable outcomes",
+    family_unit: "a household decision-maker focused on fit, trust, day-to-day experience, and long-term value",
 };
 
 
@@ -150,7 +150,7 @@ ${existingQueries.map(q => `- "${q}"`).join("\n")}`;
         // Return fallback queries on API failure
         return {
             queries: [
-                `${intent} Florida`,
+                `${intent} options`,
                 `${intent} near me`,
                 `best ${intent}`,
                 `${intent} reviews`,
@@ -188,7 +188,7 @@ ${existingQueries.map(q => `- "${q}"`).join("\n")}`;
         // Fallback queries
         return {
             queries: [
-                `${intent} Florida`,
+                `${intent} options`,
                 `${intent} near me`,
                 `best ${intent}`,
                 `${intent} reviews`,

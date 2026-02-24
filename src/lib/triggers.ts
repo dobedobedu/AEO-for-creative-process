@@ -8,27 +8,27 @@ export type TriggerStage = "explore" | "consider" | "compare";
  */
 const STATIC_TRIGGERS: Record<Exclude<TriggerStage, "compare">, string[]> = {
   explore: [
-    "New job or relocation",
-    "Growing family or new baby",
-    "Retirement planning",
-    "First-time homebuyer research",
-    "Downsizing lifestyle",
-    "School district search",
-    "Lifestyle amenities exploration",
-    "Safety and crime concerns",
-    "Commute or remote work change",
-    "Seasonal or second-home interest",
+    "New role or major life transition",
+    "Changing needs or priorities",
+    "Budget planning for a major decision",
+    "First-time buyer research",
+    "Replacing a current provider or solution",
+    "Quality and trust evaluation",
+    "Feature and usability exploration",
+    "Risk and reliability concerns",
+    "Workflow or process change",
+    "Seasonal or timing-driven demand",
   ],
   consider: [
-    "Mortgage rate drop",
-    "Price reductions in the area",
-    "Inventory increase",
-    "Builder incentives or promotions",
-    "Insurance or HOA cost concerns",
-    "New community opening or phase release",
-    "Hurricane or storm risk research",
-    "Construction quality questions",
-    "Resale value and appreciation",
+    "Price change or budget pressure",
+    "More options becoming available",
+    "Discounts, promotions, or incentives",
+    "Total cost and long-term value concerns",
+    "Implementation or onboarding timeline",
+    "Compliance or policy requirements",
+    "Support and service quality questions",
+    "Performance and outcomes validation",
+    "Contract terms and risk trade-offs",
   ],
 };
 
@@ -36,11 +36,11 @@ const STATIC_TRIGGERS: Record<Exclude<TriggerStage, "compare">, string[]> = {
  * Generic compare triggers that don't reference any specific brand or competitor.
  */
 const GENERIC_COMPARE_TRIGGERS: string[] = [
-  "Compare builders and build quality",
-  "Compare amenities and lifestyle",
-  "Compare school ratings",
-  "Compare HOA fees and rules",
-  "Compare commute times",
+  "Compare features and capabilities",
+  "Compare pricing and total cost",
+  "Compare quality and performance",
+  "Compare support and service model",
+  "Compare implementation effort",
 ];
 
 /**
@@ -71,5 +71,4 @@ export function getTriggerGroups(): Record<TriggerStage, string[]> {
     compare: getCompareTriggers(),
   };
 }
-
 

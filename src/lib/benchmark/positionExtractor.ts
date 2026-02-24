@@ -38,21 +38,21 @@ export async function extractPositionWithLLM(
     const result = await generateObject({
       model: google("gemini-3-flash-preview"),
       schema: PositionSchema,
-      prompt: `Analyze this AI response about Florida communities/real estate and determine where "${brand}" (also known as: ${brandTerms}) appears in the ranking or list of recommendations.
+      prompt: `Analyze this AI response and determine where "${brand}" (also known as: ${brandTerms}) appears in the ranking or list of recommendations.
 
 RESPONSE TO ANALYZE:
 ${responseText}
 
 INSTRUCTIONS:
 1. If the brand is NOT mentioned at all, position is "absent"
-2. If the brand is the FIRST community/option mentioned or recommended, position is "1st"
-3. If ONE other community is mentioned before the brand, position is "2nd"
-4. If TWO other communities are mentioned before the brand, position is "3rd"
-5. If THREE or more communities are mentioned before the brand, position is "later"
+2. If the brand is the FIRST option mentioned or recommended, position is "1st"
+3. If ONE other option is mentioned before the brand, position is "2nd"
+4. If TWO other options are mentioned before the brand, position is "3rd"
+5. If THREE or more options are mentioned before the brand, position is "later"
 
-Consider the semantic structure - being mentioned in a list of "communities from X to Y" where the brand is at the end counts as "later", not "1st".
+Consider the semantic structure - being mentioned at the end of a list counts as "later", not "1st".
 
-Be accurate - count actual community/development names mentioned before the brand.`,
+Be accurate - count actual options named before the brand.`,
     });
 
     return result.object;

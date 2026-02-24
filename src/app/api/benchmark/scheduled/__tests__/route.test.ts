@@ -59,7 +59,7 @@ vi.mock("@/lib/providers/anthropic", () => ({
 }));
 
 import { getActiveMatrixConfigCached, getActivePersonaIds, getCoreStageMapping } from "@/lib/matrix/runtime";
-import { loadIntentLibrary } from "@/lib/intents/library";
+import { loadIntentLibrary, updateIntent } from "@/lib/intents/library";
 import { loadMetricsConfig } from "@/lib/metrics/config";
 import { runBenchmark } from "@/lib/benchmark";
 import { getBatchJob, parseBatchCustomId, getBatchJobMetadata } from "@/lib/providers/batch";
@@ -99,8 +99,10 @@ describe("GET /api/benchmark/scheduled/[stage]", () => {
     vi.mocked(upsertRunCells).mockResolvedValue({ cells: {} } as { cells: Record<string, unknown> });
   });
 
-  it("returns 409 when intents are missing fresh generated queries", async () => {
-    vi.mocked(loadIntentLibrary).mockResolvedValue({
+  it("regenerates stale queries instead of returning 409", async () => {
+    vi.mocked(generateQueriesFromIntent).mockResolvedValue({ queries: ["q1", "q2", "q3"] });
+
+    vi.mocked(loadIntentLibrary).mockResolvedValueOnce({
       version: 1,
       intents: [
         {
@@ -116,12 +118,36 @@ describe("GET /api/benchmark/scheduled/[stage]", () => {
         },
       ],
     });
+    vi.mocked(loadIntentLibrary).mockResolvedValueOnce({
+      version: 1,
+      intents: [
+        {
+          id: "intent-1",
+          persona: "move_up",
+          stage: "explore",
+          active: true,
+          text: "intent text",
+          role: "cpo",
+          queryStyle: 0.75,
+          generatedQueries: ["q1", "q2", "q3"],
+          generatedQueriesAt: new Date().toISOString(),
+        },
+      ],
+    });
 
     const res = await GET(makeRequest(), { params: Promise.resolve({ stage: "explore" }) });
-    expect(res.status).toBe(409);
+    expect(res.status).toBe(200);
 
     const body = await res.json();
-    expect(body.error).toMatch(/queries/i);
+    expect(body.success).toBe(true);
+    expect(generateQueriesFromIntent).toHaveBeenCalledTimes(1);
+    expect(updateIntent).toHaveBeenCalledWith(
+      "intent-1",
+      expect.objectContaining({
+        generatedQueries: ["q1", "q2", "q3"],
+        generatedQueriesAt: expect.any(String),
+      })
+    );
   });
 
   it("uses cached queries and maps batch results to full intentId", async () => {

@@ -4,9 +4,9 @@
 Decision phase - ready to commit, needs final validation
 
 ## Brand Policy
-{{brand}} is the presumed choice. Focus on next steps: agents, touring, deposits.
+{{brand}} is the presumed choice. Focus on final validation and concrete next steps.
 
 ## Query Examples
-- "{{brand}} real estate agents"
-- "buying home in {{brand}} process"
-- "{{brand}} new construction availability"
+- "{{brand}} onboarding process"
+- "{{brand}} contract terms and cancellation policy"
+- "{{brand}} support response times"
