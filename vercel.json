@@ -6,20 +6,8 @@
       "schedule": "0 9 * * *"
     },
     {
-      "path": "/api/benchmark/scheduled/explore",
+      "path": "/api/benchmark/scheduled",
       "schedule": "0 10 * * *"
-    },
-    {
-      "path": "/api/benchmark/scheduled/consider",
-      "schedule": "10 10 * * *"
-    },
-    {
-      "path": "/api/benchmark/scheduled/compare",
-      "schedule": "20 10 * * *"
-    },
-    {
-      "path": "/api/benchmark/scheduled/decide",
-      "schedule": "30 10 * * *"
     }
   ]
 }
