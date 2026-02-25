@@ -14,6 +14,7 @@
     "import:runs": "tsx scripts/import-runs-to-db.ts",
     "env:validate": "tsx scripts/env/validate.ts",
     "db:verify": "tsx scripts/db/verify.ts",
+    "reset:blank-slate": "tsx scripts/reset/blank-slate.ts",
     "deploy:precheck": "tsx scripts/deploy/precheck.ts",
     "secrets:check": "tsx scripts/secrets/check.ts",
     "smoke": "tsx scripts/smoke/test.ts",

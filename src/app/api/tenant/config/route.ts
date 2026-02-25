@@ -12,6 +12,8 @@
 import { TenantConfigSchema } from "@/lib/config/types";
 import { loadTenantConfigAsync, clearConfigCache } from "@/lib/config/loader";
 import { saveTenantConfig } from "@/lib/tenant/db";
+import { publishConfig } from "@/lib/matrix/db";
+import { clearConfigCache as clearMatrixConfigCache } from "@/lib/matrix/runtime";
 
 /**
  * Partial schema for the POST body.
@@ -67,9 +69,55 @@ export async function POST(request: Request) {
     }
 
     const partialConfig = parsed.data;
+    const hasPersonas = Array.isArray(partialConfig.personas);
+    const hasStages = Array.isArray(partialConfig.stages);
+
+    // Personas and stages must be provided together when updating matrix config.
+    if (hasPersonas !== hasStages) {
+      return Response.json(
+        {
+          error: "Invalid matrix configuration",
+          details: "Both personas and stages must be provided together.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (hasPersonas && hasStages) {
+      const personas = partialConfig.personas ?? [];
+      const stages = partialConfig.stages ?? [];
+
+      const matrixConfig = {
+        personas: personas.map((persona, index) => ({
+          id: persona.id,
+          label: persona.label,
+          description: persona.description,
+          fullText: persona.description,
+          orderIndex: index,
+          active: true,
+        })),
+        stages: stages.map((stage, index) => ({
+          id: stage.id,
+          label: stage.label,
+          description: stage.description,
+          orderIndex: index,
+          active: true,
+          coreStage: true,
+          coreStageMapping: inferCoreStageMapping(stage.id),
+          primaryMetric: inferPrimaryMetric(stage.id),
+        })),
+      };
+
+      await publishConfig(matrixConfig);
+      clearMatrixConfigCache();
+    }
+
+    // Matrix config is persisted to matrix_* tables; keep tenant config focused
+    // on tenant metadata and provider/entity settings.
+    const { personas, stages, ...tenantConfigPartial } = partialConfig;
 
     // Persist to the tenant_config table (read-merge-write under the hood)
-    await saveTenantConfig(partialConfig);
+    await saveTenantConfig(tenantConfigPartial);
 
     // Clear the in-memory config cache so the next read picks up the update
     clearConfigCache();
@@ -85,4 +133,29 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+function inferCoreStageMapping(stageId: string): "explore" | "consider" | "compare" | "decide" {
+  const normalized = stageId.toLowerCase();
+
+  if (normalized === "discover" || normalized === "explore") return "explore";
+  if (normalized === "research" || normalized === "consider") return "consider";
+  if (normalized === "compare") return "compare";
+  if (normalized === "apply" || normalized === "decide") return "decide";
+
+  return "explore";
+}
+
+function inferPrimaryMetric(stageId: string):
+  | "discovery_rate"
+  | "mention_rate"
+  | "top3_rate"
+  | "sentiment_score"
+  | "win_rate"
+  | "recommendation_rate" {
+  const mapping = inferCoreStageMapping(stageId);
+  if (mapping === "explore") return "discovery_rate";
+  if (mapping === "consider") return "mention_rate";
+  if (mapping === "compare") return "win_rate";
+  return "recommendation_rate";
 }
