@@ -109,6 +109,7 @@ async function checkSetupComplete(request: NextRequest): Promise<boolean> {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const authDisabled = process.env.AUTH_DISABLED === "true";
 
   // Allow public routes
   if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
@@ -134,6 +135,13 @@ export async function proxy(request: NextRequest) {
   // Check Supabase configuration
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Explicit auth bypass for white-label rollout/testing before Supabase is ready.
+  // This is opt-in and controlled by AUTH_DISABLED=true in the deployment env.
+  if (authDisabled) {
+    console.warn("[proxy] AUTH_DISABLED=true - skipping auth enforcement");
+    return NextResponse.next();
+  }
 
   if (!supabaseUrl || !supabaseKey) {
     // In production, fail closed - don't allow unauthenticated access
