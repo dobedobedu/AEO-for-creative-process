@@ -167,13 +167,51 @@ export const DEFAULT_BRAND: BrandConfig = {
 };
 
 export const DEFAULT_PERSONAS: PersonaConfig[] = [
-  { id: "persona_1", label: "Persona 1", description: "" },
-  { id: "persona_2", label: "Persona 2", description: "" },
+  {
+    id: "known_valued_parents",
+    label: "Known & Valued Parents",
+    description: "Public-school switchers seeking safety, support, and affordability.",
+  },
+  {
+    id: "known_valued_students",
+    label: "Known & Valued Students",
+    description: "Students who want to be seen, supported, and safe in a smaller environment.",
+  },
+  {
+    id: "optimization_outcomes_parents",
+    label: "Optimization & Outcomes Parents",
+    description: "Families prioritizing rigor, pathways, and strong college outcomes.",
+  },
+  {
+    id: "optimization_outcomes_students",
+    label: "Optimization & Outcomes Students",
+    description: "Driven students seeking challenge, rigor, and competitive peer cohorts.",
+  },
+  {
+    id: "whole_child_parents",
+    label: "Whole-Child Parents",
+    description: "Families focused on character, belonging, and whole-child growth.",
+  },
+  {
+    id: "whole_child_students",
+    label: "Whole-Child Students",
+    description: "Well-rounded students motivated by leadership, service, and community.",
+  },
+  {
+    id: "balanced_specialists_parents",
+    label: "Balanced Specialists Parents",
+    description: "Families seeking specialized excellence with a balanced school experience.",
+  },
+  {
+    id: "balanced_specialists_students",
+    label: "Balanced Specialists Students",
+    description: "Talented students seeking high performance without burnout.",
+  },
 ];
 
 export const DEFAULT_STAGES: StageConfig[] = [
-  { id: "explore", label: "Explore", description: "" },
-  { id: "consider", label: "Consider", description: "" },
+  { id: "discover", label: "Discover", description: "" },
+  { id: "research", label: "Research", description: "" },
   { id: "compare", label: "Compare", description: "" },
-  { id: "decide", label: "Decide", description: "" },
+  { id: "apply", label: "Apply", description: "" },
 ];

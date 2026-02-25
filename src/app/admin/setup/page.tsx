@@ -92,6 +92,80 @@ const DEFAULT_GEOGRAPHY: GeographyConfig = {
   nearbyMetros: [],
 };
 
+const DEFAULT_PERSONAS: Array<{ id: string; label: string; description: string }> = [
+  {
+    id: "known_valued_parents",
+    label: "Known & Valued Parents",
+    description:
+      "Public-school switchers seeking safety, accountability, and affordability with financial aid.",
+  },
+  {
+    id: "known_valued_students",
+    label: "Known & Valued Students",
+    description:
+      "Students who feel overlooked and want a safe, structured environment where they are known and supported.",
+  },
+  {
+    id: "optimization_outcomes_parents",
+    label: "Optimization & Outcomes Parents",
+    description:
+      "High-achieving families prioritizing rigor, Honors/AP pathways, and elite college outcomes.",
+  },
+  {
+    id: "optimization_outcomes_students",
+    label: "Optimization & Outcomes Students",
+    description:
+      "Driven students seeking challenge, strong peers, and a competitive profile for top universities.",
+  },
+  {
+    id: "whole_child_parents",
+    label: "Whole-Child Parents",
+    description:
+      "Families who value character, values, inclusion, and whole-child development alongside academics.",
+  },
+  {
+    id: "whole_child_students",
+    label: "Whole-Child Students",
+    description:
+      "Well-rounded students who thrive in leadership, service, chapel, and community engagement.",
+  },
+  {
+    id: "balanced_specialists_parents",
+    label: "Balanced Specialists Parents",
+    description:
+      "Families seeking niche excellence or athletic rigor without sacrificing balance and a normal school life.",
+  },
+  {
+    id: "balanced_specialists_students",
+    label: "Balanced Specialists Students",
+    description:
+      "Talented athletes or specialized learners seeking high performance with real friendships and balance.",
+  },
+];
+
+const DEFAULT_STAGES: Array<{ id: string; label: string; description: string }> = [
+  {
+    id: "discover",
+    label: "Discover",
+    description: "Families identify options and define their core priorities.",
+  },
+  {
+    id: "research",
+    label: "Research",
+    description: "Families evaluate academics, culture, support, and fit in depth.",
+  },
+  {
+    id: "compare",
+    label: "Compare",
+    description: "Families benchmark top schools across outcomes, value, and experience.",
+  },
+  {
+    id: "apply",
+    label: "Apply",
+    description: "Families finalize decisions, complete steps, and prepare to enroll.",
+  },
+];
+
 /* ------------------------------------------------------------------ */
 /*  Reusable sub-components                                           */
 /* ------------------------------------------------------------------ */
@@ -203,8 +277,8 @@ export default function SetupWizardPage() {
   const [competitors, setCompetitors] = useState<Competitor[]>([]);
   const [geography, setGeography] = useState<GeographyConfig>(DEFAULT_GEOGRAPHY);
   const [providers, setProviders] = useState<ProviderEntry[]>(DEFAULT_PROVIDERS);
-  const [personas, setPersonas] = useState<Array<{ id: string; label: string; description: string }>>([]);
-  const [stages, setStages] = useState<Array<{ id: string; label: string; description: string }>>([]);
+  const [personas, setPersonas] = useState<Array<{ id: string; label: string; description: string }>>(DEFAULT_PERSONAS);
+  const [stages, setStages] = useState<Array<{ id: string; label: string; description: string }>>(DEFAULT_STAGES);
   const [entityCategories, setEntityCategories] = useState<EntityCategory[]>([]);
   const [industry, setIndustry] = useState<Industry>("other");
 
