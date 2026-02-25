@@ -77,9 +77,21 @@ export async function GET(request: Request): Promise<NextResponse> {
           ` as Array<{ id: string }>;
 
           if (latest.length === 0) {
+            // Blank-slate friendly response for newly onboarded tenants.
+            // The UI can render an empty state instead of failing on 404.
             return NextResponse.json(
-              { error: "No completed runs found" },
-              { status: 404 }
+              {
+                runId: null,
+                run: null,
+                lanes: [],
+                thresholds: STATUS_THRESHOLDS,
+                mentionsHistory: [],
+              },
+              {
+                headers: {
+                  "Cache-Control": "public, s-maxage=30, stale-while-revalidate=300",
+                },
+              }
             );
           }
 
