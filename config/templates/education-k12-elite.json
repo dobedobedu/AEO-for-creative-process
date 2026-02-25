@@ -20,32 +20,52 @@
     { "name": "Berkeley Preparatory School", "aliases": ["Berkeley Prep"], "isPrimary": false }
   ],
   "personas": [
-    { 
-      "id": "wealthy_migrant", 
-      "label": "The Wealthy Migrant", 
-      "description": "High-net-worth families relocating from NY/CA/NJ seeking prestige and community integration." 
+    {
+      "id": "known_valued_parents",
+      "label": "Known & Valued Parents",
+      "description": "Public-school switchers seeking safety, accountability, and affordability with financial aid access."
     },
-    { 
-      "id": "neurodivergent_advocate", 
-      "label": "The Neurodivergent Advocate", 
-      "description": "Parents of gifted or 'spiky' kids looking for the 'Vibrant Anomaly' environment that celebrates neurodiversity." 
+    {
+      "id": "known_valued_students",
+      "label": "Known & Valued Students",
+      "description": "Students who feel lost in large classes and need a safe, structured environment where they are seen."
     },
-    { 
-      "id": "innovation_seeker", 
-      "label": "The Innovation Seeker", 
-      "description": "Tech-forward parents prioritizing STEAM, 'Mini Xerox PARC' labs, and Artrepreneurship." 
+    {
+      "id": "optimization_outcomes_parents",
+      "label": "Optimization & Outcomes Parents",
+      "description": "Highly research-driven families focused on rigorous academics, pathways, and strong college outcomes."
     },
-    { 
-      "id": "heritage_guardian", 
-      "label": "The Heritage Guardian", 
-      "description": "Established regional families valuing Episcopal tradition, social networking, and ethical leadership." 
+    {
+      "id": "optimization_outcomes_students",
+      "label": "Optimization & Outcomes Students",
+      "description": "Driven students seeking challenge, competitive peers, and a strong profile for top-tier universities."
+    },
+    {
+      "id": "whole_child_parents",
+      "label": "Whole-Child Parents",
+      "description": "Families prioritizing character, values, belonging, and whole-child development alongside academics."
+    },
+    {
+      "id": "whole_child_students",
+      "label": "Whole-Child Students",
+      "description": "Well-rounded students who thrive in service, leadership, extracurricular depth, and community life."
+    },
+    {
+      "id": "balanced_specialists_parents",
+      "label": "Balanced Specialists Parents",
+      "description": "Families seeking specialized support or elite athletics without sacrificing a healthy school-life balance."
+    },
+    {
+      "id": "balanced_specialists_students",
+      "label": "Balanced Specialists Students",
+      "description": "Talented athletes or niche learners seeking high performance, real friendships, and a normal school experience."
     }
   ],
   "stages": [
-    { "id": "discover", "label": "Discover", "description": "Finding top-tier education in the Florida Gulf Coast region." },
-    { "id": "research", "label": "Culture & Curriculum", "description": "Deep dive into innovation labs, neurodiversity support, and academic rigor." },
-    { "id": "compare", "label": "Benchmarking", "description": "How SSES compares to ODA, Pine View, and national elite schools." },
-    { "id": "apply", "label": "Affordability & ROI", "description": "Evaluating indexed tuition, universal vouchers, and long-term network value." }
+    { "id": "discover", "label": "Discover", "description": "Families identify options and define the outcomes that matter most." },
+    { "id": "research", "label": "Research", "description": "Families evaluate culture, academics, support systems, and student fit in depth." },
+    { "id": "compare", "label": "Compare", "description": "Families benchmark top schools across rigor, community, specialization, and value." },
+    { "id": "apply", "label": "Apply", "description": "Families make the final choice and complete enrollment steps with confidence." }
   ],
   "entityCategories": [
     { "id": "innovation", "label": "Innovation Labs", "examples": ["STEAM Center", "Mini Xerox PARC", "Artrepreneurship", "3D Printing"] },
