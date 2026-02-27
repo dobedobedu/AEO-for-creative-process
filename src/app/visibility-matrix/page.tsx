@@ -824,6 +824,8 @@ export default function VisibilityMatrixPage() {
 
   // Track whether user has run their own benchmark this session (don't override with historical)
   const userRanBenchmarkRef = useRef(false);
+  // Guard against repeatedly re-applying the same historical run into matrixData.
+  const autoLoadedHistoricalKeyRef = useRef<string | null>(null);
 
   // Load most recent run into matrix after personas/stages AND historical runs are available
   // This properly handles remounts when navigating back to the page
@@ -838,12 +840,21 @@ export default function VisibilityMatrixPage() {
       return;
     }
 
-    // If matrixData has no actual results and we have historical runs, load the latest
-    // This handles both initial load AND navigation back to the page
-    // Note: Check for results, not just keys, because empty cells may have been initialized
+    if (historicalRuns.length === 0) {
+      autoLoadedHistoricalKeyRef.current = null;
+      return;
+    }
+
+    // If matrixData has no actual results and we have historical runs, load the latest.
+    // Use a stable guard key so we don't loop on empty/stale runs.
     const hasResults = Object.values(matrixData).some(cell => cell.results.length > 0);
-    if (!hasResults && historicalRuns.length > 0) {
+    if (!hasResults) {
       const latestRun = historicalRuns[historicalRuns.length - 1];
+      const latestLoadKey = `${latestRun.id}:${personas.map(p => p.id).join(",")}:${stages.map(s => s.id).join(",")}`;
+      if (autoLoadedHistoricalKeyRef.current === latestLoadKey) {
+        return;
+      }
+      autoLoadedHistoricalKeyRef.current = latestLoadKey;
       setMatrixData(storedRunToMatrixData(latestRun, personas, stages));
     }
   }, [matrixConfigLoading, personas, stages, historicalRuns, matrixData]);
