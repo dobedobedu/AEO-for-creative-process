@@ -1466,7 +1466,7 @@ export default function VisibilityMatrixPage() {
                 </p>
               </div>
             )}
-            (() => {
+            {(() => {
               // Transform effectiveMatrixData into a format SplitViewEditor can use for the 'summary' mode
               // effectiveMatrixData is either the current run or a selected historical run
               const cellResults: Record<string, Record<string, { discoveryRate: number; sentimentScore: number; topCompetitor?: string; winRate?: number; recommendationRate?: number; responses?: { provider: string; model: string; text: string; query: string; visibility: { score: number; mentioned: boolean; sentiment: string } }[]; citations?: Citation[] }>> = {};
@@ -1688,7 +1688,7 @@ export default function VisibilityMatrixPage() {
                   }}
                 />
               );
-            })()
+            })()}
           </div>
         </div>
       </div>
