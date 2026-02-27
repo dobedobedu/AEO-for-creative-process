@@ -162,20 +162,18 @@ interface PersonaConfig {
   description: string;
 }
 
-// Default configuration (fallback if config API fails)
-const DEFAULT_PERSONAS: PersonaConfig[] = [
-  { id: "move_up", label: "Move-Up", description: "Upgrading from starter home" },
-  { id: "retiree", label: "Retiree", description: "55+ active lifestyle" },
-  { id: "luxury", label: "Luxury", description: "High-end amenities focus" },
-  { id: "first_time", label: "First-Time", description: "Entry-level, value-conscious" },
-];
+// White-label fallback configuration used before tenant config loads.
+const DEFAULT_PERSONAS: PersonaConfig[] = CONFIG_DEFAULT_PERSONAS.map((persona) => ({
+  id: persona.id,
+  label: persona.label,
+  description: persona.description || "",
+}));
 
-const DEFAULT_STAGES: { id: Stage; label: string; description: string }[] = [
-  { id: "explore", label: "Explore", description: "Starting research" },
-  { id: "consider", label: "Consider", description: "Evaluating options" },
-  { id: "compare", label: "Compare", description: "Narrowing choices" },
-  { id: "decide", label: "Decide", description: "Ready to buy" },
-];
+const DEFAULT_STAGES: { id: Stage; label: string; description: string }[] = CONFIG_DEFAULT_STAGES.map((stage) => ({
+  id: stage.id,
+  label: stage.label,
+  description: stage.description || "",
+}));
 
 const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; chartColor: string; logo: string }[] = [
   { id: "openai", label: "GPT 5.2", color: "text-brand-primary", bgColor: "bg-brand-primary", chartColor: "#1f3b2c", logo: "/OpenAI-black-monoblossom.svg" },
@@ -1663,14 +1661,28 @@ export default function VisibilityMatrixPage() {
                   showMissing={Boolean(selectedHistoricalRun)}
                   loading={matrixDataHook.status === "loading" && Object.keys(effectiveMatrixData).length === 0}
                   onSelectCell={(persona, stage) => {
-                    setSelectedCell({ persona, stage });
-                    setSelection({ type: "cell", persona, stage });
-                    if (viewMode === "summary") {
-                      setInsightModalOpen(true);
-                    } else if (viewMode === "answers") {
-                      setAnswersPanelOpen(true);
-                    } else {
+                    setSelectedCell((prev) =>
+                      prev?.persona === persona && prev?.stage === stage
+                        ? prev
+                        : { persona, stage }
+                    );
+                    setSelection((prev) =>
+                      prev.type === "cell" && prev.persona === persona && prev.stage === stage
+                        ? prev
+                        : { type: "cell", persona, stage }
+                    );
+                    if (viewMode === "intents" || viewMode === "queries") {
                       setIntentEditorOpen(true);
+                      setInsightModalOpen(false);
+                      setAnswersPanelOpen(false);
+                    } else if (viewMode === "summary") {
+                      setInsightModalOpen(true);
+                      setIntentEditorOpen(false);
+                      setAnswersPanelOpen(false);
+                    } else {
+                      setAnswersPanelOpen(true);
+                      setIntentEditorOpen(false);
+                      setInsightModalOpen(false);
                     }
                   }}
                   onShowAll={() => setViewMode("summary")}
@@ -1912,7 +1924,7 @@ export default function VisibilityMatrixPage() {
       {/* Focus Mode Editor */}
 
       {
-        selectedCell && (
+        selectedCell && intentEditorOpen && (
           <IntentEditorModal
             open={intentEditorOpen}
             onClose={() => setIntentEditorOpen(false)}
@@ -1922,7 +1934,11 @@ export default function VisibilityMatrixPage() {
             personas={personas}
             stages={stages}
             cellStatus={cellStatus}
-            onSelectCell={(p, s) => setSelectedCell({ persona: p, stage: s })}
+            onSelectCell={(p, s) =>
+              setSelectedCell((prev) =>
+                prev?.persona === p && prev?.stage === s ? prev : { persona: p, stage: s }
+              )
+            }
             intents={localQueryBank[selectedCell.persona]?.[selectedCell.stage]?.intents || []}
             queries={Object.fromEntries(
               (localQueryBank[selectedCell.persona]?.[selectedCell.stage]?.intents || []).map(i => [i.id, i.generatedQueries || []])
@@ -2056,7 +2072,7 @@ export default function VisibilityMatrixPage() {
         )
       }
 
-      {selectedCell && (() => {
+      {selectedCell && insightModalOpen && (() => {
         const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
         const cellData = effectiveMatrixData[cellKey];
         return (
@@ -2080,7 +2096,7 @@ export default function VisibilityMatrixPage() {
       })()}
 
       {/* Answers Panel - LLM Response Viewer */}
-      {selectedCell && (() => {
+      {selectedCell && answersPanelOpen && (() => {
         const cellKey = `${selectedCell.persona}-${selectedCell.stage}`;
         const cellData = effectiveMatrixData[cellKey];
         return (

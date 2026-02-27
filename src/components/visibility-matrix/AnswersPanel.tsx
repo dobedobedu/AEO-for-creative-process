@@ -191,10 +191,10 @@ export function AnswersPanel({
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       onClose();
+      setMessages([]);
+      setInput("");
+      setExpandedProvider(null);
     }
-    setMessages([]);
-    setInput("");
-    setExpandedProvider(null);
   };
 
   // Auto-scroll to bottom on new messages

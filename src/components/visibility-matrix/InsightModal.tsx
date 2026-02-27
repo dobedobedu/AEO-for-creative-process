@@ -104,15 +104,15 @@ export function InsightModal({
 
     const isLoading = status === "submitted" || status === "streaming";
 
-    const handleOpenChange = (nextOpen: boolean) => {
-        if (!nextOpen) {
-            onClose();
-        }
-        setMessages([]);
-        setInput("");
-        setRagError(null);
-        setRagStatus(null);
-    };
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      onClose();
+      setMessages([]);
+      setInput("");
+      setRagError(null);
+      setRagStatus(null);
+    }
+  };
 
     useEffect(() => {
         if (!open) return;

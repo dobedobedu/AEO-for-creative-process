@@ -157,8 +157,14 @@ export function IntentEditorModal({
     }
   };
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-5xl h-[90vh] overflow-hidden flex flex-col p-0 border-none bg-white">
         <DialogHeader className="sr-only">
           <DialogTitle>Focus Mode Editor</DialogTitle>
