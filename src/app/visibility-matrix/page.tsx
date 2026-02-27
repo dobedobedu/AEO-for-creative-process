@@ -1459,20 +1459,13 @@ export default function VisibilityMatrixPage() {
         {/* Matrix Workspace */}
         <div className="mt-8 -mx-6">
           <div className="flex-1">
-            {/* Empty State - when ready but no data */}
-            {matrixDataHook.status === "ready" && historicalRuns.length === 0 && Object.values(matrixData).every(cell => cell.results.length === 0) ? (
-              <div className="border border-dashed border-brand-secondary bg-white px-8 py-16 text-center mx-6">
-                <div className="max-w-md mx-auto space-y-4">
-                  <div className="w-12 h-12 mx-auto rounded-full bg-[#f6f1e8] flex items-center justify-center">
-                    <svg className="w-6 h-6 text-black/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-medium text-black/80">No benchmark data yet</h3>
-                  <p className="text-sm text-black/50">Run a benchmark to populate the visibility matrix with AI response data across personas and journey stages.</p>
-                </div>
+            {matrixDataHook.status === "ready" && historicalRuns.length === 0 && Object.values(matrixData).every(cell => cell.results.length === 0) && (
+              <div className="mx-6 mb-4 border border-dashed border-brand-secondary bg-white px-6 py-4 text-center">
+                <p className="text-sm text-black/60">
+                  No benchmark data yet. Click <span className="font-semibold">&quot;Select Queries to Run&quot;</span> to choose cells and start your first benchmark.
+                </p>
               </div>
-            ) : (
+            )}
             (() => {
               // Transform effectiveMatrixData into a format SplitViewEditor can use for the 'summary' mode
               // effectiveMatrixData is either the current run or a selected historical run
@@ -1696,7 +1689,6 @@ export default function VisibilityMatrixPage() {
                 />
               );
             })()
-            )}
           </div>
         </div>
       </div>
