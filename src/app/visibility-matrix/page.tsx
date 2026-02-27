@@ -1707,12 +1707,41 @@ export default function VisibilityMatrixPage() {
 
                       const newBank = cloneQueryBank(localQueryBank);
                       emptyCells.forEach(cell => {
-                        const baselineText = {
-                          explore: `Understand what ${personas.find(p => p.id === cell.persona)?.label} is trying to solve and what options they should research first.`,
-                          consider: `Evaluate fit, constraints, trust signals, and practical trade-offs for ${personas.find(p => p.id === cell.persona)?.label}.`,
-                          compare: `Compare top options side-by-side for ${personas.find(p => p.id === cell.persona)?.label} based on outcomes, cost, and risk.`,
-                          decide: `Address final blockers and decision confidence signals for ${personas.find(p => p.id === cell.persona)?.label}.`
-                        }[cell.stage] || `Generate research objectives for ${personas.find(p => p.id === cell.persona)?.label || cell.persona} during the ${stages.find(s => s.id === cell.stage)?.label || cell.stage} phase.`;
+                        const personaConfig = personas.find((p) => p.id === cell.persona);
+                        const stageConfig = stages.find((s) => s.id === cell.stage);
+                        const personaLabel = personaConfig?.label || cell.persona;
+                        const personaContext = personaConfig?.description?.trim()
+                          ? ` Context: ${personaConfig.description.trim()}`
+                          : "";
+                        const stageLabel = stageConfig?.label || cell.stage;
+                        const stageText = `${cell.stage} ${stageLabel}`.toLowerCase();
+
+                        const baselineText = (
+                          stageText.includes("discover") ||
+                          stageText.includes("explore") ||
+                          stageText.includes("awareness")
+                        )
+                          ? `Identify the top early-stage questions ${personaLabel} should ask to frame the problem, key criteria, and viable options.${personaContext}`
+                          : (
+                            stageText.includes("research") ||
+                            stageText.includes("consider") ||
+                            stageText.includes("evaluate")
+                          )
+                            ? `Evaluate fit, constraints, pricing, outcomes, and trust signals for ${personaLabel} so they can narrow to realistic options.${personaContext}`
+                            : (
+                              stageText.includes("compare") ||
+                              stageText.includes("shortlist")
+                            )
+                              ? `Compare leading options side-by-side for ${personaLabel} across trade-offs, total cost, risk, and expected results.${personaContext}`
+                              : (
+                                stageText.includes("apply") ||
+                                stageText.includes("decide") ||
+                                stageText.includes("select") ||
+                                stageText.includes("purchase") ||
+                                stageText.includes("enroll")
+                              )
+                                ? `Resolve final decision blockers for ${personaLabel} and define the confidence checks needed before committing.${personaContext}`
+                                : `Define the key decision questions ${personaLabel} must answer during the ${stageLabel} stage.${personaContext}`;
 
                         if (!newBank[cell.persona]) newBank[cell.persona] = {};
                         if (!newBank[cell.persona][cell.stage]) newBank[cell.persona][cell.stage] = { intents: [] };
