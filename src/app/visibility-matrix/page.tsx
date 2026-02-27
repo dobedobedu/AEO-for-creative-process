@@ -1688,22 +1688,34 @@ export default function VisibilityMatrixPage() {
                   onShowAll={() => setViewMode("summary")}
                   onGenerateAll={async (mode) => {
                     if (mode === "intents") {
-                      // Generate default Research Objectives for any empty cells
+                      // Generate (or regenerate) Research Objectives.
+                      const allCells: { persona: Persona; stage: Stage }[] = [];
                       const emptyCells: { persona: Persona, stage: Stage }[] = [];
                       Object.entries(localQueryBank).forEach(([pId, stages]) => {
                         Object.entries(stages).forEach(([sId, data]) => {
+                          allCells.push({ persona: pId as Persona, stage: sId as Stage });
                           if (data.intents.length === 0) {
                             emptyCells.push({ persona: pId as Persona, stage: sId as Stage });
                           }
                         });
                       });
 
-                      if (emptyCells.length === 0) {
-                        alert("All cells already have research objectives.");
-                        return;
-                      }
+                      let targetCells = emptyCells;
+                      let overwriteExisting = false;
 
-                      if (!confirm(`Generate AI research objectives for ${emptyCells.length} empty cells?`)) return;
+                      if (emptyCells.length > 0) {
+                        if (!confirm(`Generate AI research objectives for ${emptyCells.length} empty cells?`)) return;
+                      } else {
+                        overwriteExisting = true;
+                        targetCells = allCells;
+                        if (
+                          !confirm(
+                            `All cells already have research objectives. Regenerate and replace intents for all ${allCells.length} cells?`
+                          )
+                        ) {
+                          return;
+                        }
+                      }
 
                       const buildFallbackIntentText = (personaId: Persona, stageId: Stage): string => {
                         const personaConfig = personas.find((p) => p.id === personaId);
@@ -1745,7 +1757,7 @@ export default function VisibilityMatrixPage() {
                       };
 
                       const newBank = cloneQueryBank(localQueryBank);
-                      const queue = [...emptyCells];
+                      const queue = [...targetCells];
                       const workerCount = Math.min(4, queue.length);
                       let generatedCount = 0;
                       let fallbackCount = 0;
@@ -1796,13 +1808,19 @@ export default function VisibilityMatrixPage() {
                           const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
                           if (!newBank[cell.persona]) newBank[cell.persona] = {};
                           if (!newBank[cell.persona][cell.stage]) newBank[cell.persona][cell.stage] = { intents: [] };
-                          newBank[cell.persona][cell.stage].intents.push({
+                          const generatedIntent: IntentNode = {
                             id: `intent-${cell.persona}-${cell.stage}-${uniqueId}`,
                             text: intentText,
                             role: intentRole,
                             queryStyle: intentStyle,
                             generatedQueries: [],
-                          });
+                          };
+
+                          if (overwriteExisting) {
+                            newBank[cell.persona][cell.stage].intents = [generatedIntent];
+                          } else {
+                            newBank[cell.persona][cell.stage].intents.push(generatedIntent);
+                          }
 
                           if (usedFallback) fallbackCount += 1;
                           else generatedCount += 1;
@@ -1815,8 +1833,8 @@ export default function VisibilityMatrixPage() {
                       persistQueryBank(newBank);
                       alert(
                         fallbackCount > 0
-                          ? `Generated ${generatedCount} AI objectives. ${fallbackCount} used safe fallback objectives.`
-                          : `Generated ${generatedCount} AI objectives.`
+                          ? `Generated ${generatedCount} AI objectives. ${fallbackCount} used safe fallback objectives.${overwriteExisting ? " Existing objectives were replaced." : ""}`
+                          : `Generated ${generatedCount} AI objectives.${overwriteExisting ? " Existing objectives were replaced." : ""}`
                       );
                     } else {
                       // Generate Queries mode
