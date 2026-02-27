@@ -1769,21 +1769,20 @@ export default function VisibilityMatrixPage() {
 
                       const newBank = cloneQueryBank(localQueryBank);
                       const queue = [...targetCells];
-                      const workerCount = Math.min(4, queue.length);
+                      const workerCount = Math.min(2, queue.length);
                       let generatedCount = 0;
                       let fallbackCount = 0;
 
-                      const workers = Array.from({ length: workerCount }, async () => {
-                        while (queue.length > 0) {
-                          const cell = queue.shift();
-                          if (!cell) break;
+                      const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-                          const fallbackText = buildFallbackIntentText(cell.persona, cell.stage);
-                          let intentText = fallbackText;
-                          let intentRole: "cpo" | "family_unit" = "cpo";
-                          let intentStyle = 0.75;
-                          let usedFallback = true;
+                      const generateObjectiveForCell = async (cell: { persona: Persona; stage: Stage }) => {
+                        const localFallbackText = buildFallbackIntentText(cell.persona, cell.stage);
+                        let bestText = localFallbackText;
+                        let bestRole: "cpo" | "family_unit" = "cpo";
+                        let bestStyle = 0.75;
+                        let usedFallback = true;
 
+                        for (let attempt = 0; attempt < 3; attempt += 1) {
                           try {
                             const resp = await fetch("/api/intents/generate-objective", {
                               method: "POST",
@@ -1798,32 +1797,54 @@ export default function VisibilityMatrixPage() {
                               const data = await resp.json();
                               const modelIntent = data?.intent;
                               if (modelIntent?.text && typeof modelIntent.text === "string") {
-                                intentText = modelIntent.text.trim();
+                                bestText = modelIntent.text.trim();
                                 if (modelIntent.role === "cpo" || modelIntent.role === "family_unit") {
-                                  intentRole = modelIntent.role;
+                                  bestRole = modelIntent.role;
                                 }
                                 if (
                                   typeof modelIntent.queryStyle === "number" &&
                                   modelIntent.queryStyle >= 0.5 &&
                                   modelIntent.queryStyle <= 1
                                 ) {
-                                  intentStyle = modelIntent.queryStyle;
+                                  bestStyle = modelIntent.queryStyle;
                                 }
                                 usedFallback = Boolean(data?.fallback);
+                                if (!usedFallback) {
+                                  break;
+                                }
                               }
                             }
                           } catch {
-                            // Keep fallback for this cell and continue.
+                            // Retry transient failures.
                           }
+
+                          if (attempt < 2) {
+                            await sleep((attempt + 1) * 300);
+                          }
+                        }
+
+                        return {
+                          text: bestText,
+                          role: bestRole,
+                          queryStyle: bestStyle,
+                          usedFallback,
+                        };
+                      };
+
+                      const workers = Array.from({ length: workerCount }, async () => {
+                        while (queue.length > 0) {
+                          const cell = queue.shift();
+                          if (!cell) break;
+                          const generated = await generateObjectiveForCell(cell);
 
                           const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
                           if (!newBank[cell.persona]) newBank[cell.persona] = {};
                           if (!newBank[cell.persona][cell.stage]) newBank[cell.persona][cell.stage] = { intents: [] };
                           const generatedIntent: IntentNode = {
                             id: `intent-${cell.persona}-${cell.stage}-${uniqueId}`,
-                            text: intentText,
-                            role: intentRole,
-                            queryStyle: intentStyle,
+                            text: generated.text,
+                            role: generated.role,
+                            queryStyle: generated.queryStyle,
                             generatedQueries: [],
                           };
 
@@ -1833,7 +1854,7 @@ export default function VisibilityMatrixPage() {
                             newBank[cell.persona][cell.stage].intents.push(generatedIntent);
                           }
 
-                          if (usedFallback) fallbackCount += 1;
+                          if (generated.usedFallback) fallbackCount += 1;
                           else generatedCount += 1;
                         }
                       });

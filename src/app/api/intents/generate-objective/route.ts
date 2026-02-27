@@ -32,12 +32,112 @@ function stageDirective(coreStage: "explore" | "consider" | "compare" | "decide"
   }
 }
 
-function fallbackIntentText(personaLabel: string, stageLabel: string): string {
-  return `Define the key questions ${personaLabel} needs answered during the ${stageLabel} stage to make a confident decision.`;
+function fallbackIntentText(
+  coreStage: "explore" | "consider" | "compare" | "decide",
+  personaLabel: string,
+  stageLabel: string,
+  personaDescription?: string
+): string {
+  const context = personaDescription?.trim() ? ` Context: ${personaDescription.trim()}` : "";
+  switch (coreStage) {
+    case "explore":
+      return `Identify early discovery questions ${personaLabel} should ask in ${stageLabel} to frame needs, constraints, and viable options.${context}`;
+    case "consider":
+      return `Define the due-diligence checks ${personaLabel} should run in ${stageLabel} to validate fit, risk, and expected outcomes.${context}`;
+    case "compare":
+      return `Compare top options for ${personaLabel} in ${stageLabel} across tradeoffs, total cost, implementation effort, and confidence signals.${context}`;
+    case "decide":
+      return `Resolve final blockers for ${personaLabel} in ${stageLabel} and specify the evidence needed to commit with confidence.${context}`;
+  }
 }
 
 function cleanJsonResponse(raw: string): string {
   return raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+}
+
+function extractFirstJsonObject(raw: string): string | null {
+  const input = cleanJsonResponse(raw);
+  const start = input.indexOf("{");
+  if (start === -1) return null;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < input.length; i += 1) {
+    const ch = input[i];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === "\"") {
+      inString = true;
+      continue;
+    }
+    if (ch === "{") depth += 1;
+    if (ch === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        return input.slice(start, i + 1);
+      }
+    }
+  }
+  return null;
+}
+
+function parseModelOutput(raw: string): z.infer<typeof ModelOutputSchema> | null {
+  const candidates = [cleanJsonResponse(raw), extractFirstJsonObject(raw)].filter(Boolean) as string[];
+  for (const candidate of candidates) {
+    try {
+      const parsed = JSON.parse(candidate) as unknown;
+      const normalized = (() => {
+        if (parsed && typeof parsed === "object" && "intent" in (parsed as Record<string, unknown>)) {
+          const value = (parsed as Record<string, unknown>).intent;
+          if (value && typeof value === "object") {
+            const nested = value as Record<string, unknown>;
+            return {
+              intent: typeof nested.text === "string" ? nested.text : typeof nested.intent === "string" ? nested.intent : "",
+              role: nested.role,
+              queryStyle: nested.queryStyle,
+            };
+          }
+          if (typeof value === "string") return parsed;
+        }
+
+        if (parsed && typeof parsed === "object") {
+          const obj = parsed as Record<string, unknown>;
+          return {
+            intent:
+              typeof obj.intent === "string"
+                ? obj.intent
+                : typeof obj.objective === "string"
+                  ? obj.objective
+                  : typeof obj.text === "string"
+                    ? obj.text
+                    : "",
+            role: obj.role,
+            queryStyle:
+              typeof obj.queryStyle === "number"
+                ? obj.queryStyle
+                : typeof obj.queryStyle === "string"
+                  ? Number.parseFloat(obj.queryStyle)
+                  : undefined,
+          };
+        }
+        return parsed;
+      })();
+
+      const validated = ModelOutputSchema.safeParse(normalized);
+      if (validated.success) return validated.data;
+    } catch {
+      // try next parsing strategy
+    }
+  }
+  return null;
 }
 
 export async function POST(req: Request) {
@@ -79,7 +179,7 @@ export async function POST(req: Request) {
       () =>
         callOpenRouter({
           model,
-          temperature: 0.4,
+          temperature: 0.1,
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt },
@@ -92,7 +192,7 @@ export async function POST(req: Request) {
       return Response.json(
         {
           intent: {
-            text: fallbackIntentText(persona.label, stage.label),
+            text: fallbackIntentText(coreStage, persona.label, stage.label, persona.description),
             role: "cpo",
             queryStyle: 0.75,
           },
@@ -103,15 +203,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const cleaned = cleanJsonResponse(result.data);
-    let parsed: z.infer<typeof ModelOutputSchema>;
-    try {
-      parsed = ModelOutputSchema.parse(JSON.parse(cleaned));
-    } catch {
+    const parsed = parseModelOutput(result.data);
+    if (!parsed) {
       return Response.json(
         {
           intent: {
-            text: fallbackIntentText(persona.label, stage.label),
+            text: fallbackIntentText(coreStage, persona.label, stage.label, persona.description),
             role: "cpo",
             queryStyle: 0.75,
           },
@@ -139,4 +236,3 @@ export async function POST(req: Request) {
     return Response.json({ error: message }, { status: 500 });
   }
 }
-
