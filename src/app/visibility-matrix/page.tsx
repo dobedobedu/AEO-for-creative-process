@@ -187,33 +187,75 @@ const PROVIDERS: { id: Provider; label: string; color: string; bgColor: string; 
 // Updated to support multiple intents
 type QueryBank = Record<Persona, Record<Stage, { intents: IntentNode[] }>>;
 
-function createEmptyQueryBank(): QueryBank {
-  return {
-    move_up: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
-    retiree: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
-    luxury: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
-    first_time: { explore: { intents: [] }, consider: { intents: [] }, compare: { intents: [] }, decide: { intents: [] } },
-  };
+function createEmptyQueryBank(personaIds: Persona[], stageIds: Stage[]): QueryBank {
+  const bank: QueryBank = {};
+  for (const personaId of personaIds) {
+    bank[personaId] = {};
+    for (const stageId of stageIds) {
+      bank[personaId][stageId] = { intents: [] };
+    }
+  }
+  return bank;
 }
 
-function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
-  const bank = createEmptyQueryBank();
+function cloneQueryBank(source: QueryBank): QueryBank {
+  const cloned: QueryBank = {};
+  for (const [persona, stages] of Object.entries(source)) {
+    cloned[persona] = {};
+    for (const [stage, entry] of Object.entries(stages)) {
+      cloned[persona][stage] = {
+        intents: entry.intents.map((intent) => ({
+          ...intent,
+          generatedQueries: intent.generatedQueries ? [...intent.generatedQueries] : undefined,
+        })),
+      };
+    }
+  }
+  return cloned;
+}
+
+function normalizeQueryBank(source: QueryBank, personaIds: Persona[], stageIds: Stage[]): QueryBank {
+  const normalized = createEmptyQueryBank(personaIds, stageIds);
+
+  for (const [persona, stages] of Object.entries(source)) {
+    if (!normalized[persona]) normalized[persona] = {};
+    for (const [stage, entry] of Object.entries(stages)) {
+      if (!normalized[persona][stage]) normalized[persona][stage] = { intents: [] };
+      normalized[persona][stage] = {
+        intents: entry.intents.map((intent) => ({
+          ...intent,
+          generatedQueries: intent.generatedQueries ? [...intent.generatedQueries] : undefined,
+        })),
+      };
+    }
+  }
+
+  return normalized;
+}
+
+function buildQueryBankFromIntentLibrary(
+  library: IntentLibrary,
+  personaIds: Persona[],
+  stageIds: Stage[]
+): QueryBank {
+  const bank = createEmptyQueryBank(personaIds, stageIds);
 
   // Group all active intents by persona/stage
   for (const intent of library.intents) {
     if (!intent.active) continue;
 
-    if (bank[intent.persona] && bank[intent.persona][intent.stage]) {
-      const node: IntentNode = {
-        id: intent.id,
-        text: intent.text,
-        role: intent.role || "cpo",
-        queryStyle: intent.queryStyle || 0.75,
-        generatedQueries: intent.generatedQueries
-      };
+    if (!bank[intent.persona]) bank[intent.persona] = {};
+    if (!bank[intent.persona][intent.stage]) bank[intent.persona][intent.stage] = { intents: [] };
 
-      bank[intent.persona][intent.stage].intents.push(node);
-    }
+    const node: IntentNode = {
+      id: intent.id,
+      text: intent.text,
+      role: intent.role || "cpo",
+      queryStyle: intent.queryStyle || 0.75,
+      generatedQueries: intent.generatedQueries
+    };
+
+    bank[intent.persona][intent.stage].intents.push(node);
   }
 
   return bank;
@@ -221,7 +263,7 @@ function buildQueryBankFromIntentLibrary(library: IntentLibrary): QueryBank {
 
 // Convert a StoredRun to a QueryBank for displaying historical intent/query data
 function storedRunToQueryBank(run: StoredRun): QueryBank {
-  const bank = createEmptyQueryBank();
+  const bank: QueryBank = {};
 
   if (!run.cells) return bank;
 
@@ -231,7 +273,8 @@ function storedRunToQueryBank(run: StoredRun): QueryBank {
     const stage = parts.pop() as Stage;
     const persona = parts.join("_") as Persona;
 
-    if (!bank[persona] || !bank[persona][stage]) continue;
+    if (!bank[persona]) bank[persona] = {};
+    if (!bank[persona][stage]) bank[persona][stage] = { intents: [] };
 
     // Create an intent node from the stored cell data
     const intentNode: IntentNode = {
@@ -510,7 +553,12 @@ export default function VisibilityMatrixPage() {
   const [evidenceModal, setEvidenceModal] = useState<EvidenceModalData | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<ChatContext>({ scope: "global" });
-  const [localQueryBank, setLocalQueryBank] = useState<QueryBank>(() => createEmptyQueryBank());
+  const [localQueryBank, setLocalQueryBank] = useState<QueryBank>(() =>
+    createEmptyQueryBank(
+      DEFAULT_PERSONAS.map((p) => p.id),
+      DEFAULT_STAGES.map((s) => s.id)
+    )
+  );
   const [, setIntentLibrary] = useState<IntentLibrary | null>(null);
   const [viewMode, setViewMode] = useState<"summary" | "intents" | "queries" | "answers">("summary");
   // Cell Selection and Focus Mode
@@ -755,9 +803,26 @@ export default function VisibilityMatrixPage() {
 
     if (matrixDataHook.intentLibrary) {
       setIntentLibrary(matrixDataHook.intentLibrary);
-      setLocalQueryBank(buildQueryBankFromIntentLibrary(matrixDataHook.intentLibrary));
+      setLocalQueryBank(
+        buildQueryBankFromIntentLibrary(
+          matrixDataHook.intentLibrary,
+          personas.map((p) => p.id),
+          stages.map((s) => s.id)
+        )
+      );
     }
-  }, [matrixDataHook.intentLibrary]);
+  }, [matrixDataHook.intentLibrary, personas, stages]);
+
+  // Keep query-bank shape aligned with current dynamic personas/stages.
+  useEffect(() => {
+    setLocalQueryBank((prev) =>
+      normalizeQueryBank(
+        prev,
+        personas.map((p) => p.id),
+        stages.map((s) => s.id)
+      )
+    );
+  }, [personas, stages]);
 
   // Track whether user has run their own benchmark this session (don't override with historical)
   const userRanBenchmarkRef = useRef(false);
@@ -897,6 +962,24 @@ export default function VisibilityMatrixPage() {
       .filter(Boolean) as Array<{ key: string; persona: Persona; stage: Stage }>;
 
     if (targetCells.length === 0) return;
+
+    const cellsWithoutIntents = targetCells.filter(
+      (cell) => (localQueryBank[cell.persona]?.[cell.stage]?.intents?.length ?? 0) === 0
+    );
+    if (cellsWithoutIntents.length > 0) {
+      const preview = cellsWithoutIntents
+        .slice(0, 3)
+        .map((cell) => {
+          const personaLabel = personas.find((p) => p.id === cell.persona)?.label ?? cell.persona;
+          const stageLabel = stages.find((s) => s.id === cell.stage)?.label ?? cell.stage;
+          return `${personaLabel} × ${stageLabel}`;
+        })
+        .join(", ");
+      alert(
+        `Cannot run benchmark yet. Missing intents for ${cellsWithoutIntents.length} selected cell(s): ${preview}.`
+      );
+      return;
+    }
 
     // Start progress bar
     const tempRunId = `client-${Date.now()}`;
@@ -1044,10 +1127,12 @@ export default function VisibilityMatrixPage() {
       cellKeys = personas.map((p) => `${p.id}-${selection.stage}`);
     }
 
-    await runCellsBenchmark(cellKeys, quickTest, signal);
-
-    setIsRunning(false);
-    abortControllerRef.current = null;
+    try {
+      await runCellsBenchmark(cellKeys, quickTest, signal);
+    } finally {
+      setIsRunning(false);
+      abortControllerRef.current = null;
+    }
   };
 
   const stopBenchmark = () => {
@@ -1608,15 +1693,17 @@ export default function VisibilityMatrixPage() {
 
                       if (!confirm(`Generate baseline research objectives for ${emptyCells.length} empty cells?`)) return;
 
-                      const newBank = { ...localQueryBank };
+                      const newBank = cloneQueryBank(localQueryBank);
                       emptyCells.forEach(cell => {
                         const baselineText = {
-                          explore: `Analyze macro-level research and initial curiosity for ${personas.find(p => p.id === cell.persona)?.label} during the broad discovery phase.`,
-                          consider: `Evaluate specific lifestyle fit, community amenities, and long-term suitability for ${personas.find(p => p.id === cell.persona)?.label}.`,
-                          compare: `Directly compare financial trade-offs, CDD fees, and specific village logistics for ${personas.find(p => p.id === cell.persona)?.label}.`,
-                          decide: `Address final transactional hurdles, closing costs, and immediate life integration logistics for ${personas.find(p => p.id === cell.persona)?.label}.`
+                          explore: `Understand what ${personas.find(p => p.id === cell.persona)?.label} is trying to solve and what options they should research first.`,
+                          consider: `Evaluate fit, constraints, trust signals, and practical trade-offs for ${personas.find(p => p.id === cell.persona)?.label}.`,
+                          compare: `Compare top options side-by-side for ${personas.find(p => p.id === cell.persona)?.label} based on outcomes, cost, and risk.`,
+                          decide: `Address final blockers and decision confidence signals for ${personas.find(p => p.id === cell.persona)?.label}.`
                         }[cell.stage] || `Generate research objectives for ${personas.find(p => p.id === cell.persona)?.label || cell.persona} during the ${stages.find(s => s.id === cell.stage)?.label || cell.stage} phase.`;
 
+                        if (!newBank[cell.persona]) newBank[cell.persona] = {};
+                        if (!newBank[cell.persona][cell.stage]) newBank[cell.persona][cell.stage] = { intents: [] };
                         newBank[cell.persona][cell.stage].intents.push({
                           id: `intent-${cell.persona}-${cell.stage}-${Date.now()}`,
                           text: baselineText || `Research intent for ${cell.persona} at ${cell.stage} stage.`,
@@ -1654,6 +1741,8 @@ export default function VisibilityMatrixPage() {
 
                       if (!confirm(`Generate queries for ${cellsToProcess.length} intents?`)) return;
 
+                      const newBank = cloneQueryBank(localQueryBank);
+
                       for (const item of cellsToProcess) {
                         try {
                           const resp = await fetch("/api/intents/generate", {
@@ -1671,18 +1760,17 @@ export default function VisibilityMatrixPage() {
 
                           if (resp.ok) {
                             const data = await resp.json();
-                            const newBank = { ...localQueryBank };
-                            const targetIntent = newBank[item.persona][item.stage].intents.find(i => i.id === item.intent.id);
+                            const targetIntent = newBank[item.persona]?.[item.stage]?.intents.find(i => i.id === item.intent.id);
                             if (targetIntent) {
                               targetIntent.generatedQueries = data.queries;
-                              setLocalQueryBank({ ...newBank });
                             }
                           }
                         } catch (err) {
                           console.error("Failed to generate for cell:", err);
                         }
                       }
-                      persistQueryBank(localQueryBank);
+                      setLocalQueryBank(newBank);
+                      persistQueryBank(newBank);
                       alert("Generation complete!");
                     }
                   }}

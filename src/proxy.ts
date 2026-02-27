@@ -49,6 +49,7 @@ const SETUP_EXEMPT_PATHS = [
  */
 let setupStatusCache: { value: boolean; expiresAt: number } | null = null;
 const SETUP_CACHE_TTL_MS = 30_000; // 30 seconds
+let authBypassLogged = false;
 
 // API routes that require auth (mutation routes + AI call routes)
 const PROTECTED_API_ROUTES = [
@@ -139,7 +140,10 @@ export async function proxy(request: NextRequest) {
   // Explicit auth bypass for white-label rollout/testing before Supabase is ready.
   // This is opt-in and controlled by AUTH_DISABLED=true in the deployment env.
   if (authDisabled) {
-    console.warn("[proxy] AUTH_DISABLED=true - skipping auth enforcement");
+    if (!authBypassLogged) {
+      console.info("[proxy] Auth bypass enabled (AUTH_DISABLED=true) - expected in testing mode");
+      authBypassLogged = true;
+    }
     return NextResponse.next();
   }
 
