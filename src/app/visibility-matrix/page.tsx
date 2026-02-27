@@ -1703,60 +1703,121 @@ export default function VisibilityMatrixPage() {
                         return;
                       }
 
-                      if (!confirm(`Generate baseline research objectives for ${emptyCells.length} empty cells?`)) return;
+                      if (!confirm(`Generate AI research objectives for ${emptyCells.length} empty cells?`)) return;
 
-                      const newBank = cloneQueryBank(localQueryBank);
-                      emptyCells.forEach(cell => {
-                        const personaConfig = personas.find((p) => p.id === cell.persona);
-                        const stageConfig = stages.find((s) => s.id === cell.stage);
-                        const personaLabel = personaConfig?.label || cell.persona;
+                      const buildFallbackIntentText = (personaId: Persona, stageId: Stage): string => {
+                        const personaConfig = personas.find((p) => p.id === personaId);
+                        const stageConfig = stages.find((s) => s.id === stageId);
+                        const personaLabel = personaConfig?.label || personaId;
+                        const stageLabel = stageConfig?.label || stageId;
                         const personaContext = personaConfig?.description?.trim()
                           ? ` Context: ${personaConfig.description.trim()}`
                           : "";
-                        const stageLabel = stageConfig?.label || cell.stage;
-                        const stageText = `${cell.stage} ${stageLabel}`.toLowerCase();
+                        const stageText = `${stageId} ${stageLabel}`.toLowerCase();
 
-                        const baselineText = (
+                        if (
                           stageText.includes("discover") ||
                           stageText.includes("explore") ||
                           stageText.includes("awareness")
-                        )
-                          ? `Identify the top early-stage questions ${personaLabel} should ask to frame the problem, key criteria, and viable options.${personaContext}`
-                          : (
-                            stageText.includes("research") ||
-                            stageText.includes("consider") ||
-                            stageText.includes("evaluate")
-                          )
-                            ? `Evaluate fit, constraints, pricing, outcomes, and trust signals for ${personaLabel} so they can narrow to realistic options.${personaContext}`
-                            : (
-                              stageText.includes("compare") ||
-                              stageText.includes("shortlist")
-                            )
-                              ? `Compare leading options side-by-side for ${personaLabel} across trade-offs, total cost, risk, and expected results.${personaContext}`
-                              : (
-                                stageText.includes("apply") ||
-                                stageText.includes("decide") ||
-                                stageText.includes("select") ||
-                                stageText.includes("purchase") ||
-                                stageText.includes("enroll")
-                              )
-                                ? `Resolve final decision blockers for ${personaLabel} and define the confidence checks needed before committing.${personaContext}`
-                                : `Define the key decision questions ${personaLabel} must answer during the ${stageLabel} stage.${personaContext}`;
+                        ) {
+                          return `Identify the top early-stage questions ${personaLabel} should ask to frame the problem, key criteria, and viable options.${personaContext}`;
+                        }
+                        if (
+                          stageText.includes("research") ||
+                          stageText.includes("consider") ||
+                          stageText.includes("evaluate")
+                        ) {
+                          return `Evaluate fit, constraints, pricing, outcomes, and trust signals for ${personaLabel} so they can narrow to realistic options.${personaContext}`;
+                        }
+                        if (stageText.includes("compare") || stageText.includes("shortlist")) {
+                          return `Compare leading options side-by-side for ${personaLabel} across trade-offs, total cost, risk, and expected results.${personaContext}`;
+                        }
+                        if (
+                          stageText.includes("apply") ||
+                          stageText.includes("decide") ||
+                          stageText.includes("select") ||
+                          stageText.includes("purchase") ||
+                          stageText.includes("enroll")
+                        ) {
+                          return `Resolve final decision blockers for ${personaLabel} and define the confidence checks needed before committing.${personaContext}`;
+                        }
+                        return `Define the key decision questions ${personaLabel} must answer during the ${stageLabel} stage.${personaContext}`;
+                      };
 
-                        if (!newBank[cell.persona]) newBank[cell.persona] = {};
-                        if (!newBank[cell.persona][cell.stage]) newBank[cell.persona][cell.stage] = { intents: [] };
-                        newBank[cell.persona][cell.stage].intents.push({
-                          id: `intent-${cell.persona}-${cell.stage}-${Date.now()}`,
-                          text: baselineText || `Research intent for ${cell.persona} at ${cell.stage} stage.`,
-                          role: "cpo",
-                          queryStyle: 0.75,
-                          generatedQueries: [],
-                        });
+                      const newBank = cloneQueryBank(localQueryBank);
+                      const queue = [...emptyCells];
+                      const workerCount = Math.min(4, queue.length);
+                      let generatedCount = 0;
+                      let fallbackCount = 0;
+
+                      const workers = Array.from({ length: workerCount }, async () => {
+                        while (queue.length > 0) {
+                          const cell = queue.shift();
+                          if (!cell) break;
+
+                          const fallbackText = buildFallbackIntentText(cell.persona, cell.stage);
+                          let intentText = fallbackText;
+                          let intentRole: "cpo" | "family_unit" = "cpo";
+                          let intentStyle = 0.75;
+                          let usedFallback = true;
+
+                          try {
+                            const resp = await fetch("/api/intents/generate-objective", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                persona: cell.persona,
+                                stage: cell.stage,
+                              }),
+                            });
+
+                            if (resp.ok) {
+                              const data = await resp.json();
+                              const modelIntent = data?.intent;
+                              if (modelIntent?.text && typeof modelIntent.text === "string") {
+                                intentText = modelIntent.text.trim();
+                                if (modelIntent.role === "cpo" || modelIntent.role === "family_unit") {
+                                  intentRole = modelIntent.role;
+                                }
+                                if (
+                                  typeof modelIntent.queryStyle === "number" &&
+                                  modelIntent.queryStyle >= 0.5 &&
+                                  modelIntent.queryStyle <= 1
+                                ) {
+                                  intentStyle = modelIntent.queryStyle;
+                                }
+                                usedFallback = Boolean(data?.fallback);
+                              }
+                            }
+                          } catch {
+                            // Keep fallback for this cell and continue.
+                          }
+
+                          const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                          if (!newBank[cell.persona]) newBank[cell.persona] = {};
+                          if (!newBank[cell.persona][cell.stage]) newBank[cell.persona][cell.stage] = { intents: [] };
+                          newBank[cell.persona][cell.stage].intents.push({
+                            id: `intent-${cell.persona}-${cell.stage}-${uniqueId}`,
+                            text: intentText,
+                            role: intentRole,
+                            queryStyle: intentStyle,
+                            generatedQueries: [],
+                          });
+
+                          if (usedFallback) fallbackCount += 1;
+                          else generatedCount += 1;
+                        }
                       });
+
+                      await Promise.all(workers);
 
                       setLocalQueryBank(newBank);
                       persistQueryBank(newBank);
-                      alert("Research objectives seeded!");
+                      alert(
+                        fallbackCount > 0
+                          ? `Generated ${generatedCount} AI objectives. ${fallbackCount} used safe fallback objectives.`
+                          : `Generated ${generatedCount} AI objectives.`
+                      );
                     } else {
                       // Generate Queries mode
                       const cellsToProcess: { persona: Persona, stage: Stage, intent: IntentNode }[] = [];
